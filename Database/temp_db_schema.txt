@@ -1,0 +1,152 @@
+# Sugarcane Industry Web Platform - Database Schema Design
+
+## MySQL Schema (Relational, Normalized)
+
+### Tables & Relationships
+
+#### 1. Users
+- `id` (PK)
+- `name`
+- `email` (unique)
+- `password_hash`
+- `role` (ENUM: 'farmer', 'hhm', 'worker', 'factory', 'admin')
+- `phone`
+- `created_at`
+
+#### 2. Farmers
+- `id` (PK, FK to Users)
+- `address`
+- `farm_size`
+- `other_details`
+
+#### 3. HHMs (Harvest Managers)
+- `id` (PK, FK to Users)
+- `company_name`
+- `address`
+- `other_details`
+
+#### 4. Workers
+- `id` (PK, FK to Users)
+- `skills`
+- `availability`
+- `attendance` (can be a separate table)
+
+#### 5. Factories
+- `id` (PK, FK to Users)
+- `factory_name`
+- `location`
+- `other_details`
+
+#### 6. Contracts
+- `id` (PK)
+- `farmer_id` (FK)
+- `hhm_id` (FK)
+- `factory_id` (FK)
+- `status` (ENUM: 'pending', 'approved', 'rejected', 'completed')
+- `start_date`
+- `end_date`
+- `details`
+
+#### 7. Payments
+- `id` (PK)
+- `contract_id` (FK)
+- `amount`
+- `paid_by` (FK to Users)
+- `paid_to` (FK to Users)
+- `status` (ENUM: 'pending', 'completed')
+- `date`
+
+#### 8. Schedules
+- `id` (PK)
+- `contract_id` (FK)
+- `hhm_id` (FK)
+- `worker_id` (FK)
+- `date`
+- `task`
+- `status`
+
+#### 9. Attendance
+- `id` (PK)
+- `worker_id` (FK)
+- `date`
+- `hours_worked`
+- `status` (ENUM: 'present', 'absent')
+
+---
+
+## MongoDB Schema (Collections, Documents)
+
+### Collections & Document Structure
+
+#### 1. Users
+```json
+{
+  "_id": ObjectId,
+  "name": String,
+  "email": String,
+  "password_hash": String,
+  "role": "farmer" | "hhm" | "worker" | "factory" | "admin",
+  "phone": String,
+  "created_at": Date,
+  "profile": {
+    // role-specific fields (address, farm_size, company_name, etc.)
+  }
+}
+```
+
+#### 2. Contracts
+```json
+{
+  "_id": ObjectId,
+  "farmer_id": ObjectId,
+  "hhm_id": ObjectId,
+  "factory_id": ObjectId,
+  "status": "pending" | "approved" | "rejected" | "completed",
+  "start_date": Date,
+  "end_date": Date,
+  "details": String
+}
+```
+
+#### 3. Payments
+```json
+{
+  "_id": ObjectId,
+  "contract_id": ObjectId,
+  "amount": Number,
+  "paid_by": ObjectId,
+  "paid_to": ObjectId,
+  "status": "pending" | "completed",
+  "date": Date
+}
+```
+
+#### 4. Schedules
+```json
+{
+  "_id": ObjectId,
+  "contract_id": ObjectId,
+  "hhm_id": ObjectId,
+  "worker_id": ObjectId,
+  "date": Date,
+  "task": String,
+  "status": String
+}
+```
+
+#### 5. Attendance
+```json
+{
+  "_id": ObjectId,
+  "worker_id": ObjectId,
+  "date": Date,
+  "hours_worked": Number,
+  "status": "present" | "absent"
+}
+```
+
+## Notes
+- All user roles are managed in the `Users` table/collection with a `role` field.
+- Relationships are handled via foreign keys (MySQL) or references (MongoDB).
+- You can add more fields as needed for business logic.
+- Seed/sample data can be provided for each table/collection.
