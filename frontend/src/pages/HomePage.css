@@ -1,0 +1,442 @@
+/* HomePage.css */
+.home-page {
+  min-height: 80vh;
+  padding: 0;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
+  padding: 80px 20px;
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.hero-section h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #2c5f2d;
+  margin: 0 0 20px 0;
+  line-height: 1.2;
+}
+
+.hero-section p {
+  font-size: 1.3rem;
+  color: #4a7c59;
+  margin: 0 0 40px 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4a7c59 0%, #2c5f2d 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(74, 124, 89, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 124, 89, 0.4);
+}
+
+.btn-secondary {
+  background: white;
+  color: #4a7c59;
+  border: 2px solid #4a7c59;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary:hover {
+  background: #4a7c59;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.features-section {
+  padding: 0 20px 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.features-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c5f2d;
+  margin: 0 0 50px 0;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.feature-card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c5f2d;
+  margin: 0 0 15px 0;
+}
+
+.feature-card p {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 60px 20px;
+  }
+
+  .hero-section h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-section p {
+    font-size: 1.1rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-primary, .btn-secondary {
+    width: 200px;
+  }
+
+  .features-section h2 {
+    font-size: 2rem;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section h1 {
+    font-size: 2rem;
+  }
+
+  .hero-section p {
+    font-size: 1rem;
+  }
+
+  .feature-card {
+    padding: 30px 20px;
+  }
+
+  .roles-section h2 {
+    font-size: 2rem;
+  }
+
+  .guide-boxes-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Loading State */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e0e0e0;
+  border-top: 4px solid #2c5f2d;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Error Message */
+.error-message {
+  background: #ffe6e6;
+  border: 1px solid #ffb3b3;
+  color: #cc0000;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 1200px;
+  text-align: center;
+}
+
+.error-message p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Roles Section */
+.roles-section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.roles-section h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c5f2d;
+  margin: 0 0 15px 0;
+}
+
+.roles-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin: 0 0 50px 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* Guide Boxes Grid */
+.guide-boxes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+/* Modal Content Styles */
+.role-modal-content {
+  padding: 0;
+}
+
+.role-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.role-icon {
+  font-size: 3rem;
+  flex-shrink: 0;
+}
+
+.role-info h2 {
+  color: #2c5f2d;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+}
+
+.role-description {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Role Details */
+.role-details {
+  margin-bottom: 30px;
+}
+
+.features-section-modal,
+.benefits-section-modal {
+  margin-bottom: 30px;
+}
+
+.features-section-modal h3,
+.benefits-section-modal h3 {
+  color: #2c5f2d;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.features-list,
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.features-list li,
+.benefits-list li {
+  padding: 8px 0;
+  color: #444;
+  position: relative;
+  padding-left: 25px;
+  line-height: 1.5;
+}
+
+.features-list li::before {
+  content: '✅';
+  position: absolute;
+  left: 0;
+  top: 8px;
+}
+
+.benefits-list li::before {
+  content: '🎯';
+  position: absolute;
+  left: 0;
+  top: 8px;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.modal-actions .btn-primary,
+.modal-actions .btn-secondary {
+  flex: 1;
+  max-width: 200px;
+  text-align: center;
+}
+
+/* Test clickable card */
+.test-clickable-card {
+  background: #ff6b6b;
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  transition: all 0.3s ease;
+}
+
+.test-clickable-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+}
+
+.test-clickable-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+}
+
+.test-clickable-card p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Debug styles for clickable elements */
+.debug-clickable {
+  border: 2px solid #2c5f2d !important;
+  position: relative;
+}
+
+.debug-clickable::after {
+  content: 'CLICKABLE';
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #2c5f2d;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  z-index: 10;
+}
+
+/* Ensure GuideBox components are properly styled */
+.guide-boxes-grid .guide-box {
+  cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
+}
+
+.guide-boxes-grid .guide-box:hover {
+  background-color: #f0f8f0;
+}
+
+/* Responsive Design for Modal */
+@media (max-width: 768px) {
+  .role-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .role-info h2 {
+    font-size: 1.7rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-actions .btn-primary,
+  .modal-actions .btn-secondary {
+    max-width: 100%;
+  }
+
+  .roles-section {
+    padding: 40px 15px;
+  }
+}

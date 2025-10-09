@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication API Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 12px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .response {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .token-display {
+            background-color: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Sugarcane Platform - Authentication API Tester</h1>
+    
+    <!-- Registration Section -->
+    <div class="container">
+        <h2>📝 User Registration</h2>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="regName">Name:</label>
+                <input type="text" id="regName" value="John Doe" required>
+            </div>
+            <div class="form-group">
+                <label for="regUsername">Username:</label>
+                <input type="text" id="regUsername" value="johndoe" required>
+            </div>
+            <div class="form-group">
+                <label for="regPhone">Phone:</label>
+                <input type="text" id="regPhone" value="+1234567890" required>
+            </div>
+            <div class="form-group">
+                <label for="regEmail">Email:</label>
+                <input type="email" id="regEmail" value="john@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="regRole">Role:</label>
+                <select id="regRole" required>
+                    <option value="Farmer">Farmer</option>
+                    <option value="HHM">HHM</option>
+                    <option value="Labour">Labour</option>
+                    <option value="Factory">Factory</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Password:</label>
+                <input type="password" id="regPassword" value="securepass123" required>
+            </div>
+            <button type="submit">Register User</button>
+        </form>
+        <div id="registerResult"></div>
+    </div>
+
+    <!-- Login Section -->
+    <div class="container">
+        <h2>🔐 User Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginIdentifier">Username/Email/Phone:</label>
+                <input type="text" id="loginIdentifier" value="johndoe" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" value="securepass123" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div id="loginResult"></div>
+    </div>
+
+    <!-- Token Verification Section -->
+    <div class="container">
+        <h2>✅ Token Verification</h2>
+        <div class="form-group">
+            <label for="verifyToken">JWT Token:</label>
+            <input type="text" id="verifyToken" placeholder="Token will be filled automatically after login/registration">
+        </div>
+        <button onclick="verifyToken()">Verify Token</button>
+        <div id="verifyResult"></div>
+    </div>
+
+    <!-- Current Token Display -->
+    <div class="container">
+        <h2>🎫 Current Token</h2>
+        <div id="currentToken" class="token-display">No token available</div>
+    </div>
+
+    <script>
+        let currentTokenValue = '';
+
+        // Helper function to display results
+        function displayResult(elementId, success, message, data = null) {
+            const element = document.getElementById(elementId);
+            const cssClass = success ? 'success' : 'error';
+            const icon = success ? '✅' : '❌';
+            
+            let html = `<div class="${cssClass}">${icon} ${message}</div>`;
+            if (data) {
+                html += `<div class="response">${JSON.stringify(data, null, 2)}</div>`;
+            }
+            element.innerHTML = html;
+        }
+
+        // Helper function to make API requests
+        async function apiRequest(url, method, data = null, token = null) {
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const config = {
+                method,
+                headers
+            };
+
+            if (data) {
+                config.body = JSON.stringify(data);
+            }
+
+            try {
+                const response = await fetch(url, config);
+                const result = await response.json();
+                return { success: response.ok, data: result, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Update token display
+        function updateTokenDisplay(token) {
+            currentTokenValue = token;
+            document.getElementById('currentToken').textContent = token || 'No token available';
+            document.getElementById('verifyToken').value = token || '';
+        }
+
+        // Registration form handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userData = {
+                name: document.getElementById('regName').value,
+                username: document.getElementById('regUsername').value,
+                phone: document.getElementById('regPhone').value,
+                email: document.getElementById('regEmail').value,
+                role: document.getElementById('regRole').value,
+                password: document.getElementById('regPassword').value
+            };
+
+            const result = await apiRequest('http://localhost:5000/api/auth/register', 'POST', userData);
+            
+            if (result.success) {
+                displayResult('registerResult', true, 'Registration successful!', result.data);
+                if (result.data.data && result.data.data.token) {
+                    updateTokenDisplay(result.data.data.token);
+                }
+            } else {
+                displayResult('registerResult', false, result.data?.message || result.error || 'Registration failed', result.data);
+            }
+        });
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const loginData = {
+                identifier: document.getElementById('loginIdentifier').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            const result = await apiRequest('http://localhost:5000/api/auth/login', 'POST', loginData);
+            
+            if (result.success) {
+                displayResult('loginResult', true, 'Login successful!', result.data);
+                if (result.data.data && result.data.data.token) {
+                    updateTokenDisplay(result.data.data.token);
+                }
+            } else {
+                displayResult('loginResult', false, result.data?.message || result.error || 'Login failed', result.data);
+            }
+        });
+
+        // Token verification function
+        async function verifyToken() {
+            const token = document.getElementById('verifyToken').value || currentTokenValue;
+            
+            if (!token) {
+                displayResult('verifyResult', false, 'No token provided');
+                return;
+            }
+
+            const result = await apiRequest('http://localhost:5000/api/auth/verify', 'GET', null, token);
+            
+            if (result.success) {
+                displayResult('verifyResult', true, 'Token verified successfully!', result.data);
+            } else {
+                displayResult('verifyResult', false, result.data?.message || result.error || 'Token verification failed', result.data);
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Authentication API Tester loaded');
+        });
+    </script>
+</body>
+</html>

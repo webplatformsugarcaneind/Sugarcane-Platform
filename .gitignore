@@ -1,0 +1,149 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.example
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+.next/
+.nuxt/
+.vuepress/dist/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+
+# Cache directories
+.npm/
+.eslintcache
+.parcel-cache/
+.cache/
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+.yarn/
+.pnp.*
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.vim
+.sublime-*
+*.code-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Archives
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Runtime files
+*.local
+
+# PM2 Process Manager
+.pm2/
+
+# Docker
+.dockerignore
+
+# Serverless Framework
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# Ignore specific development files
+*.test.js.bak
+*.backup
+*.orig
+
+# Local configuration files
+config/local.js
+config/local.json
+
+# Upload directories (if any)
+uploads/
+public/uploads/
+
+# Certificate files
+*.pem
+*.key
+*.crt
+
+# Ignore any personal notes or TODO files
+notes.txt
+TODO.txt
+NOTES.md
