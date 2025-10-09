@@ -1,1 +1,1 @@
-# sugarcane-platform
+# sugarcane-web-platform
