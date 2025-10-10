@@ -5,8 +5,9 @@ import App from './App.jsx'
 
 console.log('Starting main app...');
 
+let root;
 try {
-  const root = createRoot(document.getElementById('root'));
+  root = createRoot(document.getElementById('root'));
   console.log('Root created successfully');
   
   root.render(
@@ -19,6 +20,9 @@ try {
   console.error('Error during rendering:', error);
   // Fallback to simple test if main app fails
   import('./SimpleTest.jsx').then(SimpleTest => {
+    if (!root) {
+      root = createRoot(document.getElementById('root'));
+    }
     root.render(<SimpleTest.default />);
   });
 }
