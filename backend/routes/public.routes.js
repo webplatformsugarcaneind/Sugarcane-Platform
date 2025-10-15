@@ -1,12 +1,12 @@
 const express = require('express');
-const Factory = require('../models/factory.model');
+const User = require('../models/user.model'); // Use User model instead of Factory model
 const RoleFeature = require('../models/roleFeature.model');
 const mongoose = require('mongoose');
 
 const router = express.Router();
 
 // @route   GET /api/public/factories
-// @desc    Get all factories
+// @desc    Get all factories (from Factory role users)
 // @access  Public
 router.get('/factories', async (req, res) => {
   try {
@@ -15,22 +15,16 @@ router.get('/factories', async (req, res) => {
       page = 1,
       limit = 10,
       location,
-      isActive = true,
       sort = 'createdAt',
       order = 'desc'
     } = req.query;
 
-    // Build filter object
-    const filter = {};
-    
-    // Filter by active status
-    if (isActive !== 'all') {
-      filter.isActive = isActive === 'true';
-    }
+    // Build filter object for Factory role users
+    const filter = { role: 'Factory' };
     
     // Filter by location (case-insensitive partial match)
     if (location) {
-      filter.location = { $regex: location, $options: 'i' };
+      filter.factoryLocation = { $regex: location, $options: 'i' };
     }
 
     // Build sort object
@@ -41,34 +35,40 @@ router.get('/factories', async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const limitNum = parseInt(limit);
 
-    // Execute query with population of associated HHMs
-    const factories = await Factory.find(filter)
-      .populate('associatedHHMs', 'name username email phone role')
+    // Execute query to get Factory role users
+    const factoryUsers = await User.find(filter)
       .sort(sortObj)
       .skip(skip)
       .limit(limitNum)
       .lean();
 
     // Get total count for pagination info
-    const totalFactories = await Factory.countDocuments(filter);
+    const totalFactories = await User.countDocuments(filter);
     const totalPages = Math.ceil(totalFactories / limitNum);
 
-    // Format response data
-    const formattedFactories = factories.map(factory => ({
-      id: factory._id,
-      name: factory.name,
-      location: factory.location,
-      description: factory.description,
-      imageUrls: factory.imageUrls || [],
-      imageCount: factory.imageUrls ? factory.imageUrls.length : 0,
-      associatedHHMs: factory.associatedHHMs || [],
-      hhmCount: factory.associatedHHMs ? factory.associatedHHMs.length : 0,
-      isActive: factory.isActive,
-      capacity: factory.capacity,
-      contactInfo: factory.contactInfo,
-      operatingHours: factory.operatingHours,
-      createdAt: factory.createdAt,
-      updatedAt: factory.updatedAt
+    // Format response data to match expected factory structure
+    const formattedFactories = factoryUsers.map(user => ({
+      id: user._id,
+      name: user.factoryName || user.name + ' Factory',
+      location: user.factoryLocation || 'Location not specified',
+      description: user.factoryDescription || 'Modern sugar processing facility',
+      imageUrls: [],
+      imageCount: 0,
+      associatedHHMs: [],
+      hhmCount: 0,
+      isActive: true,
+      capacity: user.capacity || 'Not specified',
+      contactInfo: {
+        phone: user.phone,
+        email: user.email,
+        website: user.contactInfo?.website || '',
+        ...user.contactInfo
+      },
+      operatingHours: user.operatingHours || {},
+      experience: user.experience || 'Not specified',
+      specialization: user.specialization || 'Sugar Processing',
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
     }));
 
     res.status(200).json({
@@ -99,7 +99,7 @@ router.get('/factories', async (req, res) => {
 });
 
 // @route   GET /api/public/factories/:id
-// @desc    Get single factory by ID
+// @desc    Get single factory by ID (from Factory role user)
 // @access  Public
 router.get('/factories/:id', async (req, res) => {
   try {
@@ -113,34 +113,49 @@ router.get('/factories/:id', async (req, res) => {
       });
     }
 
-    // Find factory by ID and populate associated HHMs
-    const factory = await Factory.findById(factoryId)
-      .populate('associatedHHMs', 'name username email phone role isActive createdAt')
-      .lean();
+    // Find factory user by ID (Factory role user)
+    const factoryUser = await User.findOne({ 
+      _id: factoryId, 
+      role: 'Factory' 
+    }).lean();
 
-    if (!factory) {
+    if (!factoryUser) {
       return res.status(404).json({
         success: false,
         message: 'Factory not found'
       });
     }
 
-    // Format response data
+    // Find associated HHMs for this factory (if applicable)
+    const associatedHHMs = await User.find({ 
+      role: 'HHM',
+      // You might have a field linking HHMs to factories
+      // factoryId: factoryId 
+    }).select('name username email phone role isActive createdAt').lean();
+
+    // Format response data to match expected factory structure
     const formattedFactory = {
-      id: factory._id,
-      name: factory.name,
-      location: factory.location,
-      description: factory.description,
-      imageUrls: factory.imageUrls || [],
-      imageCount: factory.imageUrls ? factory.imageUrls.length : 0,
-      associatedHHMs: factory.associatedHHMs || [],
-      hhmCount: factory.associatedHHMs ? factory.associatedHHMs.length : 0,
-      isActive: factory.isActive,
-      capacity: factory.capacity,
-      contactInfo: factory.contactInfo,
-      operatingHours: factory.operatingHours,
-      createdAt: factory.createdAt,
-      updatedAt: factory.updatedAt
+      id: factoryUser._id,
+      name: factoryUser.factoryName || factoryUser.name + ' Factory',
+      location: factoryUser.factoryLocation || 'Location not specified',
+      description: factoryUser.factoryDescription || 'Modern sugar processing facility',
+      imageUrls: [],
+      imageCount: 0,
+      associatedHHMs: associatedHHMs || [],
+      hhmCount: associatedHHMs ? associatedHHMs.length : 0,
+      isActive: true,
+      capacity: factoryUser.capacity || 'Not specified',
+      contactInfo: {
+        phone: factoryUser.phone,
+        email: factoryUser.email,
+        website: factoryUser.contactInfo?.website || '',
+        ...factoryUser.contactInfo
+      },
+      operatingHours: factoryUser.operatingHours || {},
+      experience: factoryUser.experience || 'Not specified',
+      specialization: factoryUser.specialization || 'Sugar Processing',
+      createdAt: factoryUser.createdAt,
+      updatedAt: factoryUser.updatedAt
     };
 
     res.status(200).json({

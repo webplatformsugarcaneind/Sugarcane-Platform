@@ -348,10 +348,123 @@ const updateMaintenanceApplication = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Get factory profile
+ * @route   GET /api/factory/profile
+ * @access  Private (Factory only)
+ */
+const getProfile = async (req, res) => {
+  try {
+    console.log('👤 getProfile called for factory user:', req.user?._id);
+
+    // The user is already attached to req.user by the protect middleware
+    const factory = req.user;
+
+    if (!factory) {
+      return res.status(404).json({
+        success: false,
+        message: 'Factory profile not found'
+      });
+    }
+
+    // Debug: Log the full user object
+    console.log('🔍 Full user object:', JSON.stringify(factory, null, 2));
+    console.log('🏭 Factory name from user:', factory.factoryName);
+
+    // Format profile data specific to factory users
+    const profileData = {
+      _id: factory._id,
+      name: factory.name,
+      username: factory.username,
+      email: factory.email,
+      phone: factory.phone,
+      role: factory.role,
+      factoryName: factory.factoryName,
+      factoryLocation: factory.factoryLocation,
+      factoryDescription: factory.factoryDescription,
+      capacity: factory.capacity,
+      experience: factory.experience,
+      specialization: factory.specialization,
+      contactInfo: factory.contactInfo || {},
+      operatingHours: factory.operatingHours || {},
+      isActive: factory.isActive,
+      createdAt: factory.createdAt,
+      updatedAt: factory.updatedAt
+    };
+
+    res.status(200).json({
+      success: true,
+      message: 'Factory profile retrieved successfully',
+      profile: profileData
+    });
+
+  } catch (error) {
+    console.error('Error in getProfile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving factory profile',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    Update factory profile
+ * @route   PUT /api/factory/profile
+ * @access  Private (Factory only)
+ */
+const updateProfile = async (req, res) => {
+  try {
+    console.log('🔄 updateProfile called for factory user:', req.user?._id);
+
+    const factoryId = req.user._id;
+    const updateData = req.body;
+
+    // Remove fields that shouldn't be updated via profile
+    delete updateData.password;
+    delete updateData.role;
+    delete updateData._id;
+    delete updateData.createdAt;
+
+    // Update factory profile
+    const updatedFactory = await User.findByIdAndUpdate(
+      factoryId,
+      updateData,
+      { 
+        new: true, 
+        runValidators: true 
+      }
+    ).select('-password');
+
+    if (!updatedFactory) {
+      return res.status(404).json({
+        success: false,
+        message: 'Factory profile not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Factory profile updated successfully',
+      profile: updatedFactory
+    });
+
+  } catch (error) {
+    console.error('Error in updateProfile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating factory profile',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createBill,
   getBills,
   createMaintenanceJob,
   getMaintenanceApplications,
-  updateMaintenanceApplication
+  updateMaintenanceApplication,
+  getProfile,
+  updateProfile
 };

@@ -1,12 +1,11 @@
 // Clean version of the original HomePage.jsx with all functionality preserved
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios'; // Commented out since API call is not currently used
 import GuideBox from '../components/GuideBox';
 import Modal from '../components/Modal';
 import './HomePage.css';
 
 const HomePage = () => {
-  const [rolesFeatures, setRolesFeatures] = useState([]);
   const [rolesData, setRolesData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);

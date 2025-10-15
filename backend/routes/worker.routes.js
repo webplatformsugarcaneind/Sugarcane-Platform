@@ -11,13 +11,33 @@ const {
   getMyApplications,
   getMyInvitations,
   respondToInvitation,
-  getWorkerDashboard
+  getWorkerDashboard,
+  getProfile,
+  updateProfile
 } = require('../controllers/worker.controller');
 
 // Apply protection and authorization to all routes in this file
 // All routes require user to be authenticated and have 'Labour' role
 router.use(protect);
 router.use(authorize('Labour'));
+
+// ================================
+// PROFILE API ROUTES
+// ================================
+
+/**
+ * @route   GET /api/worker/profile
+ * @desc    Get the logged-in worker's profile
+ * @access  Private (Labour only)
+ */
+router.get('/profile', getProfile);
+
+/**
+ * @route   PUT /api/worker/profile
+ * @desc    Update the logged-in worker's profile
+ * @access  Private (Labour only)
+ */
+router.put('/profile', updateProfile);
 
 // ================================
 // JOB FEED ROUTES

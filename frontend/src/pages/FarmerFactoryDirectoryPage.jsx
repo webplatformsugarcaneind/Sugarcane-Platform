@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 /**
@@ -21,9 +21,67 @@ const FarmerFactoryDirectoryPage = () => {
     fetchFactories();
   }, []);
 
+  const filterAndSortFactories = useCallback(() => {
+    let filtered = [...factories];
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(factory =>
+        factory.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.contactEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.contactPhone?.includes(searchTerm) ||
+        factory.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply location filter
+    if (selectedLocation) {
+      filtered = filtered.filter(factory =>
+        factory.location?.toLowerCase().includes(selectedLocation.toLowerCase())
+      );
+    }
+
+    // Apply capacity filter
+    if (selectedCapacity) {
+      const _capacity = parseInt(selectedCapacity);
+      filtered = filtered.filter(factory => {
+        const factoryCapacity = factory.processingCapacity || 0;
+        switch (selectedCapacity) {
+          case 'small':
+            return factoryCapacity < 1000;
+          case 'medium':
+            return factoryCapacity >= 1000 && factoryCapacity < 5000;
+          case 'large':
+            return factoryCapacity >= 5000;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return (a.name || '').localeCompare(b.name || '');
+        case 'location':
+          return (a.location || '').localeCompare(b.location || '');
+        case 'capacity':
+          return (b.processingCapacity || 0) - (a.processingCapacity || 0);
+        case 'established':
+          return new Date(b.establishedYear || 0) - new Date(a.establishedYear || 0);
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredFactories(filtered);
+  }, [factories, searchTerm, selectedLocation, selectedCapacity, sortBy]);
+
   useEffect(() => {
     filterAndSortFactories();
-  }, [factories, searchTerm, selectedLocation, selectedCapacity, sortBy]);
+  }, [factories, searchTerm, selectedLocation, selectedCapacity, sortBy, filterAndSortFactories]);
 
   const fetchFactories = async () => {
     try {
@@ -57,64 +115,6 @@ const FarmerFactoryDirectoryPage = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const filterAndSortFactories = () => {
-    let filtered = [...factories];
-
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(factory =>
-        factory.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        factory.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        factory.contactEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        factory.contactPhone?.includes(searchTerm) ||
-        factory.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Apply location filter
-    if (selectedLocation) {
-      filtered = filtered.filter(factory =>
-        factory.location?.toLowerCase().includes(selectedLocation.toLowerCase())
-      );
-    }
-
-    // Apply capacity filter
-    if (selectedCapacity) {
-      const capacity = parseInt(selectedCapacity);
-      filtered = filtered.filter(factory => {
-        const factoryCapacity = factory.processingCapacity || 0;
-        switch (selectedCapacity) {
-          case 'small':
-            return factoryCapacity < 1000;
-          case 'medium':
-            return factoryCapacity >= 1000 && factoryCapacity < 5000;
-          case 'large':
-            return factoryCapacity >= 5000;
-          default:
-            return true;
-        }
-      });
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return (a.name || '').localeCompare(b.name || '');
-        case 'location':
-          return (a.location || '').localeCompare(b.location || '');
-        case 'capacity':
-          return (b.processingCapacity || 0) - (a.processingCapacity || 0);
-        case 'established':
-          return new Date(b.establishedYear || 0) - new Date(a.establishedYear || 0);
-        default:
-          return 0;
-      }
-    });
-
-    setFilteredFactories(filtered);
   };
 
   const handleSearchChange = (e) => {
@@ -329,15 +329,20 @@ const FarmerFactoryDirectoryPage = () => {
                       </div>
                     )}
 
-                    {factory.specialization && factory.specialization.length > 0 && (
+                    {factory.specialization && (
                       <div className="detail-item">
                         <span className="detail-label">Specialization:</span>
                         <div className="specialization-tags">
-                          {factory.specialization.map((spec, index) => (
-                            <span key={index} className="spec-tag">
-                              {spec}
-                            </span>
-                          ))}
+                          {Array.isArray(factory.specialization) 
+                            ? factory.specialization.map((spec, index) => (
+                                <span key={index} className="spec-tag">
+                                  {spec}
+                                </span>
+                              ))
+                            : <span className="spec-tag">
+                                {factory.specialization}
+                              </span>
+                          }
                         </div>
                       </div>
                     )}

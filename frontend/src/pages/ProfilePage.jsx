@@ -1,38 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './ProfilePage.css';
 
 /**
- * ProfilePage Component
- * 
- * Profile page where farmers can view and edit their personal
- * information, farm details, and account settings.
+ * ProfilePage Component - Role-based profile layouts
  */
 const ProfilePage = () => {
   const navigate = useNavigate();
   
-  const [profileData, setProfileData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    farmLocation: '',
-    farmSize: '',
-    experience: '',
-    specialization: '',
-    skills: '',
-    availabilityStatus: 'available',
-    contactPreferences: {
-      email: true,
-      phone: true,
-      sms: false
-    },
-    privacy: {
-      showPhone: true,
-      showEmail: false,
-      showLocation: true
-    }
-  });
-
+  const [profileData, setProfileData] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -50,11 +27,12 @@ const ProfilePage = () => {
   }, []);
 
   const fetchProfile = async () => {
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
-
       const token = localStorage.getItem('token');
+      
       if (!token) {
         setError('No authentication token found');
         return;
@@ -63,7 +41,23 @@ const ProfilePage = () => {
       // Determine API endpoint based on user role
       const userData = localStorage.getItem('user');
       const user = userData ? JSON.parse(userData) : {};
-      const apiEndpoint = user.role === 'Labour' ? '/api/worker/profile' : '/api/farmer/profile';
+      
+      let apiEndpoint;
+      switch (user.role) {
+        case 'Labour':
+          apiEndpoint = '/api/worker/profile';
+          break;
+        case 'Factory':
+          apiEndpoint = '/api/factory/profile';
+          break;
+        case 'HHM':
+          apiEndpoint = '/api/hhm/profile';
+          break;
+        case 'Farmer':
+        default:
+          apiEndpoint = '/api/farmer/profile';
+          break;
+      }
 
       const response = await axios.get(apiEndpoint, {
         headers: {
@@ -72,20 +66,10 @@ const ProfilePage = () => {
         }
       });
 
-      // Merge response data with default structure
+      // Set profile data based on the response
       const profile = response.data.profile || {};
-      setProfileData(prev => ({
-        ...prev,
-        ...profile,
-        contactPreferences: {
-          ...prev.contactPreferences,
-          ...(profile.contactPreferences || {})
-        },
-        privacy: {
-          ...prev.privacy,
-          ...(profile.privacy || {})
-        }
-      }));
+      setProfileData(profile);
+
     } catch (err) {
       console.error('Error fetching profile:', err);
       setError(
@@ -101,7 +85,7 @@ const ProfilePage = () => {
     const { name, value, type, checked } = e.target;
     
     if (name.includes('.')) {
-      // Handle nested properties (contactPreferences, privacy)
+      // Handle nested properties
       const [parent, child] = name.split('.');
       setProfileData(prev => ({
         ...prev,
@@ -120,21 +104,38 @@ const ProfilePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    try {
-      setSaving(true);
-      setError(null);
-      setSuccessMessage('');
+    setSaving(true);
+    setError(null);
+    setSuccessMessage('');
 
+    try {
       const token = localStorage.getItem('token');
+      
       if (!token) {
-        throw new Error('No authentication token found');
+        setError('No authentication token found');
+        return;
       }
 
       // Determine API endpoint based on user role
       const userData = localStorage.getItem('user');
       const user = userData ? JSON.parse(userData) : {};
-      const apiEndpoint = user.role === 'Labour' ? '/api/worker/profile' : '/api/farmer/profile';
+      
+      let apiEndpoint;
+      switch (user.role) {
+        case 'Labour':
+          apiEndpoint = '/api/worker/profile';
+          break;
+        case 'Factory':
+          apiEndpoint = '/api/factory/profile';
+          break;
+        case 'HHM':
+          apiEndpoint = '/api/hhm/profile';
+          break;
+        case 'Farmer':
+        default:
+          apiEndpoint = '/api/farmer/profile';
+          break;
+      }
 
       const response = await axios.put(apiEndpoint, profileData, {
         headers: {
@@ -145,22 +146,14 @@ const ProfilePage = () => {
 
       setSuccessMessage('Profile updated successfully!');
       
-      // Update localStorage user data if it exists
-      if (userData) {
-        const updatedUser = JSON.parse(userData);
-        localStorage.setItem('user', JSON.stringify({
-          ...updatedUser,
-          name: profileData.name,
-          email: profileData.email
-        }));
+      // Update profile data with the response
+      if (response.data.profile) {
+        setProfileData(response.data.profile);
       }
+      
+      setTimeout(() => setSuccessMessage(''), 3000);
 
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        setSuccessMessage('');
-      }, 3000);
     } catch (err) {
-      console.error('Error updating profile:', err);
       setError(
         err.response?.data?.message || 
         'Failed to update profile. Please try again.'
@@ -170,15 +163,689 @@ const ProfilePage = () => {
     }
   };
 
-  const handleLogout = () => {
-    // Show confirmation dialog
-    if (window.confirm('Are you sure you want to logout?')) {
-      // Clear authentication data
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      
-      // Redirect to home page
-      navigate('/');
+  // Role-specific profile rendering functions
+  const renderFarmerProfile = () => (
+    <form onSubmit={handleSubmit} className="profile-form farmer-profile">
+      <div className="form-section">
+        <h2 className="section-title">🌾 Farmer Information</h2>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="name" className="form-label">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={profileData.name || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email" className="form-label">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={profileData.email || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="phone" className="form-label">Phone Number</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={profileData.phone || ''}
+              onChange={handleInputChange}
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="location" className="form-label">Location</label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              value={profileData.location || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., Nashik, Maharashtra"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="farmSize" className="form-label">Farm Size</label>
+            <input
+              type="text"
+              id="farmSize"
+              name="farmSize"
+              value={profileData.farmSize || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., 25 acres"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="farmingExperience" className="form-label">Farming Experience</label>
+            <input
+              type="text"
+              id="farmingExperience"
+              name="farmingExperience"
+              value={profileData.farmingExperience || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., 12 years"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="cropTypes" className="form-label">Primary Crops</label>
+            <input
+              type="text"
+              id="cropTypes"
+              name="cropTypes"
+              value={profileData.cropTypes || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., Sugarcane, Rice, Wheat"
+            />
+            <small className="form-help">Separate multiple crops with commas</small>
+          </div>
+          <div className="form-group">
+            <label htmlFor="irrigationType" className="form-label">Irrigation Type</label>
+            <select
+              id="irrigationType"
+              name="irrigationType"
+              value={profileData.irrigationType || ''}
+              onChange={handleInputChange}
+              className="form-input"
+            >
+              <option value="">Select irrigation type</option>
+              <option value="drip">Drip Irrigation</option>
+              <option value="sprinkler">Sprinkler System</option>
+              <option value="flood">Flood Irrigation</option>
+              <option value="furrow">Furrow Irrigation</option>
+              <option value="rainfed">Rain-fed</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Farm Equipment & Technology Section */}
+      <div className="form-section">
+        <h2 className="section-title">🚜 Farm Equipment & Technology</h2>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="equipment" className="form-label">Available Equipment</label>
+            <textarea
+              id="equipment"
+              name="equipment"
+              value={profileData.equipment || ''}
+              onChange={handleInputChange}
+              className="form-input textarea"
+              rows="3"
+              placeholder="e.g., Tractor, Harvester, Plow, Cultivator, Seed Drill"
+            />
+            <small className="form-help">List your farm equipment</small>
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="farmingMethods" className="form-label">Farming Methods</label>
+            <textarea
+              id="farmingMethods"
+              name="farmingMethods"
+              value={profileData.farmingMethods || ''}
+              onChange={handleInputChange}
+              className="form-input textarea"
+              rows="2"
+              placeholder="e.g., Organic farming, Drip irrigation, Crop rotation"
+            />
+            <small className="form-help">Describe your farming methods and techniques</small>
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="certifications" className="form-label">Certifications</label>
+            <input
+              type="text"
+              id="certifications"
+              name="certifications"
+              value={profileData.certifications || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., Organic Farming Certificate, Good Agricultural Practices (GAP)"
+            />
+            <small className="form-help">Separate multiple certifications with commas</small>
+          </div>
+        </div>
+      </div>
+
+      <div className="form-actions">
+        <button type="submit" className="btn btn-primary" disabled={saving}>
+          {saving ? 'Saving...' : 'Save Profile'}
+        </button>
+      </div>
+    </form>
+  );
+
+  const renderFactoryProfile = () => (
+    <form onSubmit={handleSubmit} className="profile-form factory-profile">
+      <div className="form-section">
+        <h2 className="section-title">🏭 Factory Information</h2>
+        
+        <div className="factory-header">
+          <div className="factory-name-section">
+            <h3>{profileData.factoryName || 'Factory Name'}</h3>
+            <p className="factory-location">{profileData.factoryLocation || 'Location'}</p>
+          </div>
+          <div className="factory-capacity">
+            <span className="capacity-label">Daily Capacity</span>
+            <span className="capacity-value">{profileData.capacity || 'Not specified'}</span>
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="name" className="form-label">Contact Person Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={profileData.name || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="factoryName" className="form-label">Factory Name</label>
+            <input
+              type="text"
+              id="factoryName"
+              name="factoryName"
+              value={profileData.factoryName || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="email" className="form-label">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={profileData.email || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="phone" className="form-label">Phone Number</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={profileData.phone || ''}
+              onChange={handleInputChange}
+              className="form-input"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="factoryLocation" className="form-label">Factory Location</label>
+            <input
+              type="text"
+              id="factoryLocation"
+              name="factoryLocation"
+              value={profileData.factoryLocation || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., Pune, Maharashtra"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="capacity" className="form-label">Processing Capacity</label>
+            <input
+              type="text"
+              id="capacity"
+              name="capacity"
+              value={profileData.capacity || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., 2500 TCD"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group full-width">
+            <label htmlFor="factoryDescription" className="form-label">Factory Description</label>
+            <textarea
+              id="factoryDescription"
+              name="factoryDescription"
+              value={profileData.factoryDescription || ''}
+              onChange={handleInputChange}
+              className="form-input textarea"
+              rows="3"
+              placeholder="Describe your factory's capabilities and services..."
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="experience" className="form-label">Years in Operation</label>
+            <input
+              type="text"
+              id="experience"
+              name="experience"
+              value={profileData.experience || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., 15 years"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="specialization" className="form-label">Specialization</label>
+            <input
+              type="text"
+              id="specialization"
+              name="specialization"
+              value={profileData.specialization || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., Sugar Processing, Ethanol Production"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Contact Information Section */}
+      <div className="form-section">
+        <h2 className="section-title">📞 Contact Information</h2>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="contactInfo.website" className="form-label">Website</label>
+            <input
+              type="url"
+              id="contactInfo.website"
+              name="contactInfo.website"
+              value={profileData.contactInfo?.website || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="https://yourfactory.com"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="contactInfo.fax" className="form-label">Fax Number</label>
+            <input
+              type="tel"
+              id="contactInfo.fax"
+              name="contactInfo.fax"
+              value={profileData.contactInfo?.fax || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="+91-20-12345678"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Operating Hours Section */}
+      <div className="form-section">
+        <h2 className="section-title">🕒 Operating Hours & Schedule</h2>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="operatingHours.season" className="form-label">Operating Season</label>
+            <input
+              type="text"
+              id="operatingHours.season"
+              name="operatingHours.season"
+              value={profileData.operatingHours?.season || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., October to March"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="operatingHours.monday" className="form-label">Monday Hours</label>
+            <input
+              type="text"
+              id="operatingHours.monday"
+              name="operatingHours.monday"
+              value={profileData.operatingHours?.monday || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., 6:00 AM - 10:00 PM"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="operatingHours.tuesday" className="form-label">Tuesday Hours</label>
+            <input
+              type="text"
+              id="operatingHours.tuesday"
+              name="operatingHours.tuesday"
+              value={profileData.operatingHours?.tuesday || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., 6:00 AM - 10:00 PM"
+            />
+          </div>
+        </div>
+
+        {/* Display Current Operating Hours */}
+        {(profileData.operatingHours && Object.keys(profileData.operatingHours).length > 0) && (
+          <div className="operating-hours-display">
+            <h4>Current Operating Schedule:</h4>
+            <div className="schedule-grid">
+              {Object.entries(profileData.operatingHours).map(([key, value]) => (
+                <div key={key} className="schedule-item">
+                  <span className="schedule-label">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+                  <span className="schedule-value">{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="form-actions">
+        <button type="submit" className="btn btn-primary" disabled={saving}>
+          {saving ? 'Saving...' : 'Update Factory Profile'}
+        </button>
+      </div>
+    </form>
+  );
+
+  const renderHHMProfile = () => (
+    <form onSubmit={handleSubmit} className="profile-form hhm-profile">
+      <div className="form-section">
+        <h2 className="section-title">👥 HHM Information</h2>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="name" className="form-label">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={profileData.name || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email" className="form-label">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={profileData.email || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="phone" className="form-label">Phone Number</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={profileData.phone || ''}
+              onChange={handleInputChange}
+              className="form-input"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Management & Operations Section */}
+      <div className="form-section">
+        <h2 className="section-title">📊 Management & Operations</h2>
+        
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="managementExperience" className="form-label">Management Experience</label>
+            <input
+              type="text"
+              id="managementExperience"
+              name="managementExperience"
+              value={profileData.managementExperience || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., 8 years"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="teamSize" className="form-label">Team Size</label>
+            <input
+              type="text"
+              id="teamSize"
+              name="teamSize"
+              value={profileData.teamSize || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., 15-20 workers"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group full-width">
+            <label htmlFor="managementOperations" className="form-label">Management Operations</label>
+            <textarea
+              id="managementOperations"
+              name="managementOperations"
+              value={profileData.managementOperations || ''}
+              onChange={handleInputChange}
+              className="form-input textarea"
+              rows="3"
+              placeholder="e.g., Worker coordination, Task scheduling, Quality control, Safety supervision"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group full-width">
+            <label htmlFor="servicesOffered" className="form-label">Services Offered</label>
+            <textarea
+              id="servicesOffered"
+              name="servicesOffered"
+              value={profileData.servicesOffered || ''}
+              onChange={handleInputChange}
+              className="form-input textarea"
+              rows="3"
+              placeholder="e.g., Labour contracting, Equipment rental, Field supervision, Training services"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="form-actions">
+        <button type="submit" className="btn btn-primary" disabled={saving}>
+          {saving ? 'Saving...' : 'Update HHM Profile'}
+        </button>
+      </div>
+    </form>
+  );
+
+  const renderLabourProfile = () => (
+    <form onSubmit={handleSubmit} className="profile-form labour-profile">
+      <div className="form-section">
+        <h2 className="section-title">👷 Worker Information</h2>
+        
+        <div className="worker-status">
+          <div className="status-indicator">
+            <span className={`status-badge ${profileData.availabilityStatus === 'available' ? 'available' : 'unavailable'}`}>
+              {profileData.availabilityStatus === 'available' ? '🟢 Available' : '🔴 Unavailable'}
+            </span>
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="name" className="form-label">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={profileData.name || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="email" className="form-label">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={profileData.email || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="phone" className="form-label">Phone Number</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={profileData.phone || ''}
+              onChange={handleInputChange}
+              className="form-input"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="skills" className="form-label">Skills</label>
+            <input
+              type="text"
+              id="skills"
+              name="skills"
+              value={profileData.skills || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., Sugarcane cutting, Field preparation, Irrigation, Equipment operation"
+            />
+            <small className="form-help">Separate multiple skills with commas</small>
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="workExperience" className="form-label">Work Experience</label>
+            <input
+              type="text"
+              id="workExperience"
+              name="workExperience"
+              value={profileData.workExperience || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., 6 years in agricultural work"
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="wageRate" className="form-label">Wage Rate</label>
+            <input
+              type="text"
+              id="wageRate"
+              name="wageRate"
+              value={profileData.wageRate || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., ₹350 per day"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="availability" className="form-label">Availability</label>
+            <select
+              id="availability"
+              name="availability"
+              value={profileData.availability || 'Available'}
+              onChange={handleInputChange}
+              className="form-input"
+            >
+              <option value="Available">Available</option>
+              <option value="Busy">Busy</option>
+              <option value="Unavailable">Unavailable</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="workPreferences" className="form-label">Work Preferences</label>
+            <input
+              type="text"
+              id="workPreferences"
+              name="workPreferences"
+              value={profileData.workPreferences || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              placeholder="e.g., Full-time, Day shifts, Outdoor work"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="form-actions">
+        <button type="submit" className="btn btn-primary" disabled={saving}>
+          {saving ? 'Saving...' : 'Update Worker Profile'}
+        </button>
+      </div>
+    </form>
+  );
+
+  const renderProfileByRole = () => {
+    switch (userRole) {
+      case 'Farmer':
+        return renderFarmerProfile();
+      case 'Factory':
+        return renderFactoryProfile();
+      case 'HHM':
+        return renderHHMProfile();
+      case 'Labour':
+        return renderLabourProfile();
+      default:
+        return renderFarmerProfile(); // Default fallback
     }
   };
 
@@ -199,18 +866,12 @@ const ProfilePage = () => {
         <div className="header-content">
           <h1>My Profile</h1>
           <p className="page-subtitle">
-            {userRole === 'Labour' 
-              ? 'Manage your worker profile, skills, and availability' 
-              : 'Manage your personal information and preferences'
-            }
+            {userRole === 'Factory' && 'Manage your factory information and operations'}
+            {userRole === 'Farmer' && 'Manage your farm details and personal information'}
+            {userRole === 'HHM' && 'Manage your hub operations and contact details'}
+            {userRole === 'Labour' && 'Manage your skills, availability, and work profile'}
           </p>
         </div>
-        <button 
-          className="logout-btn"
-          onClick={handleLogout}
-        >
-          🚪 Logout
-        </button>
       </div>
 
       <div className="profile-content">
@@ -227,592 +888,8 @@ const ProfilePage = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="profile-form">
-          {/* Personal Information Section */}
-          <div className="form-section">
-            <h2 className="section-title">Personal Information</h2>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="name" className="form-label">Full Name</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={profileData.name}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email" className="form-label">Email Address</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={profileData.email}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="phone" className="form-label">Phone Number</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={profileData.phone}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="+91 98765 43210"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Farm/Work Information Section */}
-          <div className="form-section">
-            <h2 className="section-title">
-              {userRole === 'Labour' ? 'Work Information' : 'Farm Information'}
-            </h2>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="farmLocation" className="form-label">
-                  {userRole === 'Labour' ? 'Current Location' : 'Farm Location'}
-                </label>
-                <input
-                  type="text"
-                  id="farmLocation"
-                  name="farmLocation"
-                  value={profileData.farmLocation}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="e.g., Mumbai, Maharashtra"
-                />
-              </div>
-
-              {userRole !== 'Labour' && (
-                <div className="form-group">
-                  <label htmlFor="farmSize" className="form-label">Farm Size (acres)</label>
-                  <input
-                    type="number"
-                    id="farmSize"
-                    name="farmSize"
-                    value={profileData.farmSize}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    min="0"
-                    step="0.1"
-                    placeholder="e.g., 5.5"
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="experience" className="form-label">Years of Experience</label>
-                <input
-                  type="number"
-                  id="experience"
-                  name="experience"
-                  value={profileData.experience}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  min="0"
-                  placeholder="e.g., 10"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="specialization" className="form-label">
-                  {userRole === 'Labour' ? 'Primary Work Area' : 'Specialization'}
-                </label>
-                <input
-                  type="text"
-                  id="specialization"
-                  name="specialization"
-                  value={profileData.specialization}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  placeholder={userRole === 'Labour' ? 'e.g., Harvesting, Field Preparation' : 'e.g., Sugarcane, Rice'}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Labour-specific Information Section */}
-          {userRole === 'Labour' && (
-            <div className="form-section">
-              <h2 className="section-title">Worker Information</h2>
-              
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="skills" className="form-label">Skills</label>
-                  <textarea
-                    id="skills"
-                    name="skills"
-                    value={profileData.skills}
-                    onChange={handleInputChange}
-                    className="form-textarea"
-                    placeholder="e.g., Harvesting, Planting, Irrigation, Equipment Operation, Pest Control"
-                    rows="3"
-                  />
-                  <small className="form-help">List your agricultural skills separated by commas</small>
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="availabilityStatus" className="form-label">Availability Status</label>
-                  <select
-                    id="availabilityStatus"
-                    name="availabilityStatus"
-                    value={profileData.availabilityStatus}
-                    onChange={handleInputChange}
-                    className="form-select"
-                  >
-                    <option value="available">Available for work</option>
-                    <option value="busy">Currently busy</option>
-                    <option value="partially_available">Partially available</option>
-                    <option value="unavailable">Unavailable</option>
-                  </select>
-                  <small className="form-help">Let employers know your current availability</small>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Contact Preferences Section */}
-          <div className="form-section">
-            <h2 className="section-title">Contact Preferences</h2>
-            
-            <div className="checkbox-group">
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  name="contactPreferences.email"
-                  checked={profileData.contactPreferences.email}
-                  onChange={handleInputChange}
-                  className="checkbox-input"
-                />
-                <span className="checkbox-text">Email notifications</span>
-              </label>
-
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  name="contactPreferences.phone"
-                  checked={profileData.contactPreferences.phone}
-                  onChange={handleInputChange}
-                  className="checkbox-input"
-                />
-                <span className="checkbox-text">Phone calls</span>
-              </label>
-
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  name="contactPreferences.sms"
-                  checked={profileData.contactPreferences.sms}
-                  onChange={handleInputChange}
-                  className="checkbox-input"
-                />
-                <span className="checkbox-text">SMS notifications</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Privacy Settings Section */}
-          <div className="form-section">
-            <h2 className="section-title">Privacy Settings</h2>
-            
-            <div className="checkbox-group">
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  name="privacy.showPhone"
-                  checked={profileData.privacy.showPhone}
-                  onChange={handleInputChange}
-                  className="checkbox-input"
-                />
-                <span className="checkbox-text">
-                  {userRole === 'Labour' 
-                    ? 'Show phone number to employers' 
-                    : 'Show phone number to other farmers'
-                  }
-                </span>
-              </label>
-
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  name="privacy.showEmail"
-                  checked={profileData.privacy.showEmail}
-                  onChange={handleInputChange}
-                  className="checkbox-input"
-                />
-                <span className="checkbox-text">
-                  {userRole === 'Labour' 
-                    ? 'Show email address to employers' 
-                    : 'Show email address to other farmers'
-                  }
-                </span>
-              </label>
-
-              <label className="checkbox-label">
-                <input
-                  type="checkbox"
-                  name="privacy.showLocation"
-                  checked={profileData.privacy.showLocation}
-                  onChange={handleInputChange}
-                  className="checkbox-input"
-                />
-                <span className="checkbox-text">
-                  {userRole === 'Labour' 
-                    ? 'Show current location to employers' 
-                    : 'Show farm location to other farmers'
-                  }
-                </span>
-              </label>
-            </div>
-          </div>
-
-          {/* Form Actions */}
-          <div className="form-actions">
-            <button
-              type="submit"
-              className="save-btn"
-              disabled={saving}
-            >
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-            
-            <button
-              type="button"
-              className="cancel-btn"
-              onClick={fetchProfile}
-              disabled={saving}
-            >
-              Reset Changes
-            </button>
-          </div>
-        </form>
+        {renderProfileByRole()}
       </div>
-
-      <style jsx>{`
-        .profile-page {
-          padding: 2rem;
-          max-width: 1000px;
-          margin: 0 auto;
-        }
-
-        .profile-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 3rem;
-          flex-wrap: wrap;
-          gap: 1rem;
-        }
-
-        .header-content h1 {
-          color: #2c5530;
-          font-size: 2.5rem;
-          margin: 0;
-        }
-
-        .page-subtitle {
-          color: #666;
-          font-size: 1.1rem;
-          margin: 0.5rem 0 0 0;
-        }
-
-        .logout-btn {
-          background: #dc3545;
-          color: white;
-          border: none;
-          padding: 0.875rem 1.5rem;
-          border-radius: 8px;
-          font-size: 1rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .logout-btn:hover {
-          background: #c82333;
-          transform: translateY(-2px);
-        }
-
-        .loading-container {
-          text-align: center;
-          padding: 4rem;
-        }
-
-        .loading-spinner {
-          width: 40px;
-          height: 40px;
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #4caf50;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        .profile-content {
-          background: #fff;
-          border-radius: 12px;
-          padding: 2rem;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .error-message {
-          background: #fff5f5;
-          border: 1px solid #fed7d7;
-          color: #c53030;
-          padding: 1rem;
-          border-radius: 8px;
-          margin-bottom: 2rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .success-message {
-          background: #f0fff4;
-          border: 1px solid #9ae6b4;
-          color: #2f855a;
-          padding: 1rem;
-          border-radius: 8px;
-          margin-bottom: 2rem;
-        }
-
-        .retry-btn {
-          background: #4caf50;
-          color: white;
-          border: none;
-          padding: 0.5rem 1rem;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 0.9rem;
-        }
-
-        .profile-form {
-          display: flex;
-          flex-direction: column;
-          gap: 2.5rem;
-        }
-
-        .form-section {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-
-        .section-title {
-          color: #2c5530;
-          font-size: 1.3rem;
-          margin: 0;
-          padding-bottom: 0.5rem;
-          border-bottom: 2px solid #4caf50;
-        }
-
-        .form-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1.5rem;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .form-label {
-          font-weight: 500;
-          color: #333;
-          font-size: 0.9rem;
-        }
-
-        .form-input {
-          padding: 0.75rem;
-          border: 2px solid #e1e5e9;
-          border-radius: 6px;
-          font-size: 1rem;
-          transition: border-color 0.2s ease;
-        }
-
-        .form-input:focus {
-          outline: none;
-          border-color: #4caf50;
-          box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-        }
-
-        .form-textarea {
-          padding: 0.75rem;
-          border: 2px solid #e1e5e9;
-          border-radius: 6px;
-          font-size: 1rem;
-          font-family: inherit;
-          resize: vertical;
-          min-height: 80px;
-          transition: border-color 0.2s ease;
-        }
-
-        .form-textarea:focus {
-          outline: none;
-          border-color: #4caf50;
-          box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-        }
-
-        .form-select {
-          padding: 0.75rem;
-          border: 2px solid #e1e5e9;
-          border-radius: 6px;
-          font-size: 1rem;
-          background-color: white;
-          cursor: pointer;
-          transition: border-color 0.2s ease;
-        }
-
-        .form-select:focus {
-          outline: none;
-          border-color: #4caf50;
-          box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-        }
-
-        .form-help {
-          color: #666;
-          font-size: 0.85rem;
-          margin-top: 0.25rem;
-          font-style: italic;
-        }
-
-        .checkbox-group {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .checkbox-label {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          cursor: pointer;
-          padding: 0.5rem;
-          border-radius: 6px;
-          transition: background-color 0.2s ease;
-        }
-
-        .checkbox-label:hover {
-          background: #f8f9fa;
-        }
-
-        .checkbox-input {
-          width: 1.2rem;
-          height: 1.2rem;
-          cursor: pointer;
-        }
-
-        .checkbox-text {
-          font-size: 1rem;
-          color: #333;
-        }
-
-        .form-actions {
-          display: flex;
-          gap: 1rem;
-          justify-content: flex-end;
-          padding-top: 2rem;
-          border-top: 1px solid #e9ecef;
-        }
-
-        .save-btn,
-        .cancel-btn {
-          padding: 0.875rem 2rem;
-          border: none;
-          border-radius: 8px;
-          font-size: 1rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .save-btn {
-          background: #4caf50;
-          color: white;
-        }
-
-        .save-btn:hover:not(:disabled) {
-          background: #45a049;
-          transform: translateY(-2px);
-        }
-
-        .save-btn:disabled {
-          background: #ccc;
-          cursor: not-allowed;
-          transform: none;
-        }
-
-        .cancel-btn {
-          background: #6c757d;
-          color: white;
-        }
-
-        .cancel-btn:hover:not(:disabled) {
-          background: #5a6268;
-          transform: translateY(-2px);
-        }
-
-        .cancel-btn:disabled {
-          background: #ccc;
-          cursor: not-allowed;
-          transform: none;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-          .profile-page {
-            padding: 1rem;
-          }
-
-          .profile-header {
-            flex-direction: column;
-            align-items: stretch;
-            text-align: center;
-          }
-
-          .header-content h1 {
-            font-size: 2rem;
-          }
-
-          .profile-content {
-            padding: 1.5rem;
-          }
-
-          .form-row {
-            grid-template-columns: 1fr;
-          }
-
-          .form-actions {
-            flex-direction: column;
-          }
-        }
-      `}</style>
     </div>
   );
 };

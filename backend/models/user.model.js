@@ -54,6 +54,128 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  
+  // Factory-specific fields
+  factoryName: {
+    type: String,
+    trim: true
+  },
+  factoryLocation: {
+    type: String,
+    trim: true
+  },
+  factoryDescription: {
+    type: String,
+    trim: true
+  },
+  capacity: {
+    type: String,
+    trim: true
+  },
+  experience: {
+    type: String,
+    trim: true
+  },
+  specialization: {
+    type: String,
+    trim: true
+  },
+  contactInfo: {
+    website: { type: String, trim: true },
+    fax: { type: String, trim: true },
+    tollfree: { type: String, trim: true },
+    landline: { type: String, trim: true }
+  },
+  operatingHours: {
+    season: { type: String, trim: true },
+    daily: { type: String, trim: true },
+    monday: { type: String, trim: true },
+    tuesday: { type: String, trim: true },
+    wednesday: { type: String, trim: true },
+    thursday: { type: String, trim: true },
+    friday: { type: String, trim: true },
+    saturday: { type: String, trim: true },
+    sunday: { type: String, trim: true },
+    shift1: { type: String, trim: true },
+    shift2: { type: String, trim: true },
+    maintenance: { type: String, trim: true }
+  },
+  
+  // Farmer-specific fields
+  farmSize: {
+    type: String,
+    trim: true
+  },
+  farmingExperience: {
+    type: String,
+    trim: true
+  },
+  farmingMethods: {
+    type: String,
+    trim: true
+  },
+  equipment: {
+    type: String,
+    trim: true
+  },
+  certifications: {
+    type: String,
+    trim: true
+  },
+  cropTypes: {
+    type: String,
+    trim: true
+  },
+  irrigationType: {
+    type: String,
+    trim: true
+  },
+  location: {
+    type: String,
+    trim: true
+  },
+  
+  // HHM-specific fields
+  managementExperience: {
+    type: String,
+    trim: true
+  },
+  teamSize: {
+    type: String,
+    trim: true
+  },
+  managementOperations: {
+    type: String,
+    trim: true
+  },
+  servicesOffered: {
+    type: String,
+    trim: true
+  },
+  
+  // Labour-specific fields
+  skills: {
+    type: String,
+    trim: true
+  },
+  workPreferences: {
+    type: String,
+    trim: true
+  },
+  wageRate: {
+    type: String,
+    trim: true
+  },
+  availability: {
+    type: String,
+    enum: ['Available', 'Unavailable'],
+    default: 'Available'
+  },
+  workExperience: {
+    type: String,
+    trim: true
+  },
+  
   createdAt: {
     type: Date,
     default: Date.now

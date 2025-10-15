@@ -1,8 +1,6 @@
-const Profile = require('../models/profile.model');
 const Announcement = require('../models/announcement.model');
 const CropListing = require('../models/cropListing.model');
 const User = require('../models/user.model');
-const Factory = require('../models/factory.model');
 
 /**
  * @desc    Get the logged-in farmer's profile
@@ -11,49 +9,60 @@ const Factory = require('../models/factory.model');
  */
 const getProfile = async (req, res) => {
   try {
-    console.log('👤 getProfile called for user:', req.user?._id);
-    
-    // Get profile for the authenticated farmer
-    const profile = await Profile.getFullProfile(req.user._id);
-    console.log('📋 Profile found:', profile ? 'Yes' : 'No');
+    console.log('🔥 NEW FARMER CONTROLLER - getProfile called for farmer user:', req.user?._id);
+    console.log('🔥 User object keys:', Object.keys(req.user));
+    console.log('🔥 User location:', req.user.location);
+    console.log('🔥 User cropTypes:', req.user.cropTypes);
+    console.log('🔥 User irrigationType:', req.user.irrigationType);
 
-    if (!profile) {
-      console.log('❌ No profile found, creating basic profile from user data');
-      // Return basic user information when no profile exists
-      const basicProfile = {
-        userId: req.user._id,
-        name: req.user.name,
-        username: req.user.username,
-        email: req.user.email,
-        phone: req.user.phone,
-        role: req.user.role,
-        profileImage: 'default.jpg',
-        farmLocation: null,
-        farmSize: null,
-        bio: null,
-        farmingExperience: null,
-        cropSpecialties: [],
-        isVerified: false,
-        createdAt: req.user.createdAt
-      };
-      
-      return res.status(200).json({
-        success: true,
-        data: basicProfile,
-        message: 'Basic profile returned. Complete your profile setup for full features.'
+    // The user is already attached to req.user by the protect middleware
+    const farmer = req.user;
+
+    if (!farmer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Farmer profile not found'
       });
     }
 
+    // Format profile data specific to farmer users
+    const profileData = {
+      _id: farmer._id,
+      name: farmer.name,
+      username: farmer.username,
+      email: farmer.email,
+      phone: farmer.phone,
+      role: farmer.role,
+      location: farmer.location,
+      farmSize: farmer.farmSize,
+      farmingExperience: farmer.farmingExperience,
+      farmingMethods: farmer.farmingMethods,
+      equipment: farmer.equipment,
+      certifications: farmer.certifications,
+      cropTypes: farmer.cropTypes,
+      irrigationType: farmer.irrigationType,
+      isActive: farmer.isActive,
+      createdAt: farmer.createdAt,
+      updatedAt: farmer.updatedAt
+    };
+
     res.status(200).json({
       success: true,
-      data: profile.toSafeObject()
+      message: 'Farmer profile retrieved successfully',
+      profile: profileData
+    });
+
+    console.log('🔥 NEW FARMER CONTROLLER - Response sent:', {
+      success: true,
+      message: 'Farmer profile retrieved successfully',
+      profileDataKeys: Object.keys(profileData)
     });
 
   } catch (error) {
     console.error('Error in getProfile:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to retrieve profile',
+      message: 'Error retrieving farmer profile',
       error: error.message
     });
   }
@@ -66,63 +75,45 @@ const getProfile = async (req, res) => {
  */
 const updateProfile = async (req, res) => {
   try {
-    const {
-      profileImage,
-      farmLocation,
-      farmSize,
-      contactDetails,
-      bio,
-      farmingExperience,
-      cropSpecialties,
-      socialLinks,
-      preferences
-    } = req.body;
+    console.log('🔄 updateProfile called for farmer user:', req.user?._id);
 
-    // Find existing profile or create new one
-    let profile = await Profile.findOne({ userId: req.user._id });
+    const farmerId = req.user._id;
+    const updateData = req.body;
 
-    if (profile) {
-      // Update existing profile
-      Object.assign(profile, {
-        profileImage: profileImage || profile.profileImage,
-        farmLocation: farmLocation || profile.farmLocation,
-        farmSize: farmSize !== undefined ? farmSize : profile.farmSize,
-        contactDetails: { ...profile.contactDetails, ...contactDetails },
-        bio: bio || profile.bio,
-        farmingExperience: farmingExperience !== undefined ? farmingExperience : profile.farmingExperience,
-        cropSpecialties: cropSpecialties || profile.cropSpecialties,
-        socialLinks: { ...profile.socialLinks, ...socialLinks },
-        preferences: { ...profile.preferences, ...preferences }
-      });
-    } else {
-      // Create new profile
-      profile = new Profile({
-        userId: req.user._id,
-        profileImage,
-        farmLocation,
-        farmSize,
-        contactDetails,
-        bio,
-        farmingExperience,
-        cropSpecialties,
-        socialLinks,
-        preferences
+    // Remove fields that shouldn't be updated via profile
+    delete updateData.password;
+    delete updateData.role;
+    delete updateData._id;
+    delete updateData.createdAt;
+
+    // Update farmer profile
+    const updatedFarmer = await User.findByIdAndUpdate(
+      farmerId,
+      updateData,
+      { 
+        new: true, 
+        runValidators: true 
+      }
+    ).select('-password');
+
+    if (!updatedFarmer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Farmer profile not found'
       });
     }
 
-    await profile.save();
-
     res.status(200).json({
       success: true,
-      message: 'Profile updated successfully',
-      data: profile.toSafeObject()
+      message: 'Farmer profile updated successfully',
+      profile: updatedFarmer
     });
 
   } catch (error) {
     console.error('Error in updateProfile:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update profile',
+      message: 'Error updating farmer profile',
       error: error.message
     });
   }
@@ -428,13 +419,35 @@ const getHHMs = async (req, res) => {
  */
 const getFactories = async (req, res) => {
   try {
-    // Find all factories (assuming factories don't have an isActive field like users)
-    const factories = await Factory.find({}).sort({ name: 1 });
+    // Find all active users with Factory role
+    const factories = await User.find({ 
+      role: 'Factory', 
+      isActive: true 
+    }).select('name factoryName factoryLocation factoryDescription capacity experience specialization contactInfo operatingHours phone email username createdAt').sort({ factoryName: 1 });
+
+    // Format the response to match expected factory structure
+    const formattedFactories = factories.map(factory => ({
+      id: factory._id,
+      name: factory.factoryName || factory.name + ' Factory',
+      location: factory.factoryLocation || 'Location not specified',
+      description: factory.factoryDescription || 'Sugar processing facility',
+      capacity: factory.capacity || 'Not specified',
+      experience: factory.experience || 'Not specified',
+      specialization: factory.specialization || 'Sugar Processing',
+      contactInfo: {
+        phone: factory.phone,
+        email: factory.email,
+        ...factory.contactInfo
+      },
+      operatingHours: factory.operatingHours || {},
+      username: factory.username,
+      createdAt: factory.createdAt
+    }));
 
     res.status(200).json({
       success: true,
-      count: factories.length,
-      data: factories
+      count: formattedFactories.length,
+      data: formattedFactories
     });
 
   } catch (error) {

@@ -10,13 +10,33 @@ const {
   getBills,
   createMaintenanceJob,
   getMaintenanceApplications,
-  updateMaintenanceApplication
+  updateMaintenanceApplication,
+  getProfile,
+  updateProfile
 } = require('../controllers/factory.controller');
 
 // Apply protection and authorization to all routes in this file
 // All routes require user to be authenticated and have 'Factory' role
 router.use(protect);
 router.use(authorize('Factory'));
+
+// ===================================
+// PROFILE API ROUTES
+// ===================================
+
+/**
+ * @route   GET /api/factory/profile
+ * @desc    Get the logged-in factory's profile
+ * @access  Private (Factory only)
+ */
+router.get('/profile', getProfile);
+
+/**
+ * @route   PUT /api/factory/profile
+ * @desc    Update the logged-in factory's profile
+ * @access  Private (Factory only)
+ */
+router.put('/profile', updateProfile);
 
 // ===================================
 // BILLING API ROUTES

@@ -265,12 +265,12 @@ const MarketplacePage = () => {
                   <div key={listing._id} className="listing-card">
                     <div className="listing-header">
                       <div className="listing-type">
-                        <span className="type-icon">{getTypeIcon(listing.type)}</span>
+                        <span className="type-icon">{getTypeIcon(listing.type || 'sell')}</span>
                         <span 
                           className="type-badge"
-                          style={{ backgroundColor: getTypeColor(listing.type) }}
+                          style={{ backgroundColor: getTypeColor(listing.type || 'sell') }}
                         >
-                          {listing.type.toUpperCase()}
+                          {(listing.type || 'sell').toUpperCase()}
                         </span>
                       </div>
                       <span className="listing-date">
@@ -351,12 +351,12 @@ const MarketplacePage = () => {
                   <div key={listing._id} className="listing-card my-listing-card">
                     <div className="listing-header">
                       <div className="listing-type">
-                        <span className="type-icon">{getTypeIcon(listing.type)}</span>
+                        <span className="type-icon">{getTypeIcon(listing.type || 'sell')}</span>
                         <span 
                           className="type-badge"
-                          style={{ backgroundColor: getTypeColor(listing.type) }}
+                          style={{ backgroundColor: getTypeColor(listing.type || 'sell') }}
                         >
-                          {listing.type.toUpperCase()}
+                          {(listing.type || 'sell').toUpperCase()}
                         </span>
                       </div>
                       <span className="listing-date">

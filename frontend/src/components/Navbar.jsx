@@ -212,6 +212,17 @@ const Navbar = () => {
                         Factory Directory
                       </NavLink>
                     </li>
+                    <li>
+                      <NavLink 
+                        to="/farmer/profile" 
+                        className={({ isActive }) => 
+                          isActive ? 'nav-link active' : 'nav-link'
+                        }
+                        onClick={closeMenu}
+                      >
+                        Profile
+                      </NavLink>
+                    </li>
                   </>
                 )}
                 
@@ -436,6 +447,15 @@ const Navbar = () => {
                     onClick={closeMenu}
                   >
                     Factory Directory
+                  </NavLink>
+                  <NavLink 
+                    to="/farmer/profile" 
+                    className={({ isActive }) => 
+                      isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
+                    }
+                    onClick={closeMenu}
+                  >
+                    Profile
                   </NavLink>
                 </>
               )}

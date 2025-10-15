@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
+/**
+ * MyApplicationsPage component for displaying user job applications
+ * @returns {JSX.Element} The applications page component
+ */
 const MyApplicationsPage = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, _setLoading] = useState(false);
   const [applications, setApplications] = useState([]);
   const [activeFilter, setActiveFilter] = useState('all');
 

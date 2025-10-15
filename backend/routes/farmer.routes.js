@@ -29,14 +29,36 @@ router.use(authorize('Farmer'));
  * @desc    Get the logged-in farmer's profile
  * @access  Private (Farmer only)
  */
-router.get('/profile', getProfile);
+router.get('/profile', (req, res, next) => {
+  console.log('🚀 FARMER ROUTES - Profile GET request received');
+  console.log('🚀 User:', req.user?._id);
+  return getProfile(req, res, next);
+});
+
+/**
+ * @route   GET /api/farmer/test-profile
+ * @desc    Test endpoint to check farmer controller
+ * @access  Private (Farmer only)
+ */
+router.get('/test-profile', (req, res) => {
+  console.log('🧪 TEST ENDPOINT - Farmer test profile called');
+  res.json({
+    success: true,
+    message: 'Test endpoint working - this is from the NEW farmer controller',
+    user: req.user._id,
+    timestamp: new Date()
+  });
+});
 
 /**
  * @route   PUT /api/farmer/profile
  * @desc    Update the logged-in farmer's profile
  * @access  Private (Farmer only)
  */
-router.put('/profile', updateProfile);
+router.put('/profile', (req, res, next) => {
+  console.log('🚀 FARMER ROUTES - Profile PUT request received');
+  return updateProfile(req, res, next);
+});
 
 // Announcements Routes
 /**

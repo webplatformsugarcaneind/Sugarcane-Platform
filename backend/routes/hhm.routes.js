@@ -13,13 +13,33 @@ const {
   deleteSchedule,
   getWorkers,
   getApplications,
-  updateApplicationStatus
+  updateApplicationStatus,
+  getProfile,
+  updateProfile
 } = require('../controllers/hhm.controller');
 
 // Apply protection and authorization to all routes in this file
 // All routes require user to be authenticated and have 'HHM' role
 router.use(protect);
 router.use(authorize('HHM'));
+
+// ================================
+// PROFILE API ROUTES
+// ================================
+
+/**
+ * @route   GET /api/hhm/profile
+ * @desc    Get the logged-in HHM's profile
+ * @access  Private (HHM only)
+ */
+router.get('/profile', getProfile);
+
+/**
+ * @route   PUT /api/hhm/profile
+ * @desc    Update the logged-in HHM's profile
+ * @access  Private (HHM only)
+ */
+router.put('/profile', updateProfile);
 
 // ================================
 // JOB MANAGEMENT (SCHEDULES) ROUTES

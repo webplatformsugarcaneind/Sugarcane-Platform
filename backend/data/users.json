@@ -1,0 +1,185 @@
+[
+  {
+    "name": "Ravi Patel",
+    "username": "ravifarmer",
+    "phone": "9876543210",
+    "email": "ravi.patel@example.com",
+    "role": "Farmer",
+    "password": "123456",
+    "location": "Nashik, Maharashtra",
+    "farmSize": "25 acres",
+    "farmingExperience": "12 years",
+    "farmingMethods": "Organic farming, Drip irrigation, Crop rotation",
+    "equipment": "Tractor, Harvester, Irrigation pumps, Spraying equipment",
+    "certifications": "Organic Farming Certificate, Good Agricultural Practices (GAP)",
+    "cropTypes": "Sugarcane, Rice, Wheat",
+    "irrigationType": "drip"
+  },
+  {
+    "name": "Prakash Joshi",
+    "username": "prakashfarmer",
+    "phone": "9876543200",
+    "email": "prakash.joshi@example.com",
+    "role": "Farmer",
+    "password": "123456",
+    "farmSize": "40 acres",
+    "farmingExperience": "18 years",
+    "farmingMethods": "Traditional farming, Integrated pest management",
+    "equipment": "Tractor, Ploughs, Seed drill, Threshing machine",
+    "certifications": "Agricultural Diploma, Pesticide License"
+  },
+  {
+    "name": "Sunita Sharma",
+    "username": "sunitahhm",
+    "phone": "9876543211",
+    "email": "sunita.sharma@example.com",
+    "role": "HHM",
+    "password": "123456",
+    "managementExperience": "8 years",
+    "teamSize": "15-20 workers",
+    "managementOperations": "Worker coordination, Task scheduling, Quality control, Safety supervision",
+    "servicesOffered": "Labour contracting, Equipment rental, Field supervision, Training services"
+  },
+  {
+    "name": "Vikram Singh",
+    "username": "vikramhhm",
+    "phone": "9876543214",
+    "email": "vikram.singh@example.com",
+    "role": "HHM",
+    "password": "123456",
+    "managementExperience": "12 years",
+    "teamSize": "25-30 workers",
+    "managementOperations": "Large scale operations, Multi-field coordination, Machinery management, Budget planning",
+    "servicesOffered": "Complete farm management, Mechanized harvesting, Worker training, Technical consultation"
+  },
+  {
+    "name": "Sunil Kumar",
+    "username": "sunilhhm",
+    "phone": "9876543219",
+    "email": "sunil.kumar@example.com",
+    "role": "HHM",
+    "password": "123456",
+    "managementExperience": "15 years",
+    "teamSize": "30-35 workers",
+    "managementOperations": "Strategic planning, Multi-farm coordination, Technology integration, Performance monitoring, Budget management",
+    "servicesOffered": "Enterprise farm management, Advanced mechanization, Leadership training, Business consultation, Technology advisory"
+  },
+  {
+    "name": "Amit Kumar",
+    "username": "amitlabour",
+    "phone": "9876543212",
+    "email": "amit.kumar@example.com",
+    "role": "Labour",
+    "password": "123456",
+    "skills": "Sugarcane cutting, Field preparation, Irrigation, Equipment operation",
+    "workPreferences": "Full-time, Day shifts, Outdoor work",
+    "wageRate": "₹350 per day",
+    "availability": "Available",
+    "workExperience": "6 years in agricultural work"
+  },
+  {
+    "name": "Meena Kumari",
+    "username": "meenalabour",
+    "phone": "9876543215",
+    "email": "meena.kumari@example.com",
+    "role": "Labour",
+    "password": "123456",
+    "skills": "Harvesting, Sorting, Packaging, Quality inspection",
+    "workPreferences": "Part-time, Flexible hours, Seasonal work",
+    "wageRate": "₹300 per day",
+    "availability": "Available",
+    "workExperience": "4 years in farm operations"
+  },
+  {
+    "name": "Priya Singh",
+    "username": "priyafactory",
+    "phone": "9876543213",
+    "email": "priya.singh@example.com",
+    "role": "Factory",
+    "password": "123456",
+    "factoryName": "Maharashtra Sugar Mills",
+    "factoryLocation": "Pune, Maharashtra",
+    "factoryDescription": "Leading sugar processing facility with state-of-the-art technology and sustainable practices.",
+    "capacity": "2500 TCD (Tonnes Crushed per Day)",
+    "experience": "15 years",
+    "specialization": "Sugar Processing, Ethanol Production",
+    "contactInfo": {
+      "website": "https://maharashtrasugar.com",
+      "fax": "+91-20-12345678"
+    },
+    "operatingHours": {
+      "monday": "6:00 AM - 10:00 PM",
+      "tuesday": "6:00 AM - 10:00 PM",
+      "season": "October to March"
+    }
+  },
+  {
+    "name": "Rajesh Patel",
+    "username": "rajeshfactory",
+    "phone": "9876543216",
+    "email": "rajesh.patel@example.com",
+    "role": "Factory",
+    "password": "123456",
+    "factoryName": "Golden Sugarcane Industries",
+    "factoryLocation": "Mumbai, Maharashtra", 
+    "factoryDescription": "Modern sugar mill focused on high-quality production and farmer partnerships.",
+    "capacity": "1800 TCD",
+    "experience": "12 years",
+    "specialization": "White Sugar, Bagasse Power Generation",
+    "contactInfo": {
+      "website": "https://goldensugarcane.com",
+      "fax": "+91-20-12345678"
+    },
+    "operatingHours": {
+      "monday": "6:00 AM - 10:00 PM",
+      "tuesday": "6:00 AM - 10:00 PM",
+      "season": "October to March"
+    }
+  },
+  {
+    "name": "Deepak Sharma",
+    "username": "deepakfactory",
+    "phone": "9876543217",
+    "email": "deepak.sharma@example.com",
+    "role": "Factory",
+    "password": "123456",
+    "factoryName": "Sunrise Sugar Corporation",
+    "factoryLocation": "Nashik, Maharashtra",
+    "factoryDescription": "Innovative sugar factory specializing in organic sugar production and renewable energy solutions.",
+    "capacity": "3200 TCD (Tonnes Crushed per Day)",
+    "experience": "20 years",
+    "specialization": "Organic Sugar, Bio-fertilizer Production",
+    "contactInfo": {
+      "website": "https://sunrisesugar.co.in",
+      "landline": "+91-253-2345678"
+    },
+    "operatingHours": {
+      "shift1": "6:00 AM - 2:00 PM",
+      "shift2": "2:00 PM - 10:00 PM",
+      "season": "November to April"
+    }
+  },
+  {
+    "name": "Anita Joshi",
+    "username": "anitafactory",
+    "phone": "9876543218",
+    "email": "anita.joshi@example.com",
+    "role": "Factory",
+    "password": "123456",
+    "factoryName": "Green Valley Sugar Mills",
+    "factoryLocation": "Kolhapur, Maharashtra",
+    "factoryDescription": "Eco-friendly sugar processing plant committed to sustainable practices and community development.",
+    "capacity": "2800 TCD (Tonnes Crushed per Day)",
+    "experience": "18 years",
+    "specialization": "Raw Sugar, Molasses Processing, Green Energy",
+    "contactInfo": {
+      "website": "https://greenvalleysugar.com",
+      "tollfree": "1800-123-4567"
+    },
+    "operatingHours": {
+      "daily": "5:00 AM - 11:00 PM",
+      "maintenance": "Sunday 11:00 PM - Monday 5:00 AM",
+      "season": "October to May"
+    }
+  }
+]

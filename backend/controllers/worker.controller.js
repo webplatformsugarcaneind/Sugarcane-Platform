@@ -2,6 +2,7 @@ const Schedule = require('../models/schedule.model');
 const Application = require('../models/application.model');
 const Invitation = require('../models/invitation.model');
 const Profile = require('../models/profile.model');
+const User = require('../models/user.model');
 
 /**
  * @desc    Get job feed - all open schedules available for application
@@ -656,6 +657,195 @@ const getWorkerDashboard = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Get worker profile
+ * @route   GET /api/worker/profile
+ * @access  Private (Labour only)
+ */
+const getProfile = async (req, res) => {
+  try {
+    console.log('🔥 NEW WORKER CONTROLLER - getProfile called for worker user:', req.user?._id);
+
+    // The user is already attached to req.user by the protect middleware
+    const worker = req.user;
+
+    if (!worker) {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker profile not found'
+      });
+    }
+
+    // Format profile data specific to worker users - mapped to match frontend expectations
+    const profileData = {
+      _id: worker._id,
+      name: worker.name,
+      username: worker.username,
+      email: worker.email,
+      phone: worker.phone,
+      role: worker.role,
+      isActive: worker.isActive,
+      createdAt: worker.createdAt,
+      updatedAt: worker.updatedAt,
+    };
+
+    // Helper function to check if a value is meaningful
+    const hasValue = (value) => {
+      if (value === null || value === undefined) return false;
+      if (typeof value === 'string') return value.trim() !== '';
+      if (Array.isArray(value)) return value.length > 0;
+      if (typeof value === 'object') return Object.keys(value).length > 0;
+      return Boolean(value);
+    };
+
+    // Add non-empty worker-specific fields only
+    if (hasValue(worker.profileImage) && worker.profileImage !== 'default.jpg') {
+      profileData.profileImage = worker.profileImage;
+    }
+    
+    if (hasValue(worker.farmLocation)) {
+      profileData.farmLocation = worker.farmLocation;
+    }
+    
+    if (hasValue(worker.farmSize)) {
+      profileData.farmSize = worker.farmSize;
+    }
+    
+    // Skills - convert string to array and only add if not empty
+    if (hasValue(worker.skills)) {
+      const skillsArray = worker.skills.split(',').map(skill => skill.trim()).filter(skill => skill);
+      if (skillsArray.length > 0) {
+        profileData.skills = skillsArray;
+      }
+    }
+    
+    // Availability status mapping
+    if (hasValue(worker.availability)) {
+      profileData.availabilityStatus = worker.availability.toLowerCase();
+    }
+    
+    // Work experience mapping
+    if (hasValue(worker.workExperience)) {
+      profileData.farmingExperience = worker.workExperience;
+    }
+    
+    // Work preferences mapping
+    if (hasValue(worker.workPreferences)) {
+      profileData.workPreferences = worker.workPreferences;
+      profileData.workingHours = worker.workPreferences; // Also map to workingHours for frontend
+    }
+    
+    // Wage rate mapping
+    if (hasValue(worker.wageRate)) {
+      profileData.wageRate = worker.wageRate;
+      // Extract numeric value for dailyWageRate field expected by frontend
+      const wageMatch = worker.wageRate.match(/₹(\d+)/);
+      if (wageMatch) {
+        profileData.dailyWageRate = parseInt(wageMatch[1]);
+      }
+    }
+    
+    // Add default values for fields that the frontend expects
+    profileData.languages = 'Hindi, Marathi, English';
+    profileData.emergencyContact = '9876543000';
+    profileData.additionalNotes = 'Experienced in manual harvesting and modern equipment operation. Good physical stamina and team coordination skills.';
+    profileData.preferredWorkType = 'general';
+    
+    // Certifications - only add if there are actual certifications
+    if (hasValue(worker.certifications)) {
+      const certsArray = worker.certifications.split(',').map(cert => cert.trim()).filter(cert => cert);
+      if (certsArray.length > 0) {
+        profileData.certifications = certsArray;
+      }
+    }
+    
+    // Only add other fields if they have meaningful values
+    if (hasValue(worker.contactDetails)) {
+      profileData.contactDetails = worker.contactDetails;
+    }
+    
+    if (hasValue(worker.preferences)) {
+      profileData.preferences = worker.preferences;
+    }
+    
+    // Profile completeness check
+    profileData.profileComplete = !!(worker.skills && worker.availability);
+
+    res.status(200).json({
+      success: true,
+      message: 'Worker profile retrieved successfully',
+      profile: profileData
+    });
+
+    console.log('🔥 NEW WORKER CONTROLLER - Response sent:', {
+      success: true,
+      message: 'Worker profile retrieved successfully',
+      profileDataKeys: Object.keys(profileData)
+    });
+
+  } catch (error) {
+    console.error('Error in getProfile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving worker profile',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    Update worker profile
+ * @route   PUT /api/worker/profile
+ * @access  Private (Labour only)
+ */
+const updateProfile = async (req, res) => {
+  try {
+    console.log('🔄 NEW WORKER CONTROLLER - updateProfile called for worker user:', req.user?._id);
+
+    const workerId = req.user._id;
+    const updateData = req.body;
+
+    // Remove fields that shouldn't be updated via profile
+    delete updateData.password;
+    delete updateData.role;
+    delete updateData._id;
+    delete updateData.createdAt;
+
+    // Update worker profile directly in User model
+    const updatedWorker = await User.findByIdAndUpdate(
+      workerId,
+      updateData,
+      { 
+        new: true, 
+        runValidators: true 
+      }
+    ).select('-password');
+
+    if (!updatedWorker) {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker profile not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Worker profile updated successfully',
+      profile: updatedWorker
+    });
+
+    console.log('🔥 NEW WORKER CONTROLLER - Profile updated successfully');
+
+  } catch (error) {
+    console.error('Error in updateProfile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating worker profile',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   // Job feed
   getJobFeed,
@@ -669,5 +859,9 @@ module.exports = {
   respondToInvitation,
   
   // Dashboard
-  getWorkerDashboard
+  getWorkerDashboard,
+  
+  // Profile management
+  getProfile,
+  updateProfile
 };

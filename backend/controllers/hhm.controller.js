@@ -646,6 +646,110 @@ const updateApplicationStatus = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Get HHM profile
+ * @route   GET /api/hhm/profile
+ * @access  Private (HHM only)
+ */
+const getProfile = async (req, res) => {
+  try {
+    console.log('👤 getProfile called for HHM user:', req.user?._id);
+
+    // The user is already attached to req.user by the protect middleware
+    const hhm = req.user;
+
+    if (!hhm) {
+      return res.status(404).json({
+        success: false,
+        message: 'HHM profile not found'
+      });
+    }
+
+    // Format profile data specific to HHM users
+    const profileData = {
+      _id: hhm._id,
+      name: hhm.name,
+      username: hhm.username,
+      email: hhm.email,
+      phone: hhm.phone,
+      role: hhm.role,
+      // Add any HHM-specific fields here
+      experience: hhm.experience,
+      specialization: hhm.specialization,
+      location: hhm.location,
+      contactInfo: hhm.contactInfo || {},
+      isActive: hhm.isActive,
+      createdAt: hhm.createdAt,
+      updatedAt: hhm.updatedAt
+    };
+
+    res.status(200).json({
+      success: true,
+      message: 'HHM profile retrieved successfully',
+      profile: profileData
+    });
+
+  } catch (error) {
+    console.error('Error in getProfile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving HHM profile',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    Update HHM profile
+ * @route   PUT /api/hhm/profile
+ * @access  Private (HHM only)
+ */
+const updateProfile = async (req, res) => {
+  try {
+    console.log('🔄 updateProfile called for HHM user:', req.user?._id);
+
+    const hhmId = req.user._id;
+    const updateData = req.body;
+
+    // Remove fields that shouldn't be updated via profile
+    delete updateData.password;
+    delete updateData.role;
+    delete updateData._id;
+    delete updateData.createdAt;
+
+    // Update HHM profile
+    const updatedHHM = await User.findByIdAndUpdate(
+      hhmId,
+      updateData,
+      { 
+        new: true, 
+        runValidators: true 
+      }
+    ).select('-password');
+
+    if (!updatedHHM) {
+      return res.status(404).json({
+        success: false,
+        message: 'HHM profile not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'HHM profile updated successfully',
+      profile: updatedHHM
+    });
+
+  } catch (error) {
+    console.error('Error in updateProfile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating HHM profile',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   // Schedule management
   createSchedule,
@@ -659,5 +763,9 @@ module.exports = {
   
   // Application management
   getApplications,
-  updateApplicationStatus
+  updateApplicationStatus,
+  
+  // Profile management
+  getProfile,
+  updateProfile
 };

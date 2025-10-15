@@ -20,16 +20,22 @@ const FactoriesPage = () => {
       try {
         setLoading(true);
         const response = await axios.get('/api/public/factories');
-        const factoriesData = response.data;
         
-        setFactories(factoriesData);
-        setFilteredFactories(factoriesData);
-        
-        // Extract unique locations for filter dropdown
-        const uniqueLocations = [...new Set(factoriesData.map(factory => factory.location))];
-        setLocations(uniqueLocations.sort());
-        
-        setError(null);
+        // Check if response has the expected structure
+        if (response.data && response.data.success && response.data.data && response.data.data.factories) {
+          const factoriesData = response.data.data.factories;
+          
+          setFactories(factoriesData);
+          setFilteredFactories(factoriesData);
+          
+          // Extract unique locations for filter dropdown
+          const uniqueLocations = [...new Set(factoriesData.map(factory => factory.location))];
+          setLocations(uniqueLocations.sort());
+          
+          setError(null);
+        } else {
+          throw new Error('Invalid response structure');
+        }
       } catch (err) {
         console.error('Error fetching factories:', err);
         setError('Failed to load factories. Please try again later.');
@@ -262,7 +268,7 @@ const FactoriesPage = () => {
                 description={factory.description}
                 capacity={factory.capacity}
                 hhmCount={factory.hhmCount}
-                imageUrl={factory.imageUrl}
+                imageUrl={factory.imageUrls && factory.imageUrls.length > 0 ? factory.imageUrls[0] : factory.imageUrl}
                 onClick={handleFactoryClick}
               />
             ))}
