@@ -726,7 +726,7 @@ const getProfile = async (req, res) => {
     
     // Work experience mapping
     if (hasValue(worker.workExperience)) {
-      profileData.farmingExperience = worker.workExperience;
+      profileData.workExperience = worker.workExperience;
     }
     
     // Work preferences mapping
@@ -846,6 +846,40 @@ const updateProfile = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Get all HHMs (Hub Head Managers) directory for workers
+ * @route   GET /api/worker/hhms
+ * @access  Private (Labour only)
+ */
+const getHHMs = async (req, res) => {
+  try {
+    console.log('📋 Getting HHMs directory for worker:', req.user._id);
+    
+    // Find all active users with HHM role
+    const hhms = await User.find({ 
+      role: 'HHM', 
+      isActive: true 
+    }).select('name phone email username createdAt').sort({ name: 1 });
+
+    console.log(`✅ Found ${hhms.length} HHMs for worker directory`);
+
+    res.status(200).json({
+      success: true,
+      count: hhms.length,
+      data: hhms,
+      message: 'HHMs directory retrieved successfully'
+    });
+
+  } catch (error) {
+    console.error('Error in getHHMs for worker:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve HHMs directory',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   // Job feed
   getJobFeed,
@@ -863,5 +897,8 @@ module.exports = {
   
   // Profile management
   getProfile,
-  updateProfile
+  updateProfile,
+  
+  // HHM Directory
+  getHHMs
 };

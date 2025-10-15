@@ -673,11 +673,12 @@ const getProfile = async (req, res) => {
       email: hhm.email,
       phone: hhm.phone,
       role: hhm.role,
-      // Add any HHM-specific fields here
-      experience: hhm.experience,
-      specialization: hhm.specialization,
+      // HHM-specific fields
+      managementExperience: hhm.managementExperience,
+      teamSize: hhm.teamSize,
+      managementOperations: hhm.managementOperations,
+      servicesOffered: hhm.servicesOffered,
       location: hhm.location,
-      contactInfo: hhm.contactInfo || {},
       isActive: hhm.isActive,
       createdAt: hhm.createdAt,
       updatedAt: hhm.updatedAt

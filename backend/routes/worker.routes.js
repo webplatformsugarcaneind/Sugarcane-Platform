@@ -13,7 +13,8 @@ const {
   respondToInvitation,
   getWorkerDashboard,
   getProfile,
-  updateProfile
+  updateProfile,
+  getHHMs
 } = require('../controllers/worker.controller');
 
 // Apply protection and authorization to all routes in this file
@@ -38,6 +39,19 @@ router.get('/profile', getProfile);
  * @access  Private (Labour only)
  */
 router.put('/profile', updateProfile);
+
+// ================================
+// HHM DIRECTORY ROUTES
+// ================================
+
+/**
+ * @route   GET /api/worker/hhms
+ * @desc    Get all HHMs (Hub Head Managers) directory for workers
+ * @access  Private (Labour only)
+ * @returns {Array} Array of HHM objects with basic contact information
+ * @example GET /api/worker/hhms
+ */
+router.get('/hhms', getHHMs);
 
 // ================================
 // JOB FEED ROUTES
