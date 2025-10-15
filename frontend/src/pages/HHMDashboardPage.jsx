@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+// Configure axios base URL
+axios.defaults.baseURL = 'http://localhost:5000';
+
 const HHMDashboardPage = () => {
+  const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,33 +23,7 @@ const HHMDashboardPage = () => {
           return;
         }
 
-        // Mock data for now - replace with actual API call
-        setTimeout(() => {
-          const mockData = {
-            schedules: {
-              open: 12,
-              closed: 8,
-              total: 20
-            },
-            applications: {
-              pending: 25,
-              approved: 18,
-              rejected: 7,
-              total: 50
-            },
-            workers: {
-              available: 150,
-              unavailable: 30,
-              total: 180
-            }
-          };
-          
-          setDashboardData(mockData);
-          setLoading(false);
-        }, 1000);
-
-        // Uncomment this when backend API is ready
-        /*
+        // Fetch dashboard data from API
         const response = await axios.get('/api/hhm/dashboard', {
           headers: {
             Authorization: `Bearer ${token}`
@@ -53,7 +32,6 @@ const HHMDashboardPage = () => {
         
         setDashboardData(response.data.data);
         setLoading(false);
-        */
 
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
@@ -172,54 +150,16 @@ const HHMDashboardPage = () => {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div style={styles.quickActions}>
-        <h2 style={styles.sectionTitle}>Quick Actions</h2>
-        <div style={styles.actionGrid}>
-          <button style={styles.actionButton}>
-            <span style={styles.actionIcon}>➕</span>
-            <span>Create New Schedule</span>
-          </button>
-          <button style={styles.actionButton}>
-            <span style={styles.actionIcon}>👥</span>
-            <span>Browse Workers</span>
-          </button>
-          <button style={styles.actionButton}>
-            <span style={styles.actionIcon}>📝</span>
-            <span>Review Applications</span>
-          </button>
-          <button style={styles.actionButton}>
-            <span style={styles.actionIcon}>💌</span>
-            <span>Send Invitations</span>
-          </button>
-        </div>
-      </div>
-
       {/* Recent Activity */}
       <div style={styles.recentActivity}>
         <h2 style={styles.sectionTitle}>Recent Activity</h2>
-        <div style={styles.activityList}>
-          <div style={styles.activityItem}>
-            <span style={styles.activityIcon}>📝</span>
-            <div style={styles.activityContent}>
-              <p style={styles.activityText}>New application received for "Sugarcane Harvesting - Batch A"</p>
-              <span style={styles.activityTime}>2 hours ago</span>
-            </div>
-          </div>
-          <div style={styles.activityItem}>
-            <span style={styles.activityIcon}>✅</span>
-            <div style={styles.activityContent}>
-              <p style={styles.activityText}>Worker invitation accepted for "Field Preparation Project"</p>
-              <span style={styles.activityTime}>4 hours ago</span>
-            </div>
-          </div>
-          <div style={styles.activityItem}>
-            <span style={styles.activityIcon}>📅</span>
-            <div style={styles.activityContent}>
-              <p style={styles.activityText}>New job schedule created: "Irrigation System Maintenance"</p>
-              <span style={styles.activityTime}>1 day ago</span>
-            </div>
-          </div>
+        <div style={styles.activityPlaceholder}>
+          <div style={styles.placeholderIcon}>�</div>
+          <p style={styles.placeholderText}>Recent activity tracking is coming soon!</p>
+          <p style={styles.placeholderSubtext}>
+            We're building a comprehensive activity feed to help you track applications, 
+            schedule updates, and worker interactions.
+          </p>
         </div>
       </div>
     </div>
@@ -295,34 +235,10 @@ const styles = {
     fontSize: '0.9rem',
     color: '#636e72'
   },
-  quickActions: {
-    marginBottom: '3rem'
-  },
   sectionTitle: {
     fontSize: '1.8rem',
     color: '#2d3436',
     marginBottom: '1rem'
-  },
-  actionGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '1rem'
-  },
-  actionButton: {
-    backgroundColor: 'white',
-    border: '2px solid #ddd',
-    borderRadius: '8px',
-    padding: '1rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '1rem',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    gap: '0.5rem'
-  },
-  actionIcon: {
-    fontSize: '1.2rem'
   },
   recentActivity: {
     backgroundColor: 'white',
@@ -330,32 +246,33 @@ const styles = {
     padding: '1.5rem',
     boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
   },
-  activityList: {
+  activityPlaceholder: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '1rem'
-  },
-  activityItem: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '1rem',
-    padding: '1rem',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '3rem',
     backgroundColor: '#f8f9fa',
-    borderRadius: '8px'
+    borderRadius: '8px',
+    textAlign: 'center'
   },
-  activityIcon: {
-    fontSize: '1.5rem'
+  placeholderIcon: {
+    fontSize: '3rem',
+    marginBottom: '1rem',
+    opacity: 0.6
   },
-  activityContent: {
-    flex: 1
-  },
-  activityText: {
+  placeholderText: {
+    fontSize: '1.2rem',
+    color: '#2d3436',
     margin: '0 0 0.5rem 0',
-    color: '#2d3436'
+    fontWeight: '500'
   },
-  activityTime: {
-    fontSize: '0.9rem',
-    color: '#636e72'
+  placeholderSubtext: {
+    fontSize: '1rem',
+    color: '#636e72',
+    margin: '0',
+    maxWidth: '400px',
+    lineHeight: 1.5
   },
   loadingSpinner: {
     display: 'flex',

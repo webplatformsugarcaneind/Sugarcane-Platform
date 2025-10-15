@@ -18,9 +18,12 @@ import MarketplacePage from './pages/MarketplacePage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import FarmerHHMDirectoryPage from './pages/FarmerHHMDirectoryPage.jsx';
 import FarmerFactoryDirectoryPage from './pages/FarmerFactoryDirectoryPage.jsx';
+import HHMFactoryDirectoryPage from './pages/HHMFactoryDirectoryPage.jsx';
+import FactoryDirectoryPage from './pages/FactoryDirectoryPage.jsx';
 import HHMDashboardPage from './pages/HHMDashboardPage.jsx';
 import LaborManagementPage from './pages/LaborManagementPage.jsx';
 import WorkerDashboardPage from './pages/WorkerDashboardPage.jsx';
+import WorkerHHMDirectoryPage from './pages/WorkerHHMDirectoryPage.jsx';
 import AvailableJobsPage from './pages/AvailableJobsPage.jsx';
 import MyApplicationsPage from './pages/MyApplicationsPage.jsx';
 import InvitesAndApplicationsPage from './pages/InvitesAndApplicationsPage.jsx';
@@ -373,6 +376,11 @@ function App() {
                     <ProfilePage />
                   </SafeComponent>
                 } />
+                <Route path="factory-directory" element={
+                  <SafeComponent name="HHMFactoryDirectoryPage">
+                    <HHMFactoryDirectoryPage />
+                  </SafeComponent>
+                } />
                 <Route index element={
                   <SafeComponent name="HHMDashboardPage">
                     <HHMDashboardPage />
@@ -405,6 +413,11 @@ function App() {
                 <Route path="applications" element={
                   <SafeComponent name="InvitesAndApplicationsPage">
                     <InvitesAndApplicationsPage />
+                  </SafeComponent>
+                } />
+                <Route path="hhm-directory" element={
+                  <SafeComponent name="WorkerHHMDirectoryPage">
+                    <WorkerHHMDirectoryPage />
                   </SafeComponent>
                 } />
                 <Route path="profile" element={
@@ -444,6 +457,11 @@ function App() {
                 <Route path="profile" element={
                   <SafeComponent name="ProfilePage">
                     <ProfilePage />
+                  </SafeComponent>
+                } />
+                <Route path="factory-directory" element={
+                  <SafeComponent name="FactoryDirectoryPage">
+                    <FactoryDirectoryPage />
                   </SafeComponent>
                 } />
                 <Route index element={

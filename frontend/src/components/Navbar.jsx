@@ -252,6 +252,17 @@ const Navbar = () => {
                     </li>
                     <li>
                       <NavLink 
+                        to="/hhm/factory-directory" 
+                        className={({ isActive }) => 
+                          isActive ? 'nav-link active' : 'nav-link'
+                        }
+                        onClick={closeMenu}
+                      >
+                        Factory Directory
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink 
                         to="/hhm/profile" 
                         className={({ isActive }) => 
                           isActive ? 'nav-link active' : 'nav-link'
@@ -290,6 +301,17 @@ const Navbar = () => {
                     </li>
                     <li>
                       <NavLink 
+                        to="/worker/hhm-directory" 
+                        className={({ isActive }) => 
+                          isActive ? 'nav-link active' : 'nav-link'
+                        }
+                        onClick={closeMenu}
+                      >
+                        HHM Directory
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink 
                         to="/worker/profile" 
                         className={({ isActive }) => 
                           isActive ? 'nav-link active' : 'nav-link'
@@ -314,6 +336,28 @@ const Navbar = () => {
                         onClick={closeMenu}
                       >
                         Dashboard
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink 
+                        to="/factory/maintenance" 
+                        className={({ isActive }) => 
+                          isActive ? 'nav-link active' : 'nav-link'
+                        }
+                        onClick={closeMenu}
+                      >
+                        Maintenance
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink 
+                        to="/factory/factory-directory" 
+                        className={({ isActive }) => 
+                          isActive ? 'nav-link active' : 'nav-link'
+                        }
+                        onClick={closeMenu}
+                      >
+                        Factory Network
                       </NavLink>
                     </li>
                     <li>
@@ -481,6 +525,15 @@ const Navbar = () => {
                     Labor Management
                   </NavLink>
                   <NavLink 
+                    to="/hhm/factory-directory" 
+                    className={({ isActive }) => 
+                      isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
+                    }
+                    onClick={closeMenu}
+                  >
+                    Factory Directory
+                  </NavLink>
+                  <NavLink 
                     to="/hhm/profile" 
                     className={({ isActive }) => 
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
@@ -513,6 +566,15 @@ const Navbar = () => {
                     My Applications
                   </NavLink>
                   <NavLink 
+                    to="/worker/hhm-directory" 
+                    className={({ isActive }) => 
+                      isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
+                    }
+                    onClick={closeMenu}
+                  >
+                    HHM Directory
+                  </NavLink>
+                  <NavLink 
                     to="/worker/profile" 
                     className={({ isActive }) => 
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
@@ -535,6 +597,24 @@ const Navbar = () => {
                     onClick={closeMenu}
                   >
                     Dashboard
+                  </NavLink>
+                  <NavLink 
+                    to="/factory/maintenance" 
+                    className={({ isActive }) => 
+                      isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
+                    }
+                    onClick={closeMenu}
+                  >
+                    Maintenance
+                  </NavLink>
+                  <NavLink 
+                    to="/factory/factory-directory" 
+                    className={({ isActive }) => 
+                      isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
+                    }
+                    onClick={closeMenu}
+                  >
+                    Factory Network
                   </NavLink>
                   <NavLink 
                     to="/factory/profile" 

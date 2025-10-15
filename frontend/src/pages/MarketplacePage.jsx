@@ -52,7 +52,8 @@ const MarketplacePage = () => {
         }
       });
 
-      setListings(response.data.listings || []);
+      console.log('Fetched listings response:', response.data);
+      setListings(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (err) {
       console.error('Error fetching listings:', err);
       setError(
@@ -85,7 +86,8 @@ const MarketplacePage = () => {
         }
       });
 
-      setMyListings(response.data.data || []);
+      console.log('Fetched my listings response:', response.data);
+      setMyListings(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (err) {
       console.error('Error fetching my listings:', err);
       setMyListingsError(
@@ -157,12 +159,16 @@ const MarketplacePage = () => {
         }
       });
 
-      // Add new listing to the state
-      setListings(prev => [response.data.listing, ...prev]);
+      console.log('Created listing response:', response.data);
       
-      // Also add to my listings if we have them loaded
-      if (activeTab === 'my' || myListings.length > 0) {
-        setMyListings(prev => [response.data.listing, ...prev]);
+      // Add new listing to the state
+      if (response.data.data && response.data.data._id) {
+        setListings(prev => [response.data.data, ...prev]);
+        
+        // Also add to my listings if we have them loaded
+        if (activeTab === 'my' || myListings.length > 0) {
+          setMyListings(prev => [response.data.data, ...prev]);
+        }
       }
       
       // Close modal
@@ -261,7 +267,9 @@ const MarketplacePage = () => {
               </div>
             ) : (
               <div className="listings-grid">
-                {listings.map((listing) => (
+                {listings
+                  .filter(listing => listing && listing._id && listing.type)
+                  .map((listing) => (
                   <div key={listing._id} className="listing-card">
                     <div className="listing-header">
                       <div className="listing-type">
@@ -347,7 +355,9 @@ const MarketplacePage = () => {
               </div>
             ) : (
               <div className="listings-grid">
-                {myListings.map((listing) => (
+                {myListings
+                  .filter(listing => listing && listing._id && listing.type)
+                  .map((listing) => (
                   <div key={listing._id} className="listing-card my-listing-card">
                     <div className="listing-header">
                       <div className="listing-type">

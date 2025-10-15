@@ -173,35 +173,6 @@
   opacity: 0.8;
 }
 
-/* Impact Stats */
-.impact-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 40px;
-  margin-top: 40px;
-}
-
-.stat-card {
-  text-align: center;
-  padding: 30px 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-}
-
-.stat-number {
-  font-size: 3rem;
-  font-weight: 700;
-  color: #4a7c3c;
-  margin-bottom: 10px;
-}
-
-.stat-label {
-  font-size: 1.1rem;
-  color: #666;
-  font-weight: 500;
-}
-
 /* Values Grid */
 .values-grid {
   display: grid;
@@ -324,7 +295,6 @@
   }
   
   .features-grid,
-  .impact-stats,
   .values-grid {
     grid-template-columns: 1fr;
     gap: 30px;

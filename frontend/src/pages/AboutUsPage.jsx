@@ -110,34 +110,6 @@ const AboutUsPage = () => {
         </div>
       </section>
 
-      {/* Impact Section */}
-      <section className="about-section alt-bg">
-        <div className="container">
-          <div className="section-header">
-            <h2>Our Impact</h2>
-            <p>Making a difference in the sugarcane industry through innovation and collaboration</p>
-          </div>
-          <div className="impact-stats">
-            <div className="stat-card">
-              <div className="stat-number">500+</div>
-              <div className="stat-label">Farmers Connected</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number">50+</div>
-              <div className="stat-label">Partner Factories</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number">25%</div>
-              <div className="stat-label">Yield Improvement</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-number">1000+</div>
-              <div className="stat-label">Jobs Created</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Values Section */}
       <section className="about-section">
         <div className="container">
