@@ -459,6 +459,40 @@ const updateProfile = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Get all HHMs (Hub Head Managers) directory for factories
+ * @route   GET /api/factory/hhms
+ * @access  Private (Factory only)
+ */
+const getHHMs = async (req, res) => {
+  try {
+    console.log('📋 Getting HHMs directory for factory:', req.user._id);
+    
+    // Find all active users with HHM role
+    const hhms = await User.find({ 
+      role: 'HHM', 
+      isActive: true 
+    }).select('name phone email username createdAt').sort({ name: 1 });
+
+    console.log(`✅ Found ${hhms.length} HHMs for factory directory`);
+
+    res.status(200).json({
+      success: true,
+      count: hhms.length,
+      data: hhms,
+      message: 'HHMs directory retrieved successfully for factory'
+    });
+
+  } catch (error) {
+    console.error('Error in getHHMs for factory:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve HHMs directory',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createBill,
   getBills,
@@ -466,5 +500,6 @@ module.exports = {
   getMaintenanceApplications,
   updateMaintenanceApplication,
   getProfile,
-  updateProfile
+  updateProfile,
+  getHHMs
 };

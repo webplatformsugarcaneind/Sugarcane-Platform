@@ -427,37 +427,38 @@ const FactoryDirectoryPage = () => {
           padding: 2rem;
           max-width: 1400px;
           margin: 0 auto;
-          background: #f5f7fa;
+          background: #f8f9fa;
           min-height: 100vh;
         }
 
         .page-header {
           text-align: center;
           margin-bottom: 2rem;
-          background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-          color: white;
+          background: white;
+          color: #2c5530;
           padding: 2rem;
           border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .page-header h1 {
           margin: 0 0 0.5rem 0;
           font-size: 2.5rem;
           font-weight: 600;
+          color: #2c5530;
         }
 
         .page-subtitle {
           margin: 0;
           font-size: 1.1rem;
-          opacity: 0.9;
+          color: #666;
         }
 
         .filter-section {
           background: white;
           padding: 1.5rem;
           border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
           margin-bottom: 2rem;
         }
 
@@ -493,8 +494,8 @@ const FactoryDirectoryPage = () => {
 
         .search-input:focus {
           outline: none;
-          border-color: #ff6b6b;
-          box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+          border-color: #2c5530;
+          box-shadow: 0 0 0 3px rgba(44, 85, 48, 0.1);
         }
 
         .filter-controls {
@@ -515,22 +516,22 @@ const FactoryDirectoryPage = () => {
 
         .filter-select:focus, .sort-select:focus {
           outline: none;
-          border-color: #ff6b6b;
+          border-color: #2c5530;
         }
 
         .clear-filters-btn {
           padding: 0.75rem 1.5rem;
-          background: #f1f3f4;
-          border: 2px solid #e1e5e9;
+          background-color: #ff6b6b;
+          color: white;
+          border: none;
           border-radius: 8px;
           cursor: pointer;
           font-size: 0.9rem;
-          transition: all 0.2s;
         }
 
         .clear-filters-btn:hover {
-          background: #e8eaed;
-          border-color: #d2d6da;
+          background-color: #e55555;
+          transform: translateY(-1px);
         }
 
         .results-info {
@@ -540,7 +541,7 @@ const FactoryDirectoryPage = () => {
         }
 
         .results-count {
-          color: #ff6b6b;
+          color: #2c5530;
           font-weight: 500;
         }
 
@@ -557,14 +558,14 @@ const FactoryDirectoryPage = () => {
           text-align: center;
           background: white;
           border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .loading-spinner {
           width: 40px;
           height: 40px;
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #ff6b6b;
+          border: 4px solid #e0e0e0;
+          border-top: 4px solid #4caf50;
           border-radius: 50%;
           animation: spin 1s linear infinite;
           margin-bottom: 1rem;
@@ -587,7 +588,7 @@ const FactoryDirectoryPage = () => {
 
         .retry-button {
           padding: 0.75rem 1.5rem;
-          background: #ff6b6b;
+          background: #4caf50;
           color: white;
           border: none;
           border-radius: 8px;
@@ -608,16 +609,17 @@ const FactoryDirectoryPage = () => {
 
         .factory-card {
           background: white;
-          border-radius: 12px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
           overflow: hidden;
-          transition: all 0.3s;
-          border: 1px solid #e1e5e9;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .factory-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+          transform: translateY(-8px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+          border-color: rgba(76, 124, 89, 0.2);
         }
 
         .card-header {
@@ -625,12 +627,12 @@ const FactoryDirectoryPage = () => {
           align-items: flex-start;
           gap: 1rem;
           padding: 1.5rem;
-          background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+          background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
           border-bottom: 1px solid #e1e5e9;
         }
 
         .factory-avatar {
-          background: #ff6b6b;
+          background: linear-gradient(135deg, #2c5530, #4caf50);
           color: white;
           width: 50px;
           height: 50px;
@@ -650,7 +652,7 @@ const FactoryDirectoryPage = () => {
           margin: 0 0 0.5rem 0;
           font-size: 1.3rem;
           font-weight: 600;
-          color: #2c3e50;
+          color: #2c5530;
         }
 
         .factory-location {
@@ -701,8 +703,8 @@ const FactoryDirectoryPage = () => {
         .factory-description {
           margin-bottom: 1.5rem;
           padding: 1rem;
-          background: #fff5f5;
-          border-left: 4px solid #ff6b6b;
+          background: #f1f8e9;
+          border-left: 4px solid #4caf50;
           border-radius: 0 8px 8px 0;
         }
 
@@ -729,7 +731,7 @@ const FactoryDirectoryPage = () => {
         }
 
         .opportunity-tag {
-          background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+          background: linear-gradient(135deg, #2c5530 0%, #4caf50 100%);
           color: white;
           padding: 0.4rem 0.8rem;
           border-radius: 15px;
@@ -760,20 +762,20 @@ const FactoryDirectoryPage = () => {
         }
 
         .contact-link {
-          color: #ff6b6b;
+          color: #4caf50;
           text-decoration: none;
           font-size: 0.9rem;
           transition: color 0.2s;
         }
 
         .contact-link:hover {
-          color: #ee5a24;
+          color: #2c5530;
           text-decoration: underline;
         }
 
         .card-footer {
           padding: 1rem 1.5rem;
-          background: #fff5f5;
+          background: #f1f8e9;
           border-top: 1px solid #e1e5e9;
         }
 
@@ -794,23 +796,25 @@ const FactoryDirectoryPage = () => {
         }
 
         .contact-btn.primary {
-          background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+          background: linear-gradient(135deg, #2c5530 0%, #4caf50 100%);
           color: white;
         }
 
         .contact-btn.primary:hover {
           transform: translateY(-1px);
-          box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+          box-shadow: 0 4px 15px rgba(44, 95, 45, 0.3);
         }
 
         .contact-btn.secondary {
-          background: #f1f3f4;
-          color: #2c3e50;
-          border: 1px solid #e1e5e9;
+          background: white;
+          color: #4a7c59;
+          border: 2px solid #4a7c59;
         }
 
         .contact-btn.secondary:hover {
-          background: #e8eaed;
+          background: #4a7c59;
+          color: white;
+          transform: translateY(-1px);
         }
 
         @media (max-width: 768px) {

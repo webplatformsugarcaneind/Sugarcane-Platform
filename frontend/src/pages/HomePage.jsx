@@ -1,11 +1,13 @@
 // Clean version of the original HomePage.jsx with all functionality preserved
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 // import axios from 'axios'; // Commented out since API call is not currently used
 import GuideBox from '../components/GuideBox';
 import Modal from '../components/Modal';
 import './HomePage.css';
 
 const HomePage = () => {
+  const navigate = useNavigate();
   const [rolesData, setRolesData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -224,6 +226,16 @@ const HomePage = () => {
     setSelectedRole(null);
   };
 
+  // Handle Get Started button click - navigate to signup page
+  const handleGetStarted = () => {
+    navigate('/signup');
+  };
+
+  // Handle Learn More button click - navigate to about us page
+  const handleLearnMore = () => {
+    navigate('/about');
+  };
+
   // Render modal content
   const renderModalContent = () => {
     if (!selectedRole) return null;
@@ -295,10 +307,10 @@ const HomePage = () => {
           Your comprehensive solution for sugar industry management, connecting farmers, factories, and workers in one unified platform
         </p>
         <div className="hero-buttons">
-          <button className="btn-primary">
+          <button className="btn-primary" onClick={handleGetStarted}>
             Get Started
           </button>
-          <button className="btn-secondary">
+          <button className="btn-secondary" onClick={handleLearnMore}>
             Learn More
           </button>
         </div>
@@ -324,7 +336,6 @@ const HomePage = () => {
             description="Manage crops, track yields, and connect with factories"
             onClick={handleGuideBoxClick}
             color="farmer"
-            className="debug-clickable"
           />
           
           <GuideBox
@@ -332,7 +343,6 @@ const HomePage = () => {
             description="Coordinate operations and manage logistics"
             onClick={handleGuideBoxClick}
             color="hhm"
-            className="debug-clickable"
           />
           
           <GuideBox
@@ -340,7 +350,6 @@ const HomePage = () => {
             description="Find work opportunities and manage your career"
             onClick={handleGuideBoxClick}
             color="labour"
-            className="debug-clickable"
           />
           
           <GuideBox
@@ -348,7 +357,6 @@ const HomePage = () => {
             description="Optimize production and manage supply chains"
             onClick={handleGuideBoxClick}
             color="factory"
-            className="debug-clickable"
           />
         </div>
       </div>

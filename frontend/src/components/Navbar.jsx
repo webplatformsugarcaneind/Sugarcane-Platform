@@ -125,7 +125,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation Menu */}
         <div className="navbar-menu">
-          <ul className="navbar-nav">
+          <ul className={`navbar-nav ${userRole === 'Farmer' ? 'farmer-nav' : ''}`}>
             {!isAuthenticated ? (
               // Public navigation links
               <>
@@ -187,7 +187,7 @@ const Navbar = () => {
                         }
                         onClick={closeMenu}
                       >
-                        Crop Marketplace
+                        Marketplace
                       </NavLink>
                     </li>
                     <li>
@@ -198,7 +198,7 @@ const Navbar = () => {
                         }
                         onClick={closeMenu}
                       >
-                        HHM Directory
+                        HHMs
                       </NavLink>
                     </li>
                     <li>
@@ -209,7 +209,7 @@ const Navbar = () => {
                         }
                         onClick={closeMenu}
                       >
-                        Factory Directory
+                        Factories
                       </NavLink>
                     </li>
                     <li>
@@ -285,7 +285,7 @@ const Navbar = () => {
                         }
                         onClick={closeMenu}
                       >
-                        Available Jobs
+                        Dashbord
                       </NavLink>
                     </li>
                     <li>
@@ -340,13 +340,13 @@ const Navbar = () => {
                     </li>
                     <li>
                       <NavLink 
-                        to="/factory/maintenance" 
+                        to="/factory/hhm-directory" 
                         className={({ isActive }) => 
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
                       >
-                        Maintenance
+                        HHM Directory
                       </NavLink>
                     </li>
                     <li>
@@ -472,7 +472,7 @@ const Navbar = () => {
                     }
                     onClick={closeMenu}
                   >
-                    Crop Marketplace
+                    Marketplace
                   </NavLink>
                   <NavLink 
                     to="/farmer/hhm-directory" 
@@ -481,7 +481,7 @@ const Navbar = () => {
                     }
                     onClick={closeMenu}
                   >
-                    HHM Directory
+                    HHMs
                   </NavLink>
                   <NavLink 
                     to="/farmer/factory-directory" 
@@ -490,7 +490,7 @@ const Navbar = () => {
                     }
                     onClick={closeMenu}
                   >
-                    Factory Directory
+                    Factories
                   </NavLink>
                   <NavLink 
                     to="/farmer/profile" 
@@ -599,13 +599,13 @@ const Navbar = () => {
                     Dashboard
                   </NavLink>
                   <NavLink 
-                    to="/factory/maintenance" 
+                    to="/factory/hhm-directory" 
                     className={({ isActive }) => 
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
-                    Maintenance
+                    HHM Directory
                   </NavLink>
                   <NavLink 
                     to="/factory/factory-directory" 

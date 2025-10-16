@@ -430,30 +430,31 @@ const HHMFactoryDirectoryPage = () => {
           padding: 2rem;
           max-width: 1400px;
           margin: 0 auto;
-          background: #f8f9ff;
+          background: #f8f9fa;
           min-height: 100vh;
         }
 
         .page-header {
           text-align: center;
           margin-bottom: 2rem;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
+          background: white;
+          color: #2c5f2d;
           padding: 2rem;
           border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
         .page-header h1 {
           margin: 0 0 0.5rem 0;
           font-size: 2.5rem;
           font-weight: 600;
+          color: #2c5f2d;
         }
 
         .page-subtitle {
           margin: 0;
           font-size: 1.1rem;
-          opacity: 0.9;
+          color: #666;
         }
 
         .filter-section {
@@ -496,8 +497,8 @@ const HHMFactoryDirectoryPage = () => {
 
         .search-input:focus {
           outline: none;
-          border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          border-color: #2c5f2d;
+          box-shadow: 0 0 0 3px rgba(44, 95, 45, 0.1);
         }
 
         .filter-controls {
@@ -518,22 +519,17 @@ const HHMFactoryDirectoryPage = () => {
 
         .filter-select:focus, .sort-select:focus {
           outline: none;
-          border-color: #667eea;
+          border-color: #2c5f2d;
         }
 
         .clear-filters-btn {
           padding: 0.75rem 1.5rem;
-          background: #f1f3f4;
-          border: 2px solid #e1e5e9;
+          background-color: #ff6b6b;
+          color: white;
+          border: none;
           border-radius: 8px;
           cursor: pointer;
           font-size: 0.9rem;
-          transition: all 0.2s;
-        }
-
-        .clear-filters-btn:hover {
-          background: #e8eaed;
-          border-color: #d2d6da;
         }
 
         .results-info {
@@ -543,7 +539,7 @@ const HHMFactoryDirectoryPage = () => {
         }
 
         .results-count {
-          color: #667eea;
+          color: #2c5f2d;
           font-weight: 500;
         }
 
@@ -566,8 +562,8 @@ const HHMFactoryDirectoryPage = () => {
         .loading-spinner {
           width: 40px;
           height: 40px;
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #667eea;
+          border: 4px solid #e0e0e0;
+          border-top: 4px solid #2c5f2d;
           border-radius: 50%;
           animation: spin 1s linear infinite;
           margin-bottom: 1rem;
@@ -590,17 +586,12 @@ const HHMFactoryDirectoryPage = () => {
 
         .retry-button {
           padding: 0.75rem 1.5rem;
-          background: #667eea;
+          background: #4a7c59;
           color: white;
           border: none;
           border-radius: 8px;
           cursor: pointer;
           font-size: 1rem;
-          transition: background 0.2s;
-        }
-
-        .retry-button:hover {
-          background: #5a6fd8;
         }
 
         .factory-grid {
@@ -614,13 +605,7 @@ const HHMFactoryDirectoryPage = () => {
           border-radius: 12px;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
           overflow: hidden;
-          transition: all 0.3s;
           border: 1px solid #e1e5e9;
-        }
-
-        .factory-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
         .card-header {
@@ -628,12 +613,12 @@ const HHMFactoryDirectoryPage = () => {
           align-items: flex-start;
           gap: 1rem;
           padding: 1.5rem;
-          background: linear-gradient(135deg, #f8f9ff 0%, #e8eaff 100%);
+          background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
           border-bottom: 1px solid #e1e5e9;
         }
 
         .factory-avatar {
-          background: #667eea;
+          background: linear-gradient(135deg, #2c5f2d, #4a7c59);
           color: white;
           width: 50px;
           height: 50px;
@@ -732,7 +717,7 @@ const HHMFactoryDirectoryPage = () => {
         }
 
         .opportunity-tag {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%);
           color: white;
           padding: 0.4rem 0.8rem;
           border-radius: 15px;
@@ -763,20 +748,14 @@ const HHMFactoryDirectoryPage = () => {
         }
 
         .contact-link {
-          color: #667eea;
+          color: #4a7c59;
           text-decoration: none;
           font-size: 0.9rem;
-          transition: color 0.2s;
-        }
-
-        .contact-link:hover {
-          color: #5a6fd8;
-          text-decoration: underline;
         }
 
         .card-footer {
           padding: 1rem 1.5rem;
-          background: #f8f9ff;
+          background: #f0f8f0;
           border-top: 1px solid #e1e5e9;
         }
 
@@ -797,23 +776,14 @@ const HHMFactoryDirectoryPage = () => {
         }
 
         .contact-btn.primary {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%);
           color: white;
         }
 
-        .contact-btn.primary:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
         .contact-btn.secondary {
-          background: #f1f3f4;
-          color: #2c3e50;
-          border: 1px solid #e1e5e9;
-        }
-
-        .contact-btn.secondary:hover {
-          background: #e8eaed;
+          background: white;
+          color: #4a7c59;
+          border: 2px solid #4a7c59;
         }
 
         @media (max-width: 768px) {

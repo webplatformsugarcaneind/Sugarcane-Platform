@@ -28,7 +28,7 @@ import AvailableJobsPage from './pages/AvailableJobsPage.jsx';
 import MyApplicationsPage from './pages/MyApplicationsPage.jsx';
 import InvitesAndApplicationsPage from './pages/InvitesAndApplicationsPage.jsx';
 import FactoryDashboardPage from './pages/FactoryDashboardPage.jsx';
-import MaintenanceManagementPage from './pages/MaintenanceManagementPage.jsx';
+import FactoryHHMDirectoryPage from './pages/FactoryHHMDirectoryPage.jsx';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -449,9 +449,9 @@ function App() {
                     <FactoryDashboardPage />
                   </SafeComponent>
                 } />
-                <Route path="maintenance" element={
-                  <SafeComponent name="MaintenanceManagementPage">
-                    <MaintenanceManagementPage />
+                <Route path="hhm-directory" element={
+                  <SafeComponent name="FactoryHHMDirectoryPage">
+                    <FactoryHHMDirectoryPage />
                   </SafeComponent>
                 } />
                 <Route path="profile" element={

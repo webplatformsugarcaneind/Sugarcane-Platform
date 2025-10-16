@@ -12,7 +12,8 @@ const {
   getMaintenanceApplications,
   updateMaintenanceApplication,
   getProfile,
-  updateProfile
+  updateProfile,
+  getHHMs
 } = require('../controllers/factory.controller');
 
 // Apply protection and authorization to all routes in this file
@@ -86,5 +87,18 @@ router.get('/maintenance-applications', getMaintenanceApplications);
  * @body    { status: 'approved' | 'rejected' }
  */
 router.put('/maintenance-applications/:id', updateMaintenanceApplication);
+
+// ===================================
+// HHM DIRECTORY API ROUTES
+// ===================================
+
+/**
+ * @route   GET /api/factory/hhms
+ * @desc    Get all HHMs (Hub Head Managers) directory for factories
+ * @access  Private (Factory only)
+ * @returns {Array} Array of HHM objects with basic contact information
+ * @example GET /api/factory/hhms
+ */
+router.get('/hhms', getHHMs);
 
 module.exports = router;

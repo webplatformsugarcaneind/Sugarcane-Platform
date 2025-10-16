@@ -162,8 +162,8 @@ const FarmerFactoryDirectoryPage = () => {
 
   const getCapacityColor = (capacity) => {
     if (!capacity) return '#666';
-    if (capacity < 1000) return '#ff9800';
-    if (capacity < 5000) return '#2196f3';
+    if (capacity < 1000) return '#81c784';
+    if (capacity < 5000) return '#66bb6a';
     return '#4caf50';
   };
 
@@ -441,16 +441,21 @@ const FarmerFactoryDirectoryPage = () => {
         .page-header {
           margin-bottom: 2rem;
           text-align: center;
+          background: linear-gradient(135deg, rgba(44, 85, 48, 0.7) 0%, rgba(76, 175, 80, 0.7) 100%);
+          color: white;
+          padding: 2rem;
+          border-radius: 12px;
+          box-shadow: 0 4px 20px rgba(44, 85, 48, 0.2);
         }
 
         .page-header h1 {
-          color: #2c5530;
+          color: white;
           font-size: 2.5rem;
           margin: 0 0 0.5rem 0;
         }
 
         .page-subtitle {
-          color: #666;
+          color: rgba(255, 255, 255, 0.9);
           font-size: 1.1rem;
           margin: 0;
         }
@@ -668,7 +673,7 @@ const FarmerFactoryDirectoryPage = () => {
         .factory-avatar {
           width: 60px;
           height: 60px;
-          background: linear-gradient(135deg, #ff9800, #f57c00);
+          background: linear-gradient(135deg, #2c5530, #4caf50);
           border-radius: 12px;
           display: flex;
           align-items: center;
@@ -754,8 +759,8 @@ const FarmerFactoryDirectoryPage = () => {
         }
 
         .spec-tag {
-          background: #e3f2fd;
-          color: #1976d2;
+          background: #e8f5e9;
+          color: #2c5530;
           padding: 0.2rem 0.5rem;
           border-radius: 12px;
           font-size: 0.75rem;
@@ -785,12 +790,13 @@ const FarmerFactoryDirectoryPage = () => {
         }
 
         .contact-link {
-          color: #1976d2;
+          color: #4caf50;
           text-decoration: none;
           font-size: 0.9rem;
         }
 
         .contact-link:hover {
+          color: #2c5530;
           text-decoration: underline;
         }
 
@@ -863,12 +869,12 @@ const FarmerFactoryDirectoryPage = () => {
         }
 
         .visit-website-btn {
-          background: #1976d2;
+          background: #66bb6a;
           color: white;
         }
 
         .visit-website-btn:hover {
-          background: #1565c0;
+          background: #4caf50;
         }
 
         .view-details-btn {

@@ -357,7 +357,6 @@ const WorkerHHMDirectoryPage = () => {
           border: 2px solid #e9ecef;
           border-radius: 8px;
           font-size: 1rem;
-          transition: border-color 0.3s ease;
         }
 
         .search-input:focus {
@@ -399,11 +398,6 @@ const WorkerHHMDirectoryPage = () => {
           border-radius: 6px;
           cursor: pointer;
           font-size: 0.9rem;
-          transition: background-color 0.3s ease;
-        }
-
-        .clear-filters-btn:hover {
-          background-color: #c0392b;
         }
 
         .results-summary {
@@ -423,12 +417,12 @@ const WorkerHHMDirectoryPage = () => {
           border-radius: 12px;
           overflow: hidden;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .hhm-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+          background: white;
+          transform: none;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .card-header {
@@ -535,7 +529,13 @@ const WorkerHHMDirectoryPage = () => {
           align-items: center;
           justify-content: center;
           gap: 0.5rem;
-          transition: all 0.3s ease;
+          transition: none;
+        }
+
+        .contact-button:hover {
+          transform: none;
+          box-shadow: none;
+          opacity: 1;
         }
 
         .contact-button.primary {
@@ -543,8 +543,10 @@ const WorkerHHMDirectoryPage = () => {
           color: white;
         }
 
-        .contact-button.primary:hover:not(:disabled) {
-          background-color: #219a52;
+        .contact-button.primary:hover {
+          background-color: #27ae60;
+          transform: none;
+          box-shadow: none;
         }
 
         .contact-button.primary:disabled {
@@ -558,7 +560,9 @@ const WorkerHHMDirectoryPage = () => {
         }
 
         .contact-button.secondary:hover {
-          background-color: #2980b9;
+          background-color: #3498db;
+          transform: none;
+          box-shadow: none;
         }
 
         .button-icon {
@@ -601,10 +605,6 @@ const WorkerHHMDirectoryPage = () => {
           margin-top: 1rem;
         }
 
-        .retry-button:hover {
-          background-color: #2980b9;
-        }
-
         .no-results {
           grid-column: 1 / -1;
           text-align: center;
@@ -631,15 +631,11 @@ const WorkerHHMDirectoryPage = () => {
 
         .clear-search-btn {
           padding: 0.75rem 1.5rem;
-          background-color: #3498db;
+          background-color: #e74c3c;
           color: white;
           border: none;
           border-radius: 6px;
           cursor: pointer;
-        }
-
-        .clear-search-btn:hover {
-          background-color: #2980b9;
         }
 
         /* Responsive Design */

@@ -122,6 +122,13 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .guide-boxes-grid {
+    max-width: 700px;
+    gap: 30px;
+  }
+}
+
 @media (max-width: 768px) {
   .hero-section {
     padding: 60px 20px;
@@ -173,6 +180,8 @@
 
   .guide-boxes-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 100%;
   }
 }
 
@@ -252,9 +261,13 @@
 /* Guide Boxes Grid */
 .guide-boxes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 40px;
   margin-top: 40px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Modal Content Styles */
@@ -355,52 +368,6 @@
   flex: 1;
   max-width: 200px;
   text-align: center;
-}
-
-/* Test clickable card */
-.test-clickable-card {
-  background: #ff6b6b;
-  color: white;
-  padding: 20px;
-  border-radius: 12px;
-  cursor: pointer;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-  transition: all 0.3s ease;
-}
-
-.test-clickable-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-}
-
-.test-clickable-card h3 {
-  margin: 0 0 10px 0;
-  font-size: 1.5rem;
-}
-
-.test-clickable-card p {
-  margin: 0;
-  font-size: 1rem;
-}
-
-/* Debug styles for clickable elements */
-.debug-clickable {
-  border: 2px solid #2c5f2d !important;
-  position: relative;
-}
-
-.debug-clickable::after {
-  content: 'CLICKABLE';
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: #2c5f2d;
-  color: white;
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 3px;
-  z-index: 10;
 }
 
 /* Ensure GuideBox components are properly styled */

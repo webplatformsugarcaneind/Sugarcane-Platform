@@ -14,9 +14,9 @@
 }
 
 .navbar-container {
-  max-width: 1200px;
+  max-width: 1300px; /* Increased from 1200px to give more space for farmer navigation */
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 15px; /* Reduced from 20px to give more space for navigation */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -112,6 +112,7 @@
 /* Logo Styles */
 .navbar-logo {
   flex-shrink: 0;
+  margin-right: 10px; /* Add some margin to create space from navigation */
 }
 
 .logo-link {
@@ -120,7 +121,7 @@
   text-decoration: none;
   color: white;
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 1.3rem; /* Slightly reduced from 1.5rem */
   transition: color 0.3s ease;
 }
 
@@ -129,8 +130,8 @@
 }
 
 .logo-icon {
-  font-size: 2rem;
-  margin-right: 10px;
+  font-size: 1.8rem; /* Reduced from 2rem */
+  margin-right: 8px; /* Reduced from 10px */
 }
 
 .logo-text {
@@ -142,16 +143,31 @@
 .navbar-menu {
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 30px; /* Reduced from 40px */
 }
 
 .navbar-nav {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 20px; /* Reduced from 30px for better spacing with more items */
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+/* Special handling for farmer role with more navigation items */
+.navbar-nav:has(.nav-link[href*="/farmer/"]) {
+  gap: 15px; /* Even tighter spacing for farmer navigation */
+}
+
+/* Farmer-specific navigation styling */
+.farmer-nav {
+  gap: 15px !important;
+}
+
+.farmer-nav .nav-link {
+  font-size: 0.9rem;
+  padding: 6px 12px;
 }
 
 /* Navigation Links */
@@ -159,11 +175,12 @@
   color: white;
   text-decoration: none;
   font-weight: 500;
-  font-size: 1rem;
-  padding: 8px 16px;
+  font-size: 0.95rem; /* Slightly reduced from 1rem */
+  padding: 8px 14px; /* Slightly reduced padding */
   border-radius: 6px;
   transition: all 0.3s ease;
   position: relative;
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 .nav-link:hover {
@@ -256,6 +273,28 @@
 }
 
 /* Responsive Design */
+
+/* Medium screens - optimize for farmer navigation */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .navbar-nav {
+    gap: 12px; /* Even tighter spacing on medium screens */
+  }
+  
+  .nav-link {
+    font-size: 0.9rem; /* Slightly smaller font */
+    padding: 6px 12px; /* Reduced padding */
+  }
+  
+  .logo-text {
+    font-size: 1.2rem;
+  }
+  
+  .logo-icon {
+    font-size: 1.6rem;
+    margin-right: 6px;
+  }
+}
+
 @media (max-width: 768px) {
   .navbar-container {
     padding: 0 15px;
