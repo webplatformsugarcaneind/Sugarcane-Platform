@@ -100,15 +100,27 @@ const WorkerDashboardPage = () => {
         throw new Error('No authentication token found');
       }
 
+      // Find the job to get its required skills
+      const job = jobs.find(j => j._id === jobId);
+      if (!job) {
+        throw new Error('Job not found');
+      }
+
+      // Prepare application data according to backend requirements
       const applicationData = {
-        jobId,
-        message: 'I am interested in this position and believe my skills and experience make me a good fit for this role.'
+        scheduleId: jobId,  // Backend expects 'scheduleId', not 'jobId'
+        applicationMessage: 'I am interested in this position and believe my skills and experience make me a good fit for this role.',
+        workerSkills: job.requiredSkills || [],  // Required: non-empty array
+        experience: 'Experienced in agricultural work',
+        expectedWage: job.wageOffered || 0,
+        availability: 'full-time'  // Must be lowercase: 'full-time', 'part-time', or 'flexible'
       };
 
-      await axios.post('/api/worker/applications', applicationData, {
+      const response = await axios.post('/api/worker/applications', applicationData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
+      console.log('Application response:', response.data);
       alert('Application submitted successfully!');
       
       // Update the job to show it's been applied to
@@ -122,15 +134,12 @@ const WorkerDashboardPage = () => {
 
     } catch (err) {
       console.error('Error applying for job:', err);
-      // For development, still update the UI
-      setJobs(prev =>
-        prev.map(job =>
-          job._id === jobId
-            ? { ...job, hasApplied: true }
-            : job
-        )
-      );
-      alert('Application submitted successfully! (Development mode)');
+      console.error('Error response:', err.response?.data);
+      
+      // Show specific error message from backend
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to submit application';
+      alert(`Error: ${errorMessage}`);
+      
     } finally {
       setApplying(prev => ({ ...prev, [jobId]: false }));
     }
@@ -191,64 +200,78 @@ const WorkerDashboardPage = () => {
             </div>
           ) : (
             <div style={styles.jobsList}>
-              {jobs.map(job => (
-                <div key={job._id} style={styles.jobCard}>
-                  <div style={styles.jobHeader}>
-                    <div style={styles.jobTitleSection}>
-                      <h3 style={styles.jobTitle}>{job.title}</h3>
-                      <p style={styles.jobEmployer}>by {job.employer.name} ⭐ {job.employer.rating}</p>
+              {jobs.map(job => {
+                // Handle both backend (hhmId) and mock data (employer) structures
+                const employerInfo = job.hhmId || job.employer || {};
+                const employerName = employerInfo.name || employerInfo.companyName || 'Unknown Employer';
+                const employerRating = employerInfo.rating || 'N/A';
+                
+                return (
+                  <div key={job._id} style={styles.jobCard}>
+                    <div style={styles.jobHeader}>
+                      <div style={styles.jobTitleSection}>
+                        <h3 style={styles.jobTitle}>{job.title || 'Untitled Job'}</h3>
+                        <p style={styles.jobEmployer}>
+                          by {employerName} {employerRating !== 'N/A' && `⭐ ${employerRating}`}
+                        </p>
+                      </div>
+                      <div style={styles.jobWage}>
+                        <span style={styles.wageAmount}>₹{job.wageOffered || 0}</span>
+                        <span style={styles.wageUnit}>/day</span>
+                      </div>
                     </div>
-                    <div style={styles.jobWage}>
-                      <span style={styles.wageAmount}>₹{job.wageOffered}</span>
-                      <span style={styles.wageUnit}>/day</span>
-                    </div>
-                  </div>
 
-                  <div style={styles.jobDetails}>
-                    <div style={styles.detailRow}>
-                      <span style={styles.detailLabel}>📍 Location:</span>
-                      <span>{job.location}</span>
+                    <div style={styles.jobDetails}>
+                      <div style={styles.detailRow}>
+                        <span style={styles.detailLabel}>📍 Location:</span>
+                        <span>{job.location || 'Not specified'}</span>
                     </div>
                     <div style={styles.detailRow}>
                       <span style={styles.detailLabel}>👥 Workers Needed:</span>
-                      <span>{job.workerCount}</span>
+                      <span>{job.workerCount || 'Not specified'}</span>
                     </div>
                     <div style={styles.detailRow}>
                       <span style={styles.detailLabel}>🗓️ Duration:</span>
-                      <span>{new Date(job.startDate).toLocaleDateString()} - {new Date(job.endDate).toLocaleDateString()}</span>
+                      <span>
+                        {job.startDate ? new Date(job.startDate).toLocaleDateString() : 'TBD'} - {job.endDate ? new Date(job.endDate).toLocaleDateString() : 'TBD'}
+                      </span>
                     </div>
                     <div style={styles.detailRow}>
                       <span style={styles.detailLabel}>⏰ Working Hours:</span>
-                      <span>{job.workingHours}</span>
+                      <span>{job.workingHours || 'Not specified'}</span>
                     </div>
                     <div style={styles.detailRow}>
                       <span style={styles.detailLabel}>🛠️ Work Type:</span>
-                      <span style={styles.workTypeTag}>{job.workType}</span>
+                      <span style={styles.workTypeTag}>{job.workType || 'General'}</span>
                     </div>
                   </div>
 
-                  <div style={styles.jobSkills}>
-                    <strong>Required Skills:</strong>
-                    <div style={styles.skillTags}>
-                      {job.requiredSkills.map(skill => (
-                        <span key={skill} style={styles.skillTag}>{skill}</span>
-                      ))}
+                  {job.requiredSkills && job.requiredSkills.length > 0 && (
+                    <div style={styles.jobSkills}>
+                      <strong>Required Skills:</strong>
+                      <div style={styles.skillTags}>
+                        {job.requiredSkills.map((skill, index) => (
+                          <span key={`${job._id}-skill-${index}`} style={styles.skillTag}>
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div style={styles.jobDescription}>
                     <strong>Description:</strong>
-                    <p style={styles.descriptionText}>{job.description}</p>
+                    <p style={styles.descriptionText}>{job.description || 'No description provided'}</p>
                   </div>
 
                   <div style={styles.jobActions}>
                     <div style={styles.jobMeta}>
                       <span style={styles.postedDate}>
-                        Posted: {new Date(job.postedAt).toLocaleDateString()}
+                        Posted: {job.postedAt ? new Date(job.postedAt).toLocaleDateString() : 'Recently'}
                       </span>
                     </div>
                     <div style={styles.actionButtons}>
-                      {job.hasApplied ? (
+                      {job.hasApplied || job.applicationStatus ? (
                         <button style={styles.appliedButton} disabled>
                           ✅ Applied
                         </button>
@@ -267,7 +290,8 @@ const WorkerDashboardPage = () => {
                     </div>
                   </div>
                 </div>
-              ))}
+              );
+              })}
             </div>
           )}
         </div>

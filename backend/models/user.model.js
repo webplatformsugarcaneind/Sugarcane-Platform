@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     minlength: [3, 'Username must be at least 3 characters'],
     maxlength: [20, 'Username cannot be more than 20 characters'],
-    match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores']
+    match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'] 
   },
   phone: {
     type: String,
@@ -40,8 +40,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Role is required'],
     enum: {
-      values: ['Farmer', 'HHM', 'Labour', 'Factory'],
-      message: 'Role must be one of: Farmer, HHM, Labour, Factory'
+      values: ['Farmer', 'HHM', 'Worker', 'Factory'],
+      message: 'Role must be one of: Farmer, HHM, Worker, Factory'
     }
   },
   password: {
@@ -153,7 +153,7 @@ const userSchema = new mongoose.Schema({
     trim: true
   },
   
-  // Labour-specific fields
+  // Worker-specific fields
   skills: {
     type: String,
     trim: true

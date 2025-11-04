@@ -19,6 +19,7 @@ import ProfilePage from './pages/ProfilePage.jsx';
 import FarmerHHMDirectoryPage from './pages/FarmerHHMDirectoryPage.jsx';
 import FarmerFactoryDirectoryPage from './pages/FarmerFactoryDirectoryPage.jsx';
 import HHMFactoryDirectoryPage from './pages/HHMFactoryDirectoryPage.jsx';
+import HHMSpecificFactoryPage from './pages/HHMSpecificFactoryPage.jsx';
 import FactoryDirectoryPage from './pages/FactoryDirectoryPage.jsx';
 import HHMDashboardPage from './pages/HHMDashboardPage.jsx';
 import LaborManagementPage from './pages/LaborManagementPage.jsx';
@@ -379,6 +380,16 @@ function App() {
                 <Route path="factory-directory" element={
                   <SafeComponent name="HHMFactoryDirectoryPage">
                     <HHMFactoryDirectoryPage />
+                  </SafeComponent>
+                } />
+                <Route path="factories" element={
+                  <SafeComponent name="HHMFactoryDirectoryPage">
+                    <HHMFactoryDirectoryPage />
+                  </SafeComponent>
+                } />
+                <Route path="factories/:id" element={
+                  <SafeComponent name="HHMSpecificFactoryPage">
+                    <HHMSpecificFactoryPage />
                   </SafeComponent>
                 } />
                 <Route index element={

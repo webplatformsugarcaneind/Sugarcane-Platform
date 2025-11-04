@@ -27,13 +27,57 @@ const InvitesAndApplicationsPage = () => {
         throw new Error('No authentication token found');
       }
 
+      console.log('📨 Fetching invitations from backend...');
       const response = await axios.get('/api/worker/invitations', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      setInvitations(response.data.data || response.data);
+      console.log('✅ Invitations received:', response.data);
+
+      // Transform backend data to match frontend expectations
+      // Backend: inv.schedule, inv.hhm
+      // Frontend: inv.job, inv.employer
+      const invitationsData = response.data.data || response.data;
+      const transformedInvitations = invitationsData.map(inv => ({
+        _id: inv._id,
+        job: {
+          _id: inv.schedule?.id || inv.schedule?._id,
+          title: inv.schedule?.title || 'Unknown Job',
+          location: inv.schedule?.location || 'N/A',
+          wageOffered: inv.offeredWage || inv.schedule?.wageOffered || 0,
+          startDate: inv.schedule?.startDate,
+          endDate: inv.schedule?.endDate,
+          workType: inv.schedule?.workType || 'general',
+          status: inv.schedule?.status,
+          requiredSkills: inv.schedule?.requiredSkills || [],
+          totalSpots: inv.schedule?.totalSpots,
+          filledSpots: inv.schedule?.filledSpots,
+          spotsRemaining: inv.schedule?.spotsRemaining
+        },
+        employer: {
+          _id: inv.hhm?.id || inv.hhm?._id,
+          name: inv.hhm?.name || 'Unknown Employer',
+          email: inv.hhm?.email,
+          phone: inv.hhm?.phone,
+          companyName: inv.hhm?.companyName,
+          rating: 4.5 // Default rating
+        },
+        status: inv.status,
+        invitedAt: inv.invitedAt || inv.createdAt,
+        expiresAt: inv.expiresAt,
+        message: inv.personalMessage || 'No message provided',
+        priority: inv.priority,
+        isExpired: inv.isExpired,
+        daysUntilExpiration: inv.daysUntilExpiration,
+        respondedAt: inv.respondedAt,
+        responseMessage: inv.responseMessage
+      }));
+
+      console.log('📋 Transformed invitations:', transformedInvitations);
+      setInvitations(transformedInvitations);
     } catch (err) {
       console.error('Error fetching invitations:', err);
+      console.error('Error details:', err.response?.data);
       // Use mock data as fallback for development
       const mockInvitations = [
         {
@@ -98,7 +142,48 @@ const InvitesAndApplicationsPage = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      setApplications(response.data.data || response.data);
+      console.log('Worker applications received:', response.data);
+
+      // Transform backend data to match frontend expectations
+      // Backend: app.schedule, app.hhm
+      // Frontend: app.job, app.employer
+      const applicationsData = response.data.data || response.data;
+      const transformedApplications = applicationsData.map(app => ({
+        _id: app._id,
+        job: {
+          _id: app.schedule?.id || app.schedule?._id,
+          title: app.schedule?.title || 'Unknown Job',
+          location: app.schedule?.location || 'N/A',
+          wageOffered: app.schedule?.wageOffered || 0,
+          startDate: app.schedule?.startDate,
+          endDate: app.schedule?.endDate,
+          workType: app.schedule?.workType || 'general',
+          status: app.schedule?.status,
+          requiredSkills: app.schedule?.requiredSkills || [],
+          totalSpots: app.schedule?.totalSpots,
+          filledSpots: app.schedule?.filledSpots,
+          spotsRemaining: app.schedule?.spotsRemaining
+        },
+        employer: {
+          _id: app.hhm?.id || app.hhm?._id,
+          name: app.hhm?.name || 'Unknown Employer',
+          email: app.hhm?.email,
+          phone: app.hhm?.phone,
+          companyName: app.hhm?.companyName,
+          rating: 4.5 // Default rating
+        },
+        status: app.status,
+        appliedAt: app.appliedAt || app.createdAt,
+        reviewedAt: app.reviewedAt,
+        message: app.applicationMessage || 'No message',
+        response: app.reviewNotes || null,
+        workerSkills: app.workerSkills || [],
+        experience: app.experience,
+        expectedWage: app.expectedWage,
+        availability: app.availability
+      }));
+
+      setApplications(transformedApplications);
     } catch (err) {
       console.error('Error fetching applications:', err);
       // Use mock data as fallback for development
@@ -352,8 +437,10 @@ const InvitesAndApplicationsPage = () => {
                   <div key={application._id} style={styles.itemCard}>
                     <div style={styles.itemHeader}>
                       <div style={styles.itemTitleSection}>
-                        <h3 style={styles.itemTitle}>{application.job.title}</h3>
-                        <p style={styles.itemEmployer}>by {application.employer.name} ⭐ {application.employer.rating}</p>
+                        <h3 style={styles.itemTitle}>{application.job?.title || 'Unknown Job'}</h3>
+                        <p style={styles.itemEmployer}>
+                          by {application.employer?.name || 'Unknown Employer'} ⭐ {application.employer?.rating || 0}
+                        </p>
                       </div>
                       <div style={styles.itemStatus}>
                         <span style={getStatusStyle(application.status)}>
@@ -364,12 +451,12 @@ const InvitesAndApplicationsPage = () => {
                     
                     <div style={styles.itemDetails}>
                       <div style={styles.detailRow}>
-                        <span style={styles.detailLabel}>� Location:</span>
-                        <span>{application.job.location}</span>
+                        <span style={styles.detailLabel}>📍 Location:</span>
+                        <span>{application.job?.location || 'N/A'}</span>
                       </div>
                       <div style={styles.detailRow}>
                         <span style={styles.detailLabel}>💰 Wage:</span>
-                        <span>₹{application.job.wageOffered}/day</span>
+                        <span>₹{application.job?.wageOffered || 0}/day</span>
                       </div>
                       <div style={styles.detailRow}>
                         <span style={styles.detailLabel}>📅 Applied:</span>
@@ -379,7 +466,7 @@ const InvitesAndApplicationsPage = () => {
                     
                     <div style={styles.itemMessage}>
                       <strong>Your Application:</strong>
-                      <p style={styles.messageText}>{application.message}</p>
+                      <p style={styles.messageText}>{application.message || 'No message'}</p>
                     </div>
                     
                     {application.response && (

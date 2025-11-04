@@ -18,9 +18,9 @@ const {
 } = require('../controllers/worker.controller');
 
 // Apply protection and authorization to all routes in this file
-// All routes require user to be authenticated and have 'Labour' role
+// All routes require user to be authenticated and have 'Worker' role
 router.use(protect);
-router.use(authorize('Labour'));
+router.use(authorize('Worker'));
 
 // ================================
 // PROFILE API ROUTES
@@ -29,14 +29,14 @@ router.use(authorize('Labour'));
 /**
  * @route   GET /api/worker/profile
  * @desc    Get the logged-in worker's profile
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  */
 router.get('/profile', getProfile);
 
 /**
  * @route   PUT /api/worker/profile
  * @desc    Update the logged-in worker's profile
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  */
 router.put('/profile', updateProfile);
 
@@ -47,7 +47,7 @@ router.put('/profile', updateProfile);
 /**
  * @route   GET /api/worker/hhms
  * @desc    Get all HHMs (Hub Head Managers) directory for workers
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  * @returns {Array} Array of HHM objects with basic contact information
  * @example GET /api/worker/hhms
  */
@@ -60,7 +60,7 @@ router.get('/hhms', getHHMs);
 /**
  * @route   GET /api/worker/jobs
  * @desc    Get job feed - all open schedules available for application
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  * @query   skills?: string | string[] (comma-separated skills to filter by)
  * @query   location?: string (location to filter by)
  * @query   minWage?: number (minimum wage filter)
@@ -79,7 +79,7 @@ router.get('/jobs', getJobFeed);
 /**
  * @route   POST /api/worker/applications
  * @desc    Apply for a job schedule
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  * @body    {
  *   scheduleId: string (required),
  *   applicationMessage?: string,
@@ -103,7 +103,7 @@ router.post('/applications', applyForJob);
 /**
  * @route   GET /api/worker/applications
  * @desc    Get worker's own applications with status
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  * @query   status?: 'pending' | 'approved' | 'rejected'
  * @query   page?: number (default: 1)
  * @query   limit?: number (default: 20)
@@ -118,7 +118,7 @@ router.get('/applications', getMyApplications);
 /**
  * @route   GET /api/worker/invitations
  * @desc    Get worker's invitations from HHMs
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  * @query   status?: 'pending' | 'accepted' | 'declined'
  * @query   page?: number (default: 1)
  * @query   limit?: number (default: 20)
@@ -129,7 +129,7 @@ router.get('/invitations', getMyInvitations);
 /**
  * @route   PUT /api/worker/invitations/:id
  * @desc    Respond to invitation (accept or decline)
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  * @params  id: string (invitation ObjectId)
  * @body    {
  *   status: 'accepted' | 'declined' (required),
@@ -150,7 +150,7 @@ router.put('/invitations/:id', respondToInvitation);
 /**
  * @route   GET /api/worker/dashboard
  * @desc    Get worker dashboard statistics
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  * @returns {
  *   applications: { pending: number, approved: number, rejected: number, total: number },
  *   invitations: { pending: number, accepted: number, declined: number, expired: number },
@@ -163,7 +163,7 @@ router.get('/dashboard', getWorkerDashboard);
 /**
  * @route   GET /api/worker/jobs/:id
  * @desc    Get detailed information about a specific job
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  * @params  id: string (schedule ObjectId)
  */
 router.get('/jobs/:id', async (req, res) => {
@@ -219,7 +219,7 @@ router.get('/jobs/:id', async (req, res) => {
 /**
  * @route   DELETE /api/worker/applications/:id
  * @desc    Withdraw/cancel a pending application
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  * @params  id: string (application ObjectId)
  */
 router.delete('/applications/:id', async (req, res) => {
@@ -273,7 +273,7 @@ router.delete('/applications/:id', async (req, res) => {
 /**
  * @route   GET /api/worker/jobs/recommendations
  * @desc    Get job recommendations based on worker's skills and profile
- * @access  Private (Labour only)
+ * @access  Private (Worker only)
  * @query   limit?: number (default: 10)
  */
 router.get('/jobs/recommendations', async (req, res) => {

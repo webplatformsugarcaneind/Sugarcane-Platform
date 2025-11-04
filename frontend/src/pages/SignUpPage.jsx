@@ -142,7 +142,7 @@ const SignUpPage = () => {
               <option value="">Select your role</option>
               <option value="Farmer">Farmer</option>
               <option value="HHM">HHM (Hub Head Manager)</option>
-              <option value="Labour">Labour</option>
+              <option value="Worker">Worker</option>
               <option value="Factory">Factory</option>
             </select>
           </div>

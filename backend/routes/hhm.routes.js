@@ -12,6 +12,7 @@ const {
   updateSchedule,
   deleteSchedule,
   getWorkers,
+  createInvitation,
   getApplications,
   updateApplicationStatus,
   getProfile,
@@ -124,6 +125,32 @@ router.delete('/schedules/:id', deleteSchedule);
  * @example GET /api/hhm/workers?skills=planting,harvesting&availabilityStatus=available&page=1&limit=20
  */
 router.get('/workers', getWorkers);
+
+// ================================
+// INVITATION MANAGEMENT ROUTES (DIRECT HIRE)
+// ================================
+
+/**
+ * @route   POST /api/hhm/invitations
+ * @desc    Send a direct hire invitation to a worker
+ * @access  Private (HHM only)
+ * @body    {
+ *   scheduleId: string (required) - The job schedule ID,
+ *   workerId: string (required) - The worker's user ID,
+ *   personalMessage?: string (optional) - Personal message to the worker,
+ *   offeredWage?: number (optional) - Custom wage offer (defaults to schedule wage),
+ *   priority?: 'low' | 'medium' | 'high' | 'urgent' (optional, default: 'medium')
+ * }
+ * @example POST /api/hhm/invitations
+ *          Body: {
+ *            "scheduleId": "64f123456789abcdef123456",
+ *            "workerId": "64f987654321fedcba654321",
+ *            "personalMessage": "We would love to have you join our team for this harvest!",
+ *            "offeredWage": 550,
+ *            "priority": "high"
+ *          }
+ */
+router.post('/invitations', createInvitation);
 
 // ================================
 // APPLICATION MANAGEMENT ROUTES

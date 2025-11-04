@@ -252,7 +252,7 @@ const Navbar = () => {
                     </li>
                     <li>
                       <NavLink 
-                        to="/hhm/factory-directory" 
+                        to="/hhm/factories" 
                         className={({ isActive }) => 
                           isActive ? 'nav-link active' : 'nav-link'
                         }
@@ -275,7 +275,7 @@ const Navbar = () => {
                   </>
                 )}
 
-                {userRole === 'Labour' && (
+                {userRole === 'Worker' && (
                   <>
                     <li>
                       <NavLink 
@@ -525,7 +525,7 @@ const Navbar = () => {
                     Labor Management
                   </NavLink>
                   <NavLink 
-                    to="/hhm/factory-directory" 
+                    to="/hhm/factories" 
                     className={({ isActive }) => 
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
@@ -545,7 +545,7 @@ const Navbar = () => {
                 </>
               )}
 
-              {userRole === 'Labour' && (
+              {userRole === 'Worker' && (
                 <>
                   <NavLink 
                     to="/worker/jobs" 

@@ -56,6 +56,7 @@ const LoginPage = () => {
         return '/farmer/dashboard';
       case 'hhm':
         return '/hhm/dashboard';
+      case 'worker':
       case 'labour':
         return '/worker/jobs';
       case 'factory':

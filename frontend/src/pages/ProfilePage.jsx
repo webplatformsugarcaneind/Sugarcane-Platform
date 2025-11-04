@@ -44,6 +44,7 @@ const ProfilePage = () => {
       
       let apiEndpoint;
       switch (user.role) {
+        case 'Worker':
         case 'Labour':
           apiEndpoint = '/api/worker/profile';
           break;
@@ -122,6 +123,7 @@ const ProfilePage = () => {
       
       let apiEndpoint;
       switch (user.role) {
+        case 'Worker':
         case 'Labour':
           apiEndpoint = '/api/worker/profile';
           break;
@@ -842,6 +844,7 @@ const ProfilePage = () => {
         return renderFactoryProfile();
       case 'HHM':
         return renderHHMProfile();
+      case 'Worker':
       case 'Labour':
         return renderLabourProfile();
       default:
@@ -869,7 +872,7 @@ const ProfilePage = () => {
             {userRole === 'Factory' && 'Manage your factory information and operations'}
             {userRole === 'Farmer' && 'Manage your farm details and personal information'}
             {userRole === 'HHM' && 'Manage your hub operations and contact details'}
-            {userRole === 'Labour' && 'Manage your skills, availability, and work profile'}
+            {(userRole === 'Worker' || userRole === 'Labour') && 'Manage your skills, availability, and work profile'}
           </p>
         </div>
       </div>

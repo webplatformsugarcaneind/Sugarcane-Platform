@@ -35,7 +35,7 @@ const GuideBox = ({
     const titleLower = title.toLowerCase();
     if (titleLower.includes('farmer')) return '🌾';
     if (titleLower.includes('hhm')) return '👥';
-    if (titleLower.includes('labour')) return '⚒️';
+    if (titleLower.includes('labour') || titleLower.includes('worker')) return '⚒️';
     if (titleLower.includes('factory') || titleLower.includes('factories')) return '🏭';
     return icon || '📖';
   };

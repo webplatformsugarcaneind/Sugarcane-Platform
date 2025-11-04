@@ -1,4 +1,5 @@
     import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 /**
@@ -9,6 +10,8 @@ import axios from 'axios';
  * Customized for HHM user perspective with emphasis on partnership and collaboration.
  */
 const HHMFactoryDirectoryPage = () => {
+  const navigate = useNavigate();
+  
   const [factories, setFactories] = useState([]);
   const [filteredFactories, setFilteredFactories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -164,6 +167,11 @@ const HHMFactoryDirectoryPage = () => {
     setSortBy('name');
   };
 
+  const handleFactoryClick = (factoryId) => {
+    console.log('🔗 Navigating to factory:', factoryId);
+    navigate(`/hhm/factories/${factoryId}`);
+  };
+
   // Get unique locations for filter dropdown
   const uniqueLocations = [...new Set(
     (Array.isArray(factories) ? factories : [])
@@ -317,109 +325,134 @@ const HHMFactoryDirectoryPage = () => {
         ) : (
           <div className="factory-grid">
             {filteredFactories.map((factory) => (
-              <div key={factory._id} className="factory-card">
-                <div className="card-header">
-                  <div className="factory-avatar">
-                    <span className="avatar-icon">🏭</span>
-                  </div>
-                  <div className="factory-basic-info">
-                    <h3 className="factory-name">{factory.name || 'Unknown Factory'}</h3>
-                    <p className="factory-location">📍 {factory.location || 'Location not specified'}</p>
-                  </div>
-                  <div className="capacity-badge" style={{ backgroundColor: getCapacityColor(factory.capacity) }}>
-                    {getCapacityLabel(factory.capacity)}
-                  </div>
-                </div>
-
-                <div className="card-body">
-                  <div className="factory-stats">
-                    <div className="stat-item">
-                      <span className="stat-label">Processing Capacity:</span>
-                      <span className="stat-value">{factory.capacity || 'N/A'}</span>
+              <Link 
+                key={factory._id} 
+                to={`/hhm/factories/${factory._id || factory.id}`}
+                className="factory-card-link"
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <div className="factory-card">
+                  <div className="card-header">
+                    <div className="factory-avatar">
+                      <span className="avatar-icon">🏭</span>
                     </div>
-                    {factory.establishedYear && (
+                    <div className="factory-basic-info">
+                      <h3 className="factory-name">{factory.name || 'Unknown Factory'}</h3>
+                      <p className="factory-location">📍 {factory.location || 'Location not specified'}</p>
+                    </div>
+                    <div className="capacity-badge" style={{ backgroundColor: getCapacityColor(factory.capacity) }}>
+                      {getCapacityLabel(factory.capacity)}
+                    </div>
+                  </div>
+
+                  <div className="card-body">
+                    <div className="factory-stats">
                       <div className="stat-item">
-                        <span className="stat-label">Established:</span>
-                        <span className="stat-value">{factory.establishedYear}</span>
+                        <span className="stat-label">Processing Capacity:</span>
+                        <span className="stat-value">{factory.capacity || 'N/A'}</span>
+                      </div>
+                      {factory.establishedYear && (
+                        <div className="stat-item">
+                          <span className="stat-label">Established:</span>
+                          <span className="stat-value">{factory.establishedYear}</span>
+                        </div>
+                      )}
+                      {factory.operatingHours && (
+                        <div className="stat-item">
+                          <span className="stat-label">Operating Hours:</span>
+                          <span className="stat-value">
+                            {typeof factory.operatingHours === 'object' 
+                              ? (factory.operatingHours.season 
+                                  ? `${factory.operatingHours.season}${factory.operatingHours.daily ? ' - ' + factory.operatingHours.daily : factory.operatingHours.monday ? ' - ' + factory.operatingHours.monday : ''}`
+                                  : 'Contact for schedule'
+                                )
+                              : factory.operatingHours}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {factory.description && (
+                      <div className="factory-description">
+                        <p>{factory.description}</p>
                       </div>
                     )}
-                    {factory.operatingHours && (
-                      <div className="stat-item">
-                        <span className="stat-label">Operating Hours:</span>
-                        <span className="stat-value">
-                          {typeof factory.operatingHours === 'object' 
-                            ? (factory.operatingHours.season 
-                                ? `${factory.operatingHours.season}${factory.operatingHours.daily ? ' - ' + factory.operatingHours.daily : factory.operatingHours.monday ? ' - ' + factory.operatingHours.monday : ''}`
-                                : 'Contact for schedule'
-                              )
-                            : factory.operatingHours}
-                        </span>
+
+                    <div className="partnership-opportunities">
+                      <h4>🤝 Partnership Opportunities:</h4>
+                      <div className="opportunity-tags">
+                        <span className="opportunity-tag">👥 Worker Placement</span>
+                        <span className="opportunity-tag">⚙️ Maintenance Support</span>
+                        <span className="opportunity-tag">📊 Operations Coordination</span>
                       </div>
-                    )}
+                    </div>
+
+                    <div className="contact-info">
+                      <h4>📞 Contact Information:</h4>
+                      <div className="contact-details">
+                        {factory.contactInfo?.email && (
+                          <div className="contact-item">
+                            <span className="contact-icon">📧</span>
+                            <a 
+                              href={`mailto:${factory.contactInfo.email}`} 
+                              className="contact-link"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {factory.contactInfo.email}
+                            </a>
+                          </div>
+                        )}
+                        {factory.contactInfo?.phone && (
+                          <div className="contact-item">
+                            <span className="contact-icon">📱</span>
+                            <a 
+                              href={`tel:${factory.contactInfo.phone}`} 
+                              className="contact-link"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {factory.contactInfo.phone}
+                            </a>
+                          </div>
+                        )}
+                        {factory.contactInfo?.website && (
+                          <div className="contact-item">
+                            <span className="contact-icon">🌐</span>
+                            <a 
+                              href={factory.contactInfo.website.startsWith('http') ? factory.contactInfo.website : `https://${factory.contactInfo.website}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="contact-link"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Visit Website
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  {factory.description && (
-                    <div className="factory-description">
-                      <p>{factory.description}</p>
-                    </div>
-                  )}
-
-                  <div className="partnership-opportunities">
-                    <h4>🤝 Partnership Opportunities:</h4>
-                    <div className="opportunity-tags">
-                      <span className="opportunity-tag">👥 Worker Placement</span>
-                      <span className="opportunity-tag">⚙️ Maintenance Support</span>
-                      <span className="opportunity-tag">📊 Operations Coordination</span>
-                    </div>
-                  </div>
-
-                  <div className="contact-info">
-                    <h4>📞 Contact Information:</h4>
-                    <div className="contact-details">
-                      {factory.contactInfo?.email && (
-                        <div className="contact-item">
-                          <span className="contact-icon">📧</span>
-                          <a href={`mailto:${factory.contactInfo.email}`} className="contact-link">
-                            {factory.contactInfo.email}
-                          </a>
-                        </div>
-                      )}
-                      {factory.contactInfo?.phone && (
-                        <div className="contact-item">
-                          <span className="contact-icon">📱</span>
-                          <a href={`tel:${factory.contactInfo.phone}`} className="contact-link">
-                            {factory.contactInfo.phone}
-                          </a>
-                        </div>
-                      )}
-                      {factory.contactInfo?.website && (
-                        <div className="contact-item">
-                          <span className="contact-icon">🌐</span>
-                          <a 
-                            href={factory.contactInfo.website.startsWith('http') ? factory.contactInfo.website : `https://${factory.contactInfo.website}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="contact-link"
-                          >
-                            Visit Website
-                          </a>
-                        </div>
-                      )}
+                  <div className="card-footer">
+                    <div className="action-buttons">
+                      <button 
+                        className="contact-btn primary"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        🤝 Initiate Partnership
+                      </button>
+                      <button 
+                        className="contact-btn secondary"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleFactoryClick(factory._id || factory.id);
+                        }}
+                      >
+                        📋 View Details
+                      </button>
                     </div>
                   </div>
                 </div>
-
-                <div className="card-footer">
-                  <div className="action-buttons">
-                    <button className="contact-btn primary">
-                      🤝 Initiate Partnership
-                    </button>
-                    <button className="contact-btn secondary">
-                      📋 View Details
-                    </button>
-                  </div>
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
@@ -600,12 +633,28 @@ const HHMFactoryDirectoryPage = () => {
           gap: 2rem;
         }
 
+        .factory-card-link {
+          display: block;
+          text-decoration: none;
+          color: inherit;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .factory-card-link:hover {
+          transform: translateY(-5px);
+        }
+
+        .factory-card-link:hover .factory-card {
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
         .factory-card {
           background: white;
           border-radius: 12px;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
           overflow: hidden;
           border: 1px solid #e1e5e9;
+          transition: box-shadow 0.3s ease;
         }
 
         .card-header {

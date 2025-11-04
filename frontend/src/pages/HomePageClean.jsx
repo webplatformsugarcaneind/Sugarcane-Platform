@@ -72,7 +72,7 @@ const HomePage = () => {
         ]
       },
       labour: {
-        title: 'Labour',
+        title: 'Worker',
         icon: '⚒️',
         description: 'Find work opportunities and manage your career',
         features: [
@@ -199,7 +199,7 @@ const HomePage = () => {
       matchedRole = rolesData.farmer;
     } else if (roleTitle.toLowerCase() === 'hhm' || roleTitle.toLowerCase().includes('hhm')) {
       matchedRole = rolesData.hhm;
-    } else if (roleTitle.toLowerCase() === 'labour' || roleTitle.toLowerCase().includes('labour')) {
+    } else if (roleTitle.toLowerCase() === 'worker' || roleTitle.toLowerCase().includes('worker') || roleTitle.toLowerCase() === 'labour' || roleTitle.toLowerCase().includes('labour')) {
       matchedRole = rolesData.labour;
     } else if (roleTitle.toLowerCase() === 'factories' || roleTitle.toLowerCase().includes('factories')) {
       matchedRole = rolesData.factories;
@@ -337,7 +337,7 @@ const HomePage = () => {
           />
           
           <GuideBox
-            title="Labour"
+            title="Worker"
             description="Find work opportunities and manage your career"
             onClick={handleGuideBoxClick}
             color="labour"

@@ -68,16 +68,49 @@ const AvailableJobsPage = () => {
     setJobs(mockJobs);
   }, []);
 
-  const handleApply = (jobId) => {
-    // Mock application submission
-    alert(`Application submitted for job ${jobId}! You will be notified of the status soon.`);
-    
-    // Update applied count in UI (mock)
-    setJobs(prev => prev.map(job => 
-      job._id === jobId 
-        ? { ...job, appliedCount: job.appliedCount + 1, hasApplied: true }
-        : job
-    ));
+  const handleApply = async (jobId) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        alert('Please login to apply for jobs');
+        return;
+      }
+
+      // Find the job to get its required skills
+      const job = jobs.find(j => j._id === jobId);
+      if (!job) {
+        alert('Job not found');
+        return;
+      }
+
+      // Prepare application data according to backend requirements
+      const applicationData = {
+        scheduleId: jobId,  // Backend expects 'scheduleId'
+        applicationMessage: 'I am interested in this position and believe my skills and experience make me a good fit for this role.',
+        workerSkills: job.requiredSkills || [],  // Required: non-empty array
+        experience: 'Experienced in agricultural work',
+        expectedWage: job.wageOffered || 0,
+        availability: 'full-time'  // Must be lowercase: 'full-time', 'part-time', or 'flexible'
+      };
+
+      const response = await axios.post('/api/worker/applications', applicationData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      alert('Application submitted successfully! You will be notified of the status soon.');
+      
+      // Update applied count in UI
+      setJobs(prev => prev.map(j => 
+        j._id === jobId 
+          ? { ...j, appliedCount: j.appliedCount + 1, hasApplied: true }
+          : j
+      ));
+    } catch (err) {
+      console.error('Error applying for job:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to submit application';
+      alert(`Error: ${errorMessage}`);
+    }
   };
 
   const filteredJobs = jobs.filter(job => {
