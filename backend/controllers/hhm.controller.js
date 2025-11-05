@@ -833,6 +833,19 @@ const updateApplicationStatus = async (req, res) => {
     // Update application status using instance methods
     if (status === 'approved') {
       await application.approve(reviewNotes);
+      
+      // Mark worker as unavailable when application is approved
+      try {
+        await User.findByIdAndUpdate(
+          application.workerId._id,
+          { availability: 'busy' },
+          { new: true }
+        );
+        console.log(`✅ Worker ${application.workerId.name} marked as unavailable`);
+      } catch (availabilityError) {
+        console.error('❌ Error updating worker availability:', availabilityError);
+        // Continue with the response even if availability update fails
+      }
     } else {
       await application.reject(reviewNotes);
     }
@@ -857,6 +870,68 @@ const updateApplicationStatus = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error updating application status',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    Update worker availability status (HHM can mark workers as busy/available)
+ * @route   PUT /api/hhm/workers/:workerId/availability
+ * @access  Private (HHM only)
+ */
+const updateWorkerAvailability = async (req, res) => {
+  try {
+    console.log('🔄 HHM updating worker availability:', req.params.workerId);
+    
+    const { availability } = req.body;
+    const workerId = req.params.workerId;
+
+    // Validate availability status
+    if (!availability || !['available', 'busy'].includes(availability)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Availability must be either "available" or "busy"'
+      });
+    }
+
+    // Verify the worker exists and has Worker role
+    const worker = await User.findOne({
+      _id: workerId,
+      role: 'Worker'
+    });
+
+    if (!worker) {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker not found or invalid worker ID'
+      });
+    }
+
+    // Update worker availability
+    const updatedWorker = await User.findByIdAndUpdate(
+      workerId,
+      { availability: availability },
+      { new: true, runValidators: true }
+    ).select('name email availability');
+
+    console.log(`✅ Worker ${updatedWorker.name} availability updated to: ${availability} by HHM: ${req.user._id}`);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        _id: updatedWorker._id,
+        name: updatedWorker.name,
+        availability: updatedWorker.availability
+      },
+      message: `Worker availability updated to ${availability}`
+    });
+
+  } catch (error) {
+    console.error('❌ Error updating worker availability:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating worker availability status',
       error: error.message
     });
   }
@@ -984,6 +1059,9 @@ module.exports = {
   // Application management
   getApplications,
   updateApplicationStatus,
+  
+  // Worker management
+  updateWorkerAvailability,
   
   // Profile management
   getProfile,

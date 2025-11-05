@@ -8,16 +8,15 @@ const { protect, authorize } = require('../middleware/auth.middleware');
 const {
   getJobFeed,
   applyForJob,
-  getMyApplications,
+  getMyApplications,  
   getMyInvitations,
   respondToInvitation,
   getWorkerDashboard,
   getProfile,
   updateProfile,
+  updateAvailability,
   getHHMs
-} = require('../controllers/worker.controller');
-
-// Apply protection and authorization to all routes in this file
+} = require('../controllers/worker.controller');// Apply protection and authorization to all routes in this file
 // All routes require user to be authenticated and have 'Worker' role
 router.use(protect);
 router.use(authorize('Worker'));
@@ -39,6 +38,13 @@ router.get('/profile', getProfile);
  * @access  Private (Worker only)
  */
 router.put('/profile', updateProfile);
+
+/**
+ * @route   PUT /api/worker/availability
+ * @desc    Update worker availability status (available/busy)
+ * @access  Private (Worker only)
+ */
+router.put('/availability', updateAvailability);
 
 // ================================
 // HHM DIRECTORY ROUTES

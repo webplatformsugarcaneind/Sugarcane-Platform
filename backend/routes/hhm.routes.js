@@ -15,6 +15,7 @@ const {
   createInvitation,
   getApplications,
   updateApplicationStatus,
+  updateWorkerAvailability,
   getProfile,
   updateProfile
 } = require('../controllers/hhm.controller');
@@ -125,6 +126,14 @@ router.delete('/schedules/:id', deleteSchedule);
  * @example GET /api/hhm/workers?skills=planting,harvesting&availabilityStatus=available&page=1&limit=20
  */
 router.get('/workers', getWorkers);
+
+/**
+ * @route   PUT /api/hhm/workers/:workerId/availability
+ * @desc    Update worker availability status (mark as busy/available)
+ * @access  Private (HHM only)
+ * @body    { availability: 'available' | 'busy' }
+ */
+router.put('/workers/:workerId/availability', updateWorkerAvailability);
 
 // ================================
 // INVITATION MANAGEMENT ROUTES (DIRECT HIRE)

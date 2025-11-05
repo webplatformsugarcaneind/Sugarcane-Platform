@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './ProfilePage.css';
@@ -15,6 +15,12 @@ const ProfilePage = () => {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [userRole, setUserRole] = useState('');
+  
+  // My Labours state for HHM users
+  const [myLabours, setMyLabours] = useState([]);
+  const [loadingMyLabours, setLoadingMyLabours] = useState(false);
+  const [labourSearchTerm, setLabourSearchTerm] = useState('');
+  const [filteredMyLabours, setFilteredMyLabours] = useState([]);
 
   useEffect(() => {
     // Get user role from localStorage
@@ -22,9 +28,19 @@ const ProfilePage = () => {
     if (userData) {
       const user = JSON.parse(userData);
       setUserRole(user.role || '');
+      
+      // Fetch labours if user is HHM
+      if (user.role === 'HHM') {
+        fetchMyLabours();
+      }
     }
     fetchProfile();
   }, []);
+
+  // Filter labours when search term changes
+  useEffect(() => {
+    filterMyLabours();
+  }, [myLabours, labourSearchTerm]);
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -164,6 +180,77 @@ const ProfilePage = () => {
       setSaving(false);
     }
   };
+
+  // Fetch approved labours (workers with approved applications) for HHM
+  const fetchMyLabours = async () => {
+    try {
+      setLoadingMyLabours(true);
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      console.log('🔄 Fetching approved labours from backend...');
+      const response = await axios.get('/api/hhm/applications?status=approved', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      console.log('✅ Backend response for my labours:', response.data);
+      
+      const approvedApplications = response.data.data || response.data || [];
+      console.log('👥 Approved labours from backend:', approvedApplications.length, 'workers');
+      
+      // Transform applications to labour data
+      const laboursData = approvedApplications.map(app => ({
+        _id: app.worker?.id || app._id,
+        applicationId: app._id,
+        name: app.worker?.name,
+        email: app.worker?.email,
+        phone: app.worker?.phone,
+        skills: app.worker?.skills || app.workerSkills || [],
+        experience: app.worker?.experience || app.experience,
+        profileImage: app.worker?.profileImage,
+        availabilityStatus: app.worker?.availabilityStatus || 'available',
+        schedule: {
+          title: app.schedule?.title,
+          startDate: app.schedule?.startDate,
+          location: app.schedule?.location,
+          wageOffered: app.schedule?.wageOffered
+        },
+        appliedAt: app.appliedAt,
+        reviewedAt: app.reviewedAt,
+        expectedWage: app.expectedWage,
+        availability: app.availability
+      }));
+      
+      console.log('✅ Mapped labours:', laboursData);
+      setMyLabours(laboursData);
+      setFilteredMyLabours(laboursData);
+    } catch (err) {
+      console.error('❌ Error fetching my labours:', err.response?.data || err.message);
+      // Show empty state on error
+      setMyLabours([]);
+      setFilteredMyLabours([]);
+    } finally {
+      setLoadingMyLabours(false);
+    }
+  };
+
+  // Filter my labours based on search term
+  const filterMyLabours = useCallback(() => {
+    let filtered = [...myLabours];
+
+    if (labourSearchTerm) {
+      filtered = filtered.filter(labour =>
+        labour.name?.toLowerCase().includes(labourSearchTerm.toLowerCase()) ||
+        labour.email?.toLowerCase().includes(labourSearchTerm.toLowerCase()) ||
+        labour.schedule?.title?.toLowerCase().includes(labourSearchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredMyLabours(filtered);
+  }, [myLabours, labourSearchTerm]);
 
   // Role-specific profile rendering functions
   const renderFarmerProfile = () => (
@@ -694,6 +781,222 @@ const ProfilePage = () => {
             />
           </div>
         </div>
+      </div>
+
+      {/* My Labours Section */}
+      <div className="form-section">
+        <h2 className="section-title">👥 My Hired Workers</h2>
+        <p className="section-description">
+          Manage your hired workforce and track their assignments
+        </p>
+        
+        {/* Search Section */}
+        <div className="search-section" style={{ marginBottom: '1.5rem' }}>
+          <div className="search-input-group" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <span style={{ position: 'absolute', left: '12px', color: '#7f8c8d' }}>🔍</span>
+            <input
+              type="text"
+              placeholder="Search by worker name, email, or job title..."
+              value={labourSearchTerm}
+              onChange={(e) => setLabourSearchTerm(e.target.value)}
+              className="form-input"
+              style={{ paddingLeft: '40px' }}
+            />
+            {labourSearchTerm && (
+              <button
+                type="button"
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#7f8c8d'
+                }}
+                onClick={() => setLabourSearchTerm('')}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          <div style={{ marginTop: '0.5rem', color: '#7f8c8d', fontSize: '0.9rem' }}>
+            {filteredMyLabours.length} hired worker{filteredMyLabours.length !== 1 ? 's' : ''}
+          </div>
+        </div>
+
+        {/* Labours List */}
+        {loadingMyLabours ? (
+          <div style={{ textAlign: 'center', padding: '2rem', color: '#7f8c8d' }}>
+            <div style={{ marginBottom: '1rem' }}>Loading your hired workers...</div>
+          </div>
+        ) : filteredMyLabours.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '2rem', color: '#7f8c8d' }}>
+            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>👷</div>
+            <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>
+              {labourSearchTerm
+                ? 'No hired workers match your search'
+                : myLabours.length === 0
+                  ? 'No hired workers yet'
+                  : 'No hired workers match your search'}
+            </p>
+            <p style={{ fontSize: '0.9rem' }}>
+              {labourSearchTerm
+                ? 'Try adjusting your search terms or clear the search to see all hired workers.'
+                : 'Approved job applications will appear here as hired workers.'}
+            </p>
+            {labourSearchTerm && (
+              <button
+                type="button"
+                onClick={() => setLabourSearchTerm('')}
+                className="btn"
+                style={{ 
+                  marginTop: '1rem',
+                  padding: '0.5rem 1rem',
+                  backgroundColor: '#3498db',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Clear Search
+              </button>
+            )}
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            {filteredMyLabours.map(labour => (
+              <div key={labour._id} style={{
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                padding: '1.5rem',
+                backgroundColor: '#fff'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <h3 style={{ margin: '0 0 0.5rem 0', color: '#2c3e50' }}>{labour.name}</h3>
+                    <p style={{ margin: '0 0 0.25rem 0', color: '#7f8c8d' }}>{labour.email}</p>
+                    {labour.phone && (
+                      <p style={{ margin: '0 0 0.25rem 0', color: '#7f8c8d' }}>📞 {labour.phone}</p>
+                    )}
+
+                    {/* Skills */}
+                    {labour.skills && labour.skills.length > 0 && (
+                      <div style={{ margin: '0.5rem 0' }}>
+                        {labour.skills.slice(0, 3).map((skill, idx) => (
+                          <span key={idx} style={{
+                            display: 'inline-block',
+                            backgroundColor: '#ecf0f1',
+                            color: '#2c3e50',
+                            padding: '0.25rem 0.5rem',
+                            borderRadius: '12px',
+                            fontSize: '0.8rem',
+                            marginRight: '0.5rem',
+                            marginBottom: '0.25rem'
+                          }}>
+                            {skill}
+                          </span>
+                        ))}
+                        {labour.skills.length > 3 && (
+                          <span style={{
+                            display: 'inline-block',
+                            backgroundColor: '#ecf0f1',
+                            color: '#2c3e50',
+                            padding: '0.25rem 0.5rem',
+                            borderRadius: '12px',
+                            fontSize: '0.8rem'
+                          }}>
+                            +{labour.skills.length - 3} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Job Details */}
+                    <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+                      <div style={{ marginBottom: '0.5rem' }}>
+                        <strong>Job Assignment:</strong> {labour.schedule?.title || 'Not specified'}
+                      </div>
+                      {labour.schedule?.location && (
+                        <div style={{ marginBottom: '0.5rem' }}>
+                          <strong>Location:</strong> 📍 {labour.schedule.location}
+                        </div>
+                      )}
+                      {labour.schedule?.wageOffered && (
+                        <div style={{ marginBottom: '0.5rem' }}>
+                          <strong>Wage:</strong> 💰 ₹{labour.schedule.wageOffered}/day
+                        </div>
+                      )}
+                      {labour.experience && (
+                        <div style={{ marginBottom: '0.5rem' }}>
+                          <strong>Experience:</strong> {labour.experience}
+                        </div>
+                      )}
+                      <div style={{ marginBottom: '0.5rem' }}>
+                        <strong>Status:</strong> <span style={{ color: '#27ae60' }}>✅ Hired & Active</span>
+                      </div>
+                      {labour.appliedAt && (
+                        <div style={{ fontSize: '0.9rem', color: '#7f8c8d' }}>
+                          📝 Applied: {new Date(labour.appliedAt).toLocaleDateString()}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="btn"
+                    style={{
+                      padding: '0.5rem 1rem',
+                      backgroundColor: '#3498db',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem'
+                    }}
+                  >
+                    👁️ View Full Profile
+                  </button>
+                  <button
+                    type="button"
+                    className="btn"
+                    style={{
+                      padding: '0.5rem 1rem',
+                      backgroundColor: '#2ecc71',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem'
+                    }}
+                  >
+                    📞 Contact Worker
+                  </button>
+                  <button
+                    type="button"
+                    className="btn"
+                    style={{
+                      padding: '0.5rem 1rem',
+                      backgroundColor: '#f39c12',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem'
+                    }}
+                  >
+                    ⚙️ Manage Assignment
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="form-actions">

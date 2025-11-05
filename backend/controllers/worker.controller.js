@@ -847,6 +847,61 @@ const updateProfile = async (req, res) => {
 };
 
 /**
+ * @desc    Update worker availability status
+ * @route   PUT /api/worker/availability
+ * @access  Private (Labour only)
+ */
+const updateAvailability = async (req, res) => {
+  try {
+    console.log('🔄 Updating availability for worker:', req.user._id);
+    
+    const { availability } = req.body;
+
+    // Validate availability status
+    if (!availability || !['available', 'busy'].includes(availability)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Availability must be either "available" or "busy"'
+      });
+    }
+
+    // Update worker availability
+    const updatedWorker = await User.findByIdAndUpdate(
+      req.user._id,
+      { availability: availability },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!updatedWorker) {
+      return res.status(404).json({
+        success: false,
+        message: 'Worker not found'
+      });
+    }
+
+    console.log(`✅ Worker availability updated to: ${availability}`);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        _id: updatedWorker._id,
+        name: updatedWorker.name,
+        availability: updatedWorker.availability
+      },
+      message: `Availability updated to ${availability}`
+    });
+
+  } catch (error) {
+    console.error('❌ Error updating worker availability:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating availability status',
+      error: error.message
+    });
+  }
+};
+
+/**
  * @desc    Get all HHMs (Hub Head Managers) directory for workers
  * @route   GET /api/worker/hhms
  * @access  Private (Labour only)
@@ -898,6 +953,9 @@ module.exports = {
   // Profile management
   getProfile,
   updateProfile,
+  
+  // Availability management
+  updateAvailability,
   
   // HHM Directory
   getHHMs

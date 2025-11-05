@@ -3,10 +3,12 @@ import axios from 'axios';
 
 const LaborManagementPage = () => {
   const [activeTab, setActiveTab] = useState('create-job');
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [error, setError] = useState(null);
   const [applications, setApplications] = useState([]);
   const [loadingApplications, setLoadingApplications] = useState(false);
+  const [applicationStatusFilter, setApplicationStatusFilter] = useState('all');
+  const [filteredApplications, setFilteredApplications] = useState([]);
   const [scheduleForm, setScheduleForm] = useState({
     title: '',
     description: '',
@@ -76,6 +78,11 @@ const LaborManagementPage = () => {
   useEffect(() => {
     filterMyLabours();
   }, [myLabours, labourSearchTerm]);
+
+  // Filter applications based on status
+  useEffect(() => {
+    filterApplications();
+  }, [applications, applicationStatusFilter]);
 
   const fetchApplications = async () => {
     try {
@@ -312,7 +319,30 @@ const LaborManagementPage = () => {
       );
     }
 
+    // Exclude workers who are currently busy/assigned
+    filtered = filtered.filter(worker => {
+      // Worker may have availability as 'Available' or 'Busy'
+      if (worker.availability) {
+        return worker.availability === 'Available';
+      }
+      // Fallback: include if no availability info
+      return true;
+    });
     setFilteredWorkers(filtered);
+  };
+
+  // Filter applications based on status
+  const filterApplications = () => {
+    let filtered = [...applications];
+
+    // Apply status filter
+    if (applicationStatusFilter && applicationStatusFilter !== 'all') {
+      filtered = filtered.filter(application => 
+        application.status === applicationStatusFilter
+      );
+    }
+
+    setFilteredApplications(filtered);
   };
 
   // Fetch HHM's own schedules for invitation modal
@@ -512,6 +542,38 @@ const LaborManagementPage = () => {
       setApplications(prev =>
         prev.filter(app => app._id !== applicationId)
       );
+
+      // If approved, mark the related worker as unavailable in the backend and locally
+      if (action === 'approved') {
+        try {
+          // Get worker id from the application we just processed
+          const currentApplication = applications.find(a => a._id === applicationId);
+          const workerId = currentApplication?.workerId?._id || currentApplication?.workerId;
+
+          if (workerId) {
+            // Call backend API to mark worker as busy
+            try {
+              await axios.put(
+                `/api/hhm/workers/${workerId}/availability`,
+                { availability: 'busy' },
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+              console.log(`✅ Worker ${workerId} marked as busy in backend`);
+            } catch (availabilityError) {
+              console.warn('❌ Could not update worker availability in backend:', availabilityError);
+            }
+
+            // Update local state: set availability to Busy
+            setWorkers(prev => prev.map(w => (w._id === workerId ? { ...w, availability: 'Busy' } : w)));
+            // Re-filter workers to remove busy ones from the display
+            setFilteredWorkers(prev => prev.filter(w => w._id !== workerId));
+
+            console.log(`✅ Worker ${workerId} marked as unavailable locally`);
+          }
+        } catch (e) {
+          console.warn('Could not mark worker as Busy:', e);
+        }
+      }
 
       // Show success message
       const successMsg = action === 'approved' 
@@ -866,12 +928,12 @@ const LaborManagementPage = () => {
         >
           Hire Labour
         </button>
-        <button
+        {/* <button
           style={activeTab === 'my-labours' ? { ...styles.tab, ...styles.activeTab } : styles.tab}
           onClick={() => setActiveTab('my-labours')}
         >
           My Labours
-        </button>
+        </button> */}
       </div>
 
       {/* Tab Content */}
@@ -1129,33 +1191,33 @@ const LaborManagementPage = () => {
                 {/* Filter buttons for application status */}
                 <div style={styles.filterButtonGroup}>
                   <button 
-                    style={styles.filterBtn}
-                    onClick={() => {/* Show all */}}
+                    style={applicationStatusFilter === 'all' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+                    onClick={() => setApplicationStatusFilter('all')}
                   >
                     All ({applications.length})
                   </button>
                   <button 
-                    style={styles.filterBtn}
-                    onClick={() => {/* Filter pending */}}
+                    style={applicationStatusFilter === 'pending' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+                    onClick={() => setApplicationStatusFilter('pending')}
                   >
                     Pending ({applications.filter(app => app.status === 'pending').length})
                   </button>
                   <button 
-                    style={styles.filterBtn}
-                    onClick={() => {/* Filter approved */}}
+                    style={applicationStatusFilter === 'approved' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+                    onClick={() => setApplicationStatusFilter('approved')}
                   >
                     Approved ({applications.filter(app => app.status === 'approved').length})
                   </button>
                   <button 
-                    style={styles.filterBtn}
-                    onClick={() => {/* Filter rejected */}}
+                    style={applicationStatusFilter === 'rejected' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+                    onClick={() => setApplicationStatusFilter('rejected')}
                   >
                     Rejected ({applications.filter(app => app.status === 'rejected').length})
                   </button>
                 </div>
 
                 {/* Applications List */}
-                {applications.map(application => (
+                {filteredApplications.map(application => (
                   <div key={application._id} style={styles.applicationCard}>
                     <div style={styles.applicationHeader}>
                       <div style={styles.workerInfo}>
@@ -1584,14 +1646,14 @@ const LaborManagementPage = () => {
                         <div style={styles.assignmentCard}>
                           <p style={styles.jobTitle}>{labour.schedule?.title || 'No assignment'}</p>
                           <div style={styles.assignmentDetails}>
-                            <span style={styles.detailItem}>
+                            <span style={styles.assignmentDetailItem}>
                               📍 {labour.schedule?.location || 'N/A'}
                             </span>
-                            <span style={styles.detailItem}>
+                            <span style={styles.assignmentDetailItem}>
                               💰 ₹{labour.schedule?.wageOffered || labour.expectedWage || 'N/A'}/day
                             </span>
                             {labour.schedule?.startDate && (
-                              <span style={styles.detailItem}>
+                              <span style={styles.assignmentDetailItem}>
                                 📅 Start: {new Date(labour.schedule.startDate).toLocaleDateString()}
                               </span>
                             )}
@@ -1975,6 +2037,13 @@ const styles = {
     fontWeight: '500',
     transition: 'all 0.2s',
     color: '#495057'
+  },
+  activeFilterBtn: {
+    backgroundColor: '#4CAF50',
+    borderColor: '#4CAF50',
+    color: 'white',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 2px 8px rgba(76, 175, 80, 0.3)'
   },
   applicationCard: {
     border: '1px solid #ecf0f1',
@@ -2596,7 +2665,7 @@ const styles = {
     flexDirection: 'column',
     gap: '0.25rem'
   },
-  detailItem: {
+  assignmentDetailItem: {
     fontSize: '0.875rem',
     color: '#636e72'
   },
