@@ -13,7 +13,12 @@ const {
   updateMaintenanceApplication,
   getProfile,
   updateProfile,
-  getHHMs
+  getHHMs,
+  inviteHHM,
+  getMyInvitations,
+  cancelInvitation,
+  removeAssociatedHHM,
+  getAssociatedHHMs
 } = require('../controllers/factory.controller');
 
 // Apply protection and authorization to all routes in this file
@@ -100,5 +105,48 @@ router.put('/maintenance-applications/:id', updateMaintenanceApplication);
  * @example GET /api/factory/hhms
  */
 router.get('/hhms', getHHMs);
+
+// ===================================
+// HHM INVITATION & ASSOCIATION ROUTES
+// ===================================
+
+/**
+ * @route   POST /api/factory/invite-hhm
+ * @desc    Send invitation to HHM to associate with factory
+ * @access  Private (Factory only)
+ * @body    { hhmId, personalMessage?, invitationReason? }
+ */
+router.post('/invite-hhm', inviteHHM);
+
+/**
+ * @route   GET /api/factory/invitations
+ * @desc    Get all invitations sent by factory to HHMs
+ * @access  Private (Factory only)
+ * @query   status (optional), page (optional), limit (optional)
+ */
+router.get('/invitations', getMyInvitations);
+
+/**
+ * @route   GET /api/factory/associated-hhms
+ * @desc    Get all HHMs associated with factory
+ * @access  Private (Factory only)
+ */
+router.get('/associated-hhms', getAssociatedHHMs);
+
+/**
+ * @route   DELETE /api/factory/invitations/:id
+ * @desc    Cancel pending invitation to HHM
+ * @access  Private (Factory only)
+ * @param   id - Invitation ID
+ */
+router.delete('/invitations/:id', cancelInvitation);
+
+/**
+ * @route   DELETE /api/factory/associated-hhms/:hhmId
+ * @desc    Remove HHM from factory's associated list
+ * @access  Private (Factory only)
+ * @param   hhmId - HHM user ID
+ */
+router.delete('/associated-hhms/:hhmId', removeAssociatedHHM);
 
 module.exports = router;

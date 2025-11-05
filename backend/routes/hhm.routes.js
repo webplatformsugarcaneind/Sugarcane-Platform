@@ -17,7 +17,12 @@ const {
   updateApplicationStatus,
   updateWorkerAvailability,
   getProfile,
-  updateProfile
+  updateProfile,
+  getFactoryInvitations,
+  respondToFactoryInvitation,
+  getAssociatedFactories,
+  disconnectFromFactory,
+  getMyPerformance
 } = require('../controllers/hhm.controller');
 
 // Apply protection and authorization to all routes in this file
@@ -276,7 +281,7 @@ router.get('/schedules/:id/applications', async (req, res) => {
   try {
     const Schedule = require('../models/schedule.model');
     const Application = require('../models/application.model');
-    
+
     // Verify schedule belongs to HHM
     const schedule = await Schedule.findOne({
       _id: req.params.id,
@@ -318,5 +323,48 @@ router.get('/schedules/:id/applications', async (req, res) => {
     });
   }
 });
+
+// ================================
+// FACTORY INVITATION & ASSOCIATION ROUTES
+// ================================
+
+/**
+ * @route   GET /api/hhm/factory-invitations
+ * @desc    Get all factory invitations received by HHM
+ * @access  Private (HHM only)
+ * @query   status (optional), page (optional), limit (optional)
+ */
+router.get('/factory-invitations', getFactoryInvitations);
+
+/**
+ * @route   PUT /api/hhm/factory-invitations/:id
+ * @desc    Accept or reject factory invitation
+ * @access  Private (HHM only)
+ * @param   id - Invitation ID
+ * @body    { status: 'accepted' | 'declined', responseMessage? }
+ */
+router.put('/factory-invitations/:id', respondToFactoryInvitation);
+
+/**
+ * @route   GET /api/hhm/associated-factories
+ * @desc    Get list of associated factories
+ * @access  Private (HHM only)
+ */
+router.get('/associated-factories', getAssociatedFactories);
+
+/**
+ * @route   DELETE /api/hhm/associated-factories/:factoryId
+ * @desc    Disconnect from factory (remove association)
+ * @access  Private (HHM only)
+ * @param   factoryId - Factory user ID
+ */
+router.delete('/associated-factories/:factoryId', disconnectFromFactory);
+
+/**
+ * @route   GET /api/hhm/my-performance
+ * @desc    Get own performance metrics
+ * @access  Private (HHM only)
+ */
+router.get('/my-performance', getMyPerformance);
 
 module.exports = router;

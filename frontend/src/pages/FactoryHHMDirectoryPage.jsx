@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Set axios base URL
+axios.defaults.baseURL = 'http://localhost:5000';
+
 /**
  * FactoryHHMDirectoryPage Component
  * 
@@ -17,6 +20,13 @@ const FactoryHHMDirectoryPage = () => {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [sortBy, setSortBy] = useState('name');
 
+  // Invitation modal states
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [selectedHHM, setSelectedHHM] = useState(null);
+  const [invitationMessage, setInvitationMessage] = useState('');
+  const [sendingInvitation, setSendingInvitation] = useState(false);
+  const [invitationSuccess, setInvitationSuccess] = useState(null);
+
   useEffect(() => {
     fetchHHMs();
   }, []);
@@ -32,7 +42,7 @@ const FactoryHHMDirectoryPage = () => {
 
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setError('No authentication token found. Please login again.');
         return;
@@ -50,14 +60,14 @@ const FactoryHHMDirectoryPage = () => {
       setHhms(Array.isArray(hhmData) ? hhmData : []);
     } catch (err) {
       console.error('Error fetching HHMs:', err);
-      
+
       if (err.response?.status === 403 || err.response?.status === 401) {
         setError(
           'Access denied. Please ensure you are logged in with the correct Factory role.'
         );
       } else {
         setError(
-          err.response?.data?.message || 
+          err.response?.data?.message ||
           'Failed to fetch HHM directory. Please try again later.'
         );
       }
@@ -139,6 +149,64 @@ const FactoryHHMDirectoryPage = () => {
     });
   };
 
+  const handleInviteClick = (hhm) => {
+    setSelectedHHM(hhm);
+    setInvitationMessage('');
+    setInvitationSuccess(null);
+    setShowInviteModal(true);
+  };
+
+  const handleSendInvitation = async () => {
+    if (!selectedHHM) return;
+
+    try {
+      setSendingInvitation(true);
+      const token = localStorage.getItem('token');
+
+      const response = await axios.post(
+        '/api/factory/invite-hhm',
+        {
+          hhmId: selectedHHM._id,
+          message: invitationMessage
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      setInvitationSuccess({
+        type: 'success',
+        message: `Invitation sent successfully to ${selectedHHM.name}!`
+      });
+
+      // Close modal after 2 seconds
+      setTimeout(() => {
+        setShowInviteModal(false);
+        setSelectedHHM(null);
+        setInvitationMessage('');
+      }, 2000);
+
+    } catch (err) {
+      console.error('Error sending invitation:', err);
+      setInvitationSuccess({
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to send invitation. Please try again.'
+      });
+    } finally {
+      setSendingInvitation(false);
+    }
+  };
+
+  const closeInviteModal = () => {
+    setShowInviteModal(false);
+    setSelectedHHM(null);
+    setInvitationMessage('');
+    setInvitationSuccess(null);
+  };
+
   return (
     <div className="hhm-directory-page">
       <div className="page-header">
@@ -215,8 +283,8 @@ const FactoryHHMDirectoryPage = () => {
             <div className="error-icon">⚠️</div>
             <h3>Error Loading Directory</h3>
             <p className="error-message">{error}</p>
-            <button 
-              onClick={fetchHHMs} 
+            <button
+              onClick={fetchHHMs}
               className="retry-button"
             >
               Try Again
@@ -228,7 +296,7 @@ const FactoryHHMDirectoryPage = () => {
             <h3>No Harvest Managers Found</h3>
             <p>
               {searchTerm || selectedLocation
-                ? 'Try adjusting your search or filter criteria.' 
+                ? 'Try adjusting your search or filter criteria.'
                 : 'No harvest managers are currently available in the directory.'
               }
             </p>
@@ -261,7 +329,7 @@ const FactoryHHMDirectoryPage = () => {
                       <span className="detail-icon">📍</span>
                       <span className="detail-value">{hhm.location || 'Location not specified'}</span>
                     </div>
-                    
+
                     <div className="detail-item">
                       <span className="detail-icon">📧</span>
                       <span className="detail-value">{hhm.email || 'No email provided'}</span>
@@ -295,8 +363,11 @@ const FactoryHHMDirectoryPage = () => {
                   </div>
 
                   <div className="card-actions">
-                    <button className="contact-btn primary">
-                      🤝 Coordinate Harvest
+                    <button
+                      className="contact-btn primary"
+                      onClick={() => handleInviteClick(hhm)}
+                    >
+                      📨 Send Invitation
                     </button>
                     <button className="contact-btn secondary">
                       📋 View Profile
@@ -308,6 +379,71 @@ const FactoryHHMDirectoryPage = () => {
           </div>
         )}
       </div>
+
+      {/* Invitation Modal */}
+      {showInviteModal && selectedHHM && (
+        <div className="modal-overlay" onClick={closeInviteModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>📨 Send Invitation to {selectedHHM.name}</h2>
+              <button className="modal-close" onClick={closeInviteModal}>×</button>
+            </div>
+
+            <div className="modal-body">
+              {invitationSuccess ? (
+                <div className={`alert ${invitationSuccess.type === 'success' ? 'alert-success' : 'alert-error'}`}>
+                  {invitationSuccess.message}
+                </div>
+              ) : (
+                <>
+                  <div className="hhm-preview">
+                    <div className="hhm-preview-avatar">🌾</div>
+                    <div className="hhm-preview-info">
+                      <h3>{selectedHHM.name}</h3>
+                      <p>📍 {selectedHHM.location || 'Location not specified'}</p>
+                      <p>📧 {selectedHHM.email}</p>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="invitation-message">Message (Optional)</label>
+                    <textarea
+                      id="invitation-message"
+                      value={invitationMessage}
+                      onChange={(e) => setInvitationMessage(e.target.value)}
+                      placeholder="Add a personal message to your invitation..."
+                      rows="4"
+                      className="invitation-textarea"
+                    />
+                    <small className="form-hint">
+                      Explain why you'd like to partner with this Harvest Manager
+                    </small>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {!invitationSuccess && (
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={closeInviteModal}
+                  disabled={sendingInvitation}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleSendInvitation}
+                  disabled={sendingInvitation}
+                >
+                  {sendingInvitation ? 'Sending...' : '📨 Send Invitation'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .hhm-directory-page {
@@ -615,6 +751,196 @@ const FactoryHHMDirectoryPage = () => {
           background: #f8f9fa;
           color: #495057;
           border: 2px solid #e1e5e9;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          padding: 1rem;
+        }
+
+        .modal-content {
+          background: white;
+          border-radius: 12px;
+          max-width: 600px;
+          width: 100%;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.5rem;
+          border-bottom: 1px solid #e1e5e9;
+        }
+
+        .modal-header h2 {
+          margin: 0;
+          font-size: 1.5rem;
+          color: #2c5530;
+        }
+
+        .modal-close {
+          background: none;
+          border: none;
+          font-size: 2rem;
+          color: #666;
+          cursor: pointer;
+          padding: 0;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 4px;
+          transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+          background: #f8f9fa;
+        }
+
+        .modal-body {
+          padding: 1.5rem;
+        }
+
+        .hhm-preview {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 1rem;
+          background: #f8f9fa;
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
+        }
+
+        .hhm-preview-avatar {
+          width: 50px;
+          height: 50px;
+          background: linear-gradient(135deg, #4caf50, #45a049);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+        }
+
+        .hhm-preview-info h3 {
+          margin: 0 0 0.5rem 0;
+          color: #2c5530;
+          font-size: 1.1rem;
+        }
+
+        .hhm-preview-info p {
+          margin: 0.25rem 0;
+          color: #666;
+          font-size: 0.9rem;
+        }
+
+        .form-group {
+          margin-bottom: 1rem;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          color: #333;
+          font-weight: 500;
+        }
+
+        .invitation-textarea {
+          width: 100%;
+          padding: 0.75rem;
+          border: 2px solid #e1e5e9;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          font-family: inherit;
+          resize: vertical;
+          transition: border-color 0.2s;
+        }
+
+        .invitation-textarea:focus {
+          outline: none;
+          border-color: #4caf50;
+        }
+
+        .form-hint {
+          display: block;
+          margin-top: 0.5rem;
+          color: #666;
+          font-size: 0.85rem;
+        }
+
+        .alert {
+          padding: 1rem;
+          border-radius: 8px;
+          margin-bottom: 1rem;
+        }
+
+        .alert-success {
+          background: #d4edda;
+          color: #155724;
+          border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+          background: #f8d7da;
+          color: #721c24;
+          border: 1px solid #f5c6cb;
+        }
+
+        .modal-footer {
+          display: flex;
+          justify-content: flex-end;
+          gap: 1rem;
+          padding: 1.5rem;
+          border-top: 1px solid #e1e5e9;
+        }
+
+        .btn {
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .btn-primary {
+          background: #4caf50;
+          color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+          background: #45a049;
+        }
+
+        .btn-secondary {
+          background: #f8f9fa;
+          color: #495057;
+          border: 2px solid #e1e5e9;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+          background: #e9ecef;
         }
 
         @media (max-width: 768px) {

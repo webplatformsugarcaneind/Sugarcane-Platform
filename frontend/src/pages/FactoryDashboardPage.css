@@ -56,6 +56,7 @@
 /* Action Cards */
 .action-card {
   background: #ffffff;
+  color: #2c3e50;
   border-radius: 16px;
   padding: 2rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -83,12 +84,12 @@
 
 /* HHM Card Specific Styling */
 .hhm-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  /* color: white; */
 }
 
 .hhm-card:hover {
-  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  /* background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%); */
 }
 
 .hhm-card .card-icon {
@@ -98,12 +99,12 @@
 
 /* Billing Card Specific Styling */
 .billing-card {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
+  /* background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); */
+  /* color: white; */
 }
 
 .billing-card:hover {
-  background: linear-gradient(135deg, #ee82e9 0%, #f3455a 100%);
+  /* background: linear-gradient(135deg, #ee82e9 0%, #f3455a 100%); */
 }
 
 .billing-card .card-icon {
@@ -312,6 +313,7 @@
     opacity: 0;
     transform: scale(0.9) translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -386,11 +388,11 @@
     max-width: 95vw;
     margin: 1rem;
   }
-  
+
   .modal-header {
     padding: 1rem 1.5rem 0 1.5rem;
   }
-  
+
   .alert {
     margin: 0 1.5rem 1rem 1.5rem;
   }

@@ -2,6 +2,7 @@ const Bill = require('../models/bill.model');
 const Schedule = require('../models/schedule.model');
 const Application = require('../models/application.model');
 const User = require('../models/user.model');
+const Invitation = require('../models/invitation.model');
 
 /**
  * @desc    Create a new bill record for a farmer
@@ -11,7 +12,7 @@ const User = require('../models/user.model');
 const createBill = async (req, res) => {
   try {
     console.log('💰 createBill called by factory:', req.user?._id);
-    
+
     const { farmerId, cropQuantity, totalAmount } = req.body;
 
     // Validate required fields
@@ -76,9 +77,9 @@ const createBill = async (req, res) => {
 const getBills = async (req, res) => {
   try {
     console.log('📋 getBills called by factory:', req.user?._id);
-    
+
     const { status, page = 1, limit = 10 } = req.query;
-    
+
     // Build query
     const query = { factoryId: req.user._id };
     if (status) {
@@ -131,7 +132,7 @@ const getBills = async (req, res) => {
 const createMaintenanceJob = async (req, res) => {
   try {
     console.log('🔧 createMaintenanceJob called by factory:', req.user?._id);
-    
+
     const {
       requiredSkills,
       workerCount,
@@ -192,7 +193,7 @@ const createMaintenanceJob = async (req, res) => {
 const getMaintenanceApplications = async (req, res) => {
   try {
     console.log('📋 getMaintenanceApplications called by factory:', req.user?._id);
-    
+
     const { status, page = 1, limit = 10 } = req.query;
 
     // First, get all maintenance schedules created by this factory
@@ -221,7 +222,7 @@ const getMaintenanceApplications = async (req, res) => {
     const query = {
       scheduleId: { $in: scheduleIds }
     };
-    
+
     if (status) {
       query.status = status;
     }
@@ -273,7 +274,7 @@ const getMaintenanceApplications = async (req, res) => {
 const updateMaintenanceApplication = async (req, res) => {
   try {
     console.log('🔄 updateMaintenanceApplication called by factory:', req.user?._id);
-    
+
     const { id } = req.params;
     const { status } = req.body;
 
@@ -297,9 +298,9 @@ const updateMaintenanceApplication = async (req, res) => {
     }
 
     // Verify the schedule belongs to this factory and is a maintenance job
-    if (!application.scheduleId || 
-        application.scheduleId.hhmId.toString() !== req.user._id.toString() ||
-        application.scheduleId.jobType !== 'maintenance') {
+    if (!application.scheduleId ||
+      application.scheduleId.hhmId.toString() !== req.user._id.toString() ||
+      application.scheduleId.jobType !== 'maintenance') {
       return res.status(403).json({
         success: false,
         message: 'You can only update applications for your own maintenance jobs'
@@ -430,9 +431,9 @@ const updateProfile = async (req, res) => {
     const updatedFactory = await User.findByIdAndUpdate(
       factoryId,
       updateData,
-      { 
-        new: true, 
-        runValidators: true 
+      {
+        new: true,
+        runValidators: true
       }
     ).select('-password');
 
@@ -467,11 +468,11 @@ const updateProfile = async (req, res) => {
 const getHHMs = async (req, res) => {
   try {
     console.log('📋 Getting HHMs directory for factory:', req.user._id);
-    
+
     // Find all active users with HHM role
-    const hhms = await User.find({ 
-      role: 'HHM', 
-      isActive: true 
+    const hhms = await User.find({
+      role: 'HHM',
+      isActive: true
     }).select('name phone email username createdAt').sort({ name: 1 });
 
     console.log(`✅ Found ${hhms.length} HHMs for factory directory`);
@@ -493,6 +494,344 @@ const getHHMs = async (req, res) => {
   }
 };
 
+/**
+ * @desc    Send invitation to HHM to associate with factory
+ * @route   POST /api/factory/invite-hhm
+ * @access  Private (Factory only)
+ */
+const inviteHHM = async (req, res) => {
+  try {
+    console.log('📨 Factory inviting HHM:', req.user._id);
+
+    const { hhmId, personalMessage, invitationReason } = req.body;
+
+    // Validate required fields
+    if (!hhmId) {
+      return res.status(400).json({
+        success: false,
+        message: 'HHM ID is required'
+      });
+    }
+
+    // Verify the HHM exists and has HHM role
+    const hhm = await User.findOne({
+      _id: hhmId,
+      role: 'HHM',
+      isActive: true
+    });
+
+    if (!hhm) {
+      return res.status(404).json({
+        success: false,
+        message: 'HHM not found or inactive'
+      });
+    }
+
+    // Check if HHM is already associated with this factory
+    const factory = await User.findById(req.user._id);
+    if (factory.associatedHHMs && factory.associatedHHMs.includes(hhmId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'This HHM is already associated with your factory'
+      });
+    }
+
+    // Check if a PENDING invitation already exists (allow reinvite if declined/accepted)
+    const existingPendingInvitation = await Invitation.findOne({
+      factoryId: req.user._id,
+      hhmId: hhmId,
+      invitationType: 'factory-to-hhm',
+      status: 'pending'
+    });
+
+    if (existingPendingInvitation) {
+      return res.status(400).json({
+        success: false,
+        message: 'A pending invitation has already been sent to this HHM'
+      });
+    }
+
+    // Create the invitation
+    const invitation = await Invitation.create({
+      invitationType: 'factory-to-hhm',
+      factoryId: req.user._id,
+      hhmId: hhmId,
+      personalMessage: personalMessage || '',
+      invitationReason: invitationReason || '',
+      status: 'pending'
+    });
+
+    // Populate the created invitation with full details
+    const populatedInvitation = await Invitation.findById(invitation._id)
+      .populate('hhmId', 'name email phone experience specialization')
+      .populate('factoryId', 'name email phone factoryName factoryLocation');
+
+    console.log('✅ Factory invitation created successfully:', invitation._id);
+
+    res.status(201).json({
+      success: true,
+      message: 'Invitation sent to HHM successfully',
+      data: populatedInvitation
+    });
+
+  } catch (error) {
+    console.error('❌ Error creating factory invitation:', error);
+
+    // Handle duplicate key error
+    if (error.code === 11000) {
+      console.error('Duplicate key details:', error.keyPattern, error.keyValue);
+
+      // Check which index caused the error
+      if (error.keyPattern && error.keyPattern.factoryId && error.keyPattern.hhmId) {
+        return res.status(400).json({
+          success: false,
+          message: 'A pending invitation has already been sent to this HHM'
+        });
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: 'An invitation conflict occurred. Please try again.'
+        });
+      }
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Error creating invitation',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    Get all invitations sent by factory to HHMs
+ * @route   GET /api/factory/invitations
+ * @access  Private (Factory only)
+ */
+const getMyInvitations = async (req, res) => {
+  try {
+    console.log('📋 Getting factory invitations:', req.user._id);
+
+    const { status, page = 1, limit = 20 } = req.query;
+
+    // Build query
+    const query = {
+      factoryId: req.user._id,
+      invitationType: 'factory-to-hhm'
+    };
+    if (status) {
+      query.status = status;
+    }
+
+    // Calculate pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Get invitations with pagination
+    const invitations = await Invitation.find(query)
+      .populate('hhmId', 'name email phone experience specialization managementExperience')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    // Get total count for pagination
+    const total = await Invitation.countDocuments(query);
+
+    // Get status counts
+    const statusCounts = await Invitation.aggregate([
+      {
+        $match: {
+          factoryId: req.user._id,
+          invitationType: 'factory-to-hhm'
+        }
+      },
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const counts = {
+      pending: 0,
+      accepted: 0,
+      declined: 0
+    };
+    statusCounts.forEach(item => {
+      counts[item._id] = item.count;
+    });
+
+    console.log(`✅ Found ${invitations.length} invitations`);
+
+    res.status(200).json({
+      success: true,
+      data: invitations,
+      pagination: {
+        current: parseInt(page),
+        total: Math.ceil(total / parseInt(limit)),
+        count: invitations.length,
+        totalRecords: total
+      },
+      statusCounts: counts
+    });
+
+  } catch (error) {
+    console.error('❌ Error getting invitations:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving invitations',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    Cancel pending invitation to HHM
+ * @route   DELETE /api/factory/invitations/:id
+ * @access  Private (Factory only)
+ */
+const cancelInvitation = async (req, res) => {
+  try {
+    console.log('🗑️ Canceling invitation:', req.params.id);
+
+    const invitation = await Invitation.findOne({
+      _id: req.params.id,
+      factoryId: req.user._id,
+      invitationType: 'factory-to-hhm'
+    });
+
+    if (!invitation) {
+      return res.status(404).json({
+        success: false,
+        message: 'Invitation not found or unauthorized'
+      });
+    }
+
+    // Only allow cancel if status is pending
+    if (invitation.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot cancel ${invitation.status} invitation. Only pending invitations can be cancelled.`
+      });
+    }
+
+    await invitation.deleteOne();
+
+    console.log('✅ Invitation cancelled successfully');
+
+    res.status(200).json({
+      success: true,
+      message: 'Invitation cancelled successfully'
+    });
+
+  } catch (error) {
+    console.error('❌ Error cancelling invitation:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error cancelling invitation',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    Remove HHM from factory's associated list
+ * @route   DELETE /api/factory/associated-hhms/:hhmId
+ * @access  Private (Factory only)
+ */
+const removeAssociatedHHM = async (req, res) => {
+  try {
+    console.log('🔓 Removing HHM association:', req.params.hhmId);
+
+    const factory = await User.findById(req.user._id);
+
+    if (!factory) {
+      return res.status(404).json({
+        success: false,
+        message: 'Factory not found'
+      });
+    }
+
+    // Check if HHM is associated
+    if (!factory.associatedHHMs || !factory.associatedHHMs.includes(req.params.hhmId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'HHM is not associated with this factory'
+      });
+    }
+
+    // Remove from factory's associatedHHMs
+    factory.associatedHHMs = factory.associatedHHMs.filter(
+      id => !id.equals(req.params.hhmId)
+    );
+    await factory.save();
+
+    // Also remove from HHM's associatedFactories
+    const hhm = await User.findById(req.params.hhmId);
+    if (hhm && hhm.associatedFactories) {
+      hhm.associatedFactories = hhm.associatedFactories.filter(
+        id => !id.equals(req.user._id)
+      );
+      await hhm.save();
+    }
+
+    console.log('✅ HHM association removed successfully');
+
+    res.status(200).json({
+      success: true,
+      message: 'HHM association removed successfully'
+    });
+
+  } catch (error) {
+    console.error('❌ Error removing HHM association:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error removing HHM association',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    Get factory's associated HHMs
+ * @route   GET /api/factory/associated-hhms
+ * @access  Private (Factory only)
+ */
+const getAssociatedHHMs = async (req, res) => {
+  try {
+    console.log('📋 Getting associated HHMs for factory:', req.user._id);
+
+    // Get factory user with populated associatedHHMs
+    const factory = await User.findById(req.user._id).populate({
+      path: 'associatedHHMs',
+      select: 'name email phone location profile'
+    });
+
+    if (!factory) {
+      return res.status(404).json({
+        success: false,
+        message: 'Factory not found'
+      });
+    }
+
+    console.log(`✅ Found ${factory.associatedHHMs.length} associated HHMs`);
+
+    res.status(200).json({
+      success: true,
+      count: factory.associatedHHMs.length,
+      data: factory.associatedHHMs
+    });
+
+  } catch (err) {
+    console.error('Error fetching associated HHMs:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching associated HHMs',
+      error: err.message
+    });
+  }
+};
+
 module.exports = {
   createBill,
   getBills,
@@ -501,5 +840,10 @@ module.exports = {
   updateMaintenanceApplication,
   getProfile,
   updateProfile,
-  getHHMs
+  getHHMs,
+  inviteHHM,
+  getMyInvitations,
+  cancelInvitation,
+  removeAssociatedHHM,
+  getAssociatedHHMs
 };

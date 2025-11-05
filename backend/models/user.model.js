@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     minlength: [3, 'Username must be at least 3 characters'],
     maxlength: [20, 'Username cannot be more than 20 characters'],
-    match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'] 
+    match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores']
   },
   phone: {
     type: String,
@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-  
+
   // Factory-specific fields
   factoryName: {
     type: String,
@@ -100,7 +100,7 @@ const userSchema = new mongoose.Schema({
     shift2: { type: String, trim: true },
     maintenance: { type: String, trim: true }
   },
-  
+
   // Farmer-specific fields
   farmSize: {
     type: String,
@@ -134,7 +134,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  
+
   // HHM-specific fields
   managementExperience: {
     type: String,
@@ -152,7 +152,34 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  
+  // Associated factories for HHM (list of factory IDs)
+  associatedFactories: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    validate: {
+      validator: async function (userId) {
+        // Validate that the referenced user exists and has role 'Factory'
+        const user = await mongoose.model('User').findById(userId);
+        return user && user.role === 'Factory';
+      },
+      message: 'Associated user must exist and have role "Factory"'
+    }
+  }],
+
+  // Associated HHMs for Factory (list of HHM IDs)
+  associatedHHMs: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    validate: {
+      validator: async function (userId) {
+        // Validate that the referenced user exists and has role 'HHM'
+        const user = await mongoose.model('User').findById(userId);
+        return user && user.role === 'HHM';
+      },
+      message: 'Associated user must exist and have role "HHM"'
+    }
+  }],
+
   // Worker-specific fields
   skills: {
     type: String,
@@ -175,7 +202,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  
+
   createdAt: {
     type: Date,
     default: Date.now
@@ -187,7 +214,7 @@ const userSchema = new mongoose.Schema({
 }, {
   timestamps: true, // Automatically adds createdAt and updatedAt
   toJSON: {
-    transform: function(doc, ret) {
+    transform: function (doc, ret) {
       delete ret.password; // Remove password from JSON output
       return ret;
     }
@@ -195,7 +222,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Pre-save hook to hash password
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   // Only hash the password if it has been modified (or is new)
   if (!this.isModified('password')) {
     return next();
@@ -212,7 +239,7 @@ userSchema.pre('save', async function(next) {
 });
 
 // Instance method to compare password
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   try {
     return await bcrypt.compare(candidatePassword, this.password);
   } catch (error) {
@@ -220,8 +247,108 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
   }
 };
 
+// Instance method for HHM to add associated factory
+userSchema.methods.addFactory = async function (factoryId) {
+  // Only allow for HHM role
+  if (this.role !== 'HHM') {
+    throw new Error('Only HHMs can add associated factories');
+  }
+
+  // Check if factory is already associated
+  if (this.associatedFactories && this.associatedFactories.includes(factoryId)) {
+    throw new Error('Factory already associated with this HHM');
+  }
+
+  // Verify the factory exists and is a Factory
+  const User = mongoose.model('User');
+  const factory = await User.findById(factoryId);
+
+  if (!factory) {
+    throw new Error('Factory not found');
+  }
+
+  if (factory.role !== 'Factory') {
+    throw new Error('User must have role "Factory"');
+  }
+
+  // Initialize array if undefined
+  if (!this.associatedFactories) {
+    this.associatedFactories = [];
+  }
+
+  this.associatedFactories.push(factoryId);
+  return this.save();
+};
+
+// Instance method for HHM to remove associated factory
+userSchema.methods.removeFactory = function (factoryId) {
+  // Only allow for HHM role
+  if (this.role !== 'HHM') {
+    throw new Error('Only HHMs can remove associated factories');
+  }
+
+  if (!this.associatedFactories) {
+    return this.save();
+  }
+
+  this.associatedFactories = this.associatedFactories.filter(
+    id => !id.equals(factoryId)
+  );
+  return this.save();
+};
+
+// Instance method for Factory to add associated HHM
+userSchema.methods.addHHM = async function (hhmId) {
+  // Only allow for Factory role
+  if (this.role !== 'Factory') {
+    throw new Error('Only Factories can add associated HHMs');
+  }
+
+  // Check if HHM is already associated
+  if (this.associatedHHMs && this.associatedHHMs.includes(hhmId)) {
+    throw new Error('HHM already associated with this Factory');
+  }
+
+  // Verify the HHM exists and is an HHM
+  const User = mongoose.model('User');
+  const hhm = await User.findById(hhmId);
+
+  if (!hhm) {
+    throw new Error('HHM not found');
+  }
+
+  if (hhm.role !== 'HHM') {
+    throw new Error('User must have role "HHM"');
+  }
+
+  // Initialize array if undefined
+  if (!this.associatedHHMs) {
+    this.associatedHHMs = [];
+  }
+
+  this.associatedHHMs.push(hhmId);
+  return this.save();
+};
+
+// Instance method for Factory to remove associated HHM
+userSchema.methods.removeHHM = function (hhmId) {
+  // Only allow for Factory role
+  if (this.role !== 'Factory') {
+    throw new Error('Only Factories can remove associated HHMs');
+  }
+
+  if (!this.associatedHHMs) {
+    return this.save();
+  }
+
+  this.associatedHHMs = this.associatedHHMs.filter(
+    id => !id.equals(hhmId)
+  );
+  return this.save();
+};
+
 // Static method to find user by credentials
-userSchema.statics.findByCredentials = async function(identifier, password) {
+userSchema.statics.findByCredentials = async function (identifier, password) {
   // Allow login with username, email, or phone
   const user = await this.findOne({
     $or: [
@@ -250,7 +377,7 @@ userSchema.index({ phone: 1 });
 userSchema.index({ role: 1 });
 
 // Virtual for user's full profile
-userSchema.virtual('profile').get(function() {
+userSchema.virtual('profile').get(function () {
   return {
     id: this._id,
     name: this.name,

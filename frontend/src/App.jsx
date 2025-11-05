@@ -22,6 +22,10 @@ import HHMFactoryDirectoryPage from './pages/HHMFactoryDirectoryPage.jsx';
 import HHMSpecificFactoryPage from './pages/HHMSpecificFactoryPage.jsx';
 import FactoryDirectoryPage from './pages/FactoryDirectoryPage.jsx';
 import HHMDashboardPage from './pages/HHMDashboardPage.jsx';
+import HHMFactoryInvitationsPage from './pages/HHMFactoryInvitationsPage.jsx';
+import HHMAssociatedFactoriesPage from './pages/HHMAssociatedFactoriesPage.jsx';
+import HHMPerformancePage from './pages/HHMPerformancePage.jsx';
+import HHMNotificationCenter from './pages/HHMNotificationCenter.jsx';
 import LaborManagementPage from './pages/LaborManagementPage.jsx';
 import WorkerDashboardPage from './pages/WorkerDashboardPage.jsx';
 import WorkerHHMDirectoryPage from './pages/WorkerHHMDirectoryPage.jsx';
@@ -30,6 +34,8 @@ import MyApplicationsPage from './pages/MyApplicationsPage.jsx';
 import InvitesAndApplicationsPage from './pages/InvitesAndApplicationsPage.jsx';
 import FactoryDashboardPage from './pages/FactoryDashboardPage.jsx';
 import FactoryHHMDirectoryPage from './pages/FactoryHHMDirectoryPage.jsx';
+import FactorySentInvitationsPage from './pages/FactorySentInvitationsPage.jsx';
+import FactoryAssociatedHHMsPage from './pages/FactoryAssociatedHHMsPage.jsx';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -49,10 +55,10 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ 
-          padding: '1rem', 
-          margin: '1rem', 
-          border: '2px solid #ff6b6b', 
+        <div style={{
+          padding: '1rem',
+          margin: '1rem',
+          border: '2px solid #ff6b6b',
           borderRadius: '8px',
           background: '#ffe0e0'
         }}>
@@ -71,7 +77,7 @@ class ErrorBoundary extends React.Component {
 // Safe component wrapper
 const SafeComponent = ({ name, children }) => (
   <ErrorBoundary componentName={name}>
-    <Suspense fallback={<div style={{padding: '1rem'}}>Loading {name}...</div>}>
+    <Suspense fallback={<div style={{ padding: '1rem' }}>Loading {name}...</div>}>
       {children}
     </Suspense>
   </ErrorBoundary>
@@ -82,13 +88,13 @@ console.log('All components imported successfully');
 // Component to conditionally render navbar based on route
 const ConditionalNavbar = () => {
   const location = useLocation();
-  
+
   // Show authenticated navbar for protected routes, public navbar for public routes
   const protectedRoutes = ['/farmer', '/hhm', '/worker', '/factory'];
-  const isProtectedRoute = protectedRoutes.some(route => 
+  const isProtectedRoute = protectedRoutes.some(route =>
     location.pathname.startsWith(route)
   );
-  
+
   if (isProtectedRoute) {
     // Show authenticated navbar (handles different user roles internally)
     return (
@@ -97,7 +103,7 @@ const ConditionalNavbar = () => {
       </SafeComponent>
     );
   }
-  
+
   // Show public navbar for non-protected routes
   return (
     <SafeComponent name="Navbar">
@@ -123,8 +129,8 @@ const PublicNavbar = () => {
       <div className="navbar-container">
         {/* Logo Section */}
         <div className="navbar-logo">
-          <NavLink 
-            to="/" 
+          <NavLink
+            to="/"
             className="logo-link"
             onClick={closeMenu}
           >
@@ -137,9 +143,9 @@ const PublicNavbar = () => {
         <div className="navbar-menu">
           <ul className="navbar-nav">
             <li>
-              <NavLink 
-                to="/" 
-                className={({ isActive }) => 
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
                   isActive ? 'nav-link active' : 'nav-link'
                 }
                 onClick={closeMenu}
@@ -148,9 +154,9 @@ const PublicNavbar = () => {
               </NavLink>
             </li>
             <li>
-              <NavLink 
-                to="/factories" 
-                className={({ isActive }) => 
+              <NavLink
+                to="/factories"
+                className={({ isActive }) =>
                   isActive ? 'nav-link active' : 'nav-link'
                 }
                 onClick={closeMenu}
@@ -159,9 +165,9 @@ const PublicNavbar = () => {
               </NavLink>
             </li>
             <li>
-              <NavLink 
-                to="/about" 
-                className={({ isActive }) => 
+              <NavLink
+                to="/about"
+                className={({ isActive }) =>
                   isActive ? 'nav-link active' : 'nav-link'
                 }
                 onClick={closeMenu}
@@ -170,11 +176,11 @@ const PublicNavbar = () => {
               </NavLink>
             </li>
           </ul>
-          
+
           {/* Auth Button */}
           <div className="navbar-auth">
-            <NavLink 
-              to="/login" 
+            <NavLink
+              to="/login"
               className="auth-button"
               onClick={closeMenu}
             >
@@ -198,35 +204,35 @@ const PublicNavbar = () => {
       {/* Mobile Navigation Menu */}
       <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
         <div className="mobile-menu-content">
-          <NavLink 
-            to="/" 
-            className={({ isActive }) => 
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
               isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
             }
             onClick={closeMenu}
           >
             Home
           </NavLink>
-          <NavLink 
-            to="/factories" 
-            className={({ isActive }) => 
+          <NavLink
+            to="/factories"
+            className={({ isActive }) =>
               isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
             }
             onClick={closeMenu}
           >
             Factories
           </NavLink>
-          <NavLink 
-            to="/about" 
-            className={({ isActive }) => 
+          <NavLink
+            to="/about"
+            className={({ isActive }) =>
               isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
             }
             onClick={closeMenu}
           >
             About Us
           </NavLink>
-          <NavLink 
-            to="/login" 
+          <NavLink
+            to="/login"
             className="mobile-auth-button"
             onClick={closeMenu}
           >
@@ -241,29 +247,29 @@ const PublicNavbar = () => {
 // Component to conditionally render footer based on route
 const ConditionalFooter = () => {
   const location = useLocation();
-  
+
   // Hide footer for protected routes (farmer, HHM, worker, etc.)
   const hideFooterRoutes = ['/farmer', '/hhm', '/worker'];
-  const shouldHideFooter = hideFooterRoutes.some(route => 
+  const shouldHideFooter = hideFooterRoutes.some(route =>
     location.pathname.startsWith(route)
   );
-  
+
   if (shouldHideFooter) {
     return null;
   }
-  
+
   return <Footer />;
 };
 
 function App() {
   console.log('App component rendering...');
-  
+
   return (
     <Router>
       <div className="App" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         {/* Conditional Navbar */}
         <ConditionalNavbar />
-        
+
         {/* Main content area */}
         <main style={{ flex: 1 }}>
           <Routes>
@@ -273,40 +279,40 @@ function App() {
                 <HomePage />
               </SafeComponent>
             } />
-            
+
             {/* Authentication Routes */}
             <Route path="/login" element={
               <SafeComponent name="LoginPage">
                 <LoginPage />
               </SafeComponent>
             } />
-            
+
             <Route path="/signup" element={
               <SafeComponent name="SignUpPage">
                 <SignUpPage />
               </SafeComponent>
             } />
-            
+
             {/* Factories Routes */}
             <Route path="/factories" element={
               <SafeComponent name="FactoriesPage">
                 <FactoriesPage />
               </SafeComponent>
             } />
-            
+
             <Route path="/factory/:id" element={
               <SafeComponent name="SpecificFactoryPage">
                 <SpecificFactoryPage />
               </SafeComponent>
             } />
-            
+
             {/* About Route */}
             <Route path="/about" element={
               <SafeComponent name="AboutUsPage">
                 <AboutUsPage />
               </SafeComponent>
             } />
-            
+
             {/* Protected Farmer Routes */}
             <Route path="/farmer" element={
               <SafeComponent name="ProtectedRoute">
@@ -350,7 +356,7 @@ function App() {
                 } />
               </Route>
             </Route>
-            
+
             {/* Protected HHM Routes */}
             <Route path="/hhm" element={
               <SafeComponent name="ProtectedRoute">
@@ -392,6 +398,26 @@ function App() {
                     <HHMSpecificFactoryPage />
                   </SafeComponent>
                 } />
+                <Route path="factory-invitations" element={
+                  <SafeComponent name="HHMFactoryInvitationsPage">
+                    <HHMFactoryInvitationsPage />
+                  </SafeComponent>
+                } />
+                <Route path="associated-factories" element={
+                  <SafeComponent name="HHMAssociatedFactoriesPage">
+                    <HHMAssociatedFactoriesPage />
+                  </SafeComponent>
+                } />
+                <Route path="performance" element={
+                  <SafeComponent name="HHMPerformancePage">
+                    <HHMPerformancePage />
+                  </SafeComponent>
+                } />
+                <Route path="notifications" element={
+                  <SafeComponent name="HHMNotificationCenter">
+                    <HHMNotificationCenter />
+                  </SafeComponent>
+                } />
                 <Route index element={
                   <SafeComponent name="HHMDashboardPage">
                     <HHMDashboardPage />
@@ -399,7 +425,7 @@ function App() {
                 } />
               </Route>
             </Route>
-            
+
             {/* Protected Worker Routes */}
             <Route path="/worker" element={
               <SafeComponent name="ProtectedRoute">
@@ -443,7 +469,7 @@ function App() {
                 } />
               </Route>
             </Route>
-            
+
             {/* Protected Factory Routes */}
             <Route path="/factory" element={
               <SafeComponent name="ProtectedRoute">
@@ -465,6 +491,16 @@ function App() {
                     <FactoryHHMDirectoryPage />
                   </SafeComponent>
                 } />
+                <Route path="sent-invitations" element={
+                  <SafeComponent name="FactorySentInvitationsPage">
+                    <FactorySentInvitationsPage />
+                  </SafeComponent>
+                } />
+                <Route path="associated-hhms" element={
+                  <SafeComponent name="FactoryAssociatedHHMsPage">
+                    <FactoryAssociatedHHMsPage />
+                  </SafeComponent>
+                } />
                 <Route path="profile" element={
                   <SafeComponent name="ProfilePage">
                     <ProfilePage />
@@ -482,7 +518,7 @@ function App() {
                 } />
               </Route>
             </Route>
-            
+
             {/* Unauthorized page */}
             <Route path="/unauthorized" element={
               <div style={{
@@ -501,8 +537,8 @@ function App() {
                 <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
                   You don't have permission to access this page.
                 </p>
-                <a 
-                  href="/" 
+                <a
+                  href="/"
                   style={{
                     background: '#27ae60',
                     color: 'white',
@@ -516,12 +552,12 @@ function App() {
                 </a>
               </div>
             } />
-            
+
             {/* Catch-all route for 404 pages */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
-        
+
         {/* Conditional Footer */}
         <ConditionalFooter />
       </div>
@@ -548,8 +584,8 @@ const NotFound = () => {
       <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
         The page you're looking for doesn't exist.
       </p>
-      <a 
-        href="/" 
+      <a
+        href="/"
         style={{
           background: '#4CAF50',
           color: 'white',
