@@ -833,7 +833,7 @@ const updateApplicationStatus = async (req, res) => {
     // Update application status using instance methods
     if (status === 'approved') {
       await application.approve(reviewNotes);
-      
+
       // Mark worker as unavailable when application is approved
       try {
         await User.findByIdAndUpdate(
@@ -883,7 +883,7 @@ const updateApplicationStatus = async (req, res) => {
 const updateWorkerAvailability = async (req, res) => {
   try {
     console.log('🔄 HHM updating worker availability:', req.params.workerId);
-    
+
     const { availability } = req.body;
     const workerId = req.params.workerId;
 
@@ -1421,6 +1421,9 @@ module.exports = {
   // Application management
   getApplications,
   updateApplicationStatus,
+
+  // Worker availability management
+  updateWorkerAvailability,
 
   // Profile management
   getProfile,
