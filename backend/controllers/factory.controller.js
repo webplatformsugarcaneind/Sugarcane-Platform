@@ -495,6 +495,49 @@ const getHHMs = async (req, res) => {
 };
 
 /**
+ * @desc    Get single HHM by ID for factory view
+ * @route   GET /api/factory/hhms/:id
+ * @access  Private (Factory only)
+ */
+const getHHMById = async (req, res) => {
+  try {
+    console.log('👤 Factory requesting HHM profile:', req.params.id);
+
+    const { id } = req.params;
+
+    // Find the HHM
+    const hhm = await User.findOne({
+      _id: id,
+      role: 'HHM',
+      isActive: true
+    }).select('-password -__v');
+
+    if (!hhm) {
+      return res.status(404).json({
+        success: false,
+        message: 'HHM not found or inactive'
+      });
+    }
+
+    console.log('✅ HHM profile retrieved:', hhm.name);
+
+    res.status(200).json({
+      success: true,
+      data: hhm,
+      message: 'HHM profile retrieved successfully'
+    });
+
+  } catch (error) {
+    console.error('Error in getHHMById:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve HHM profile',
+      error: error.message
+    });
+  }
+};
+
+/**
  * @desc    Send invitation to HHM to associate with factory
  * @route   POST /api/factory/invite-hhm
  * @access  Private (Factory only)
@@ -841,6 +884,7 @@ module.exports = {
   getProfile,
   updateProfile,
   getHHMs,
+  getHHMById,
   inviteHHM,
   getMyInvitations,
   cancelInvitation,

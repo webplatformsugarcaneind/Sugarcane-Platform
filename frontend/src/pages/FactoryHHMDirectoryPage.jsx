@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 // Set axios base URL
@@ -12,6 +13,7 @@ axios.defaults.baseURL = 'http://localhost:5000';
  * Adapted for factory perspective with emphasis on harvest coordination and partnerships.
  */
 const FactoryHHMDirectoryPage = () => {
+  const navigate = useNavigate();
   const [hhms, setHhms] = useState([]);
   const [filteredHhms, setFilteredHhms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -154,6 +156,10 @@ const FactoryHHMDirectoryPage = () => {
     setInvitationMessage('');
     setInvitationSuccess(null);
     setShowInviteModal(true);
+  };
+
+  const handleViewProfile = (hhm) => {
+    navigate(`/factory/hhm-profile/${hhm._id}`);
   };
 
   const handleSendInvitation = async () => {
@@ -369,7 +375,10 @@ const FactoryHHMDirectoryPage = () => {
                     >
                       📨 Send Invitation
                     </button>
-                    <button className="contact-btn secondary">
+                    <button
+                      className="contact-btn secondary"
+                      onClick={() => handleViewProfile(hhm)}
+                    >
                       📋 View Profile
                     </button>
                   </div>
@@ -941,6 +950,121 @@ const FactoryHHMDirectoryPage = () => {
 
         .btn-secondary:hover:not(:disabled) {
           background: #e9ecef;
+        }
+
+        /* Profile Modal Styles */
+        .profile-modal {
+          max-width: 700px;
+          max-height: 90vh;
+          overflow-y: auto;
+        }
+
+        .profile-body {
+          padding: 1.5rem;
+        }
+
+        .profile-header {
+          display: flex;
+          align-items: center;
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+          padding-bottom: 1.5rem;
+          border-bottom: 2px solid #e1e5e9;
+        }
+
+        .profile-avatar-large {
+          width: 80px;
+          height: 80px;
+          background: linear-gradient(135deg, #4caf50, #2c5530);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2.5rem;
+          flex-shrink: 0;
+        }
+
+        .profile-title h2 {
+          margin: 0;
+          color: #2c5530;
+          font-size: 1.8rem;
+        }
+
+        .profile-username {
+          margin: 0.25rem 0 0 0;
+          color: #666;
+          font-size: 1rem;
+        }
+
+        .profile-section {
+          margin-bottom: 2rem;
+        }
+
+        .profile-section h3 {
+          color: #2c5530;
+          font-size: 1.2rem;
+          margin: 0 0 1rem 0;
+          padding-bottom: 0.5rem;
+          border-bottom: 1px solid #e1e5e9;
+        }
+
+        .profile-details {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .detail-row {
+          display: flex;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .detail-label {
+          font-weight: 500;
+          color: #666;
+          min-width: 180px;
+          flex-shrink: 0;
+        }
+
+        .detail-value {
+          color: #333;
+          flex: 1;
+        }
+
+        .services-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+
+        .service-tag {
+          padding: 0.5rem 1rem;
+          background: #e8f5e9;
+          color: #2c5530;
+          border-radius: 20px;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .certifications-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .certification-item {
+          padding: 0.75rem;
+          background: #f8f9fa;
+          border-left: 3px solid #4caf50;
+          border-radius: 4px;
+          color: #333;
+        }
+
+        .profile-description {
+          color: #666;
+          line-height: 1.6;
+          margin: 0;
         }
 
         @media (max-width: 768px) {

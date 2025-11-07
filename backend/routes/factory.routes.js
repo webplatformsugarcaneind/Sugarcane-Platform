@@ -14,6 +14,7 @@ const {
   getProfile,
   updateProfile,
   getHHMs,
+  getHHMById,
   inviteHHM,
   getMyInvitations,
   cancelInvitation,
@@ -105,6 +106,15 @@ router.put('/maintenance-applications/:id', updateMaintenanceApplication);
  * @example GET /api/factory/hhms
  */
 router.get('/hhms', getHHMs);
+
+/**
+ * @route   GET /api/factory/hhms/:id
+ * @desc    Get single HHM profile by ID
+ * @access  Private (Factory only)
+ * @returns {Object} HHM profile object
+ * @example GET /api/factory/hhms/507f1f77bcf86cd799439011
+ */
+router.get('/hhms/:id', getHHMById);
 
 // ===================================
 // HHM INVITATION & ASSOCIATION ROUTES

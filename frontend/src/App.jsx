@@ -36,6 +36,7 @@ import FactoryDashboardPage from './pages/FactoryDashboardPage.jsx';
 import FactoryHHMDirectoryPage from './pages/FactoryHHMDirectoryPage.jsx';
 import FactorySentInvitationsPage from './pages/FactorySentInvitationsPage.jsx';
 import FactoryAssociatedHHMsPage from './pages/FactoryAssociatedHHMsPage.jsx';
+import HHMPublicProfilePage from './pages/HHMPublicProfilePage.jsx';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -489,6 +490,11 @@ function App() {
                 <Route path="hhm-directory" element={
                   <SafeComponent name="FactoryHHMDirectoryPage">
                     <FactoryHHMDirectoryPage />
+                  </SafeComponent>
+                } />
+                <Route path="hhm-profile/:id" element={
+                  <SafeComponent name="HHMPublicProfilePage">
+                    <HHMPublicProfilePage />
                   </SafeComponent>
                 } />
                 <Route path="sent-invitations" element={
