@@ -104,9 +104,11 @@ router.get('/factories', async (req, res) => {
 router.get('/factories/:id', async (req, res) => {
   try {
     const factoryId = req.params.id;
+    console.log('🔍 [DEBUG] Getting factory with ID:', factoryId);
 
     // Validate ObjectId format
     if (!mongoose.Types.ObjectId.isValid(factoryId)) {
+      console.log('❌ [DEBUG] Invalid ObjectId format:', factoryId);
       return res.status(400).json({
         success: false,
         message: 'Invalid factory ID format'
@@ -119,19 +121,31 @@ router.get('/factories/:id', async (req, res) => {
       role: 'Factory' 
     }).lean();
 
+    console.log('🔍 [DEBUG] Factory user found:', factoryUser ? 'YES' : 'NO');
+
     if (!factoryUser) {
+      console.log('❌ [DEBUG] Factory not found for ID:', factoryId);
       return res.status(404).json({
         success: false,
         message: 'Factory not found'
       });
     }
 
-    // Find associated HHMs for this factory (if applicable)
-    const associatedHHMs = await User.find({ 
-      role: 'HHM',
-      // You might have a field linking HHMs to factories
-      // factoryId: factoryId 
-    }).select('name username email phone role isActive createdAt').lean();
+    // Find associated HHMs for this factory using the associatedHHMs field
+    console.log('🔍 [DEBUG] Factory associatedHHMs field:', factoryUser.associatedHHMs);
+    console.log('🔍 [DEBUG] associatedHHMs length:', factoryUser.associatedHHMs ? factoryUser.associatedHHMs.length : 'undefined');
+    
+    let associatedHHMs = [];
+    if (factoryUser.associatedHHMs && factoryUser.associatedHHMs.length > 0) {
+      console.log('✅ [DEBUG] Found associatedHHMs, fetching details...');
+      associatedHHMs = await User.find({ 
+        _id: { $in: factoryUser.associatedHHMs },
+        role: 'HHM'
+      }).select('name username email phone role isActive createdAt').lean();
+      console.log('✅ [DEBUG] Associated HHMs found:', associatedHHMs.length);
+    } else {
+      console.log('❌ [DEBUG] No associatedHHMs found or empty array');
+    }
 
     // Format response data to match expected factory structure
     const formattedFactory = {
@@ -157,6 +171,9 @@ router.get('/factories/:id', async (req, res) => {
       createdAt: factoryUser.createdAt,
       updatedAt: factoryUser.updatedAt
     };
+
+    console.log('📤 [DEBUG] Sending response - HHM count:', formattedFactory.hhmCount);
+    console.log('📤 [DEBUG] Sending response - Associated HHMs length:', formattedFactory.associatedHHMs.length);
 
     res.status(200).json({
       success: true,
