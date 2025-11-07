@@ -16,10 +16,13 @@ const {
   getHHMs,
   getHHMById,
   inviteHHM,
+  inviteMultipleHHMs,
   getMyInvitations,
   cancelInvitation,
   removeAssociatedHHM,
-  getAssociatedHHMs
+  getAssociatedHHMs,
+  getReceivedInvitations,
+  respondToHHMInvitation
 } = require('../controllers/factory.controller');
 
 // Apply protection and authorization to all routes in this file
@@ -129,12 +132,37 @@ router.get('/hhms/:id', getHHMById);
 router.post('/invite-hhm', inviteHHM);
 
 /**
+ * @route   POST /api/factory/invite-multiple-hhms
+ * @desc    Send invitations to multiple HHMs (bulk invite)
+ * @access  Private (Factory only)
+ * @body    { hhmIds: [], personalMessage?, invitationReason? }
+ */
+router.post('/invite-multiple-hhms', inviteMultipleHHMs);
+
+/**
  * @route   GET /api/factory/invitations
  * @desc    Get all invitations sent by factory to HHMs
  * @access  Private (Factory only)
  * @query   status (optional), page (optional), limit (optional)
  */
 router.get('/invitations', getMyInvitations);
+
+/**
+ * @route   GET /api/factory/received-invitations
+ * @desc    Get invitations received from HHMs
+ * @access  Private (Factory only)
+ * @query   status (optional), page (optional), limit (optional)
+ */
+router.get('/received-invitations', getReceivedInvitations);
+
+/**
+ * @route   PUT /api/factory/received-invitations/:id
+ * @desc    Accept or decline HHM invitation
+ * @access  Private (Factory only)
+ * @param   id - Invitation ID
+ * @body    { status: 'accepted' | 'declined', responseMessage? }
+ */
+router.put('/received-invitations/:id', respondToHHMInvitation);
 
 /**
  * @route   GET /api/factory/associated-hhms

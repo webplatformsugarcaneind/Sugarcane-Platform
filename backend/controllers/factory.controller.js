@@ -1,135 +1,184 @@
-const Bill = require('../models/bill.model');
-const Schedule = require('../models/schedule.model');
-const Application = require('../models/application.model');
-const User = require('../models/user.model');
-const Invitation = require('../models/invitation.model');
+const Bill=require('../models/bill.model');
+const Schedule=require('../models/schedule.model');
+const Application=require('../models/application.model');
+const User=require('../models/user.model');
+const Invitation=require('../models/invitation.model');
 
 /**
  * @desc    Create a new bill record for a farmer
  * @route   POST /api/factory/bills
  * @access  Private (Factory only)
  */
-const createBill = async (req, res) => {
+const createBill=async (req, res)=> {
   try {
     console.log('💰 createBill called by factory:', req.user?._id);
 
-    const { farmerId, cropQuantity, totalAmount } = req.body;
+    const {
+      farmerId,
+      cropQuantity,
+      totalAmount
+    }
+
+    =req.body;
 
     // Validate required fields
-    if (!farmerId || !cropQuantity || !totalAmount) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide farmerId, cropQuantity, and totalAmount'
-      });
+    if ( !farmerId || !cropQuantity || !totalAmount) {
+      return res.status(400).json( {
+          success: false,
+          message: 'Please provide farmerId, cropQuantity, and totalAmount'
+        }
+
+      );
     }
 
     // Verify that the farmerId exists and is a farmer
-    const farmer = await User.findById(farmerId);
-    if (!farmer) {
-      return res.status(404).json({
-        success: false,
-        message: 'Farmer not found'
-      });
+    const farmer=await User.findById(farmerId);
+
+    if ( !farmer) {
+      return res.status(404).json( {
+          success: false,
+          message: 'Farmer not found'
+        }
+
+      );
     }
 
-    if (farmer.role !== 'Farmer') {
-      return res.status(400).json({
-        success: false,
-        message: 'Specified user is not a farmer'
-      });
+    if (farmer.role !=='Farmer') {
+      return res.status(400).json( {
+          success: false,
+          message: 'Specified user is not a farmer'
+        }
+
+      );
     }
 
     // Create the bill
-    const bill = await Bill.create({
-      factoryId: req.user._id,
-      farmerId,
-      cropQuantity,
-      totalAmount,
-      status: 'pending'
-    });
+    const bill=await Bill.create( {
+        factoryId: req.user._id,
+        farmerId,
+        cropQuantity,
+        totalAmount,
+        status: 'pending'
+      }
+
+    );
 
     // Populate the farmer details
     await bill.populate('farmerId', 'name email phone');
 
     console.log('✅ Bill created successfully:', bill._id);
 
-    res.status(201).json({
-      success: true,
-      message: 'Bill created successfully',
-      data: bill
-    });
+    res.status(201).json( {
+        success: true,
+        message: 'Bill created successfully',
+        data: bill
+      }
 
-  } catch (error) {
-    console.error('❌ Error creating bill:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error creating bill',
-      error: error.message
-    });
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('❌ Error creating bill:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error creating bill',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Get history of all bills posted by the factory
  * @route   GET /api/factory/bills
  * @access  Private (Factory only)
  */
-const getBills = async (req, res) => {
+const getBills=async (req, res)=> {
   try {
     console.log('📋 getBills called by factory:', req.user?._id);
 
-    const { status, page = 1, limit = 10 } = req.query;
+    const {
+      status,
+      page=1,
+      limit=10
+    }
+
+    =req.query;
 
     // Build query
-    const query = { factoryId: req.user._id };
+    const query= {
+      factoryId: req.user._id
+    }
+
+    ;
+
     if (status) {
-      query.status = status;
+      query.status=status;
     }
 
     // Calculate pagination
-    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const skip=(parseInt(page) - 1) * parseInt(limit);
 
     // Get bills with pagination
-    const bills = await Bill.find(query)
-      .populate('farmerId', 'name email phone')
-      .sort({ billDate: -1 })
-      .skip(skip)
-      .limit(parseInt(limit));
+    const bills=await Bill.find(query) .populate('farmerId', 'name email phone') .sort( {
+        billDate: -1
+      }
+
+    ) .skip(skip) .limit(parseInt(limit));
 
     // Get total count for pagination
-    const totalBills = await Bill.countDocuments(query);
-    const totalPages = Math.ceil(totalBills / parseInt(limit));
+    const totalBills=await Bill.countDocuments(query);
+    const totalPages=Math.ceil(totalBills / parseInt(limit));
 
-    console.log(`✅ Retrieved ${bills.length} bills for factory`);
-
-    res.status(200).json({
-      success: true,
-      data: bills,
-      pagination: {
-        currentPage: parseInt(page),
-        totalPages,
-        totalBills,
-        hasNextPage: parseInt(page) < totalPages,
-        hasPrevPage: parseInt(page) > 1
+    console.log(`✅ Retrieved $ {
+        bills.length
       }
-    });
 
-  } catch (error) {
-    console.error('❌ Error fetching bills:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching bills',
-      error: error.message
-    });
+      bills for factory`);
+
+    res.status(200).json( {
+
+        success: true,
+        data: bills,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages,
+          totalBills,
+          hasNextPage: parseInt(page) < totalPages,
+          hasPrevPage: parseInt(page) > 1
+        }
+      }
+
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('❌ Error fetching bills:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error fetching bills',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Post a new maintenance job (creates a schedule with jobType: 'maintenance')
  * @route   POST /api/factory/maintenance-jobs
  * @access  Private (Factory only)
  */
-const createMaintenanceJob = async (req, res) => {
+const createMaintenanceJob=async (req, res)=> {
   try {
     console.log('🔧 createMaintenanceJob called by factory:', req.user?._id);
 
@@ -142,230 +191,317 @@ const createMaintenanceJob = async (req, res) => {
       description,
       location,
       endDate
-    } = req.body;
+    }
+
+    =req.body;
 
     // Validate required fields
-    if (!requiredSkills || !workerCount || !wageOffered || !startDate) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please provide requiredSkills, workerCount, wageOffered, and startDate'
-      });
+    if ( !requiredSkills || !workerCount || !wageOffered || !startDate) {
+      return res.status(400).json( {
+          success: false,
+          message: 'Please provide requiredSkills, workerCount, wageOffered, and startDate'
+        }
+
+      );
     }
 
     // Create the maintenance schedule
-    const maintenanceJob = await Schedule.create({
-      hhmId: req.user._id, // Factory acts as HHM for maintenance jobs
-      requiredSkills,
-      workerCount,
-      wageOffered,
-      startDate: new Date(startDate),
-      endDate: endDate ? new Date(endDate) : undefined,
-      title,
-      description,
-      location,
-      jobType: 'maintenance', // Explicitly set as maintenance job
-      status: 'open'
-    });
+    const maintenanceJob=await Schedule.create( {
+        hhmId: req.user._id, // Factory acts as HHM for maintenance jobs
+        requiredSkills,
+        workerCount,
+        wageOffered,
+        startDate: new Date(startDate),
+        endDate: endDate ? new Date(endDate) : undefined,
+        title,
+        description,
+        location,
+        jobType: 'maintenance', // Explicitly set as maintenance job
+        status: 'open'
+      }
+
+    );
 
     console.log('✅ Maintenance job created successfully:', maintenanceJob._id);
 
-    res.status(201).json({
-      success: true,
-      message: 'Maintenance job posted successfully',
-      data: maintenanceJob
-    });
+    res.status(201).json( {
+        success: true,
+        message: 'Maintenance job posted successfully',
+        data: maintenanceJob
+      }
 
-  } catch (error) {
-    console.error('❌ Error creating maintenance job:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error creating maintenance job',
-      error: error.message
-    });
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('❌ Error creating maintenance job:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error creating maintenance job',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    View applications received for maintenance jobs
  * @route   GET /api/factory/maintenance-applications
  * @access  Private (Factory only)
  */
-const getMaintenanceApplications = async (req, res) => {
+const getMaintenanceApplications=async (req, res)=> {
   try {
     console.log('📋 getMaintenanceApplications called by factory:', req.user?._id);
 
-    const { status, page = 1, limit = 10 } = req.query;
+    const {
+      status,
+      page=1,
+      limit=10
+    }
+
+    =req.query;
 
     // First, get all maintenance schedules created by this factory
-    const maintenanceSchedules = await Schedule.find({
-      hhmId: req.user._id,
-      jobType: 'maintenance'
-    }).select('_id');
+    const maintenanceSchedules=await Schedule.find( {
+        hhmId: req.user._id,
+        jobType: 'maintenance'
+      }
 
-    const scheduleIds = maintenanceSchedules.map(schedule => schedule._id);
+    ).select('_id');
 
-    if (scheduleIds.length === 0) {
-      return res.status(200).json({
-        success: true,
-        data: [],
-        pagination: {
-          currentPage: 1,
-          totalPages: 0,
-          totalApplications: 0,
-          hasNextPage: false,
-          hasPrevPage: false
+    const scheduleIds=maintenanceSchedules.map(schedule=> schedule._id);
+
+    if (scheduleIds.length===0) {
+      return res.status(200).json( {
+
+          success: true,
+          data: [],
+          pagination: {
+            currentPage: 1,
+            totalPages: 0,
+            totalApplications: 0,
+            hasNextPage: false,
+            hasPrevPage: false
+          }
         }
-      });
+
+      );
     }
 
     // Build query for applications
-    const query = {
-      scheduleId: { $in: scheduleIds }
-    };
+    const query= {
+      scheduleId: {
+        $in: scheduleIds
+      }
+    }
+
+    ;
 
     if (status) {
-      query.status = status;
+      query.status=status;
     }
 
     // Calculate pagination
-    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const skip=(parseInt(page) - 1) * parseInt(limit);
 
     // Get applications with pagination
-    const applications = await Application.find(query)
-      .populate('workerId', 'name email phone')
-      .populate('scheduleId', 'title description requiredSkills wageOffered startDate endDate')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(parseInt(limit));
+    const applications=await Application.find(query) .populate('workerId', 'name email phone') .populate('scheduleId', 'title description requiredSkills wageOffered startDate endDate') .sort( {
+        createdAt: -1
+      }
+
+    ) .skip(skip) .limit(parseInt(limit));
 
     // Get total count for pagination
-    const totalApplications = await Application.countDocuments(query);
-    const totalPages = Math.ceil(totalApplications / parseInt(limit));
+    const totalApplications=await Application.countDocuments(query);
+    const totalPages=Math.ceil(totalApplications / parseInt(limit));
 
-    console.log(`✅ Retrieved ${applications.length} maintenance applications for factory`);
-
-    res.status(200).json({
-      success: true,
-      data: applications,
-      pagination: {
-        currentPage: parseInt(page),
-        totalPages,
-        totalApplications,
-        hasNextPage: parseInt(page) < totalPages,
-        hasPrevPage: parseInt(page) > 1
+    console.log(`✅ Retrieved $ {
+        applications.length
       }
-    });
 
-  } catch (error) {
-    console.error('❌ Error fetching maintenance applications:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error fetching maintenance applications',
-      error: error.message
-    });
+      maintenance applications for factory`);
+
+    res.status(200).json( {
+
+        success: true,
+        data: applications,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages,
+          totalApplications,
+          hasNextPage: parseInt(page) < totalPages,
+          hasPrevPage: parseInt(page) > 1
+        }
+      }
+
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('❌ Error fetching maintenance applications:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error fetching maintenance applications',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Approve or reject a specific maintenance application
  * @route   PUT /api/factory/maintenance-applications/:id
  * @access  Private (Factory only)
  */
-const updateMaintenanceApplication = async (req, res) => {
+const updateMaintenanceApplication=async (req, res)=> {
   try {
     console.log('🔄 updateMaintenanceApplication called by factory:', req.user?._id);
 
-    const { id } = req.params;
-    const { status } = req.body;
+    const {
+      id
+    }
+
+    =req.params;
+
+    const {
+      status
+    }
+
+    =req.body;
 
     // Validate status
-    if (!status || !['approved', 'rejected'].includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Status must be either "approved" or "rejected"'
-      });
+    if ( !status || !['approved', 'rejected'].includes(status)) {
+      return res.status(400).json( {
+          success: false,
+          message: 'Status must be either "approved" or "rejected"'
+        }
+
+      );
     }
 
     // Find the application and verify it belongs to a maintenance job created by this factory
-    const application = await Application.findById(id)
-      .populate('scheduleId', 'hhmId jobType title');
+    const application=await Application.findById(id) .populate('scheduleId', 'hhmId jobType title');
 
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: 'Application not found'
-      });
+    if ( !application) {
+      return res.status(404).json( {
+          success: false,
+          message: 'Application not found'
+        }
+
+      );
     }
 
     // Verify the schedule belongs to this factory and is a maintenance job
-    if (!application.scheduleId ||
-      application.scheduleId.hhmId.toString() !== req.user._id.toString() ||
-      application.scheduleId.jobType !== 'maintenance') {
-      return res.status(403).json({
-        success: false,
-        message: 'You can only update applications for your own maintenance jobs'
-      });
+    if ( !application.scheduleId || application.scheduleId.hhmId.toString() !==req.user._id.toString() || application.scheduleId.jobType !=='maintenance') {
+      return res.status(403).json( {
+          success: false,
+          message: 'You can only update applications for your own maintenance jobs'
+        }
+
+      );
     }
 
     // Check if application is already processed
-    if (application.status !== 'pending') {
-      return res.status(400).json({
-        success: false,
-        message: `Application has already been ${application.status}`
-      });
+    if (application.status !=='pending') {
+      return res.status(400).json( {
+
+          success: false,
+          message: `Application has already been $ {
+            application.status
+          }
+
+          `
+        }
+
+      );
     }
 
     // Update the application status
-    application.status = status;
-    application.reviewedAt = new Date();
+    application.status=status;
+    application.reviewedAt=new Date();
     await application.save();
 
     // If approved, increment the accepted workers count on the schedule
-    if (status === 'approved') {
-      await Schedule.findByIdAndUpdate(
-        application.scheduleId._id,
-        { $inc: { acceptedWorkersCount: 1 } }
+    if (status==='approved') {
+
+      await Schedule.findByIdAndUpdate(application.scheduleId._id,
+          {
+          $inc: {
+            acceptedWorkersCount: 1
+          }
+        }
+
       );
     }
 
     // Populate the worker details for response
     await application.populate('workerId', 'name email phone');
 
-    console.log(`✅ Application ${status} successfully:`, application._id);
+    console.log(`✅ Application $ {
+        status
+      }
 
-    res.status(200).json({
-      success: true,
-      message: `Application ${status} successfully`,
-      data: application
-    });
+      successfully:`, application._id);
 
-  } catch (error) {
-    console.error('❌ Error updating maintenance application:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error updating maintenance application',
-      error: error.message
-    });
+    res.status(200).json( {
+
+        success: true,
+        message: `Application $ {
+          status
+        }
+
+        successfully`,
+        data: application
+      }
+
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('❌ Error updating maintenance application:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error updating maintenance application',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Get factory profile
  * @route   GET /api/factory/profile
  * @access  Private (Factory only)
  */
-const getProfile = async (req, res) => {
+const getProfile=async (req, res)=> {
   try {
     console.log('👤 getProfile called for factory user:', req.user?._id);
 
     // The user is already attached to req.user by the protect middleware
-    const factory = req.user;
+    const factory=req.user;
 
-    if (!factory) {
-      return res.status(404).json({
-        success: false,
-        message: 'Factory profile not found'
-      });
+    if ( !factory) {
+      return res.status(404).json( {
+          success: false,
+          message: 'Factory profile not found'
+        }
+
+      );
     }
 
     // Debug: Log the full user object
@@ -373,7 +509,8 @@ const getProfile = async (req, res) => {
     console.log('🏭 Factory name from user:', factory.factoryName);
 
     // Format profile data specific to factory users
-    const profileData = {
+    const profileData= {
+
       _id: factory._id,
       name: factory.name,
       username: factory.username,
@@ -386,40 +523,55 @@ const getProfile = async (req, res) => {
       capacity: factory.capacity,
       experience: factory.experience,
       specialization: factory.specialization,
-      contactInfo: factory.contactInfo || {},
-      operatingHours: factory.operatingHours || {},
+      contactInfo: factory.contactInfo || {}
+
+      ,
+      operatingHours: factory.operatingHours || {}
+
+      ,
       isActive: factory.isActive,
       createdAt: factory.createdAt,
       updatedAt: factory.updatedAt
-    };
+    }
 
-    res.status(200).json({
-      success: true,
-      message: 'Factory profile retrieved successfully',
-      profile: profileData
-    });
+    ;
 
-  } catch (error) {
-    console.error('Error in getProfile:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error retrieving factory profile',
-      error: error.message
-    });
+    res.status(200).json( {
+        success: true,
+        message: 'Factory profile retrieved successfully',
+        profile: profileData
+      }
+
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('Error in getProfile:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error retrieving factory profile',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Update factory profile
  * @route   PUT /api/factory/profile
  * @access  Private (Factory only)
  */
-const updateProfile = async (req, res) => {
+const updateProfile=async (req, res)=> {
   try {
     console.log('🔄 updateProfile called for factory user:', req.user?._id);
 
-    const factoryId = req.user._id;
-    const updateData = req.body;
+    const factoryId=req.user._id;
+    const updateData=req.body;
 
     // Remove fields that shouldn't be updated via profile
     delete updateData.password;
@@ -428,454 +580,1009 @@ const updateProfile = async (req, res) => {
     delete updateData.createdAt;
 
     // Update factory profile
-    const updatedFactory = await User.findByIdAndUpdate(
-      factoryId,
+    const updatedFactory=await User.findByIdAndUpdate(factoryId,
       updateData,
-      {
+        {
         new: true,
         runValidators: true
       }
+
     ).select('-password');
 
-    if (!updatedFactory) {
-      return res.status(404).json({
-        success: false,
-        message: 'Factory profile not found'
-      });
+    if ( !updatedFactory) {
+      return res.status(404).json( {
+          success: false,
+          message: 'Factory profile not found'
+        }
+
+      );
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Factory profile updated successfully',
-      profile: updatedFactory
-    });
+    res.status(200).json( {
+        success: true,
+        message: 'Factory profile updated successfully',
+        profile: updatedFactory
+      }
 
-  } catch (error) {
-    console.error('Error in updateProfile:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error updating factory profile',
-      error: error.message
-    });
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('Error in updateProfile:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error updating factory profile',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Get all HHMs (Hub Head Managers) directory for factories
  * @route   GET /api/factory/hhms
  * @access  Private (Factory only)
  */
-const getHHMs = async (req, res) => {
+const getHHMs=async (req, res)=> {
   try {
     console.log('📋 Getting HHMs directory for factory:', req.user._id);
 
     // Find all active users with HHM role
-    const hhms = await User.find({
-      role: 'HHM',
-      isActive: true
-    }).select('name phone email username createdAt').sort({ name: 1 });
+    const hhms=await User.find( {
+        role: 'HHM',
+        isActive: true
+      }
 
-    console.log(`✅ Found ${hhms.length} HHMs for factory directory`);
+    ).select('name phone email username createdAt').sort( {
+        name: 1
+      }
 
-    res.status(200).json({
-      success: true,
-      count: hhms.length,
-      data: hhms,
-      message: 'HHMs directory retrieved successfully for factory'
-    });
+    );
 
-  } catch (error) {
-    console.error('Error in getHHMs for factory:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve HHMs directory',
-      error: error.message
-    });
+    console.log(`✅ Found $ {
+        hhms.length
+      }
+
+      HHMs for factory directory`);
+
+    res.status(200).json( {
+        success: true,
+        count: hhms.length,
+        data: hhms,
+        message: 'HHMs directory retrieved successfully for factory'
+      }
+
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('Error in getHHMs for factory:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Failed to retrieve HHMs directory',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Get single HHM by ID for factory view
  * @route   GET /api/factory/hhms/:id
  * @access  Private (Factory only)
  */
-const getHHMById = async (req, res) => {
+const getHHMById=async (req, res)=> {
   try {
     console.log('👤 Factory requesting HHM profile:', req.params.id);
 
-    const { id } = req.params;
+    const {
+      id
+    }
+
+    =req.params;
 
     // Find the HHM
-    const hhm = await User.findOne({
-      _id: id,
-      role: 'HHM',
-      isActive: true
-    }).select('-password -__v');
+    const hhm=await User.findOne( {
+        _id: id,
+        role: 'HHM',
+        isActive: true
+      }
 
-    if (!hhm) {
-      return res.status(404).json({
-        success: false,
-        message: 'HHM not found or inactive'
-      });
+    ).select('-password -__v');
+
+    if ( !hhm) {
+      return res.status(404).json( {
+          success: false,
+          message: 'HHM not found or inactive'
+        }
+
+      );
     }
 
     console.log('✅ HHM profile retrieved:', hhm.name);
 
-    res.status(200).json({
-      success: true,
-      data: hhm,
-      message: 'HHM profile retrieved successfully'
-    });
+    res.status(200).json( {
+        success: true,
+        data: hhm,
+        message: 'HHM profile retrieved successfully'
+      }
 
-  } catch (error) {
-    console.error('Error in getHHMById:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve HHM profile',
-      error: error.message
-    });
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('Error in getHHMById:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Failed to retrieve HHM profile',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Send invitation to HHM to associate with factory
  * @route   POST /api/factory/invite-hhm
  * @access  Private (Factory only)
  */
-const inviteHHM = async (req, res) => {
+const inviteHHM=async (req, res)=> {
   try {
     console.log('📨 Factory inviting HHM:', req.user._id);
 
-    const { hhmId, personalMessage, invitationReason } = req.body;
+    const {
+      hhmId,
+      personalMessage,
+      invitationReason
+    }
+
+    =req.body;
 
     // Validate required fields
-    if (!hhmId) {
-      return res.status(400).json({
-        success: false,
-        message: 'HHM ID is required'
-      });
+    if ( !hhmId) {
+      return res.status(400).json( {
+          success: false,
+          message: 'HHM ID is required'
+        }
+
+      );
     }
 
     // Verify the HHM exists and has HHM role
-    const hhm = await User.findOne({
-      _id: hhmId,
-      role: 'HHM',
-      isActive: true
-    });
+    const hhm=await User.findOne( {
+        _id: hhmId,
+        role: 'HHM',
+        isActive: true
+      }
 
-    if (!hhm) {
-      return res.status(404).json({
-        success: false,
-        message: 'HHM not found or inactive'
-      });
+    );
+
+    if ( !hhm) {
+      return res.status(404).json( {
+          success: false,
+          message: 'HHM not found or inactive'
+        }
+
+      );
     }
 
     // Check if HHM is already associated with this factory
-    const factory = await User.findById(req.user._id);
+    const factory=await User.findById(req.user._id);
+
     if (factory.associatedHHMs && factory.associatedHHMs.includes(hhmId)) {
-      return res.status(400).json({
-        success: false,
-        message: 'This HHM is already associated with your factory'
-      });
+      return res.status(400).json( {
+          success: false,
+          message: 'This HHM is already associated with your factory'
+        }
+
+      );
     }
 
     // Check if a PENDING invitation already exists (allow reinvite if declined/accepted)
-    const existingPendingInvitation = await Invitation.findOne({
-      factoryId: req.user._id,
-      hhmId: hhmId,
-      invitationType: 'factory-to-hhm',
-      status: 'pending'
-    });
+    const existingPendingInvitation=await Invitation.findOne( {
+        factoryId: req.user._id,
+        hhmId: hhmId,
+        invitationType: 'factory-to-hhm',
+        status: 'pending'
+      }
+
+    );
 
     if (existingPendingInvitation) {
-      return res.status(400).json({
-        success: false,
-        message: 'A pending invitation has already been sent to this HHM'
-      });
+      return res.status(400).json( {
+          success: false,
+          message: 'A pending invitation has already been sent to this HHM'
+        }
+
+      );
     }
 
     // Create the invitation
-    const invitation = await Invitation.create({
-      invitationType: 'factory-to-hhm',
-      factoryId: req.user._id,
-      hhmId: hhmId,
-      personalMessage: personalMessage || '',
-      invitationReason: invitationReason || '',
-      status: 'pending'
-    });
+    const invitation=await Invitation.create( {
+        invitationType: 'factory-to-hhm',
+        factoryId: req.user._id,
+        hhmId: hhmId,
+        personalMessage: personalMessage || '',
+        invitationReason: invitationReason || '',
+        status: 'pending'
+      }
+
+    );
 
     // Populate the created invitation with full details
-    const populatedInvitation = await Invitation.findById(invitation._id)
-      .populate('hhmId', 'name email phone experience specialization')
-      .populate('factoryId', 'name email phone factoryName factoryLocation');
+    const populatedInvitation=await Invitation.findById(invitation._id) .populate('hhmId', 'name email phone experience specialization') .populate('factoryId', 'name email phone factoryName factoryLocation');
 
     console.log('✅ Factory invitation created successfully:', invitation._id);
 
-    res.status(201).json({
-      success: true,
-      message: 'Invitation sent to HHM successfully',
-      data: populatedInvitation
-    });
+    res.status(201).json( {
+        success: true,
+        message: 'Invitation sent to HHM successfully',
+        data: populatedInvitation
+      }
 
-  } catch (error) {
+    );
+
+  }
+
+  catch (error) {
     console.error('❌ Error creating factory invitation:', error);
 
     // Handle duplicate key error
-    if (error.code === 11000) {
+    if (error.code===11000) {
       console.error('Duplicate key details:', error.keyPattern, error.keyValue);
 
       // Check which index caused the error
       if (error.keyPattern && error.keyPattern.factoryId && error.keyPattern.hhmId) {
-        return res.status(400).json({
-          success: false,
-          message: 'A pending invitation has already been sent to this HHM'
-        });
-      } else {
-        return res.status(400).json({
-          success: false,
-          message: 'An invitation conflict occurred. Please try again.'
-        });
+        return res.status(400).json( {
+            success: false,
+            message: 'A pending invitation has already been sent to this HHM'
+          }
+
+        );
+      }
+
+      else {
+        return res.status(400).json( {
+            success: false,
+            message: 'An invitation conflict occurred. Please try again.'
+          }
+
+        );
       }
     }
 
-    res.status(500).json({
-      success: false,
-      message: 'Error creating invitation',
-      error: error.message
-    });
+    res.status(500).json( {
+        success: false,
+        message: 'Error creating invitation',
+        error: error.message
+      }
+
+    );
   }
-};
+}
+
+;
+
+/**
+ * @desc    Send invitations to multiple HHMs (Bulk Invite)
+ * @route   POST /api/factory/invite-multiple-hhms
+ * @access  Private (Factory only)
+ */
+const inviteMultipleHHMs=async (req, res)=> {
+  try {
+    console.log('📨 Factory sending bulk invitations:', req.user._id);
+
+    const {
+      hhmIds,
+      personalMessage,
+      invitationReason
+    }
+
+    =req.body;
+
+    // Validate required fields
+    if ( !hhmIds || !Array.isArray(hhmIds) || hhmIds.length===0) {
+      return res.status(400).json( {
+          success: false,
+          message: 'Please provide an array of HHM IDs'
+        }
+
+      );
+    }
+
+    // Limit bulk invitations to prevent abuse
+    if (hhmIds.length > 50) {
+      return res.status(400).json( {
+          success: false,
+          message: 'Cannot send more than 50 invitations at once'
+        }
+
+      );
+    }
+
+    const results= {
+      successful: [],
+        failed: [],
+        skipped: []
+    }
+
+    ;
+
+    // Process each HHM ID
+    for (const hhmId of hhmIds) {
+      try {
+
+        // Verify the HHM exists and has HHM role
+        const hhm=await User.findOne( {
+            _id: hhmId,
+            role: 'HHM',
+            isActive: true
+          }
+
+        );
+
+        if ( !hhm) {
+          results.failed.push( {
+              hhmId,
+              reason: 'HHM not found or inactive'
+            }
+
+          );
+          continue;
+        }
+
+        // Check if HHM is already associated with this factory
+        const factory=await User.findById(req.user._id);
+
+        if (factory.associatedHHMs && factory.associatedHHMs.includes(hhmId)) {
+          results.skipped.push( {
+              hhmId,
+              hhmName: hhm.name,
+              reason: 'Already associated with this factory'
+            }
+
+          );
+          continue;
+        }
+
+        // Check if a PENDING invitation already exists
+        const existingPendingInvitation=await Invitation.findOne( {
+            factoryId: req.user._id,
+            hhmId: hhmId,
+            invitationType: 'factory-to-hhm',
+            status: 'pending'
+          }
+
+        );
+
+        if (existingPendingInvitation) {
+          results.skipped.push( {
+              hhmId,
+              hhmName: hhm.name,
+              reason: 'Pending invitation already exists'
+            }
+
+          );
+          continue;
+        }
+
+        // Create the invitation
+        const invitation=await Invitation.create( {
+            invitationType: 'factory-to-hhm',
+            factoryId: req.user._id,
+            hhmId: hhmId,
+            personalMessage: personalMessage || '',
+            invitationReason: invitationReason || '',
+            status: 'pending'
+          }
+
+        );
+
+        results.successful.push( {
+            hhmId,
+            hhmName: hhm.name,
+            invitationId: invitation._id
+          }
+
+        );
+
+      }
+
+      catch (error) {
+        console.error(`❌ Error inviting HHM $ {
+            hhmId
+          }
+
+          :`, error.message);
+
+        results.failed.push( {
+            hhmId,
+            reason: error.message
+          }
+
+        );
+      }
+    }
+
+    console.log(`✅ Bulk invitation complete. Success: $ {
+        results.successful.length
+      }
+
+      , Failed: $ {
+        results.failed.length
+      }
+
+      , Skipped: $ {
+        results.skipped.length
+      }
+
+      `);
+
+    res.status(200).json( {
+
+        success: true,
+        message: `Sent $ {
+          results.successful.length
+        }
+
+        invitation(s) successfully`,
+        data: results
+      }
+
+    );
+
+  }
+
+  catch (error) {
+    console.error('❌ Error in bulk invitation:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error sending bulk invitations',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Get all invitations sent by factory to HHMs
  * @route   GET /api/factory/invitations
  * @access  Private (Factory only)
  */
-const getMyInvitations = async (req, res) => {
+const getMyInvitations=async (req, res)=> {
   try {
     console.log('📋 Getting factory invitations:', req.user._id);
 
-    const { status, page = 1, limit = 20 } = req.query;
+    const {
+      status,
+      page=1,
+      limit=20
+    }
+
+    =req.query;
 
     // Build query
-    const query = {
+    const query= {
       factoryId: req.user._id,
-      invitationType: 'factory-to-hhm'
-    };
+        invitationType: 'factory-to-hhm'
+    }
+
+    ;
+
     if (status) {
-      query.status = status;
+      query.status=status;
     }
 
     // Calculate pagination
-    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const skip=(parseInt(page) - 1) * parseInt(limit);
 
     // Get invitations with pagination
-    const invitations = await Invitation.find(query)
-      .populate('hhmId', 'name email phone experience specialization managementExperience')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(parseInt(limit));
+    const invitations=await Invitation.find(query) .populate('hhmId', 'name email phone experience specialization managementExperience') .sort( {
+        createdAt: -1
+      }
+
+    ) .skip(skip) .limit(parseInt(limit));
 
     // Get total count for pagination
-    const total = await Invitation.countDocuments(query);
+    const total=await Invitation.countDocuments(query);
 
     // Get status counts
-    const statusCounts = await Invitation.aggregate([
-      {
+    const statusCounts=await Invitation.aggregate([ {
         $match: {
           factoryId: req.user._id,
           invitationType: 'factory-to-hhm'
         }
-      },
-      {
+      }
+
+      ,
+        {
         $group: {
+
           _id: '$status',
-          count: { $sum: 1 }
+          count: {
+            $sum: 1
+          }
         }
       }
-    ]);
 
-    const counts = {
+      ]);
+
+    const counts= {
       pending: 0,
-      accepted: 0,
-      declined: 0
-    };
-    statusCounts.forEach(item => {
-      counts[item._id] = item.count;
-    });
+        accepted: 0,
+        declined: 0
+    }
 
-    console.log(`✅ Found ${invitations.length} invitations`);
+    ;
 
-    res.status(200).json({
-      success: true,
-      data: invitations,
-      pagination: {
-        current: parseInt(page),
-        total: Math.ceil(total / parseInt(limit)),
-        count: invitations.length,
-        totalRecords: total
-      },
-      statusCounts: counts
-    });
+    statusCounts.forEach(item=> {
+        counts[item._id]=item.count;
+      }
 
-  } catch (error) {
-    console.error('❌ Error getting invitations:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error retrieving invitations',
-      error: error.message
-    });
+    );
+
+    console.log(`✅ Found $ {
+        invitations.length
+      }
+
+      invitations`);
+
+    res.status(200).json( {
+
+        success: true,
+        data: invitations,
+        pagination: {
+          current: parseInt(page),
+          total: Math.ceil(total / parseInt(limit)),
+          count: invitations.length,
+          totalRecords: total
+        }
+
+        ,
+        statusCounts: counts
+      }
+
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('❌ Error getting invitations:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error retrieving invitations',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Cancel pending invitation to HHM
  * @route   DELETE /api/factory/invitations/:id
  * @access  Private (Factory only)
  */
-const cancelInvitation = async (req, res) => {
+const cancelInvitation=async (req, res)=> {
   try {
     console.log('🗑️ Canceling invitation:', req.params.id);
 
-    const invitation = await Invitation.findOne({
-      _id: req.params.id,
-      factoryId: req.user._id,
-      invitationType: 'factory-to-hhm'
-    });
+    const invitation=await Invitation.findOne( {
+        _id: req.params.id,
+        factoryId: req.user._id,
+        invitationType: 'factory-to-hhm'
+      }
 
-    if (!invitation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Invitation not found or unauthorized'
-      });
+    );
+
+    if ( !invitation) {
+      return res.status(404).json( {
+          success: false,
+          message: 'Invitation not found or unauthorized'
+        }
+
+      );
     }
 
     // Only allow cancel if status is pending
-    if (invitation.status !== 'pending') {
-      return res.status(400).json({
-        success: false,
-        message: `Cannot cancel ${invitation.status} invitation. Only pending invitations can be cancelled.`
-      });
+    if (invitation.status !=='pending') {
+      return res.status(400).json( {
+
+          success: false,
+          message: `Cannot cancel $ {
+            invitation.status
+          }
+
+          invitation. Only pending invitations can be cancelled.`
+        }
+
+      );
     }
 
     await invitation.deleteOne();
 
     console.log('✅ Invitation cancelled successfully');
 
-    res.status(200).json({
-      success: true,
-      message: 'Invitation cancelled successfully'
-    });
+    res.status(200).json( {
+        success: true,
+        message: 'Invitation cancelled successfully'
+      }
 
-  } catch (error) {
-    console.error('❌ Error cancelling invitation:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error cancelling invitation',
-      error: error.message
-    });
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('❌ Error cancelling invitation:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error cancelling invitation',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Remove HHM from factory's associated list
  * @route   DELETE /api/factory/associated-hhms/:hhmId
  * @access  Private (Factory only)
  */
-const removeAssociatedHHM = async (req, res) => {
+const removeAssociatedHHM=async (req, res)=> {
   try {
     console.log('🔓 Removing HHM association:', req.params.hhmId);
 
-    const factory = await User.findById(req.user._id);
+    const factory=await User.findById(req.user._id);
 
-    if (!factory) {
-      return res.status(404).json({
-        success: false,
-        message: 'Factory not found'
-      });
+    if ( !factory) {
+      return res.status(404).json( {
+          success: false,
+          message: 'Factory not found'
+        }
+
+      );
     }
 
     // Check if HHM is associated
-    if (!factory.associatedHHMs || !factory.associatedHHMs.includes(req.params.hhmId)) {
-      return res.status(400).json({
-        success: false,
-        message: 'HHM is not associated with this factory'
-      });
+    if ( !factory.associatedHHMs || !factory.associatedHHMs.includes(req.params.hhmId)) {
+      return res.status(400).json( {
+          success: false,
+          message: 'HHM is not associated with this factory'
+        }
+
+      );
     }
 
     // Remove from factory's associatedHHMs
-    factory.associatedHHMs = factory.associatedHHMs.filter(
-      id => !id.equals(req.params.hhmId)
-    );
+    factory.associatedHHMs=factory.associatedHHMs.filter(id=> !id.equals(req.params.hhmId));
     await factory.save();
 
     // Also remove from HHM's associatedFactories
-    const hhm = await User.findById(req.params.hhmId);
+    const hhm=await User.findById(req.params.hhmId);
+
     if (hhm && hhm.associatedFactories) {
-      hhm.associatedFactories = hhm.associatedFactories.filter(
-        id => !id.equals(req.user._id)
-      );
+      hhm.associatedFactories=hhm.associatedFactories.filter(id=> !id.equals(req.user._id));
       await hhm.save();
     }
 
     console.log('✅ HHM association removed successfully');
 
-    res.status(200).json({
-      success: true,
-      message: 'HHM association removed successfully'
-    });
+    res.status(200).json( {
+        success: true,
+        message: 'HHM association removed successfully'
+      }
 
-  } catch (error) {
-    console.error('❌ Error removing HHM association:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error removing HHM association',
-      error: error.message
-    });
+    );
+
   }
-};
+
+  catch (error) {
+    console.error('❌ Error removing HHM association:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error removing HHM association',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
 
 /**
  * @desc    Get factory's associated HHMs
  * @route   GET /api/factory/associated-hhms
  * @access  Private (Factory only)
  */
-const getAssociatedHHMs = async (req, res) => {
+const getAssociatedHHMs=async (req, res)=> {
   try {
     console.log('📋 Getting associated HHMs for factory:', req.user._id);
 
     // Get factory user with populated associatedHHMs
-    const factory = await User.findById(req.user._id).populate({
-      path: 'associatedHHMs',
-      select: 'name email phone location profile'
-    });
+    const factory=await User.findById(req.user._id).populate( {
+        path: 'associatedHHMs',
+        select: 'name email phone location profile'
+      }
 
-    if (!factory) {
-      return res.status(404).json({
-        success: false,
-        message: 'Factory not found'
-      });
+    );
+
+    if ( !factory) {
+      return res.status(404).json( {
+          success: false,
+          message: 'Factory not found'
+        }
+
+      );
     }
 
-    console.log(`✅ Found ${factory.associatedHHMs.length} associated HHMs`);
+    console.log(`✅ Found $ {
+        factory.associatedHHMs.length
+      }
 
-    res.status(200).json({
-      success: true,
-      count: factory.associatedHHMs.length,
-      data: factory.associatedHHMs
-    });
+      associated HHMs`);
 
-  } catch (err) {
-    console.error('Error fetching associated HHMs:', err);
-    res.status(500).json({
-      success: false,
-      message: 'Server error while fetching associated HHMs',
-      error: err.message
-    });
+    res.status(200).json( {
+        success: true,
+        count: factory.associatedHHMs.length,
+        data: factory.associatedHHMs
+      }
+
+    );
+
   }
-};
 
-module.exports = {
+  catch (err) {
+    console.error('Error fetching associated HHMs:', err);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Server error while fetching associated HHMs',
+        error: err.message
+      }
+
+    );
+  }
+}
+
+;
+
+/**
+ * @desc    Get invitations received from HHMs
+ * @route   GET /api/factory/received-invitations
+ * @access  Private (Factory only)
+ */
+const getReceivedInvitations=async (req, res)=> {
+  try {
+    console.log('📨 Getting factory received invitations:', req.user._id);
+
+    const {
+      status,
+      page=1,
+      limit=20
+    }
+
+    =req.query;
+
+    // Build query - Factory receives invitations from HHMs
+    const query= {
+      factoryId: req.user._id,
+        invitationType: 'hhm-to-factory'
+    }
+
+    ;
+
+    if (status) {
+      query.status=status;
+    }
+
+    // Calculate pagination
+    const skip=(parseInt(page) - 1) * parseInt(limit);
+
+    // Get invitations with pagination
+    const invitations=await Invitation.find(query) .populate('hhmId', 'name email phone experience specialization') .sort( {
+        createdAt: -1
+      }
+
+    ) .skip(skip) .limit(parseInt(limit));
+
+    // Get total count for pagination
+    const totalInvitations=await Invitation.countDocuments(query);
+
+    console.log(`✅ Found $ {
+        invitations.length
+      }
+
+      received invitations`);
+
+    res.status(200).json( {
+        success: true,
+        count: invitations.length,
+        total: totalInvitations,
+        page: parseInt(page),
+        totalPages: Math.ceil(totalInvitations / parseInt(limit)),
+        data: invitations
+      }
+
+    );
+
+  }
+
+  catch (error) {
+    console.error('❌ Error fetching received invitations:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error fetching invitations',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
+
+/**
+ * @desc    Respond to HHM invitation (accept/decline)
+ * @route   PUT /api/factory/received-invitations/:id
+ * @access  Private (Factory only)
+ */
+const respondToHHMInvitation=async (req, res)=> {
+  try {
+    console.log('📝 Factory responding to HHM invitation:', req.params.id);
+
+    const {
+      status,
+      responseMessage
+    }
+
+    =req.body;
+
+    // Validate status
+    if ( !status || !['accepted', 'declined'].includes(status)) {
+      return res.status(400).json( {
+          success: false,
+          message: 'Status must be either "accepted" or "declined"'
+        }
+
+      );
+    }
+
+    // Find invitation
+    const invitation=await Invitation.findOne( {
+        _id: req.params.id,
+        factoryId: req.user._id,
+        invitationType: 'hhm-to-factory'
+      }
+
+    );
+
+    if ( !invitation) {
+      return res.status(404).json( {
+          success: false,
+          message: 'Invitation not found or unauthorized'
+        }
+
+      );
+    }
+
+    // Check if already responded
+    if (invitation.status !=='pending') {
+      return res.status(400).json( {
+
+          success: false,
+          message: `This invitation has already been $ {
+            invitation.status
+          }
+
+          `
+        }
+
+      );
+    }
+
+    // Update invitation status
+    invitation.status=status;
+    invitation.responseMessage=responseMessage || '';
+    invitation.respondedAt=new Date();
+    await invitation.save();
+
+    // If accepted, add HHM to factory's associated HHMs
+    if (status==='accepted') {
+      const factory=await User.findById(req.user._id);
+      const hhm=await User.findById(invitation.hhmId);
+
+      // Add to factory's associated HHMs
+      if ( !factory.associatedHHMs) {
+        factory.associatedHHMs=[];
+      }
+
+      if ( !factory.associatedHHMs.includes(invitation.hhmId)) {
+        factory.associatedHHMs.push(invitation.hhmId);
+        await factory.save();
+      }
+
+      // Add to HHM's associated factories
+      if ( !hhm.associatedFactories) {
+        hhm.associatedFactories=[];
+      }
+
+      if ( !hhm.associatedFactories.includes(req.user._id)) {
+        hhm.associatedFactories.push(req.user._id);
+        await hhm.save();
+      }
+
+      console.log('✅ Partnership established between Factory and HHM');
+    }
+
+    // Populate the updated invitation
+    const populatedInvitation=await Invitation.findById(invitation._id) .populate('hhmId', 'name email phone experience specialization');
+
+    console.log(`✅ Invitation $ {
+        status
+      }
+
+      `);
+
+    res.status(200).json( {
+
+        success: true,
+        message: `Invitation $ {
+          status
+        }
+
+        successfully`,
+        data: populatedInvitation
+      }
+
+    );
+
+  }
+
+  catch (error) {
+    console.error('❌ Error responding to invitation:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error responding to invitation',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
+
+module.exports= {
   createBill,
   getBills,
   createMaintenanceJob,
@@ -886,8 +1593,13 @@ module.exports = {
   getHHMs,
   getHHMById,
   inviteHHM,
+  inviteMultipleHHMs,
   getMyInvitations,
   cancelInvitation,
   removeAssociatedHHM,
-  getAssociatedHHMs
-};
+  getAssociatedHHMs,
+  getReceivedInvitations,
+  respondToHHMInvitation
+}
+
+;

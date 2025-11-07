@@ -22,7 +22,10 @@ const {
   respondToFactoryInvitation,
   getAssociatedFactories,
   disconnectFromFactory,
-  getMyPerformance
+  getMyPerformance,
+  inviteFactory,
+  inviteMultipleFactories,
+  getMyFactoryInvitations
 } = require('../controllers/hhm.controller');
 
 // Apply protection and authorization to all routes in this file
@@ -330,7 +333,7 @@ router.get('/schedules/:id/applications', async (req, res) => {
 
 /**
  * @route   GET /api/hhm/factory-invitations
- * @desc    Get all factory invitations received by HHM
+ * @desc    Get all factory invitations received by HHM (factories inviting HHM)
  * @access  Private (HHM only)
  * @query   status (optional), page (optional), limit (optional)
  */
@@ -344,6 +347,30 @@ router.get('/factory-invitations', getFactoryInvitations);
  * @body    { status: 'accepted' | 'declined', responseMessage? }
  */
 router.put('/factory-invitations/:id', respondToFactoryInvitation);
+
+/**
+ * @route   POST /api/hhm/invite-factory
+ * @desc    HHM sends invitation to Factory
+ * @access  Private (HHM only)
+ * @body    { factoryId, personalMessage?, invitationReason? }
+ */
+router.post('/invite-factory', inviteFactory);
+
+/**
+ * @route   POST /api/hhm/invite-multiple-factories
+ * @desc    HHM sends invitations to multiple Factories (bulk invite)
+ * @access  Private (HHM only)
+ * @body    { factoryIds: [], personalMessage?, invitationReason? }
+ */
+router.post('/invite-multiple-factories', inviteMultipleFactories);
+
+/**
+ * @route   GET /api/hhm/my-factory-invitations
+ * @desc    Get invitations sent by HHM to factories
+ * @access  Private (HHM only)
+ * @query   status (optional), page (optional), limit (optional)
+ */
+router.get('/my-factory-invitations', getMyFactoryInvitations);
 
 /**
  * @route   GET /api/hhm/associated-factories

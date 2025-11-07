@@ -23,6 +23,7 @@ import HHMSpecificFactoryPage from './pages/HHMSpecificFactoryPage.jsx';
 import FactoryDirectoryPage from './pages/FactoryDirectoryPage.jsx';
 import HHMDashboardPage from './pages/HHMDashboardPage.jsx';
 import HHMFactoryInvitationsPage from './pages/HHMFactoryInvitationsPage.jsx';
+import HHMSentFactoryInvitationsPage from './pages/HHMSentFactoryInvitationsPage.jsx';
 import HHMAssociatedFactoriesPage from './pages/HHMAssociatedFactoriesPage.jsx';
 import HHMPerformancePage from './pages/HHMPerformancePage.jsx';
 import HHMNotificationCenter from './pages/HHMNotificationCenter.jsx';
@@ -35,6 +36,7 @@ import InvitesAndApplicationsPage from './pages/InvitesAndApplicationsPage.jsx';
 import FactoryDashboardPage from './pages/FactoryDashboardPage.jsx';
 import FactoryHHMDirectoryPage from './pages/FactoryHHMDirectoryPage.jsx';
 import FactorySentInvitationsPage from './pages/FactorySentInvitationsPage.jsx';
+import FactoryReceivedInvitationsPage from './pages/FactoryReceivedInvitationsPage.jsx';
 import FactoryAssociatedHHMsPage from './pages/FactoryAssociatedHHMsPage.jsx';
 import HHMPublicProfilePage from './pages/HHMPublicProfilePage.jsx';
 
@@ -404,6 +406,11 @@ function App() {
                     <HHMFactoryInvitationsPage />
                   </SafeComponent>
                 } />
+                <Route path="sent-factory-invitations" element={
+                  <SafeComponent name="HHMSentFactoryInvitationsPage">
+                    <HHMSentFactoryInvitationsPage />
+                  </SafeComponent>
+                } />
                 <Route path="associated-factories" element={
                   <SafeComponent name="HHMAssociatedFactoriesPage">
                     <HHMAssociatedFactoriesPage />
@@ -500,6 +507,11 @@ function App() {
                 <Route path="sent-invitations" element={
                   <SafeComponent name="FactorySentInvitationsPage">
                     <FactorySentInvitationsPage />
+                  </SafeComponent>
+                } />
+                <Route path="received-invitations" element={
+                  <SafeComponent name="FactoryReceivedInvitationsPage">
+                    <FactoryReceivedInvitationsPage />
                   </SafeComponent>
                 } />
                 <Route path="associated-hhms" element={

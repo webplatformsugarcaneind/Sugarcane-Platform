@@ -1,4 +1,4 @@
-    import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -11,7 +11,7 @@ import axios from 'axios';
  */
 const HHMFactoryDirectoryPage = () => {
   const navigate = useNavigate();
-  
+
   const [factories, setFactories] = useState([]);
   const [filteredFactories, setFilteredFactories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ const HHMFactoryDirectoryPage = () => {
       setFilteredFactories([]);
       return;
     }
-    
+
     let filtered = [...factories];
 
     // Apply search filter
@@ -105,7 +105,7 @@ const HHMFactoryDirectoryPage = () => {
 
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setError('No authentication token found. Please login again.');
         return;
@@ -120,12 +120,12 @@ const HHMFactoryDirectoryPage = () => {
       });
 
       console.log('HHM Full API response:', response.data);
-      
+
       // The API returns: { success: true, data: { factories: [...] } }
       const factoryData = response.data.data?.factories || response.data.factories || response.data || [];
       console.log('HHM Factory data received:', factoryData);
       console.log('Is array?', Array.isArray(factoryData));
-      
+
       // Ensure we always set an array
       if (Array.isArray(factoryData)) {
         setFactories(factoryData);
@@ -136,7 +136,7 @@ const HHMFactoryDirectoryPage = () => {
     } catch (err) {
       console.error('Error fetching factories:', err);
       setError(
-        err.response?.data?.message || 
+        err.response?.data?.message ||
         'Failed to fetch factory directory. Please try again.'
       );
     } finally {
@@ -146,6 +146,82 @@ const HHMFactoryDirectoryPage = () => {
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleInitiatePartnership = async (e, factory) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Debug: Log the factory object
+    console.log('🔍 Factory object:', factory);
+    console.log('🔍 Factory ID (_id):', factory._id);
+    console.log('🔍 Factory ID (id):', factory.id);
+    console.log('🔍 Factory userId:', factory.userId);
+
+    // Try to get the correct factory ID
+    const factoryId = factory._id || factory.id || factory.userId;
+
+    if (!factoryId) {
+      alert('❌ Cannot send invitation: Factory ID not found');
+      console.error('Factory object missing ID:', factory);
+      return;
+    }
+
+    console.log('🔍 Using Factory ID:', factoryId);
+
+    // Confirm before sending invitation
+    const confirmMessage = `Send partnership invitation to ${factory.name || 'this factory'}?`;
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        alert('❌ Please login to send invitations');
+        navigate('/login');
+        return;
+      }
+
+      console.log('📤 Sending invitation to factory ID:', factoryId);
+
+      const response = await axios.post(
+        '/api/hhm/invite-factory',
+        {
+          factoryId: factoryId,
+          personalMessage: `I would like to establish a partnership with ${factory.name}`,
+          invitationReason: 'Seeking collaboration opportunities for worker placement and operations'
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('✅ Response:', response.data);
+
+      if (response.data.success) {
+        alert(`✅ Partnership invitation sent to ${factory.name} successfully!`);
+        // Optionally refresh the factories to update UI
+        fetchFactories();
+      }
+    } catch (err) {
+      console.error('❌ Full error object:', err);
+      console.error('❌ Error response:', err.response);
+      console.error('❌ Error response data:', err.response?.data);
+
+      // Handle specific error messages
+      if (err.response?.status === 400) {
+        alert(`⚠️ ${err.response.data.message}`);
+      } else if (err.response?.status === 404) {
+        alert(`❌ Factory not found. Backend says: ${err.response?.data?.message || 'No details'}`);
+      } else {
+        alert(`❌ Failed to send invitation. Error: ${err.response?.data?.message || err.message}`);
+      }
+    }
   };
 
   const handleLocationChange = (e) => {
@@ -296,8 +372,8 @@ const HHMFactoryDirectoryPage = () => {
             <div className="error-icon">⚠️</div>
             <h3>Error Loading Directory</h3>
             <p className="error-message">{error}</p>
-            <button 
-              onClick={fetchFactories} 
+            <button
+              onClick={fetchFactories}
               className="retry-button"
             >
               Try Again
@@ -309,7 +385,7 @@ const HHMFactoryDirectoryPage = () => {
             <h3>No Partnership Opportunities Found</h3>
             <p>
               {searchTerm || selectedLocation || selectedCapacity
-                ? 'Try adjusting your search or filter criteria.' 
+                ? 'Try adjusting your search or filter criteria.'
                 : 'No factories are currently available for partnerships.'
               }
             </p>
@@ -325,8 +401,8 @@ const HHMFactoryDirectoryPage = () => {
         ) : (
           <div className="factory-grid">
             {filteredFactories.map((factory) => (
-              <Link 
-                key={factory._id} 
+              <Link
+                key={factory._id}
                 to={`/hhm/factories/${factory._id || factory.id}`}
                 className="factory-card-link"
                 style={{ textDecoration: 'none', color: 'inherit' }}
@@ -361,11 +437,11 @@ const HHMFactoryDirectoryPage = () => {
                         <div className="stat-item">
                           <span className="stat-label">Operating Hours:</span>
                           <span className="stat-value">
-                            {typeof factory.operatingHours === 'object' 
-                              ? (factory.operatingHours.season 
-                                  ? `${factory.operatingHours.season}${factory.operatingHours.daily ? ' - ' + factory.operatingHours.daily : factory.operatingHours.monday ? ' - ' + factory.operatingHours.monday : ''}`
-                                  : 'Contact for schedule'
-                                )
+                            {typeof factory.operatingHours === 'object'
+                              ? (factory.operatingHours.season
+                                ? `${factory.operatingHours.season}${factory.operatingHours.daily ? ' - ' + factory.operatingHours.daily : factory.operatingHours.monday ? ' - ' + factory.operatingHours.monday : ''}`
+                                : 'Contact for schedule'
+                              )
                               : factory.operatingHours}
                           </span>
                         </div>
@@ -393,8 +469,8 @@ const HHMFactoryDirectoryPage = () => {
                         {factory.contactInfo?.email && (
                           <div className="contact-item">
                             <span className="contact-icon">📧</span>
-                            <a 
-                              href={`mailto:${factory.contactInfo.email}`} 
+                            <a
+                              href={`mailto:${factory.contactInfo.email}`}
                               className="contact-link"
                               onClick={(e) => e.stopPropagation()}
                             >
@@ -405,8 +481,8 @@ const HHMFactoryDirectoryPage = () => {
                         {factory.contactInfo?.phone && (
                           <div className="contact-item">
                             <span className="contact-icon">📱</span>
-                            <a 
-                              href={`tel:${factory.contactInfo.phone}`} 
+                            <a
+                              href={`tel:${factory.contactInfo.phone}`}
                               className="contact-link"
                               onClick={(e) => e.stopPropagation()}
                             >
@@ -417,7 +493,7 @@ const HHMFactoryDirectoryPage = () => {
                         {factory.contactInfo?.website && (
                           <div className="contact-item">
                             <span className="contact-icon">🌐</span>
-                            <a 
+                            <a
                               href={factory.contactInfo.website.startsWith('http') ? factory.contactInfo.website : `https://${factory.contactInfo.website}`}
                               target="_blank"
                               rel="noopener noreferrer"
@@ -434,13 +510,13 @@ const HHMFactoryDirectoryPage = () => {
 
                   <div className="card-footer">
                     <div className="action-buttons">
-                      <button 
+                      <button
                         className="contact-btn primary"
-                        onClick={(e) => e.preventDefault()}
+                        onClick={(e) => handleInitiatePartnership(e, factory)}
                       >
                         🤝 Initiate Partnership
                       </button>
-                      <button 
+                      <button
                         className="contact-btn secondary"
                         onClick={(e) => {
                           e.preventDefault();

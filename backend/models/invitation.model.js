@@ -3,19 +3,17 @@ const mongoose = require('mongoose');
 /**
  * Invitation Schema
  * 
- * Represents invitations sent by HHMs to specific workers for their schedules,
- * OR invitations sent by Factories to HHMs for partnership/association.
- * 
- * Two types:
+ * Represents invitations for various partnership types:
  * 1. 'hhm-to-worker' - HHM invites worker for a job schedule
  * 2. 'factory-to-hhm' - Factory invites HHM for partnership/association
+ * 3. 'hhm-to-factory' - HHM invites Factory for partnership/association
  */
 const invitationSchema = new mongoose.Schema({
   // Invitation Type - determines which fields are required
   invitationType: {
     type: String,
     enum: {
-      values: ['hhm-to-worker', 'factory-to-hhm'],
+      values: ['hhm-to-worker', 'factory-to-hhm', 'hhm-to-factory'],
       message: '{VALUE} is not a valid invitation type'
     },
     required: [true, 'Invitation type is required'],
@@ -23,20 +21,20 @@ const invitationSchema = new mongoose.Schema({
     index: true
   },
 
-  // Factory ID - Required for factory-to-hhm invitations
+  // Factory ID - Required for factory-to-hhm and hhm-to-factory invitations
   factoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     index: true,
     validate: {
       validator: function (value) {
-        // Required if invitationType is 'factory-to-hhm'
-        if (this.invitationType === 'factory-to-hhm') {
+        // Required if invitationType is 'factory-to-hhm' or 'hhm-to-factory'
+        if (this.invitationType === 'factory-to-hhm' || this.invitationType === 'hhm-to-factory') {
           return value != null;
         }
         return true;
       },
-      message: 'Factory ID is required for factory-to-hhm invitations'
+      message: 'Factory ID is required for factory-hhm invitations'
     }
   },
 
@@ -57,12 +55,23 @@ const invitationSchema = new mongoose.Schema({
     }
   },
 
-  // HHM ID - Required for both types
+  // HHM ID - Required for hhm-to-worker, factory-to-hhm, and hhm-to-factory
   hhmId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: [true, 'HHM ID is required'],
-    index: true
+    index: true,
+    validate: {
+      validator: function (value) {
+        // Required if invitationType is 'hhm-to-worker' or 'factory-to-hhm' or 'hhm-to-factory'
+        if (this.invitationType === 'hhm-to-worker' ||
+          this.invitationType === 'factory-to-hhm' ||
+          this.invitationType === 'hhm-to-factory') {
+          return value != null;
+        }
+        return true;
+      },
+      message: 'HHM ID is required for this invitation type'
+    }
   },
 
   // Schedule ID - Required only for hhm-to-worker invitations

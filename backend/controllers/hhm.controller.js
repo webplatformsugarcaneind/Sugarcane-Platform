@@ -1404,6 +1404,282 @@ const getMyPerformance = async (req, res) => {
   }
 };
 
+/**
+ * @desc    HHM sends invitation to a Factory
+ * @route   POST /api/hhm/invite-factory
+ * @access  Private (HHM only)
+ */
+const inviteFactory = async (req, res) => {
+  try {
+    console.log('📨 HHM inviting Factory:', req.user._id);
+
+    const { factoryId, personalMessage, invitationReason } = req.body;
+
+    // Validate required fields
+    if (!factoryId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Factory ID is required'
+      });
+    }
+
+    // Verify the Factory exists and has Factory role
+    const factory = await User.findOne({
+      _id: factoryId,
+      role: 'Factory',
+      isActive: true
+    });
+
+    if (!factory) {
+      return res.status(404).json({
+        success: false,
+        message: 'Factory not found or inactive'
+      });
+    }
+
+    // Check if Factory is already associated with this HHM
+    const hhm = await User.findById(req.user._id);
+    if (hhm.associatedFactories && hhm.associatedFactories.includes(factoryId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'This Factory is already associated with your profile'
+      });
+    }
+
+    // Check if a PENDING invitation already exists
+    const existingPendingInvitation = await Invitation.findOne({
+      hhmId: req.user._id,
+      factoryId: factoryId,
+      invitationType: 'hhm-to-factory',
+      status: 'pending'
+    });
+
+    if (existingPendingInvitation) {
+      return res.status(400).json({
+        success: false,
+        message: 'A pending invitation has already been sent to this Factory'
+      });
+    }
+
+    // Create the invitation
+    const invitation = await Invitation.create({
+      invitationType: 'hhm-to-factory',
+      hhmId: req.user._id,
+      factoryId: factoryId,
+      personalMessage: personalMessage || '',
+      invitationReason: invitationReason || '',
+      status: 'pending'
+    });
+
+    // Populate the created invitation with full details
+    const populatedInvitation = await Invitation.findById(invitation._id)
+      .populate('factoryId', 'name email phone factoryName factoryLocation')
+      .populate('hhmId', 'name email phone experience specialization');
+
+    console.log('✅ HHM invitation created successfully:', invitation._id);
+
+    res.status(201).json({
+      success: true,
+      message: 'Invitation sent to Factory successfully',
+      data: populatedInvitation
+    });
+
+  } catch (error) {
+    console.error('❌ Error creating HHM invitation:', error);
+
+    // Handle duplicate key error
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'An invitation conflict occurred. A pending invitation may already exist.'
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Error creating invitation',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    HHM sends invitations to multiple Factories (Bulk Invite)
+ * @route   POST /api/hhm/invite-multiple-factories
+ * @access  Private (HHM only)
+ */
+const inviteMultipleFactories = async (req, res) => {
+  try {
+    console.log('📨 HHM sending bulk factory invitations:', req.user._id);
+
+    const { factoryIds, personalMessage, invitationReason } = req.body;
+
+    // Validate required fields
+    if (!factoryIds || !Array.isArray(factoryIds) || factoryIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide an array of Factory IDs'
+      });
+    }
+
+    // Limit bulk invitations to prevent abuse
+    if (factoryIds.length > 50) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot send more than 50 invitations at once'
+      });
+    }
+
+    const results = {
+      successful: [],
+      failed: [],
+      skipped: []
+    };
+
+    // Process each Factory ID
+    for (const factoryId of factoryIds) {
+      try {
+        // Verify the Factory exists and has Factory role
+        const factory = await User.findOne({
+          _id: factoryId,
+          role: 'Factory',
+          isActive: true
+        });
+
+        if (!factory) {
+          results.failed.push({
+            factoryId,
+            reason: 'Factory not found or inactive'
+          });
+          continue;
+        }
+
+        // Check if Factory is already associated with this HHM
+        const hhm = await User.findById(req.user._id);
+        if (hhm.associatedFactories && hhm.associatedFactories.includes(factoryId)) {
+          results.skipped.push({
+            factoryId,
+            factoryName: factory.factoryName || factory.name,
+            reason: 'Already associated with this HHM'
+          });
+          continue;
+        }
+
+        // Check if a PENDING invitation already exists
+        const existingPendingInvitation = await Invitation.findOne({
+          hhmId: req.user._id,
+          factoryId: factoryId,
+          invitationType: 'hhm-to-factory',
+          status: 'pending'
+        });
+
+        if (existingPendingInvitation) {
+          results.skipped.push({
+            factoryId,
+            factoryName: factory.factoryName || factory.name,
+            reason: 'Pending invitation already exists'
+          });
+          continue;
+        }
+
+        // Create the invitation
+        const invitation = await Invitation.create({
+          invitationType: 'hhm-to-factory',
+          hhmId: req.user._id,
+          factoryId: factoryId,
+          personalMessage: personalMessage || '',
+          invitationReason: invitationReason || '',
+          status: 'pending'
+        });
+
+        results.successful.push({
+          factoryId,
+          factoryName: factory.factoryName || factory.name,
+          invitationId: invitation._id
+        });
+
+      } catch (error) {
+        console.error(`❌ Error inviting Factory ${factoryId}:`, error.message);
+        results.failed.push({
+          factoryId,
+          reason: error.message
+        });
+      }
+    }
+
+    console.log(`✅ Bulk invitation complete. Success: ${results.successful.length}, Failed: ${results.failed.length}, Skipped: ${results.skipped.length}`);
+
+    res.status(200).json({
+      success: true,
+      message: `Sent ${results.successful.length} invitation(s) successfully`,
+      data: results
+    });
+
+  } catch (error) {
+    console.error('❌ Error in bulk invitation:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error sending bulk invitations',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    Get invitations sent by HHM to Factories
+ * @route   GET /api/hhm/my-factory-invitations
+ * @access  Private (HHM only)
+ */
+const getMyFactoryInvitations = async (req, res) => {
+  try {
+    console.log('📋 Getting HHM factory invitations:', req.user._id);
+
+    const { status, page = 1, limit = 20 } = req.query;
+
+    // Build query
+    const query = {
+      hhmId: req.user._id,
+      invitationType: 'hhm-to-factory'
+    };
+
+    if (status) {
+      query.status = status;
+    }
+
+    // Calculate pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Get invitations with pagination
+    const invitations = await Invitation.find(query)
+      .populate('factoryId', 'name email phone factoryName factoryLocation')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    // Get total count for pagination
+    const totalInvitations = await Invitation.countDocuments(query);
+
+    console.log(`✅ Found ${invitations.length} HHM factory invitations`);
+
+    res.status(200).json({
+      success: true,
+      count: invitations.length,
+      total: totalInvitations,
+      page: parseInt(page),
+      totalPages: Math.ceil(totalInvitations / parseInt(limit)),
+      data: invitations
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching HHM factory invitations:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching invitations',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   // Schedule management
   createSchedule,
@@ -1429,10 +1705,15 @@ module.exports = {
   getProfile,
   updateProfile,
 
-  // Factory invitation management
+  // Factory invitation management (receiving invitations from factories)
   getFactoryInvitations,
   respondToFactoryInvitation,
   getAssociatedFactories,
   disconnectFromFactory,
-  getMyPerformance
+  getMyPerformance,
+
+  // HHM initiates invitations to factories
+  inviteFactory,
+  inviteMultipleFactories,
+  getMyFactoryInvitations
 };

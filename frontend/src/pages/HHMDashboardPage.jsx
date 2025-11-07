@@ -165,6 +165,17 @@ const HHMDashboardPage = () => {
             <button style={styles.actionButton}>View Invitations →</button>
           </div>
 
+          {/* Sent Factory Invitations */}
+          <div
+            style={styles.actionCard}
+            onClick={() => navigate('/hhm/sent-factory-invitations')}
+          >
+            <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>📤</div>
+            <h3 style={styles.actionTitle}>Sent Factory Invitations</h3>
+            <p style={styles.actionDescription}>View invitations you sent to factories</p>
+            <button style={styles.actionButton}>View Sent →</button>
+          </div>
+
           {/* Associated Factories */}
           <div
             style={styles.actionCard}

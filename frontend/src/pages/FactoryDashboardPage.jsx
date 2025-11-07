@@ -145,31 +145,6 @@ const FactoryDashboardPage = () => {
             </div>
           </div>
 
-          {/* HHM Directory Card */}
-          <div
-            className="action-card directory-card"
-            onClick={() => navigate('/factory/hhm-directory')}
-            role="button"
-            tabIndex={0}
-          >
-            <div className="card-icon">
-              📋
-            </div>
-            <div className="card-content">
-              <h3 className="card-title">HHM Directory</h3>
-              <p className="card-description">
-                Browse and send invitations to Harvest Managers
-              </p>
-              <div className="card-features">
-                <span className="feature-tag">• Browse HHMs</span>
-                <span className="feature-tag">• Send Invitations</span>
-              </div>
-            </div>
-            <div className="card-arrow">
-              →
-            </div>
-          </div>
-
           {/* Sent Invitations Card */}
           <div
             className="action-card invitations-card"
@@ -188,6 +163,31 @@ const FactoryDashboardPage = () => {
               <div className="card-features">
                 <span className="feature-tag">• Track Status</span>
                 <span className="feature-tag">• Cancel Pending</span>
+              </div>
+            </div>
+            <div className="card-arrow">
+              →
+            </div>
+          </div>
+
+          {/* Received HHM Invitations Card */}
+          <div
+            className="action-card invitations-card"
+            onClick={() => navigate('/factory/received-invitations')}
+            role="button"
+            tabIndex={0}
+          >
+            <div className="card-icon">
+              📥
+            </div>
+            <div className="card-content">
+              <h3 className="card-title">Received Invitations</h3>
+              <p className="card-description">
+                View and respond to invitations from HHMs
+              </p>
+              <div className="card-features">
+                <span className="feature-tag">• Accept/Decline</span>
+                <span className="feature-tag">• View HHM Details</span>
               </div>
             </div>
             <div className="card-arrow">
