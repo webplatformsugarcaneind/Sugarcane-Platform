@@ -160,7 +160,7 @@ const HHMDashboardPage = () => {
             onClick={() => navigate('/hhm/factory-invitations')}
           >
             <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>📨</div>
-            <h3 style={styles.actionTitle}>Factory Invitations</h3>
+            <h3 style={styles.actionTitle}>Received Factory Invitations</h3>
             <p style={styles.actionDescription}>View and respond to factory collaboration invitations</p>
             <button style={styles.actionButton}>View Invitations →</button>
           </div>
