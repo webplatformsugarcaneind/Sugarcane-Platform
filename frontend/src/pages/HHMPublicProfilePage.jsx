@@ -179,16 +179,13 @@ const HHMPublicProfilePage = () => {
             }
 
             {
-                hhm.servicesOffered && hhm.servicesOffered.length > 0 && (<div className="profile-card"> <h2 className="card-title">🛠️ Services Offered</h2> <div className="tags-container"> {
-                    hhm.servicesOffered.map((service, index) => (<span key={
-                        index
-                    }
-
-                        className="tag"> {
-                            service
-                        }
-
-                    </span>))
+                hhm.servicesOffered && (<div className="profile-card"> <h2 className="card-title">🛠️ Services Offered</h2> <div className="tags-container"> {
+                    // Handle servicesOffered as string (split by comma) or array
+                    Array.isArray(hhm.servicesOffered) 
+                        ? hhm.servicesOffered.map((service, index) => (<span key={index} className="tag"> {service} </span>))
+                        : hhm.servicesOffered.includes(',') 
+                        ? hhm.servicesOffered.split(',').map((service, index) => (<span key={index} className="tag"> {service.trim()} </span>))
+                        : (<span className="tag"> {hhm.servicesOffered} </span>)
                 }
 
                 </div> </div>)
@@ -199,16 +196,13 @@ const HHMPublicProfilePage = () => {
             }
 
             {
-                hhm.certifications && hhm.certifications.length > 0 && (<div className="profile-card"> <h2 className="card-title">🏆 Certifications</h2> <ul className="certifications-list"> {
-                    hhm.certifications.map((cert, index) => (<li key={
-                        index
-                    }
-
-                    >✓ {
-                            cert
-                        }
-
-                    </li>))
+                hhm.certifications && (<div className="profile-card"> <h2 className="card-title">🏆 Certifications</h2> <ul className="certifications-list"> {
+                    // Handle certifications as string (split by comma) or array
+                    Array.isArray(hhm.certifications)
+                        ? hhm.certifications.map((cert, index) => (<li key={index}>✓ {cert}</li>))
+                        : hhm.certifications.includes(',')
+                        ? hhm.certifications.split(',').map((cert, index) => (<li key={index}>✓ {cert.trim()}</li>))
+                        : (<li>✓ {hhm.certifications}</li>)
                 }
 
                 </ul> </div>)
