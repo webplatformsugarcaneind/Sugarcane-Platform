@@ -1,17 +1,20 @@
-/* HHM Sent Factory Invitations Page Styles */
+/* HHM Sent Factory Invitations Page Styles - Green Theme */
 
 .hhm-sent-invitations-page {
     padding: 2.5rem;
     max-width: 1400px;
     margin: 0 auto;
-    background: linear-gradient(135deg, #667eea 0%, #381eb9 100%);
+    background: #ededed;
     min-height: 100vh;
 }
 
 .page-header {
     text-align: center;
     margin-bottom: 3rem;
-    color: white;
+    background: linear-gradient(135deg, #245305 0%, #3a6b1f 100%);
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(45, 80, 22, 0.2);
     animation: fadeInDown 0.6s ease;
 }
 
@@ -20,6 +23,7 @@
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -30,13 +34,13 @@
     font-size: 2.8rem;
     margin-bottom: 0.75rem;
     font-weight: 700;
-    color: white;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    color: rgb(0, 0, 0) !important;
+    text-shadow: 0 2px 10px rgba(242, 239, 239, 0.2);
 }
 
 .page-header .subtitle {
     font-size: 1.2rem;
-    opacity: 0.95;
+    color: rgba(0, 0, 0, 0.95) !important;
     font-weight: 300;
 }
 
@@ -46,20 +50,22 @@
     align-items: center;
     justify-content: center;
     min-height: 400px;
-    color: white;
+    color: #2d5016;
 }
 
 .spinner {
     width: 50px;
     height: 50px;
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top-color: white;
+    border: 4px solid rgba(45, 80, 22, 0.2);
+    border-top-color: #2d5016;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .alert {
@@ -94,45 +100,43 @@
 
 .filter-tab {
     padding: 0.85rem 2rem;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid #E8EDF5;
     border-radius: 30px;
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
+    background: white;
+    color: #111827 !important;
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .filter-tab:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-3px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    background: #09a528;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .filter-tab.active {
-    background: white;
-    color: #667eea;
-    border-color: white;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    background-color: #09a528;
+    color: rgb(23, 130, 2) !important;
+    border-color: #2d5016;
+    box-shadow: 0 4px 16px rgba(45, 80, 22, 0.3);
     transform: translateY(-2px);
 }
 
 .invitations-container {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
+    background: white;
+    border-radius: 16px;
     padding: 2.5rem;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E8EDF5;
 }
 
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
-    color: white;
+    color: #6B7280;
 }
 
 .empty-icon {
@@ -143,6 +147,7 @@
 .empty-state h3 {
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
+    color: #111827;
 }
 
 .empty-state p {
@@ -158,112 +163,123 @@
 
 .invitation-card {
     background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #E8EDF5;
     position: relative;
     overflow: hidden;
 }
 
-.invitation-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+.card-top-border {
     height: 4px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, #2d5016 0%, #3a6b1f 100%);
 }
 
 .invitation-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1.75rem;
-    padding-bottom: 1.25rem;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem 2rem 1.25rem 2rem;
+    border-bottom: 1px solid #E8EDF5;
 }
 
-.factory-info h3 {
-    font-size: 1.5rem;
-    color: #2d3748;
+.factory-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    flex: 1;
+}
+
+.factory-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+.factory-details {
+    flex: 1;
+}
+
+.factory-details h3 {
+    font-size: 1.4rem;
+    color: #111827;
     margin-bottom: 0.5rem;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .factory-location {
-    color: #718096;
-    font-size: 1rem;
+    color: #6B7280;
+    font-size: 0.95rem;
     display: flex;
     align-items: center;
     gap: 0.25rem;
 }
 
 .status-badge {
-    padding: 0.6rem 1.25rem;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
     white-space: nowrap;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .badge-pending {
-    background: linear-gradient(135deg, #ffd89b 0%, #fd9843 100%);
-    color: #8b4513;
+    background: #FEF3C7;
+    color: #92400E;
 }
 
 .badge-accepted {
-    background: linear-gradient(135deg, #a8edea 0%, #4caf50 100%);
-    color: #1b5e20;
+    background: #D1FAE5;
+    color: #065F46;
 }
 
 .badge-declined {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: #721c24;
+    background: #FEE2E2;
+    color: #991B1B;
 }
 
 .card-body {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+    padding: 0 2rem 2rem 2rem;
 }
 
 .info-section {
-    padding: 1.25rem;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 10px;
-    border-left: 4px solid #667eea;
+    padding: 1rem;
+    background: #F8FAFC;
+    border-radius: 8px;
+    border-left: 3px solid #2d5016;
     transition: all 0.3s ease;
 }
 
 .info-section:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateX(3px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .info-section h4 {
-    font-size: 1.05rem;
-    color: #667eea;
-    margin-bottom: 0.85rem;
-    font-weight: 700;
+    font-size: 1rem;
+    color: #2d5016;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
 .info-section p {
-    color: #4a5568;
-    line-height: 1.7;
+    color: #4B5563;
+    line-height: 1.6;
     margin: 0.4rem 0;
     font-size: 0.95rem;
 }
@@ -271,50 +287,50 @@
 .message-text,
 .reason-text {
     font-style: italic;
-    color: #2d3748;
+    color: #111827;
     background: white;
     padding: 0.75rem;
     border-radius: 6px;
-    border-left: 3px solid #667eea;
+    border-left: 3px solid #2d5016;
 }
 
 .response-section {
-    background: linear-gradient(135deg, #d4f1f4 0%, #c3e6cb 100%);
-    border-left: 4px solid #28a745;
+    background: #D1FAE5;
+    border-left: 3px solid #065F46;
 }
 
 .response-text {
     font-weight: 600;
-    color: #155724;
+    color: #065F46;
 }
 
 .timeline-section {
-    padding-top: 1.25rem;
-    border-top: 2px dashed #e0e0e0;
+    padding-top: 1rem;
+    border-top: 1px dashed #E8EDF5;
     margin-top: 0.5rem;
 }
 
 .timeline-item {
     display: flex;
     justify-content: space-between;
-    padding: 0.6rem 0;
-    font-size: 0.95rem;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
 }
 
 .timeline-label {
-    color: #718096;
+    color: #6B7280;
     font-weight: 600;
 }
 
 .timeline-value {
-    color: #2d3748;
+    color: #111827;
     font-weight: 500;
 }
 
 .empty-state {
     text-align: center;
     padding: 5rem 2rem;
-    color: white;
+    color: #6B7280;
 }
 
 .empty-icon {
@@ -324,9 +340,12 @@
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0);
     }
+
     50% {
         transform: translateY(-20px);
     }
@@ -336,6 +355,7 @@
     font-size: 2rem;
     margin-bottom: 0.75rem;
     font-weight: 700;
+    color: #111827;
 }
 
 .empty-state p {
@@ -343,6 +363,7 @@
     opacity: 0.9;
     max-width: 500px;
     margin: 0 auto;
+    color: #6B7280;
 }
 
 /* Responsive Design */

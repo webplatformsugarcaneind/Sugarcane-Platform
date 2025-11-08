@@ -147,9 +147,9 @@ const HHMFactoryInvitationsPage = () => {
     return (
         <div className="invitations-page">
             {/* Header */}
-            <div className="page-header">
+            <div className="page-header" style={{ background: 'linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%)' }}>
                 <div className="header-content">
-                    <h1>🏭 Factory Partnership Invitations</h1>
+                    <h1 >🏭 Factory Partnership Invitations</h1>
                     <p>Manage invitations from factories seeking partnership with your services</p>
                 </div>
             </div>
