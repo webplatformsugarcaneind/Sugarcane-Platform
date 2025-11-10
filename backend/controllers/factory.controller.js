@@ -125,11 +125,11 @@ const getBills=async (req, res)=> {
     const skip=(parseInt(page) - 1) * parseInt(limit);
 
     // Get bills with pagination
-    const bills=await Bill.find(query) .populate('farmerId', 'name email phone') .sort( {
+    const bills=await Bill.find(query).populate('farmerId', 'name email phone').sort( {
         billDate: -1
       }
 
-    ) .skip(skip) .limit(parseInt(limit));
+    ).skip(skip).limit(parseInt(limit));
 
     // Get total count for pagination
     const totalBills=await Bill.countDocuments(query);
@@ -310,11 +310,11 @@ const getMaintenanceApplications=async (req, res)=> {
     const skip=(parseInt(page) - 1) * parseInt(limit);
 
     // Get applications with pagination
-    const applications=await Application.find(query) .populate('workerId', 'name email phone') .populate('scheduleId', 'title description requiredSkills wageOffered startDate endDate') .sort( {
+    const applications=await Application.find(query).populate('workerId', 'name email phone').populate('scheduleId', 'title description requiredSkills wageOffered startDate endDate').sort( {
         createdAt: -1
       }
 
-    ) .skip(skip) .limit(parseInt(limit));
+    ).skip(skip).limit(parseInt(limit));
 
     // Get total count for pagination
     const totalApplications=await Application.countDocuments(query);
@@ -390,7 +390,7 @@ const updateMaintenanceApplication=async (req, res)=> {
     }
 
     // Find the application and verify it belongs to a maintenance job created by this factory
-    const application=await Application.findById(id) .populate('scheduleId', 'hhmId jobType title');
+    const application=await Application.findById(id).populate('scheduleId', 'hhmId jobType title');
 
     if ( !application) {
       return res.status(404).json( {
@@ -825,7 +825,7 @@ const inviteHHM=async (req, res)=> {
     );
 
     // Populate the created invitation with full details
-    const populatedInvitation=await Invitation.findById(invitation._id) .populate('hhmId', 'name email phone experience specialization') .populate('factoryId', 'name email phone factoryName factoryLocation');
+    const populatedInvitation=await Invitation.findById(invitation._id).populate('hhmId', 'name email phone experience specialization').populate('factoryId', 'name email phone factoryName factoryLocation');
 
     console.log('✅ Factory invitation created successfully:', invitation._id);
 
@@ -1096,11 +1096,11 @@ const getMyInvitations=async (req, res)=> {
     const skip=(parseInt(page) - 1) * parseInt(limit);
 
     // Get invitations with pagination
-    const invitations=await Invitation.find(query) .populate('hhmId', 'name email phone experience specialization managementExperience') .sort( {
+    const invitations=await Invitation.find(query).populate('hhmId', 'name email phone experience specialization managementExperience').sort( {
         createdAt: -1
       }
 
-    ) .skip(skip) .limit(parseInt(limit));
+    ).skip(skip).limit(parseInt(limit));
 
     // Get total count for pagination
     const total=await Invitation.countDocuments(query);
@@ -1407,11 +1407,11 @@ const getReceivedInvitations=async (req, res)=> {
     const skip=(parseInt(page) - 1) * parseInt(limit);
 
     // Get invitations with pagination
-    const invitations=await Invitation.find(query) .populate('hhmId', 'name email phone experience specialization') .sort( {
+    const invitations=await Invitation.find(query).populate('hhmId', 'name email phone experience specialization').sort( {
         createdAt: -1
       }
 
-    ) .skip(skip) .limit(parseInt(limit));
+    ).skip(skip).limit(parseInt(limit));
 
     // Get total count for pagination
     const totalInvitations=await Invitation.countDocuments(query);
@@ -1544,7 +1544,7 @@ const respondToHHMInvitation=async (req, res)=> {
     }
 
     // Populate the updated invitation
-    const populatedInvitation=await Invitation.findById(invitation._id) .populate('hhmId', 'name email phone experience specialization');
+    const populatedInvitation=await Invitation.findById(invitation._id).populate('hhmId', 'name email phone experience specialization');
 
     console.log(`✅ Invitation $ {
         status
@@ -1582,6 +1582,96 @@ const respondToHHMInvitation=async (req, res)=> {
 
 ;
 
+/**
+ * @desc    Get dashboard statistics for factory
+ * @route   GET /api/factory/dashboard-stats
+ * @access  Private (Factory only)
+ */
+const getDashboardStats=async (req, res)=> {
+  try {
+    console.log('📊 getDashboardStats called by factory:', req.user?._id);
+
+    const factoryId=req.user._id;
+
+    // Get count of associated/accepted HHMs
+    const activeHHMsCount=await Invitation.countDocuments( {
+        invitationType: 'factory-to-hhm',
+        factoryId: factoryId,
+        status: 'accepted'
+      }
+
+    );
+
+    // Get count of pending bills (unpaid)
+    const pendingBillsCount=await Bill.countDocuments( {
+        factoryId: factoryId,
+        status: 'unpaid'
+      }
+
+    );
+
+    // Calculate total revenue from all paid bills
+    const revenueResult=await Bill.aggregate([ {
+        $match: {
+          factoryId: factoryId,
+          status: 'paid'
+        }
+      }
+
+      ,
+        {
+        $group: {
+
+          _id: null,
+          totalRevenue: {
+            $sum: '$totalAmount'
+          }
+        }
+      }
+
+      ]);
+
+    const totalRevenue=revenueResult.length>0 ? revenueResult[0].totalRevenue : 0;
+
+    // Get count of active maintenance jobs
+    const activeJobsCount=await Schedule.countDocuments( {
+        factoryId: factoryId,
+        jobType: 'maintenance',
+        status: 'active'
+      }
+
+    );
+
+    res.status(200).json( {
+
+        success: true,
+        data: {
+          activeHHMs: activeHHMsCount,
+          pendingBills: pendingBillsCount,
+          totalRevenue: totalRevenue,
+          activeJobs: activeJobsCount
+        }
+      }
+
+    );
+
+  }
+
+  catch (error) {
+    console.error('❌ Error getting dashboard stats:', error);
+
+    res.status(500).json( {
+        success: false,
+        message: 'Error fetching dashboard statistics',
+        error: error.message
+      }
+
+    );
+  }
+}
+
+;
+
 module.exports= {
   createBill,
   getBills,
@@ -1599,7 +1689,8 @@ module.exports= {
   removeAssociatedHHM,
   getAssociatedHHMs,
   getReceivedInvitations,
-  respondToHHMInvitation
+  respondToHHMInvitation,
+  getDashboardStats
 }
 
 ;

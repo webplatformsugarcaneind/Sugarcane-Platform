@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './FactoryDirectoryPage.css';
 
 /**
  * FactoryDirectoryPage Component
@@ -9,6 +11,7 @@ import axios from 'axios';
  * Customized for Factory user perspective with emphasis on networking and collaboration.
  */
 const FactoryDirectoryPage = () => {
+  const navigate = useNavigate();
   const [factories, setFactories] = useState([]);
   const [filteredFactories, setFilteredFactories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,43 +32,43 @@ const FactoryDirectoryPage = () => {
       setFilteredFactories([]);
       return;
     }
-    
+
     let filtered = [...factories];
 
-      // Apply search filter
-      if (searchTerm) {
-        filtered = filtered.filter(factory =>
-          factory.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          factory.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          factory.contactInfo?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          factory.contactInfo?.phone?.includes(searchTerm) ||
-          factory.description?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }    // Apply location filter
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(factory =>
+        factory.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.contactInfo?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.contactInfo?.phone?.includes(searchTerm) ||
+        factory.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }    // Apply location filter
     if (selectedLocation) {
       filtered = filtered.filter(factory =>
         factory.location?.toLowerCase().includes(selectedLocation.toLowerCase())
       );
     }
 
-      // Apply capacity filter
-      if (selectedCapacity) {
-        filtered = filtered.filter(factory => {
-          // Extract numeric value from capacity string (e.g., "2800 TCD" -> 2800)
-          const capacityStr = factory.capacity || '';
-          const factoryCapacity = parseInt(capacityStr.match(/\d+/)?.[0] || '0');
-          switch (selectedCapacity) {
-            case 'small':
-              return factoryCapacity < 1000;
-            case 'medium':
-              return factoryCapacity >= 1000 && factoryCapacity < 5000;
-            case 'large':
-              return factoryCapacity >= 5000;
-            default:
-              return true;
-          }
-        });
-      }    // Apply sorting
+    // Apply capacity filter
+    if (selectedCapacity) {
+      filtered = filtered.filter(factory => {
+        // Extract numeric value from capacity string (e.g., "2800 TCD" -> 2800)
+        const capacityStr = factory.capacity || '';
+        const factoryCapacity = parseInt(capacityStr.match(/\d+/)?.[0] || '0');
+        switch (selectedCapacity) {
+          case 'small':
+            return factoryCapacity < 1000;
+          case 'medium':
+            return factoryCapacity >= 1000 && factoryCapacity < 5000;
+          case 'large':
+            return factoryCapacity >= 5000;
+          default:
+            return true;
+        }
+      });
+    }    // Apply sorting
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'name':
@@ -98,7 +101,7 @@ const FactoryDirectoryPage = () => {
 
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setError('No authentication token found. Please login again.');
         return;
@@ -113,12 +116,12 @@ const FactoryDirectoryPage = () => {
       });
 
       console.log('Full API response:', response.data);
-      
+
       // The API returns: { success: true, data: { factories: [...] } }
       const factoryData = response.data.data?.factories || response.data.factories || response.data || [];
       console.log('Factory data received:', factoryData);
       console.log('Is array?', Array.isArray(factoryData));
-      
+
       // Ensure we always set an array
       if (Array.isArray(factoryData)) {
         setFactories(factoryData);
@@ -129,7 +132,7 @@ const FactoryDirectoryPage = () => {
     } catch (err) {
       console.error('Error fetching factories:', err);
       setError(
-        err.response?.data?.message || 
+        err.response?.data?.message ||
         'Failed to fetch factory directory. Please try again.'
       );
     } finally {
@@ -195,6 +198,10 @@ const FactoryDirectoryPage = () => {
     if (numericCapacity < 1000) return 'Small Scale';
     if (numericCapacity < 5000) return 'Medium Scale';
     return 'Large Scale';
+  };
+
+  const handleViewProfile = (factoryId) => {
+    navigate(`/factory/factory-directory/${factoryId}`);
   };
 
   return (
@@ -284,8 +291,8 @@ const FactoryDirectoryPage = () => {
             <div className="error-icon">⚠️</div>
             <h3>Error Loading Directory</h3>
             <p className="error-message">{error}</p>
-            <button 
-              onClick={fetchFactories} 
+            <button
+              onClick={fetchFactories}
               className="retry-button"
             >
               Try Again
@@ -297,7 +304,7 @@ const FactoryDirectoryPage = () => {
             <h3>No Network Connections Found</h3>
             <p>
               {searchTerm || selectedLocation || selectedCapacity
-                ? 'Try adjusting your search or filter criteria.' 
+                ? 'Try adjusting your search or filter criteria.'
                 : 'No factories are currently available in the network.'
               }
             </p>
@@ -313,7 +320,7 @@ const FactoryDirectoryPage = () => {
         ) : (
           <div className="factory-grid">
             {filteredFactories.map((factory) => (
-              <div key={factory._id} className="factory-card">
+              <div key={factory.id || factory._id} className="factory-card">
                 <div className="card-header">
                   <div className="factory-avatar">
                     <span className="avatar-icon">🏭</span>
@@ -343,11 +350,11 @@ const FactoryDirectoryPage = () => {
                       <div className="stat-item">
                         <span className="stat-label">Operating Hours:</span>
                         <span className="stat-value">
-                          {typeof factory.operatingHours === 'object' 
-                            ? (factory.operatingHours.season 
-                                ? `${factory.operatingHours.season}${factory.operatingHours.daily ? ' - ' + factory.operatingHours.daily : factory.operatingHours.monday ? ' - ' + factory.operatingHours.monday : ''}`
-                                : 'Contact for schedule'
-                              )
+                          {typeof factory.operatingHours === 'object'
+                            ? (factory.operatingHours.season
+                              ? `${factory.operatingHours.season}${factory.operatingHours.daily ? ' - ' + factory.operatingHours.daily : factory.operatingHours.monday ? ' - ' + factory.operatingHours.monday : ''}`
+                              : 'Contact for schedule'
+                            )
                             : factory.operatingHours}
                         </span>
                       </div>
@@ -392,7 +399,7 @@ const FactoryDirectoryPage = () => {
                       {factory.contactInfo?.website && (
                         <div className="contact-item">
                           <span className="contact-icon">🌐</span>
-                          <a 
+                          <a
                             href={factory.contactInfo.website.startsWith('http') ? factory.contactInfo.website : `https://${factory.contactInfo.website}`}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -411,7 +418,10 @@ const FactoryDirectoryPage = () => {
                     <button className="contact-btn primary">
                       🌐 Connect & Collaborate
                     </button>
-                    <button className="contact-btn secondary">
+                    <button
+                      className="contact-btn secondary"
+                      onClick={() => handleViewProfile(factory.id || factory._id)}
+                    >
                       📋 View Full Profile
                     </button>
                   </div>
@@ -421,428 +431,6 @@ const FactoryDirectoryPage = () => {
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        .factory-directory-page {
-          padding: 2rem;
-          max-width: 1400px;
-          margin: 0 auto;
-          background: #f8f9fa;
-          min-height: 100vh;
-        }
-
-        .page-header {
-          text-align: center;
-          margin-bottom: 2rem;
-          background: white;
-          color: #2c5530;
-          padding: 2rem;
-          border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .page-header h1 {
-          margin: 0 0 0.5rem 0;
-          font-size: 2.5rem;
-          font-weight: 600;
-          color: #2c5530;
-        }
-
-        .page-subtitle {
-          margin: 0;
-          font-size: 1.1rem;
-          color: #666;
-        }
-
-        .filter-section {
-          background: white;
-          padding: 1.5rem;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-          margin-bottom: 2rem;
-        }
-
-        .search-controls {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .search-input-group {
-          position: relative;
-          flex: 1;
-        }
-
-        .search-icon {
-          position: absolute;
-          left: 1rem;
-          top: 50%;
-          transform: translateY(-50%);
-          font-size: 1.2rem;
-          color: #666;
-        }
-
-        .search-input {
-          width: 100%;
-          padding: 1rem 1rem 1rem 3rem;
-          border: 2px solid #e1e5e9;
-          border-radius: 8px;
-          font-size: 1rem;
-          transition: all 0.2s;
-          box-sizing: border-box;
-        }
-
-        .search-input:focus {
-          outline: none;
-          border-color: #2c5530;
-          box-shadow: 0 0 0 3px rgba(44, 85, 48, 0.1);
-        }
-
-        .filter-controls {
-          display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
-        }
-
-        .filter-select, .sort-select {
-          padding: 0.75rem;
-          border: 2px solid #e1e5e9;
-          border-radius: 8px;
-          background: white;
-          font-size: 0.9rem;
-          min-width: 150px;
-          transition: border-color 0.2s;
-        }
-
-        .filter-select:focus, .sort-select:focus {
-          outline: none;
-          border-color: #2c5530;
-        }
-
-        .clear-filters-btn {
-          padding: 0.75rem 1.5rem;
-          background-color: #ff6b6b;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 0.9rem;
-        }
-
-        .clear-filters-btn:hover {
-          background-color: #e55555;
-          transform: translateY(-1px);
-        }
-
-        .results-info {
-          margin-top: 1rem;
-          padding-top: 1rem;
-          border-top: 1px solid #e1e5e9;
-        }
-
-        .results-count {
-          color: #2c5530;
-          font-weight: 500;
-        }
-
-        .content-section {
-          margin-top: 2rem;
-        }
-
-        .loading-container, .error-container, .empty-state {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 4rem 2rem;
-          text-align: center;
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .loading-spinner {
-          width: 40px;
-          height: 40px;
-          border: 4px solid #e0e0e0;
-          border-top: 4px solid #4caf50;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        .error-icon, .empty-icon {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-        }
-
-        .error-message {
-          color: #666;
-          margin-bottom: 1.5rem;
-        }
-
-        .retry-button {
-          padding: 0.75rem 1.5rem;
-          background: #4caf50;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 1rem;
-          transition: background 0.2s;
-        }
-
-        .retry-button:hover {
-          background: #ee5a24;
-        }
-
-        .factory-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-          gap: 2rem;
-        }
-
-        .factory-card {
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-          overflow: hidden;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .factory-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-          border-color: rgba(76, 124, 89, 0.2);
-        }
-
-        .card-header {
-          display: flex;
-          align-items: flex-start;
-          gap: 1rem;
-          padding: 1.5rem;
-          background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
-          border-bottom: 1px solid #e1e5e9;
-        }
-
-        .factory-avatar {
-          background: linear-gradient(135deg, #2c5530, #4caf50);
-          color: white;
-          width: 50px;
-          height: 50px;
-          border-radius: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.5rem;
-          flex-shrink: 0;
-        }
-
-        .factory-basic-info {
-          flex: 1;
-        }
-
-        .factory-name {
-          margin: 0 0 0.5rem 0;
-          font-size: 1.3rem;
-          font-weight: 600;
-          color: #2c5530;
-        }
-
-        .factory-location {
-          margin: 0;
-          color: #666;
-          font-size: 0.9rem;
-        }
-
-        .capacity-badge {
-          padding: 0.5rem 1rem;
-          border-radius: 20px;
-          color: white;
-          font-size: 0.8rem;
-          font-weight: 500;
-          white-space: nowrap;
-        }
-
-        .card-body {
-          padding: 1.5rem;
-        }
-
-        .factory-stats {
-          margin-bottom: 1.5rem;
-        }
-
-        .stat-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0.5rem 0;
-          border-bottom: 1px solid #f0f2f5;
-        }
-
-        .stat-item:last-child {
-          border-bottom: none;
-        }
-
-        .stat-label {
-          color: #666;
-          font-size: 0.9rem;
-        }
-
-        .stat-value {
-          font-weight: 500;
-          color: #2c3e50;
-        }
-
-        .factory-description {
-          margin-bottom: 1.5rem;
-          padding: 1rem;
-          background: #f1f8e9;
-          border-left: 4px solid #4caf50;
-          border-radius: 0 8px 8px 0;
-        }
-
-        .factory-description p {
-          margin: 0;
-          color: #555;
-          line-height: 1.5;
-        }
-
-        .collaboration-opportunities {
-          margin-bottom: 1.5rem;
-        }
-
-        .collaboration-opportunities h4 {
-          margin: 0 0 1rem 0;
-          color: #2c3e50;
-          font-size: 1rem;
-        }
-
-        .opportunity-tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-        }
-
-        .opportunity-tag {
-          background: linear-gradient(135deg, #2c5530 0%, #4caf50 100%);
-          color: white;
-          padding: 0.4rem 0.8rem;
-          border-radius: 15px;
-          font-size: 0.8rem;
-          font-weight: 500;
-        }
-
-        .contact-info h4 {
-          margin: 0 0 1rem 0;
-          color: #2c3e50;
-          font-size: 1rem;
-        }
-
-        .contact-details {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .contact-item {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .contact-icon {
-          font-size: 1rem;
-        }
-
-        .contact-link {
-          color: #4caf50;
-          text-decoration: none;
-          font-size: 0.9rem;
-          transition: color 0.2s;
-        }
-
-        .contact-link:hover {
-          color: #2c5530;
-          text-decoration: underline;
-        }
-
-        .card-footer {
-          padding: 1rem 1.5rem;
-          background: #f1f8e9;
-          border-top: 1px solid #e1e5e9;
-        }
-
-        .action-buttons {
-          display: flex;
-          gap: 1rem;
-        }
-
-        .contact-btn {
-          flex: 1;
-          padding: 0.75rem 1rem;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 0.9rem;
-          font-weight: 500;
-          transition: all 0.2s;
-        }
-
-        .contact-btn.primary {
-          background: linear-gradient(135deg, #2c5530 0%, #4caf50 100%);
-          color: white;
-        }
-
-        .contact-btn.primary:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 15px rgba(44, 95, 45, 0.3);
-        }
-
-        .contact-btn.secondary {
-          background: white;
-          color: #4a7c59;
-          border: 2px solid #4a7c59;
-        }
-
-        .contact-btn.secondary:hover {
-          background: #4a7c59;
-          color: white;
-          transform: translateY(-1px);
-        }
-
-        @media (max-width: 768px) {
-          .factory-directory-page {
-            padding: 1rem;
-          }
-
-          .page-header h1 {
-            font-size: 2rem;
-          }
-
-          .filter-controls {
-            flex-direction: column;
-          }
-
-          .filter-select, .sort-select {
-            min-width: auto;
-          }
-
-          .factory-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .action-buttons {
-            flex-direction: column;
-          }
-        }
-      `}</style>
     </div>
   );
 };
