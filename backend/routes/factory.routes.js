@@ -22,13 +22,25 @@ const {
   removeAssociatedHHM,
   getAssociatedHHMs,
   getReceivedInvitations,
-  respondToHHMInvitation
+  respondToHHMInvitation,
+  getDashboardStats
 } = require('../controllers/factory.controller');
 
 // Apply protection and authorization to all routes in this file
 // All routes require user to be authenticated and have 'Factory' role
 router.use(protect);
 router.use(authorize('Factory'));
+
+// ===================================
+// DASHBOARD API ROUTES
+// ===================================
+
+/**
+ * @route   GET /api/factory/dashboard-stats
+ * @desc    Get dashboard statistics (active HHMs, pending bills, total revenue, active jobs)
+ * @access  Private (Factory only)
+ */
+router.get('/dashboard-stats', getDashboardStats);
 
 // ===================================
 // PROFILE API ROUTES

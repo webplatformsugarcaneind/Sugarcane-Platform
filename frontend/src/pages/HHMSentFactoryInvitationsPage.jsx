@@ -108,9 +108,11 @@ const HHMSentFactoryInvitationsPage = () => {
 
     return (
         <div className="hhm-sent-invitations-page">
-            <div className="page-header">
+            <div className="page-header" style={{
+                background: 'linear - gradient(135deg, #245305 0 %, #3a6b1f 100 %)'
+}}>
                 <h1>📤 Sent Factory Invitations</h1>
-                <p className="subtitle">Track partnership requests you've sent to factories</p>
+                {/* <p className="subtitle">Track partnership requests you've sent to factories</p> */}
             </div>
 
             {error && (

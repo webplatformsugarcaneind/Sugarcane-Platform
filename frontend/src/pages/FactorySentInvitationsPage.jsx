@@ -165,19 +165,14 @@ const FactorySentInvitationsPage = () => {
     const filteredInvitations = getFilteredInvitations();
 
     if (loading) {
-        return (<div className="sent-invitations-page"> <div className="loading-spinner"> <div className="spinner"></div> <p>Loading invitations...</p> </div> </div>);
-    }
-
-    if (error) {
-        return (<div className="sent-invitations-page"> <div className="error-state"> <div className="error-icon">⚠️</div> <h3>Error Loading Invitations</h3> <p> {
-            error
-        }
-
-        </p> <button className="btn btn-primary" onClick={
-            fetchInvitations
-        }
-
-        > 🔄 Retry </button> </div> </div>);
+        return (
+            <div className="sent-invitations-page">
+                <div className="loading-container">
+                    <div className="spinner"></div>
+                    <p>Loading invitations...</p>
+                </div>
+            </div>
+        );
     }
 
     return (<div className="sent-invitations-page"> {
@@ -185,24 +180,11 @@ const FactorySentInvitationsPage = () => {
     }
 
         <div className="page-header"> <div className="header-content"> <h1>📨 Sent Invitations to HHMs</h1> <p>Track and manage your invitations to Harvest Managers</p> </div> </div> {
-            /* Search and Tabs */
+            /* Filter Tabs */
         }
 
-        <div className="controls-section"> <div className="search-box"> <span className="search-icon">🔍</span> <input type="text"
-            placeholder="Search by HHM name, location, or message..."
-
-            value={
-                searchTerm
-            }
-
-            onChange={
-                (e) => setSearchTerm(e.target.value)
-            }
-
-            className="search-input"
-
-        /> </div> <div className="tabs"> <button className={
-            `tab $ {
+        <div className="filter-tabs"> <button className={
+            `filter-tab $ {
                 activeTab==='all'? 'active' : ''
             }
 
@@ -218,7 +200,7 @@ const FactorySentInvitationsPage = () => {
             }
 
             ) </button> <button className={
-                `tab $ {
+                `filter-tab $ {
                 activeTab==='pending'? 'active' : ''
             }
 
@@ -230,42 +212,42 @@ const FactorySentInvitationsPage = () => {
                 }
 
             > ⏳ Pending ( {
-                        invitations.filter(i => i.status === 'pending').length
-                    }
+                    invitations.filter(i => i.status === 'pending').length
+                }
 
-                    ) </button> <button className={
-                        `tab $ {
+                ) </button> <button className={
+                    `filter-tab $ {
                 activeTab==='accepted'? 'active' : ''
             }
 
             `
+                }
+
+                    onClick={
+                        () => setActiveTab('accepted')
                     }
 
-                        onClick={
-                            () => setActiveTab('accepted')
-                        }
+                > ✅ Accepted ( {
+                    invitations.filter(i => i.status === 'accepted').length
+                }
 
-                    > ✅ Accepted ( {
-                        invitations.filter(i => i.status === 'accepted').length
-                    }
-
-                    ) </button> <button className={
-                        `tab $ {
+                ) </button> <button className={
+                    `filter-tab $ {
                 activeTab==='declined'? 'active' : ''
             }
 
             `
+                }
+
+                    onClick={
+                        () => setActiveTab('declined')
                     }
 
-                        onClick={
-                            () => setActiveTab('declined')
-                        }
+                > ❌ Declined ( {
+                    invitations.filter(i => i.status === 'declined').length
+                }
 
-                    > ❌ Declined ( {
-                        invitations.filter(i => i.status === 'declined').length
-                    }
-
-                    ) </button> </div> </div> {
+                ) </button> </div> {
             /* Invitations List */
         }
 

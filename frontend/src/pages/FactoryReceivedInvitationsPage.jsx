@@ -156,8 +156,10 @@ const FactoryReceivedInvitationsPage = () => {
     return (
         <div className="factory-received-invitations-page">
             <div className="page-header">
-                <h1>📥 Received HHM Invitations</h1>
-                <p className="subtitle">Partnership requests from Hub Head Managers</p>
+                <div className="header-content">
+                    <h1>📥 Received HHM Invitations</h1>
+                    <p>Review and respond to partnership requests from Harvest Managers</p>
+                </div>
             </div>
 
             {error && (
@@ -220,16 +222,16 @@ const FactoryReceivedInvitationsPage = () => {
                             <div key={invitation._id} className="invitation-card">
                                 <div className="card-header">
                                     <div className="hhm-info">
-                                        <h3>{invitation.hhmId?.name || 'Unknown HHM'}</h3>
-                                        <p className="hhm-experience">
-                                            💼 {invitation.hhmId?.experience || 'Experience not specified'}
-                                        </p>
+                                        <div className="hhm-avatar">🌾</div>
+                                        <div className="hhm-details">
+                                            <h3>{invitation.hhmId?.name || 'Unknown HHM'}</h3>
+                                            <p className="hhm-location">
+                                                📍 {invitation.hhmId?.location || 'Location not specified'}
+                                            </p>
+                                        </div>
                                     </div>
                                     <span className={`status-badge ${getStatusBadgeClass(invitation.status)}`}>
-                                        {invitation.status === 'pending' && '⏳ '}
-                                        {invitation.status === 'accepted' && '✅ '}
-                                        {invitation.status === 'declined' && '❌ '}
-                                        {invitation.status.charAt(0).toUpperCase() + invitation.status.slice(1)}
+                                        {invitation.status.toUpperCase()}
                                     </span>
                                 </div>
 
@@ -275,13 +277,20 @@ const FactoryReceivedInvitationsPage = () => {
                                     </div>
 
                                     {invitation.status === 'pending' && (
-                                        <div className="action-buttons">
+                                        <div className="card-footer">
                                             <button
-                                                className="btn-respond btn-accept"
+                                                className="action-button accept-button"
                                                 onClick={() => handleRespond(invitation)}
                                                 disabled={processingId === invitation._id}
                                             >
-                                                {processingId === invitation._id ? 'Processing...' : '📝 Respond'}
+                                                {processingId === invitation._id ? '⏳ Processing...' : '✅ Accept & Respond'}
+                                            </button>
+                                            <button
+                                                className="action-button decline-button"
+                                                onClick={() => handleRespond(invitation)}
+                                                disabled={processingId === invitation._id}
+                                            >
+                                                ❌ Decline
                                             </button>
                                         </div>
                                     )}

@@ -21,6 +21,13 @@ const HHMFactoryDirectoryPage = () => {
   const [selectedCapacity, setSelectedCapacity] = useState('');
   const [sortBy, setSortBy] = useState('name');
 
+  // Invitation modal states
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [selectedFactory, setSelectedFactory] = useState(null);
+  const [invitationMessage, setInvitationMessage] = useState('');
+  const [sendingInvitation, setSendingInvitation] = useState(false);
+  const [invitationSuccess, setInvitationSuccess] = useState(null);
+
   useEffect(() => {
     fetchFactories();
   }, []);
@@ -169,18 +176,30 @@ const HHMFactoryDirectoryPage = () => {
 
     console.log('🔍 Using Factory ID:', factoryId);
 
-    // Confirm before sending invitation
-    const confirmMessage = `Send partnership invitation to ${factory.name || 'this factory'}?`;
-    if (!window.confirm(confirmMessage)) {
-      return;
-    }
+    // Open modal instead of confirm dialog
+    setSelectedFactory(factory);
+    setInvitationMessage('');
+    setInvitationSuccess(null);
+    setShowInviteModal(true);
+  };
+
+  const handleSendInvitation = async () => {
+    if (!selectedFactory) return;
+
+    const factoryId = selectedFactory._id || selectedFactory.id || selectedFactory.userId;
+
+    setSendingInvitation(true);
+    setInvitationSuccess(null);
 
     try {
       const token = localStorage.getItem('token');
 
       if (!token) {
-        alert('❌ Please login to send invitations');
-        navigate('/login');
+        setInvitationSuccess({
+          type: 'error',
+          message: '❌ Please login to send invitations'
+        });
+        setTimeout(() => navigate('/login'), 2000);
         return;
       }
 
@@ -190,7 +209,7 @@ const HHMFactoryDirectoryPage = () => {
         '/api/hhm/invite-factory',
         {
           factoryId: factoryId,
-          personalMessage: `I would like to establish a partnership with ${factory.name}`,
+          personalMessage: invitationMessage || `I would like to establish a partnership with ${selectedFactory.name}`,
           invitationReason: 'Seeking collaboration opportunities for worker placement and operations'
         },
         {
@@ -204,9 +223,16 @@ const HHMFactoryDirectoryPage = () => {
       console.log('✅ Response:', response.data);
 
       if (response.data.success) {
-        alert(`✅ Partnership invitation sent to ${factory.name} successfully!`);
-        // Optionally refresh the factories to update UI
-        fetchFactories();
+        setInvitationSuccess({
+          type: 'success',
+          message: `✅ Partnership invitation sent to ${selectedFactory.name} successfully!`
+        });
+        // Close modal after 2 seconds
+        setTimeout(() => {
+          setShowInviteModal(false);
+          setSelectedFactory(null);
+          setInvitationMessage('');
+        }, 2000);
       }
     } catch (err) {
       console.error('❌ Full error object:', err);
@@ -214,14 +240,20 @@ const HHMFactoryDirectoryPage = () => {
       console.error('❌ Error response data:', err.response?.data);
 
       // Handle specific error messages
-      if (err.response?.status === 400) {
-        alert(`⚠️ ${err.response.data.message}`);
-      } else if (err.response?.status === 404) {
-        alert(`❌ Factory not found. Backend says: ${err.response?.data?.message || 'No details'}`);
-      } else {
-        alert(`❌ Failed to send invitation. Error: ${err.response?.data?.message || err.message}`);
-      }
+      setInvitationSuccess({
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to send invitation. Please try again.'
+      });
+    } finally {
+      setSendingInvitation(false);
     }
+  };
+
+  const closeInviteModal = () => {
+    setShowInviteModal(false);
+    setSelectedFactory(null);
+    setInvitationMessage('');
+    setInvitationSuccess(null);
   };
 
   const handleLocationChange = (e) => {
@@ -533,6 +565,71 @@ const HHMFactoryDirectoryPage = () => {
           </div>
         )}
       </div>
+
+      {/* Invitation Modal */}
+      {showInviteModal && selectedFactory && (
+        <div className="modal-overlay" onClick={closeInviteModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>📨 Send Invitation to {selectedFactory.name}</h2>
+              <button className="modal-close" onClick={closeInviteModal}>×</button>
+            </div>
+
+            <div className="modal-body">
+              {invitationSuccess ? (
+                <div className={`alert ${invitationSuccess.type === 'success' ? 'alert-success' : 'alert-error'}`}>
+                  {invitationSuccess.message}
+                </div>
+              ) : (
+                <>
+                  <div className="factory-preview">
+                    <div className="factory-preview-avatar">🏭</div>
+                    <div className="factory-preview-info">
+                      <h3>{selectedFactory.name}</h3>
+                      <p>📍 {selectedFactory.location || 'Location not specified'}</p>
+                      <p>📧 {selectedFactory.email}</p>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="invitation-message">Message (Optional)</label>
+                    <textarea
+                      id="invitation-message"
+                      value={invitationMessage}
+                      onChange={(e) => setInvitationMessage(e.target.value)}
+                      placeholder="Add a personal message to your invitation..."
+                      rows="4"
+                      className="invitation-textarea"
+                    />
+                    <small className="form-hint">
+                      Explain why you'd like to partner with this Factory
+                    </small>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {!invitationSuccess && (
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={closeInviteModal}
+                  disabled={sendingInvitation}
+                >
+                  CANCEL
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleSendInvitation}
+                  disabled={sendingInvitation}
+                >
+                  {sendingInvitation ? 'Sending...' : '📨 SEND INVITATION'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .factory-directory-page {
@@ -911,6 +1008,241 @@ const HHMFactoryDirectoryPage = () => {
           border: 2px solid #4a7c59;
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.6);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+          animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .modal-content {
+          background: white;
+          border-radius: 16px;
+          width: 90%;
+          max-width: 550px;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+          from {
+            transform: translateY(50px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+
+        .modal-header {
+          padding: 1.5rem 2rem;
+          border-bottom: 2px solid #f0f0f0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h2 {
+          margin: 0;
+          color: #2c5f2d;
+          font-size: 1.5rem;
+          font-weight: 700;
+        }
+
+        .modal-close {
+          background: none;
+          border: none;
+          font-size: 2rem;
+          color: #666;
+          cursor: pointer;
+          padding: 0;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+          background: rgba(0, 0, 0, 0.1);
+          color: #333;
+        }
+
+        .modal-body {
+          padding: 2rem;
+        }
+
+        .factory-preview {
+          display: flex;
+          gap: 1.5rem;
+          padding: 1.5rem;
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          border-radius: 12px;
+          margin-bottom: 1.5rem;
+          border-left: 4px solid #4a7c59;
+        }
+
+        .factory-preview-avatar {
+          font-size: 3rem;
+          width: 80px;
+          height: 80px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .factory-preview-info {
+          flex: 1;
+        }
+
+        .factory-preview-info h3 {
+          margin: 0 0 0.5rem 0;
+          color: #2c5f2d;
+          font-size: 1.3rem;
+          font-weight: 700;
+        }
+
+        .factory-preview-info p {
+          margin: 0.25rem 0;
+          color: #555;
+          font-size: 0.95rem;
+        }
+
+        .form-group {
+          margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          color: #333;
+          font-weight: 600;
+          font-size: 1rem;
+        }
+
+        .invitation-textarea {
+          width: 100%;
+          padding: 1rem;
+          border: 2px solid #e0e0e0;
+          border-radius: 10px;
+          font-size: 1rem;
+          font-family: inherit;
+          resize: vertical;
+          transition: border-color 0.3s;
+        }
+
+        .invitation-textarea:focus {
+          outline: none;
+          border-color: #4a7c59;
+          box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+        }
+
+        .form-hint {
+          display: block;
+          margin-top: 0.5rem;
+          color: #666;
+          font-size: 0.85rem;
+          font-style: italic;
+        }
+
+        .alert {
+          padding: 1.25rem;
+          border-radius: 10px;
+          margin-bottom: 1rem;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .alert-success {
+          background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+          color: #155724;
+          border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+          background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+          color: #721c24;
+          border-left: 4px solid #dc3545;
+        }
+
+        .modal-footer {
+          padding: 1.5rem 2rem;
+          border-top: 2px solid #f0f0f0;
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+          background: #f8f9fa;
+          border-radius: 0 0 16px 16px;
+        }
+
+        .btn {
+          padding: 0.85rem 2rem;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .btn-primary {
+          background: linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%);
+          color: white;
+          box-shadow: 0 4px 12px rgba(44, 95, 45, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(44, 95, 45, 0.4);
+        }
+
+        .btn-secondary {
+          background: white;
+          color: #666;
+          border: 2px solid #ddd;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+          background: #f8f9fa;
+          border-color: #999;
+        }
+
         @media (max-width: 768px) {
           .factory-directory-page {
             padding: 1rem;
@@ -934,6 +1266,29 @@ const HHMFactoryDirectoryPage = () => {
 
           .action-buttons {
             flex-direction: column;
+          }
+
+          .modal-content {
+            width: 95%;
+            max-height: 95vh;
+          }
+
+          .modal-header, .modal-body, .modal-footer {
+            padding: 1.25rem;
+          }
+
+          .factory-preview {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+          }
+
+          .modal-footer {
+            flex-direction: column;
+          }
+
+          .btn {
+            width: 100%;
           }
         }
       `}</style>

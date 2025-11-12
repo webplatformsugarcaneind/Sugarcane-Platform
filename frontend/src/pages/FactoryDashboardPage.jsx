@@ -10,6 +10,13 @@ const FactoryDashboardPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [dashboardStats, setDashboardStats] = useState({
+    activeHHMs: 0,
+    pendingBills: 0,
+    totalRevenue: 0,
+    activeJobs: 0
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
   const navigate = useNavigate();
 
   // Get user information on component mount
@@ -23,6 +30,34 @@ const FactoryDashboardPage = () => {
         console.error('Error parsing user data:', error);
       }
     }
+  }, []);
+
+  // Fetch dashboard statistics
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/factory/dashboard-stats', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          setDashboardStats(data.data);
+        } else {
+          console.error('Failed to fetch dashboard stats:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchDashboardStats();
   }, []);
 
   const handlePostBill = () => {
@@ -172,6 +207,37 @@ const FactoryDashboardPage = () => {
             <div className="card-arrow">
               →
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Stats Section */}
+      <div className="quick-stats-section">
+        <h2 className="section-title">Quick Overview</h2>
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-number">
+              {statsLoading ? '...' : dashboardStats.activeHHMs}
+            </div>
+            <div className="stat-label">Active HHMs</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">
+              {statsLoading ? '...' : dashboardStats.pendingBills}
+            </div>
+            <div className="stat-label">Pending Bills</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">
+              {statsLoading ? '...' : `₹${dashboardStats.totalRevenue.toLocaleString()}`}
+            </div>
+            <div className="stat-label">Total Revenue</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">
+              {statsLoading ? '...' : dashboardStats.activeJobs}
+            </div>
+            <div className="stat-label">Active Jobs</div>
           </div>
         </div>
       </div>

@@ -21,6 +21,7 @@ import FarmerFactoryDirectoryPage from './pages/FarmerFactoryDirectoryPage.jsx';
 import HHMFactoryDirectoryPage from './pages/HHMFactoryDirectoryPage.jsx';
 import HHMSpecificFactoryPage from './pages/HHMSpecificFactoryPage.jsx';
 import FactoryDirectoryPage from './pages/FactoryDirectoryPage.jsx';
+import FactoryProfilePage from './pages/FactoryProfilePage.jsx';
 import HHMDashboardPage from './pages/HHMDashboardPage.jsx';
 import HHMFactoryInvitationsPage from './pages/HHMFactoryInvitationsPage.jsx';
 import HHMSentFactoryInvitationsPage from './pages/HHMSentFactoryInvitationsPage.jsx';
@@ -670,6 +671,11 @@ function App() {
                 <Route path="factory-directory" element={
                   <SafeComponent name="FactoryDirectoryPage">
                     <FactoryDirectoryPage />
+                  </SafeComponent>
+                } />
+                <Route path="factory-directory/:id" element={
+                  <SafeComponent name="FactoryProfilePage">
+                    <FactoryProfilePage />
                   </SafeComponent>
                 } />
                 <Route path="contracts" element={

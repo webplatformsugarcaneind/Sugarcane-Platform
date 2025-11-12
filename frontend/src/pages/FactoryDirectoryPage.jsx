@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './FactoryDirectoryPage.css';
 
 /**
  * FactoryDirectoryPage Component
@@ -31,43 +32,43 @@ const FactoryDirectoryPage = () => {
       setFilteredFactories([]);
       return;
     }
-    
+
     let filtered = [...factories];
 
-      // Apply search filter
-      if (searchTerm) {
-        filtered = filtered.filter(factory =>
-          factory.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          factory.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          factory.contactInfo?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          factory.contactInfo?.phone?.includes(searchTerm) ||
-          factory.description?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }    // Apply location filter
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(factory =>
+        factory.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.contactInfo?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.contactInfo?.phone?.includes(searchTerm) ||
+        factory.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }    // Apply location filter
     if (selectedLocation) {
       filtered = filtered.filter(factory =>
         factory.location?.toLowerCase().includes(selectedLocation.toLowerCase())
       );
     }
 
-      // Apply capacity filter
-      if (selectedCapacity) {
-        filtered = filtered.filter(factory => {
-          // Extract numeric value from capacity string (e.g., "2800 TCD" -> 2800)
-          const capacityStr = factory.capacity || '';
-          const factoryCapacity = parseInt(capacityStr.match(/\d+/)?.[0] || '0');
-          switch (selectedCapacity) {
-            case 'small':
-              return factoryCapacity < 1000;
-            case 'medium':
-              return factoryCapacity >= 1000 && factoryCapacity < 5000;
-            case 'large':
-              return factoryCapacity >= 5000;
-            default:
-              return true;
-          }
-        });
-      }    // Apply sorting
+    // Apply capacity filter
+    if (selectedCapacity) {
+      filtered = filtered.filter(factory => {
+        // Extract numeric value from capacity string (e.g., "2800 TCD" -> 2800)
+        const capacityStr = factory.capacity || '';
+        const factoryCapacity = parseInt(capacityStr.match(/\d+/)?.[0] || '0');
+        switch (selectedCapacity) {
+          case 'small':
+            return factoryCapacity < 1000;
+          case 'medium':
+            return factoryCapacity >= 1000 && factoryCapacity < 5000;
+          case 'large':
+            return factoryCapacity >= 5000;
+          default:
+            return true;
+        }
+      });
+    }    // Apply sorting
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'name':
@@ -101,7 +102,7 @@ const FactoryDirectoryPage = () => {
 
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setError('No authentication token found. Please login again.');
         return;
@@ -116,12 +117,12 @@ const FactoryDirectoryPage = () => {
       });
 
       console.log('Full API response:', response.data);
-      
+
       // The API returns: { success: true, data: { factories: [...] } }
       const factoryData = response.data.data?.factories || response.data.factories || response.data || [];
       console.log('Factory data received:', factoryData);
       console.log('Is array?', Array.isArray(factoryData));
-      
+
       // Ensure we always set an array
       if (Array.isArray(factoryData)) {
         setFactories(factoryData);
@@ -132,7 +133,7 @@ const FactoryDirectoryPage = () => {
     } catch (err) {
       console.error('Error fetching factories:', err);
       setError(
-        err.response?.data?.message || 
+        err.response?.data?.message ||
         'Failed to fetch factory directory. Please try again.'
       );
     } finally {
@@ -190,6 +191,10 @@ const FactoryDirectoryPage = () => {
     if (numericCapacity < 1000) return 'Small Scale';
     if (numericCapacity < 5000) return 'Medium Scale';
     return 'Large Scale';
+  };
+
+  const handleViewProfile = (factoryId) => {
+    navigate(`/factory/factory-directory/${factoryId}`);
   };
 
   return (
@@ -279,8 +284,8 @@ const FactoryDirectoryPage = () => {
             <div className="error-icon">⚠️</div>
             <h3>Error Loading Directory</h3>
             <p className="error-message">{error}</p>
-            <button 
-              onClick={fetchFactories} 
+            <button
+              onClick={fetchFactories}
               className="retry-button"
             >
               Try Again
@@ -292,7 +297,7 @@ const FactoryDirectoryPage = () => {
             <h3>No Network Connections Found</h3>
             <p>
               {searchTerm || selectedLocation || selectedCapacity
-                ? 'Try adjusting your search or filter criteria.' 
+                ? 'Try adjusting your search or filter criteria.'
                 : 'No factories are currently available in the network.'
               }
             </p>
@@ -308,7 +313,7 @@ const FactoryDirectoryPage = () => {
         ) : (
           <div className="factory-grid">
             {filteredFactories.map((factory) => (
-              <div key={factory._id} className="factory-card">
+              <div key={factory.id || factory._id} className="factory-card">
                 <div className="card-header">
                   <div className="factory-avatar">
                     <span className="avatar-icon">🏭</span>
@@ -338,11 +343,11 @@ const FactoryDirectoryPage = () => {
                       <div className="stat-item">
                         <span className="stat-label">Operating Hours:</span>
                         <span className="stat-value">
-                          {typeof factory.operatingHours === 'object' 
-                            ? (factory.operatingHours.season 
-                                ? `${factory.operatingHours.season}${factory.operatingHours.daily ? ' - ' + factory.operatingHours.daily : factory.operatingHours.monday ? ' - ' + factory.operatingHours.monday : ''}`
-                                : 'Contact for schedule'
-                              )
+                          {typeof factory.operatingHours === 'object'
+                            ? (factory.operatingHours.season
+                              ? `${factory.operatingHours.season}${factory.operatingHours.daily ? ' - ' + factory.operatingHours.daily : factory.operatingHours.monday ? ' - ' + factory.operatingHours.monday : ''}`
+                              : 'Contact for schedule'
+                            )
                             : factory.operatingHours}
                         </span>
                       </div>
@@ -387,7 +392,7 @@ const FactoryDirectoryPage = () => {
                       {factory.contactInfo?.website && (
                         <div className="contact-item">
                           <span className="contact-icon">🌐</span>
-                          <a 
+                          <a
                             href={factory.contactInfo.website.startsWith('http') ? factory.contactInfo.website : `https://${factory.contactInfo.website}`}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -403,9 +408,12 @@ const FactoryDirectoryPage = () => {
 
                 <div className="card-footer">
                   <div className="action-buttons">
-                    <button 
-                      className="contact-btn primary"
-                      onClick={() => handleViewProfile(factory)}
+                    <button className="contact-btn primary">
+                      🌐 Connect & Collaborate
+                    </button>
+                    <button
+                      className="contact-btn secondary"
+                      onClick={() => handleViewProfile(factory.id || factory._id)}
                       title="View detailed factory profile"
                     >
                       📋 View Full Profile
