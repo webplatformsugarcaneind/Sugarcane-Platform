@@ -1,0 +1,415 @@
+.farmer-contracts-dashboard {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-content h1 {
+  color: #2c5530;
+  margin-bottom: 8px;
+  font-size: 28px;
+}
+
+.header-content p {
+  color: #666;
+  margin: 0;
+}
+
+.new-contract-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.new-contract-btn:hover {
+  background: #218838;
+}
+
+.filter-section {
+  background: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-tabs button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.filter-tabs button:hover {
+  background: #f8f9fa;
+  border-color: #28a745;
+}
+
+.filter-tabs button.active {
+  background: #28a745;
+  color: white;
+  border-color: #28a745;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #f5c6cb;
+}
+
+.no-contracts {
+  background: white;
+  padding: 60px 40px;
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.no-contracts-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+}
+
+.no-contracts h3 {
+  color: #2c5530;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.no-contracts p {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.browse-hhms-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.browse-hhms-btn:hover {
+  background: #0056b3;
+}
+
+.contracts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.contract-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contract-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.contract-header {
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.hhm-info h3 {
+  color: #2c5530;
+  margin-bottom: 5px;
+  font-size: 18px;
+}
+
+.hhm-info p {
+  color: #666;
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+.contract-status {
+  text-align: right;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-accepted {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status-cancelled {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.request-date {
+  font-size: 12px;
+  color: #666;
+}
+
+.contract-summary {
+  padding: 15px 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-item strong {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 3px;
+  font-weight: 600;
+}
+
+.summary-item span {
+  color: #333;
+  font-size: 14px;
+}
+
+.contract-details {
+  padding: 20px;
+}
+
+.detail-row {
+  margin-bottom: 15px;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-row strong {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.detail-row span,
+.detail-row p {
+  color: #333;
+  font-size: 14px;
+  margin: 0;
+}
+
+.contract-footer {
+  padding: 20px;
+  border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.pending-info,
+.accepted-info,
+.rejected-info,
+.cancelled-info {
+  text-align: center;
+}
+
+.status-text {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.pending-info .status-text {
+  color: #856404;
+}
+
+.accepted-info .status-text {
+  color: #155724;
+}
+
+.rejected-info .status-text,
+.cancelled-info .status-text {
+  color: #721c24;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.contact-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.contact-btn.phone {
+  background: #17a2b8;
+  color: white;
+}
+
+.contact-btn.phone:hover {
+  background: #138496;
+}
+
+.contact-btn.email {
+  background: #6c757d;
+  color: white;
+}
+
+.contact-btn.email:hover {
+  background: #5a6268;
+}
+
+.retry-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.retry-btn:hover {
+  background: #0056b3;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px;
+  font-size: 18px;
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .farmer-contracts-dashboard {
+    padding: 10px;
+  }
+  
+  .dashboard-header {
+    padding: 15px;
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+    text-align: center;
+  }
+  
+  .filter-section {
+    padding: 15px;
+  }
+  
+  .contract-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .contract-status {
+    text-align: left;
+  }
+  
+  .contract-summary {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .contact-actions {
+    flex-direction: column;
+  }
+  
+  .filter-tabs {
+    justify-content: center;
+  }
+  
+  .filter-tabs button {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content h1 {
+    font-size: 24px;
+  }
+  
+  .no-contracts {
+    padding: 40px 20px;
+  }
+  
+  .no-contracts-icon {
+    font-size: 36px;
+  }
+  
+  .contract-card {
+    border-radius: 4px;
+  }
+}

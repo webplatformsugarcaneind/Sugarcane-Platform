@@ -1,62 +1,88 @@
 const mongoose = require('mongoose');
 
 const cropListingSchema = new mongoose.Schema({
-  farmerId: {
+  farmer_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  type: {
+  status: {
     type: String,
-    enum: ['sell', 'buy'],
-    required: true
+    required: true,
+    enum: ['active', 'sold', 'expired'],
+    default: 'active'
   },
-  cropName: {
+  title: {
     type: String,
     required: true,
     trim: true
   },
-  quantity: {
+  crop_variety: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  quantity_in_tons: {
     type: Number,
     required: true,
     min: 0
   },
-  price: {
+  expected_price_per_ton: {
     type: Number,
     required: true,
     min: 0
+  },
+  harvest_availability_date: {
+    type: Date,
+    required: true
   },
   location: {
     type: String,
     required: true,
     trim: true
   },
-  status: {
+  description: {
     type: String,
-    enum: ['active', 'closed'],
-    default: 'active'
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
+    required: false,
+    trim: true
   }
 }, {
   timestamps: true // This adds createdAt and updatedAt automatically
 });
 
 // Add indexes for better query performance
-cropListingSchema.index({ farmerId: 1 });
-cropListingSchema.index({ type: 1 });
-cropListingSchema.index({ cropName: 1 });
+cropListingSchema.index({ farmer_id: 1 });
 cropListingSchema.index({ status: 1 });
+cropListingSchema.index({ crop_variety: 1 });
+cropListingSchema.index({ harvest_availability_date: 1 });
 cropListingSchema.index({ createdAt: -1 });
+cropListingSchema.index({ location: 1 });
 
 // Virtual for formatted price
-cropListingSchema.virtual('formattedPrice').get(function() {
-  return `₹${this.price.toLocaleString()}`;
+cropListingSchema.virtual('formattedPricePerTon').get(function() {
+  return `₹${this.expected_price_per_ton.toLocaleString()}/ton`;
 });
 
-// Virtual for age of listing
+// Virtual for total expected value
+cropListingSchema.virtual('totalExpectedValue').get(function() {
+  return this.quantity_in_tons * this.expected_price_per_ton;
+});
+
+// Virtual for formatted total value
+cropListingSchema.virtual('formattedTotalValue').get(function() {
+  return `₹${this.totalExpectedValue.toLocaleString()}`;
+});
+
+// Virtual for days until harvest
+cropListingSchema.virtual('daysUntilHarvest').get(function() {
+  const now = new Date();
+  const harvestDate = new Date(this.harvest_availability_date);
+  const diffTime = harvestDate - now;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+});
+
+// Virtual for listing age
 cropListingSchema.virtual('listingAge').get(function() {
   const now = new Date();
   const diffTime = Math.abs(now - this.createdAt);
@@ -64,31 +90,90 @@ cropListingSchema.virtual('listingAge').get(function() {
   return diffDays;
 });
 
-// Instance method to close listing
-cropListingSchema.methods.closeListing = function() {
-  this.status = 'closed';
+// Instance method to mark as sold
+cropListingSchema.methods.markAsSold = function() {
+  this.status = 'sold';
+  return this.save();
+};
+
+// Instance method to mark as expired
+cropListingSchema.methods.markAsExpired = function() {
+  this.status = 'expired';
+  return this.save();
+};
+
+// Instance method to reactivate listing
+cropListingSchema.methods.reactivate = function() {
+  this.status = 'active';
   return this.save();
 };
 
 // Static method to find active listings
-cropListingSchema.statics.findActiveByCrop = function(cropName) {
+cropListingSchema.statics.findActive = function() {
+  return this.find({ status: 'active' }).populate('farmer_id', 'name email phone');
+};
+
+// Static method to find active listings by crop variety
+cropListingSchema.statics.findActiveByCropVariety = function(cropVariety) {
   return this.find({ 
-    cropName: new RegExp(cropName, 'i'), 
+    crop_variety: new RegExp(cropVariety, 'i'), 
     status: 'active' 
-  }).populate('farmerId', 'name email phone');
+  }).populate('farmer_id', 'name email phone');
 };
 
 // Static method to find listings by farmer
 cropListingSchema.statics.findByFarmer = function(farmerId) {
-  return this.find({ farmerId }).populate('farmerId', 'name email phone');
+  return this.find({ farmer_id: farmerId }).populate('farmer_id', 'name email phone');
 };
 
-// Pre-save middleware to ensure cropName is capitalized
+// Static method to find listings by location
+cropListingSchema.statics.findByLocation = function(location) {
+  return this.find({ 
+    location: new RegExp(location, 'i'), 
+    status: 'active' 
+  }).populate('farmer_id', 'name email phone');
+};
+
+// Static method to find listings by price range
+cropListingSchema.statics.findByPriceRange = function(minPrice, maxPrice) {
+  return this.find({ 
+    expected_price_per_ton: { $gte: minPrice, $lte: maxPrice },
+    status: 'active' 
+  }).populate('farmer_id', 'name email phone');
+};
+
+// Static method to find listings available within date range
+cropListingSchema.statics.findByHarvestDateRange = function(startDate, endDate) {
+  return this.find({ 
+    harvest_availability_date: { $gte: startDate, $lte: endDate },
+    status: 'active' 
+  }).populate('farmer_id', 'name email phone');
+};
+
+// Pre-save middleware to ensure crop_variety is properly formatted
 cropListingSchema.pre('save', function(next) {
-  if (this.cropName) {
-    this.cropName = this.cropName.charAt(0).toUpperCase() + this.cropName.slice(1).toLowerCase();
+  if (this.crop_variety) {
+    this.crop_variety = this.crop_variety.charAt(0).toUpperCase() + this.crop_variety.slice(1).toLowerCase();
   }
+  
+  // Auto-expire listings if harvest date has passed and status is still active
+  if (this.status === 'active' && this.harvest_availability_date < new Date()) {
+    this.status = 'expired';
+  }
+  
   next();
+});
+
+// Pre-find middleware to automatically exclude expired listings for active queries
+cropListingSchema.pre(/^find/, function() {
+  // Auto-expire listings where harvest date has passed
+  const now = new Date();
+  this.where({ 
+    $or: [
+      { status: { $ne: 'active' } },
+      { harvest_availability_date: { $gte: now } }
+    ]
+  });
 });
 
 const CropListing = mongoose.model('CropListing', cropListingSchema);

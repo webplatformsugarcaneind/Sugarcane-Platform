@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const User = require('../models/user.model');
 
 // Import middleware
 const { protect, authorize, checkOwnership } = require('../middleware/auth.middleware');
@@ -111,6 +112,88 @@ router.delete('/listings/:id', deleteListing);
  * @access  Private (Farmer only)
  */
 router.get('/hhms', getHHMs);
+
+/**
+ * @route   GET /api/farmer/hhms/:id
+ * @desc    Get specific HHM profile for farmers
+ * @access  Private (Farmer only)
+ */
+router.get('/hhms/:id', async (req, res) => {
+  try {
+    console.log('Farmer HHM Profile API called:', {
+      userId: req.user.id,
+      role: req.user.role,
+      hhmIdRequested: req.params.id
+    });
+
+    const hhmId = req.params.id;
+
+    // Find the specific HHM - handle both uppercase and lowercase role
+    let hhm = await User.findOne(
+      { _id: hhmId, role: 'HHM' },
+      {
+        password: 0 // Exclude password field
+      }
+    );
+
+    // If not found with uppercase, try lowercase
+    if (!hhm) {
+      hhm = await User.findOne(
+        { _id: hhmId, role: 'hhm' },
+        {
+          password: 0 // Exclude password field
+        }
+      );
+    }
+
+    // If still not found, try case-insensitive search
+    if (!hhm) {
+      hhm = await User.findOne(
+        { _id: hhmId, role: { $regex: /^hhm$/i } },
+        {
+          password: 0 // Exclude password field
+        }
+      );
+    }
+
+    if (!hhm) {
+      console.log(`HHM not found with ID: ${hhmId}`);
+      
+      // Let's also check if the user exists at all
+      const userExists = await User.findById(hhmId);
+      if (userExists) {
+        console.log(`User exists but role is: ${userExists.role}`);
+        return res.status(404).json({
+          success: false,
+          message: `User found but role is '${userExists.role}', not an HHM`
+        });
+      } else {
+        console.log(`No user found with ID: ${hhmId}`);
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+    }
+
+    console.log(`HHM profile retrieved for farmer: ${hhm.name} (${hhm.username}) with role: ${hhm.role}`);
+
+    res.json({
+      success: true,
+      message: 'HHM profile retrieved successfully',
+      data: hhm,
+      hhm: hhm // Alternative property name for compatibility
+    });
+
+  } catch (error) {
+    console.error('Error in farmer HHM profile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching HHM profile',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
 
 /**
  * @route   GET /api/farmer/factories

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const AvailableJobsPage = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, _setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [filters, setFilters] = useState({
     location: '',
@@ -94,7 +95,7 @@ const AvailableJobsPage = () => {
         availability: 'full-time'  // Must be lowercase: 'full-time', 'part-time', or 'flexible'
       };
 
-      const response = await axios.post('/api/worker/applications', applicationData, {
+      await axios.post('/api/worker/applications', applicationData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -496,7 +497,6 @@ const styles = {
     border: '4px solid #f3f3f3',
     borderTop: '4px solid #3498db',
     borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
     marginBottom: '1rem'
   }
 };

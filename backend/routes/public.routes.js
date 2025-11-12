@@ -149,6 +149,7 @@ router.get('/factories/:id', async (req, res) => {
 
     // Format response data to match expected factory structure
     const formattedFactory = {
+      _id: factoryUser._id,
       id: factoryUser._id,
       name: factoryUser.factoryName || factoryUser.name + ' Factory',
       location: factoryUser.factoryLocation || 'Location not specified',
@@ -372,6 +373,76 @@ router.get('/roles-features/:roleName', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Server error while fetching role features',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+module.exports = router;
+
+// @route   GET /api/public/farmers/:id
+// @desc    Get public farmer profile by ID
+// @access  Public
+router.get('/farmers/:id', async (req, res) => {
+  try {
+    const farmerId = req.params.id;
+    console.log('🔍 [DEBUG] Getting public farmer profile with ID:', farmerId);
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(farmerId)) {
+      console.log('❌ [DEBUG] Invalid ObjectId format:', farmerId);
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid farmer ID format'
+      });
+    }
+
+    // Find farmer user by ID (Farmer role user)
+    const farmerUser = await User.findOne({ 
+      _id: farmerId, 
+      role: 'Farmer' 
+    }).select('-password').lean(); // Exclude password field
+
+    console.log('🔍 [DEBUG] Farmer user found:', farmerUser ? 'YES' : 'NO');
+
+    if (!farmerUser) {
+      console.log('❌ [DEBUG] Farmer not found for ID:', farmerId);
+      return res.status(404).json({
+        success: false,
+        message: 'Farmer not found'
+      });
+    }
+
+    // Format response data for public consumption
+    const formattedFarmer = {
+      id: farmerUser._id,
+      name: farmerUser.name,
+      username: farmerUser.username,
+      email: farmerUser.email,
+      phone: farmerUser.phone,
+      location: farmerUser.location,
+      joinedAt: farmerUser.createdAt,
+      isActive: farmerUser.isActive || true,
+      // Add any other public fields as needed
+      farmSize: farmerUser.farmSize || 'Not specified',
+      experience: farmerUser.experience || 'Not specified',
+      totalSales: farmerUser.totalSales || 0
+    };
+
+    console.log('📤 [DEBUG] Sending farmer profile response');
+
+    res.status(200).json({
+      success: true,
+      message: 'Farmer profile retrieved successfully',
+      data: formattedFarmer
+    });
+
+  } catch (error) {
+    console.error('Get farmer profile by ID error:', error);
+    
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching farmer profile',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }

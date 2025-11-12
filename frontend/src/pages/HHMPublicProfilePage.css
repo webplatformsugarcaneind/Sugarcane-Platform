@@ -361,6 +361,17 @@
   background: #e9ecef;
 }
 
+.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .profile-header-content {

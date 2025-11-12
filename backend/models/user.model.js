@@ -203,6 +203,174 @@ const userSchema = new mongoose.Schema({
     trim: true
   },
 
+  // Marketplace fields for Farmers
+  listings: [{
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: () => new mongoose.Types.ObjectId()
+    },
+    title: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    crop_variety: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    quantity_in_tons: {
+      type: Number,
+      required: true,
+      min: 0
+    },
+    expected_price_per_ton: {
+      type: Number,
+      required: true,
+      min: 0
+    },
+    harvest_availability_date: {
+      type: Date,
+      required: true
+    },
+    location: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    description: {
+      type: String,
+      trim: true
+    },
+    status: {
+      type: String,
+      enum: ['active', 'inactive', 'sold'],
+      default: 'active'
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+
+  // Orders received by this farmer (as seller)
+  receivedOrders: [{
+    orderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: () => new mongoose.Types.ObjectId()
+    },
+    listingId: {
+      type: String,
+      required: true
+    },
+    farmerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    buyerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    buyerDetails: {
+      name: { type: String, required: true },
+      email: { type: String, required: true },
+      phone: { type: String, required: true }
+    },
+    orderDetails: {
+      quantityWanted: { type: Number, required: true, min: 0 },
+      proposedPrice: { type: Number, required: true, min: 0 },
+      totalAmount: { type: Number, required: true, min: 0 },
+      deliveryLocation: { type: String, required: true },
+      message: { type: String },
+      urgency: { type: String, enum: ['normal', 'medium', 'high', 'urgent'], default: 'normal' }
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'accepted', 'rejected', 'completed', 'cancelled'],
+      default: 'pending'
+    },
+    isPartialFulfillment: {
+      type: Boolean,
+      default: false
+    },
+    originalQuantityRequested: {
+      type: Number,
+      min: 0
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+
+  // Orders sent by this farmer (as buyer)
+  sentOrders: [{
+    orderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: () => new mongoose.Types.ObjectId()
+    },
+    listingId: {
+      type: String,
+      required: true
+    },
+    farmerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    buyerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    buyerDetails: {
+      name: { type: String, required: true },
+      email: { type: String, required: true },
+      phone: { type: String, required: true }
+    },
+    orderDetails: {
+      quantityWanted: { type: Number, required: true, min: 0 },
+      proposedPrice: { type: Number, required: true, min: 0 },
+      totalAmount: { type: Number, required: true, min: 0 },
+      deliveryLocation: { type: String, required: true },
+      message: { type: String },
+      urgency: { type: String, enum: ['normal', 'medium', 'high', 'urgent'], default: 'normal' }
+    },
+    targetFarmerName: { type: String, required: true },
+    targetFarmerEmail: { type: String, required: true },
+    status: {
+      type: String,
+      enum: ['pending', 'accepted', 'rejected', 'completed', 'cancelled'],
+      default: 'pending'
+    },
+    isPartialFulfillment: {
+      type: Boolean,
+      default: false
+    },
+    originalQuantityRequested: {
+      type: Number,
+      min: 0
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+
   createdAt: {
     type: Date,
     default: Date.now

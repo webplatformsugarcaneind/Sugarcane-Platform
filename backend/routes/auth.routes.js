@@ -216,6 +216,9 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT token
     const token = generateToken(user._id);
+    console.log('🎫 Generated token for user:', user.username);
+    console.log('🎫 Token preview:', token.substring(0, 50) + '...');
+    console.log('🎫 Token length:', token.length);
 
     // Remove password from response
     const userResponse = {
@@ -294,7 +297,8 @@ router.get('/verify', async (req, res) => {
           email: user.email,
           role: user.role,
           isActive: user.isActive,
-          createdAt: user.createdAt
+          createdAt: user.createdAt,
+          listings: user.listings || [] // Include user's embedded listings
         }
       }
     });

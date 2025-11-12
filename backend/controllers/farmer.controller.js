@@ -394,7 +394,7 @@ const getHHMs = async (req, res) => {
     const hhms = await User.find({ 
       role: 'HHM', 
       isActive: true 
-    }).select('name phone email username createdAt').sort({ name: 1 });
+    }).select('_id name phone email username createdAt').sort({ name: 1 });
 
     res.status(200).json({
       success: true,
@@ -423,7 +423,7 @@ const getFactories = async (req, res) => {
     const factories = await User.find({ 
       role: 'Factory', 
       isActive: true 
-    }).select('name factoryName factoryLocation factoryDescription capacity experience specialization contactInfo operatingHours phone email username createdAt').sort({ factoryName: 1 });
+    }).select('_id name factoryName factoryLocation factoryDescription capacity experience specialization contactInfo operatingHours phone email username createdAt').sort({ factoryName: 1 });
 
     // Format the response to match expected factory structure
     const formattedFactories = factories.map(factory => ({

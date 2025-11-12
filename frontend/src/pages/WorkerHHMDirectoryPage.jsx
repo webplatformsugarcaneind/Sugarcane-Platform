@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 // Configure axios base URL
@@ -11,6 +12,7 @@ axios.defaults.baseURL = 'http://localhost:5000';
  * Allows workers to find and connect with HHMs for work opportunities.
  */
 const WorkerHHMDirectoryPage = () => {
+  const navigate = useNavigate();
   const [hhms, setHhms] = useState([]);
   const [filteredHhms, setFilteredHhms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -138,6 +140,14 @@ const WorkerHHMDirectoryPage = () => {
     if (hhm.email) {
       window.location.href = `mailto:${hhm.email}?subject=${subject}&body=${body}`;
     }
+  };
+
+  const handleViewProfile = (hhm) => {
+    console.log('👁️ Viewing HHM profile for:', hhm.name);
+    console.log('🔍 DEBUG: HHM data for profile viewing:', hhm);
+    console.log('🔍 DEBUG: HHM ID:', hhm._id);
+    // Navigate to relative profile page
+    navigate(hhm._id);
   };
 
   if (loading) {
@@ -286,6 +296,13 @@ const WorkerHHMDirectoryPage = () => {
                       Call
                     </a>
                   )}
+                  <button
+                    onClick={() => handleViewProfile(hhm)}
+                    className="contact-button view-profile"
+                  >
+                    <span className="button-icon">👁️</span>
+                    View Profile
+                  </button>
                 </div>
               </div>
             </div>
@@ -563,6 +580,19 @@ const WorkerHHMDirectoryPage = () => {
           background-color: #3498db;
           transform: none;
           box-shadow: none;
+        }
+
+        .contact-button.view-profile {
+          background-color: #8e44ad;
+          color: white;
+          border: 2px solid #8e44ad;
+        }
+
+        .contact-button.view-profile:hover {
+          background-color: #732d91;
+          border-color: #732d91;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(142, 68, 173, 0.3);
         }
 
         .button-icon {

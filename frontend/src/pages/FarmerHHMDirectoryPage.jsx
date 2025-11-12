@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 /**
@@ -8,6 +9,7 @@ import axios from 'axios';
  * Includes search functionality, filtering, and displays HHM data in a card format.
  */
 const FarmerHHMDirectoryPage = () => {
+  const navigate = useNavigate();
   const [hhms, setHhms] = useState([]);
   const [filteredHhms, setFilteredHhms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,49 +18,7 @@ const FarmerHHMDirectoryPage = () => {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [sortBy, setSortBy] = useState('name');
 
-  useEffect(() => {
-    fetchHHMs();
-  }, []);
-
-  useEffect(() => {
-    filterAndSortHHMs();
-  }, [hhms, searchTerm, selectedLocation, sortBy]);
-
-  const fetchHHMs = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Get JWT token from localStorage
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        setError('No authentication token found. Please login again.');
-        return;
-      }
-
-      // Make API request with Authorization header
-      const response = await axios.get('/api/farmer/hhms', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      const hhmData = response.data.data || response.data.hhms || [];
-      setHhms(hhmData);
-    } catch (err) {
-      console.error('Error fetching HHMs:', err);
-      setError(
-        err.response?.data?.message || 
-        'Failed to fetch HHM directory. Please try again.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterAndSortHHMs = () => {
+  const filterAndSortHHMs = useCallback(() => {
     let filtered = [...hhms];
 
     // Apply search filter
@@ -95,6 +55,48 @@ const FarmerHHMDirectoryPage = () => {
     });
 
     setFilteredHhms(filtered);
+  }, [hhms, searchTerm, selectedLocation, sortBy]);
+
+  useEffect(() => {
+    fetchHHMs();
+  }, []);
+
+  useEffect(() => {
+    filterAndSortHHMs();
+  }, [filterAndSortHHMs]);
+
+  const fetchHHMs = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Get JWT token from localStorage
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setError('No authentication token found. Please login again.');
+        return;
+      }
+
+      // Make API request with Authorization header
+      const response = await axios.get('/api/farmer/hhms', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const hhmData = response.data.data || response.data.hhms || [];
+      setHhms(hhmData);
+    } catch (err) {
+      console.error('Error fetching HHMs:', err);
+      setError(
+        err.response?.data?.message || 
+        'Failed to fetch HHM directory. Please try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSearchChange = (e) => {
@@ -298,12 +300,15 @@ const FarmerHHMDirectoryPage = () => {
                   </button>
                   <button 
                     className="view-profile-btn"
-                    onClick={() => {
-                      // TODO: Implement view profile functionality
-                      alert('View profile functionality coming soon!');
-                    }}
+                    onClick={() => navigate(hhm._id)}
                   >
                     👁️ View Profile
+                  </button>
+                  <button 
+                    className="contract-request-btn"
+                    onClick={() => navigate(`/farmer/hhms/${hhm._id}/contract`)}
+                  >
+                    📄 Send Request
                   </button>
                 </div>
               </div>
@@ -658,7 +663,8 @@ const FarmerHHMDirectoryPage = () => {
         }
 
         .contact-btn,
-        .view-profile-btn {
+        .view-profile-btn,
+        .contract-request-btn {
           flex: 1;
           padding: 0.75rem;
           border: none;
@@ -681,6 +687,17 @@ const FarmerHHMDirectoryPage = () => {
           background: #f8f9fa;
           color: #495057;
           border: 2px solid #e1e5e9;
+        }
+
+        .contract-request-btn {
+          background: #007bff;
+          color: white;
+          border: 2px solid #007bff;
+        }
+
+        .contract-request-btn:hover {
+          background: #0056b3;
+          border-color: #0056b3;
         }
 
         .view-profile-btn:hover {

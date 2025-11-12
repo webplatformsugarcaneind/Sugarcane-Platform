@@ -27,6 +27,7 @@ import HHMSentFactoryInvitationsPage from './pages/HHMSentFactoryInvitationsPage
 import HHMAssociatedFactoriesPage from './pages/HHMAssociatedFactoriesPage.jsx';
 import HHMPerformancePage from './pages/HHMPerformancePage.jsx';
 import HHMNotificationCenter from './pages/HHMNotificationCenter.jsx';
+import NotificationTestPage from './pages/NotificationTestPage.jsx';
 import LaborManagementPage from './pages/LaborManagementPage.jsx';
 import WorkerDashboardPage from './pages/WorkerDashboardPage.jsx';
 import WorkerHHMDirectoryPage from './pages/WorkerHHMDirectoryPage.jsx';
@@ -37,8 +38,22 @@ import FactoryDashboardPage from './pages/FactoryDashboardPage.jsx';
 import FactoryHHMDirectoryPage from './pages/FactoryHHMDirectoryPage.jsx';
 import FactorySentInvitationsPage from './pages/FactorySentInvitationsPage.jsx';
 import FactoryReceivedInvitationsPage from './pages/FactoryReceivedInvitationsPage.jsx';
+import FactoryProfileViewPage from './pages/FactoryProfileViewPage.jsx';
 import FactoryAssociatedHHMsPage from './pages/FactoryAssociatedHHMsPage.jsx';
+import HHMProfileViewPage from './pages/HHMProfileViewPage.jsx';
 import HHMPublicProfilePage from './pages/HHMPublicProfilePage.jsx';
+import ContractsDashboard from './pages/ContractsDashboard.jsx';
+import HHMFarmerDirectoryPage from './pages/HHMFarmerDirectoryPage.jsx';
+import HHMFarmerProfilePage from './pages/HHMFarmerProfilePage.jsx';
+import FarmerContractRequestPage from './pages/FarmerContractRequestPage.jsx';
+import FarmerContractsDashboard from './pages/FarmerContractsDashboard.jsx';
+import HHMContractDashboard from './pages/HHMContractDashboard.jsx';
+import FarmerPublicProfilePage from './pages/FarmerPublicProfilePage.jsx';
+import ListingDetailsPage from './pages/ListingDetailsPage.jsx';
+import FarmerProfileViewPage from './pages/FarmerProfileViewPage.jsx';
+import WorkerHHMProfileViewPage from './pages/WorkerHHMProfileViewPage.jsx';
+import FactoryHHMProfileViewPage from './pages/FactoryHHMProfileViewPage.jsx';
+import UserProfilePage from './pages/UserProfilePage.jsx';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -316,6 +331,39 @@ function App() {
               </SafeComponent>
             } />
 
+            {/* Notification Test Route */}
+            <Route path="/notification-test" element={
+              <SafeComponent name="NotificationTestPage">
+                <NotificationTestPage />
+              </SafeComponent>
+            } />
+
+            {/* HHM Profile View Route - Accessible by any authenticated user */}
+            <Route path="/hhm/profile/:hhmId" element={
+              <SafeComponent name="ProtectedRoute">
+                <ProtectedRoute />
+              </SafeComponent>
+            }>
+              <Route index element={
+                <SafeComponent name="HHMProfileViewPage">
+                  <HHMProfileViewPage />
+                </SafeComponent>
+              } />
+            </Route>
+
+            {/* Factory Profile View Route - Accessible by any authenticated user */}
+            <Route path="/factory/profile/:factoryId" element={
+              <SafeComponent name="ProtectedRoute">
+                <ProtectedRoute />
+              </SafeComponent>
+            }>
+              <Route index element={
+                <SafeComponent name="FactoryProfileViewPage">
+                  <FactoryProfileViewPage />
+                </SafeComponent>
+              } />
+            </Route>
+
             {/* Protected Farmer Routes */}
             <Route path="/farmer" element={
               <SafeComponent name="ProtectedRoute">
@@ -347,9 +395,59 @@ function App() {
                     <FarmerHHMDirectoryPage />
                   </SafeComponent>
                 } />
+                <Route path="hhm-directory/:userId" element={
+                  <SafeComponent name="UserProfilePage">
+                    <UserProfilePage />
+                  </SafeComponent>
+                } />
+                <Route path="hhms" element={
+                  <SafeComponent name="FarmerHHMDirectoryPage">
+                    <FarmerHHMDirectoryPage />
+                  </SafeComponent>
+                } />
                 <Route path="factory-directory" element={
                   <SafeComponent name="FarmerFactoryDirectoryPage">
                     <FarmerFactoryDirectoryPage />
+                  </SafeComponent>
+                } />
+                <Route path="factory-directory/:userId" element={
+                  <SafeComponent name="UserProfilePage">
+                    <UserProfilePage />
+                  </SafeComponent>
+                } />
+                <Route path="factory/profile/:id" element={
+                  <SafeComponent name="FarmerProfileViewPage">
+                    <FarmerProfileViewPage />
+                  </SafeComponent>
+                } />
+                <Route path="hhm/public-profile/:id" element={
+                  <SafeComponent name="HHMPublicProfilePage">
+                    <HHMPublicProfilePage />
+                  </SafeComponent>
+                } />
+                <Route path="hhms/:hhmId/contract" element={
+                  <SafeComponent name="FarmerContractRequestPage">
+                    <FarmerContractRequestPage />
+                  </SafeComponent>
+                } />
+                <Route path="contracts" element={
+                  <SafeComponent name="FarmerContractsDashboard">
+                    <FarmerContractsDashboard />
+                  </SafeComponent>
+                } />
+                <Route path="profile/:farmerId" element={
+                  <SafeComponent name="FarmerPublicProfilePage">
+                    <FarmerPublicProfilePage />
+                  </SafeComponent>
+                } />
+                <Route path="listing/:listingId" element={
+                  <SafeComponent name="ListingDetailsPage">
+                    <ListingDetailsPage />
+                  </SafeComponent>
+                } />
+                <Route path="listing/:listingId/farmer/:userId" element={
+                  <SafeComponent name="UserProfilePage">
+                    <UserProfilePage />
                   </SafeComponent>
                 } />
                 <Route index element={
@@ -391,6 +489,11 @@ function App() {
                     <HHMFactoryDirectoryPage />
                   </SafeComponent>
                 } />
+                <Route path="factory-directory/:userId" element={
+                  <SafeComponent name="UserProfilePage">
+                    <UserProfilePage />
+                  </SafeComponent>
+                } />
                 <Route path="factories" element={
                   <SafeComponent name="HHMFactoryDirectoryPage">
                     <HHMFactoryDirectoryPage />
@@ -424,6 +527,26 @@ function App() {
                 <Route path="notifications" element={
                   <SafeComponent name="HHMNotificationCenter">
                     <HHMNotificationCenter />
+                  </SafeComponent>
+                } />
+                <Route path="contracts" element={
+                  <SafeComponent name="HHMContractDashboard">
+                    <HHMContractDashboard />
+                  </SafeComponent>
+                } />
+                <Route path="farmers" element={
+                  <SafeComponent name="HHMFarmerDirectoryPage">
+                    <HHMFarmerDirectoryPage />
+                  </SafeComponent>
+                } />
+                <Route path="farmers/:userId" element={
+                  <SafeComponent name="UserProfilePage">
+                    <UserProfilePage />
+                  </SafeComponent>
+                } />
+                <Route path="farmer/profile/:id" element={
+                  <SafeComponent name="HHMFarmerProfilePage">
+                    <HHMFarmerProfilePage />
                   </SafeComponent>
                 } />
                 <Route index element={
@@ -465,6 +588,16 @@ function App() {
                     <WorkerHHMDirectoryPage />
                   </SafeComponent>
                 } />
+                <Route path="hhm-directory/:userId" element={
+                  <SafeComponent name="UserProfilePage">
+                    <UserProfilePage />
+                  </SafeComponent>
+                } />
+                <Route path="hhm/profile/:id" element={
+                  <SafeComponent name="WorkerHHMProfileViewPage">
+                    <WorkerHHMProfileViewPage />
+                  </SafeComponent>
+                } />
                 <Route path="profile" element={
                   <SafeComponent name="ProfilePage">
                     <ProfilePage />
@@ -499,6 +632,11 @@ function App() {
                     <FactoryHHMDirectoryPage />
                   </SafeComponent>
                 } />
+                <Route path="hhm/profile/:id" element={
+                  <SafeComponent name="FactoryHHMProfileViewPage">
+                    <FactoryHHMProfileViewPage />
+                  </SafeComponent>
+                } />
                 <Route path="hhm-profile/:id" element={
                   <SafeComponent name="HHMPublicProfilePage">
                     <HHMPublicProfilePage />
@@ -519,6 +657,11 @@ function App() {
                     <FactoryAssociatedHHMsPage />
                   </SafeComponent>
                 } />
+                <Route path="associated-hhms/:userId" element={
+                  <SafeComponent name="UserProfilePage">
+                    <UserProfilePage />
+                  </SafeComponent>
+                } />
                 <Route path="profile" element={
                   <SafeComponent name="ProfilePage">
                     <ProfilePage />
@@ -527,6 +670,11 @@ function App() {
                 <Route path="factory-directory" element={
                   <SafeComponent name="FactoryDirectoryPage">
                     <FactoryDirectoryPage />
+                  </SafeComponent>
+                } />
+                <Route path="contracts" element={
+                  <SafeComponent name="ContractsDashboard">
+                    <ContractsDashboard />
                   </SafeComponent>
                 } />
                 <Route index element={

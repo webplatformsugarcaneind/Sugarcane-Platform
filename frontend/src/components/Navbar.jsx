@@ -263,6 +263,17 @@ const Navbar = () => {
                     </li>
                     <li>
                       <NavLink 
+                        to="/hhm/farmers" 
+                        className={({ isActive }) => 
+                          isActive ? 'nav-link active' : 'nav-link'
+                        }
+                        onClick={closeMenu}
+                      >
+                        Farmers
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink 
                         to="/hhm/profile" 
                         className={({ isActive }) => 
                           isActive ? 'nav-link active' : 'nav-link'

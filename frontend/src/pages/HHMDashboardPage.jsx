@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import HHMJobRequestsTab from '../components/HHMJobRequestsTab';
 
 // Configure axios base URL
 axios.defaults.baseURL = 'http://localhost:5000';
@@ -10,6 +11,7 @@ const HHMDashboardPage = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Fetch dashboard statistics on component mount
   useEffect(() => {
@@ -75,156 +77,194 @@ const HHMDashboardPage = () => {
     <div style={styles.container}>
       {/* Header Section */}
       <div style={styles.header}>
-        <h1 style={styles.title}>HHM Dashboard</h1>
+        <h1 style={styles.title}>👨‍💼 HHM Dashboard</h1>
         <p style={styles.subtitle}>
-          Welcome to your Hub Head Manager dashboard. Monitor job schedules, applications, and worker availability.
+          Welcome to your Hub Head Manager dashboard. Manage job schedules, applications, and farmer requests.
         </p>
       </div>
 
-      {/* Statistics Cards */}
-      <div style={styles.statsGrid}>
-        {/* Schedules Card */}
-        <div style={styles.statCard}>
-          <div style={styles.statIcon}>📅</div>
-          <div style={styles.statContent}>
-            <h3 style={styles.statTitle}>Job Schedules</h3>
-            <div style={styles.statNumbers}>
-              <div style={styles.statItem}>
-                <span style={styles.statValue}>{dashboardData?.schedules?.total || 0}</span>
-                <span style={styles.statLabel}>Total</span>
-              </div>
-              <div style={styles.statItem}>
-                <span style={{ ...styles.statValue, color: '#27ae60' }}>{dashboardData?.schedules?.open || 0}</span>
-                <span style={styles.statLabel}>Open</span>
-              </div>
-              <div style={styles.statItem}>
-                <span style={{ ...styles.statValue, color: '#e74c3c' }}>{dashboardData?.schedules?.closed || 0}</span>
-                <span style={styles.statLabel}>Closed</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Applications Card */}
-        <div style={styles.statCard}>
-          <div style={styles.statIcon}>📋</div>
-          <div style={styles.statContent}>
-            <h3 style={styles.statTitle}>Applications</h3>
-            <div style={styles.statNumbers}>
-              <div style={styles.statItem}>
-                <span style={styles.statValue}>{dashboardData?.applications?.total || 0}</span>
-                <span style={styles.statLabel}>Total</span>
-              </div>
-              <div style={styles.statItem}>
-                <span style={{ ...styles.statValue, color: '#f39c12' }}>{dashboardData?.applications?.pending || 0}</span>
-                <span style={styles.statLabel}>Pending</span>
-              </div>
-              <div style={styles.statItem}>
-                <span style={{ ...styles.statValue, color: '#27ae60' }}>{dashboardData?.applications?.approved || 0}</span>
-                <span style={styles.statLabel}>Approved</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Workers Card */}
-        <div style={styles.statCard}>
-          <div style={styles.statIcon}>👷</div>
-          <div style={styles.statContent}>
-            <h3 style={styles.statTitle}>Workers</h3>
-            <div style={styles.statNumbers}>
-              <div style={styles.statItem}>
-                <span style={styles.statValue}>{dashboardData?.workers?.total || 0}</span>
-                <span style={styles.statLabel}>Total</span>
-              </div>
-              <div style={styles.statItem}>
-                <span style={{ ...styles.statValue, color: '#27ae60' }}>{dashboardData?.workers?.available || 0}</span>
-                <span style={styles.statLabel}>Available</span>
-              </div>
-              <div style={styles.statItem}>
-                <span style={{ ...styles.statValue, color: '#95a5a6' }}>{dashboardData?.workers?.unavailable || 0}</span>
-                <span style={styles.statLabel}>Busy</span>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Tab Navigation */}
+      <div style={styles.tabNavigation}>
+        <button 
+          style={activeTab === 'overview' ? {...styles.tabButton, ...styles.activeTabButton} : styles.tabButton}
+          onClick={() => setActiveTab('overview')}
+        >
+          📊 Overview
+        </button>
+        <button 
+          style={activeTab === 'job-requests' ? {...styles.tabButton, ...styles.activeTabButton} : styles.tabButton}
+          onClick={() => setActiveTab('job-requests')}
+        >
+          🌾 Farmer Job Requests
+        </button>
       </div>
 
-      {/* Quick Actions / Navigation Cards */}
-      <div style={styles.quickActionsSection}>
-        <h2 style={styles.sectionTitle}>Quick Actions</h2>
-        <div style={styles.quickActionsGrid}>
-          {/* Factory Invitations */}
-          <div
-            style={styles.actionCard}
-            onClick={() => navigate('/hhm/factory-invitations')}
-          >
-            <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>📨</div>
-            <h3 style={styles.actionTitle}>Received Factory Invitations</h3>
-            <p style={styles.actionDescription}>View and respond to factory collaboration invitations</p>
-            <button style={styles.actionButton}>View Invitations →</button>
-          </div>
+      {/* Tab Content */}
+      <div style={styles.tabContent}>
+        {activeTab === 'overview' && (
+          <div>
+            {/* Statistics Cards */}
+            <div style={styles.statsGrid}>
+              {/* Schedules Card */}
+              <div style={styles.statCard}>
+                <div style={styles.statIcon}>📅</div>
+                <div style={styles.statContent}>
+                  <h3 style={styles.statTitle}>Job Schedules</h3>
+                  <div style={styles.statNumbers}>
+                    <div style={styles.statItem}>
+                      <span style={styles.statValue}>{dashboardData?.schedules?.total || 0}</span>
+                      <span style={styles.statLabel}>Total</span>
+                    </div>
+                    <div style={styles.statItem}>
+                      <span style={{ ...styles.statValue, color: '#27ae60' }}>{dashboardData?.schedules?.open || 0}</span>
+                      <span style={styles.statLabel}>Open</span>
+                    </div>
+                    <div style={styles.statItem}>
+                      <span style={{ ...styles.statValue, color: '#e74c3c' }}>{dashboardData?.schedules?.closed || 0}</span>
+                      <span style={styles.statLabel}>Closed</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          {/* Sent Factory Invitations */}
-          <div
-            style={styles.actionCard}
-            onClick={() => navigate('/hhm/sent-factory-invitations')}
-          >
-            <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>📤</div>
-            <h3 style={styles.actionTitle}>Sent Factory Invitations</h3>
-            <p style={styles.actionDescription}>View invitations you sent to factories</p>
-            <button style={styles.actionButton}>View Sent →</button>
-          </div>
+              {/* Applications Card */}
+              <div style={styles.statCard}>
+                <div style={styles.statIcon}>📋</div>
+                <div style={styles.statContent}>
+                  <h3 style={styles.statTitle}>Applications</h3>
+                  <div style={styles.statNumbers}>
+                    <div style={styles.statItem}>
+                      <span style={styles.statValue}>{dashboardData?.applications?.total || 0}</span>
+                      <span style={styles.statLabel}>Total</span>
+                    </div>
+                    <div style={styles.statItem}>
+                      <span style={{ ...styles.statValue, color: '#f39c12' }}>{dashboardData?.applications?.pending || 0}</span>
+                      <span style={styles.statLabel}>Pending</span>
+                    </div>
+                    <div style={styles.statItem}>
+                      <span style={{ ...styles.statValue, color: '#27ae60' }}>{dashboardData?.applications?.approved || 0}</span>
+                      <span style={styles.statLabel}>Approved</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          {/* Associated Factories */}
-          <div
-            style={styles.actionCard}
-            onClick={() => navigate('/hhm/associated-factories')}
-          >
-            <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>🏭</div>
-            <h3 style={styles.actionTitle}>My Factories</h3>
-            <p style={styles.actionDescription}>Manage your associated factories and collaborations</p>
-            <button style={styles.actionButton}>View Factories →</button>
-          </div>
+              {/* Workers Card */}
+              <div style={styles.statCard}>
+                <div style={styles.statIcon}>👷</div>
+                <div style={styles.statContent}>
+                  <h3 style={styles.statTitle}>Workers</h3>
+                  <div style={styles.statNumbers}>
+                    <div style={styles.statItem}>
+                      <span style={styles.statValue}>{dashboardData?.workers?.total || 0}</span>
+                      <span style={styles.statLabel}>Total</span>
+                    </div>
+                    <div style={styles.statItem}>
+                      <span style={{ ...styles.statValue, color: '#27ae60' }}>{dashboardData?.workers?.available || 0}</span>
+                      <span style={styles.statLabel}>Available</span>
+                    </div>
+                    <div style={styles.statItem}>
+                      <span style={{ ...styles.statValue, color: '#95a5a6' }}>{dashboardData?.workers?.unavailable || 0}</span>
+                      <span style={styles.statLabel}>Busy</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-          {/* Performance Dashboard */}
-          <div
-            style={styles.actionCard}
-            onClick={() => navigate('/hhm/performance')}
-          >
-            <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>📊</div>
-            <h3 style={styles.actionTitle}>My Performance</h3>
-            <p style={styles.actionDescription}>Track your success metrics and KPIs</p>
-            <button style={styles.actionButton}>View Performance →</button>
-          </div>
+            {/* Quick Actions / Navigation Cards */}
+            <div style={styles.quickActionsSection}>
+              <h2 style={styles.sectionTitle}>Quick Actions</h2>
+              <div style={styles.quickActionsGrid}>
+                {/* Factory Invitations */}
+                <div
+                  style={styles.actionCard}
+                  onClick={() => navigate('/hhm/factory-invitations')}
+                >
+                  <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>📨</div>
+                  <h3 style={styles.actionTitle}>Received Factory Invitations</h3>
+                  <p style={styles.actionDescription}>View and respond to factory collaboration invitations</p>
+                  <button style={styles.actionButton}>View Invitations →</button>
+                </div>
 
-          {/* Notification Center */}
-          <div
-            style={styles.actionCard}
-            onClick={() => navigate('/hhm/notifications')}
-          >
-            <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' }}>🔔</div>
-            <h3 style={styles.actionTitle}>Notifications</h3>
-            <p style={styles.actionDescription}>Stay updated with important activities</p>
-            {dashboardData?.notifications?.unread > 0 && (
-              <div style={styles.notificationBadge}>{dashboardData.notifications.unread} New</div>
-            )}
-            <button style={styles.actionButton}>View All →</button>
-          </div>
-        </div>
-      </div>
+                {/* Sent Factory Invitations */}
+                <div
+                  style={styles.actionCard}
+                  onClick={() => navigate('/hhm/sent-factory-invitations')}
+                >
+                  <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>📤</div>
+                  <h3 style={styles.actionTitle}>Sent Factory Invitations</h3>
+                  <p style={styles.actionDescription}>View invitations you sent to factories</p>
+                  <button style={styles.actionButton}>View Sent →</button>
+                </div>
 
-      {/* Recent Activity */}
-      <div style={styles.recentActivity}>
-        <h2 style={styles.sectionTitle}>Recent Activity</h2>
-        <div style={styles.activityPlaceholder}>
-          <div style={styles.placeholderIcon}>📊</div>
-          <p style={styles.placeholderText}>Recent activity tracking is coming soon!</p>
-          <p style={styles.placeholderSubtext}>
-            We're building a comprehensive activity feed to help you track applications,
-            schedule updates, and worker interactions.
-          </p>
-        </div>
+                {/* Associated Factories */}
+                <div
+                  style={styles.actionCard}
+                  onClick={() => navigate('/hhm/associated-factories')}
+                >
+                  <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>🏭</div>
+                  <h3 style={styles.actionTitle}>My Factories</h3>
+                  <p style={styles.actionDescription}>Manage your associated factories and collaborations</p>
+                  <button style={styles.actionButton}>View Factories →</button>
+                </div>
+
+                {/* Performance Dashboard */}
+                <div
+                  style={styles.actionCard}
+                  onClick={() => navigate('/hhm/performance')}
+                >
+                  <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>📊</div>
+                  <h3 style={styles.actionTitle}>My Performance</h3>
+                  <p style={styles.actionDescription}>Track your success metrics and KPIs</p>
+                  <button style={styles.actionButton}>View Performance →</button>
+                </div>
+
+                {/* Notification Center */}
+                <div
+                  style={styles.actionCard}
+                  onClick={() => navigate('/hhm/notifications')}
+                >
+                  <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' }}>🔔</div>
+                  <h3 style={styles.actionTitle}>Notifications</h3>
+                  <p style={styles.actionDescription}>Stay updated with important activities</p>
+                  {dashboardData?.notifications?.unread > 0 && (
+                    <div style={styles.notificationBadge}>{dashboardData.notifications.unread} New</div>
+                  )}
+                  <button style={styles.actionButton}>View All →</button>
+                </div>
+
+                {/* Farmer Directory */}
+                <div
+                  style={styles.actionCard}
+                  onClick={() => navigate('/hhm/farmers')}
+                >
+                  <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>🌾</div>
+                  <h3 style={styles.actionTitle}>Farmer Directory</h3>
+                  <p style={styles.actionDescription}>Browse and connect with farmers in your network</p>
+                  <button style={styles.actionButton}>View Farmers →</button>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div style={styles.recentActivity}>
+              <h2 style={styles.sectionTitle}>Recent Activity</h2>
+              <div style={styles.activityPlaceholder}>
+                <div style={styles.placeholderIcon}>📊</div>
+                <p style={styles.placeholderText}>Recent activity tracking is coming soon!</p>
+                <p style={styles.placeholderSubtext}>
+                  We're building a comprehensive activity feed to help you track applications,
+                  schedule updates, and worker interactions.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'job-requests' && (
+          <HHMJobRequestsTab />
+        )}
       </div>
     </div>
   );
@@ -252,6 +292,42 @@ const styles = {
     fontSize: '1.1rem',
     color: '#636e72',
     margin: '0'
+  },
+  tabNavigation: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginBottom: '2rem',
+    borderBottom: '2px solid #e9ecef',
+    backgroundColor: 'white',
+    borderRadius: '12px 12px 0 0',
+    overflow: 'hidden',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+  },
+  tabButton: {
+    background: 'none',
+    border: 'none',
+    padding: '1rem 2rem',
+    fontSize: '1.1rem',
+    fontWeight: '600',
+    cursor: 'pointer',
+    color: '#6c757d',
+    borderBottom: '3px solid transparent',
+    transition: 'all 0.3s ease',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem'
+  },
+  activeTabButton: {
+    color: '#2d3436',
+    borderBottomColor: '#1565c0',
+    backgroundColor: '#f8f9fa'
+  },
+  tabContent: {
+    minHeight: '400px',
+    background: 'white',
+    borderRadius: '0 0 12px 12px',
+    padding: '2rem',
+    boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
   },
   statsGrid: {
     display: 'grid',
@@ -351,7 +427,6 @@ const styles = {
     border: '4px solid #f3f3f3',
     borderTop: '4px solid #3498db',
     borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
     marginBottom: '1rem'
   },
   errorMessage: {

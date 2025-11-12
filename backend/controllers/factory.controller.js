@@ -633,16 +633,12 @@ const getHHMs=async (req, res)=> {
     console.log('📋 Getting HHMs directory for factory:', req.user._id);
 
     // Find all active users with HHM role
-    const hhms=await User.find( {
+    const hhms = await User.find({
         role: 'HHM',
         isActive: true
-      }
-
-    ).select('name phone email username createdAt').sort( {
+    }).select('_id name phone email username createdAt').sort({
         name: 1
-      }
-
-    );
+    });
 
     console.log(`✅ Found $ {
         hhms.length
@@ -754,13 +750,20 @@ const inviteHHM=async (req, res)=> {
     =req.body;
 
     // Validate required fields
-    if ( !hhmId) {
-      return res.status(400).json( {
-          success: false,
-          message: 'HHM ID is required'
-        }
+    if (!hhmId) {
+      return res.status(400).json({
+        success: false,
+        message: 'HHM ID is required'
+      });
+    }
 
-      );
+    // Validate ObjectId format
+    const mongoose = require('mongoose');
+    if (!mongoose.Types.ObjectId.isValid(hhmId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid HHM ID format'
+      });
     }
 
     // Verify the HHM exists and has HHM role
@@ -794,22 +797,39 @@ const inviteHHM=async (req, res)=> {
     }
 
     // Check if a PENDING invitation already exists (allow reinvite if declined/accepted)
-    const existingPendingInvitation=await Invitation.findOne( {
-        factoryId: req.user._id,
-        hhmId: hhmId,
-        invitationType: 'factory-to-hhm',
-        status: 'pending'
-      }
-
-    );
+    const existingPendingInvitation = await Invitation.findOne({
+      factoryId: req.user._id,
+      hhmId: hhmId,
+      invitationType: 'factory-to-hhm',
+      status: 'pending'
+    });
 
     if (existingPendingInvitation) {
-      return res.status(400).json( {
-          success: false,
-          message: 'A pending invitation has already been sent to this HHM'
-        }
+      return res.status(409).json({
+        success: false,
+        message: 'You have already sent a pending invitation to this HHM. Please wait for their response or cancel the previous invitation.',
+        conflictType: 'pending_invitation',
+        invitationId: existingPendingInvitation._id,
+        sentAt: existingPendingInvitation.sentAt
+      });
+    }
 
-      );
+    // Check if there's a recent declined invitation (within last 24 hours) to prevent spam
+    const recentDeclined = await Invitation.findOne({
+      factoryId: req.user._id,
+      hhmId: hhmId,
+      invitationType: 'factory-to-hhm',
+      status: 'declined',
+      respondedAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
+    });
+
+    if (recentDeclined) {
+      return res.status(429).json({
+        success: false,
+        message: 'This HHM recently declined your invitation. Please wait 24 hours before sending another invitation.',
+        conflictType: 'recent_decline',
+        declinedAt: recentDeclined.respondedAt
+      });
     }
 
     // Create the invitation
@@ -842,37 +862,41 @@ const inviteHHM=async (req, res)=> {
   catch (error) {
     console.error('❌ Error creating factory invitation:', error);
 
-    // Handle duplicate key error
-    if (error.code===11000) {
+    // Handle duplicate key error from database constraints
+    if (error.code === 11000) {
       console.error('Duplicate key details:', error.keyPattern, error.keyValue);
 
       // Check which index caused the error
       if (error.keyPattern && error.keyPattern.factoryId && error.keyPattern.hhmId) {
-        return res.status(400).json( {
-            success: false,
-            message: 'A pending invitation has already been sent to this HHM'
-          }
-
-        );
-      }
-
-      else {
-        return res.status(400).json( {
-            success: false,
-            message: 'An invitation conflict occurred. Please try again.'
-          }
-
-        );
+        return res.status(409).json({
+          success: false,
+          message: 'You have already sent a pending invitation to this HHM. Please wait for their response or cancel the previous invitation.',
+          conflictType: 'duplicate_pending_invitation'
+        });
+      } else {
+        return res.status(409).json({
+          success: false,
+          message: 'An invitation with these details already exists. Please check your sent invitations.',
+          conflictType: 'database_constraint'
+        });
       }
     }
 
-    res.status(500).json( {
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
         success: false,
-        message: 'Error creating invitation',
-        error: error.message
-      }
+        message: 'Validation failed',
+        errors: validationErrors
+      });
+    }
 
-    );
+    res.status(500).json({
+      success: false,
+      message: 'Error creating invitation. Please try again later.',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
   }
 }
 
@@ -1181,13 +1205,13 @@ const getMyInvitations=async (req, res)=> {
 ;
 
 /**
- * @desc    Cancel pending invitation to HHM
+ * @desc    Cancel pending invitation or remove any invitation from list
  * @route   DELETE /api/factory/invitations/:id
  * @access  Private (Factory only)
  */
 const cancelInvitation=async (req, res)=> {
   try {
-    console.log('🗑️ Canceling invitation:', req.params.id);
+    console.log('🗑️ Processing invitation deletion:', req.params.id);
 
     const invitation=await Invitation.findOne( {
         _id: req.params.id,
@@ -1206,28 +1230,20 @@ const cancelInvitation=async (req, res)=> {
       );
     }
 
-    // Only allow cancel if status is pending
-    if (invitation.status !=='pending') {
-      return res.status(400).json( {
-
-          success: false,
-          message: `Cannot cancel $ {
-            invitation.status
-          }
-
-          invitation. Only pending invitations can be cancelled.`
-        }
-
-      );
-    }
-
     await invitation.deleteOne();
 
-    console.log('✅ Invitation cancelled successfully');
+    let message;
+    if (invitation.status === 'pending') {
+      message = 'Invitation cancelled successfully';
+      console.log('✅ Pending invitation cancelled successfully');
+    } else {
+      message = `${invitation.status.charAt(0).toUpperCase() + invitation.status.slice(1)} invitation removed successfully`;
+      console.log(`✅ ${invitation.status} invitation removed successfully`);
+    }
 
     res.status(200).json( {
         success: true,
-        message: 'Invitation cancelled successfully'
+        message: message
       }
 
     );

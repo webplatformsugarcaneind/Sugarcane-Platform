@@ -914,7 +914,7 @@ const getHHMs = async (req, res) => {
     const hhms = await User.find({ 
       role: 'HHM', 
       isActive: true 
-    }).select('name phone email username createdAt').sort({ name: 1 });
+    }).select('_id name phone email username createdAt').sort({ name: 1 });
 
     console.log(`✅ Found ${hhms.length} HHMs for worker directory`);
 

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const User = require('../models/user.model');
 
 // Import middleware
 const { protect, authorize } = require('../middleware/auth.middleware');
@@ -393,5 +394,110 @@ router.delete('/associated-factories/:factoryId', disconnectFromFactory);
  * @access  Private (HHM only)
  */
 router.get('/my-performance', getMyPerformance);
+
+// ================================
+// FARMER DIRECTORY API ROUTES
+// ================================
+
+/**
+ * @route   GET /api/hhm/farmers
+ * @desc    Get farmers list for HHM directory
+ * @access  Private (HHM only)
+ */
+router.get('/farmers', async (req, res) => {
+  try {
+    console.log('HHM Farmers API called by user:', {
+      userId: req.user.id,
+      role: req.user.role,
+      username: req.user.username
+    });
+
+    // Find all farmers with their basic information
+    const farmers = await User.find(
+      { role: 'Farmer' },
+      {
+        _id: 1,
+        name: 1,
+        username: 1,
+        email: 1,
+        phone: 1,
+        location: 1,
+        farmSize: 1,
+        farmType: 1,
+        experience: 1,
+        isActive: 1,
+        createdAt: 1,
+        updatedAt: 1
+      }
+    ).sort({ name: 1, username: 1 });
+
+    console.log(`Found ${farmers.length} farmers in directory`);
+
+    res.json({
+      success: true,
+      message: 'Farmers retrieved successfully',
+      data: farmers,
+      farmers: farmers, // Alternative property name for compatibility
+      count: farmers.length
+    });
+
+  } catch (error) {
+    console.error('Error in HHM farmers directory:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching farmers directory',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+/**
+ * @route   GET /api/hhm/farmer/:id
+ * @desc    Get specific farmer profile for HHM view
+ * @access  Private (HHM only)
+ */
+router.get('/farmer/:id', async (req, res) => {
+  try {
+    console.log('HHM Farmer Profile API called:', {
+      userId: req.user.id,
+      role: req.user.role,
+      farmerIdRequested: req.params.id
+    });
+
+    const farmerId = req.params.id;
+
+    // Find the specific farmer
+    const farmer = await User.findOne(
+      { _id: farmerId, role: 'Farmer' },
+      {
+        password: 0 // Exclude password field
+      }
+    );
+
+    if (!farmer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Farmer not found'
+      });
+    }
+
+    console.log(`Farmer profile retrieved: ${farmer.name} (${farmer.username})`);
+
+    res.json({
+      success: true,
+      message: 'Farmer profile retrieved successfully',
+      data: farmer,
+      farmer: farmer // Alternative property name for compatibility
+    });
+
+  } catch (error) {
+    console.error('Error in HHM farmer profile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching farmer profile',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
 
 module.exports = router;

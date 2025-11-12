@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 /**
@@ -8,6 +9,7 @@ import axios from 'axios';
  * Includes search functionality, filtering, and displays factory data in a card format.
  */
 const FarmerFactoryDirectoryPage = () => {
+  const navigate = useNavigate();
   const [factories, setFactories] = useState([]);
   const [filteredFactories, setFilteredFactories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -174,6 +176,26 @@ const FarmerFactoryDirectoryPage = () => {
     return 'Large Scale';
   };
 
+  const handleViewProfile = (factory) => {
+    console.log('👁️ Viewing factory profile for:', factory.name);
+    console.log('🔍 DEBUG: Factory data for profile viewing:', factory);
+    console.log('🔍 DEBUG: Factory ID (_id):', factory._id);
+    console.log('🔍 DEBUG: Factory ID (id):', factory.id);
+    
+    // Use id field (from farmer API) or _id field (from other APIs)
+    const factoryId = factory.id || factory._id;
+    
+    if (!factoryId) {
+      console.error('❌ No factory ID found!', factory);
+      alert('Error: Cannot view profile - Factory ID is missing');
+      return;
+    }
+    
+    console.log('🚀 Navigating to factory profile:', factoryId);
+    // Navigate to relative profile page
+    navigate(factoryId);
+  };
+
   return (
     <div className="factory-directory-page">
       <div className="page-header">
@@ -290,7 +312,7 @@ const FarmerFactoryDirectoryPage = () => {
         ) : (
           <div className="factory-grid">
             {filteredFactories.map((factory) => (
-              <div key={factory._id} className="factory-card">
+              <div key={factory.id || factory._id} className="factory-card">
                 <div className="card-header">
                   <div className="factory-avatar">
                     <span className="avatar-icon">🏭</span>
@@ -416,12 +438,9 @@ const FarmerFactoryDirectoryPage = () => {
                   )}
                   <button 
                     className="view-details-btn"
-                    onClick={() => {
-                      // TODO: Implement view details functionality
-                      alert('View details functionality coming soon!');
-                    }}
+                    onClick={() => handleViewProfile(factory)}
                   >
-                    👁️ View Details
+                    👁️ View Profile
                   </button>
                 </div>
               </div>

@@ -72,7 +72,14 @@ const FactorySentInvitationsPage = () => {
         ;
 
     const handleCancelInvitation = async (invitationId) => {
-        if (!window.confirm('Are you sure you want to cancel this invitation?')) {
+        const invitation = invitations.find(inv => inv._id === invitationId);
+        const isPending = invitation?.status === 'pending';
+        
+        const confirmMessage = isPending 
+            ? 'Are you sure you want to cancel this invitation?' 
+            : 'Are you sure you want to remove this invitation from the list?';
+        
+        if (!window.confirm(confirmMessage)) {
             return;
         }
 
@@ -80,17 +87,34 @@ const FactorySentInvitationsPage = () => {
             setCancelingId(invitationId);
             const token = localStorage.getItem('token');
 
+            // Always use the backend API to delete/remove the invitation
             await axios.delete(`/api/factory/invitations/${invitationId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
 
-            // Remove from local state
+            // Remove from local state after successful backend deletion
             setInvitations(prev => prev.filter(inv => inv._id !== invitationId));
+            
+            // Show success message based on status
+            if (isPending) {
+                alert('Invitation cancelled successfully');
+            } else {
+                alert('Invitation removed successfully');
+            }
+            
         } catch (err) {
-            console.error('Error canceling invitation:', err);
-            alert(err.response?.data?.message || 'Failed to cancel invitation');
+            console.error('Error processing invitation:', err);
+            
+            // Better error handling for different status codes
+            if (err.response?.status === 404) {
+                alert('Invitation not found. It may have already been removed.');
+                // Remove from local state anyway since it doesn't exist on server
+                setInvitations(prev => prev.filter(inv => inv._id !== invitationId));
+            } else {
+                alert(err.response?.data?.message || 'Failed to process invitation');
+            }
         } finally {
             setCancelingId(null);
         }
@@ -124,6 +148,7 @@ const FactorySentInvitationsPage = () => {
         });
     };
 
+    // eslint-disable-next-line no-unused-vars
     const getStatusBadgeClass = (status) => {
         switch (status) {
             case 'pending':

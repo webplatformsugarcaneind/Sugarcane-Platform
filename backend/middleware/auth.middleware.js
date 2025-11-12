@@ -32,10 +32,18 @@ const protect = async (req, res, next) => {
 
     try {
       // Verify JWT token
+      console.log('🔍 Attempting to verify token...');
+      console.log('🔍 Token to verify:', token ? `${token.substring(0, 20)}...` : 'null');
+      console.log('🔍 JWT_SECRET exists:', !!process.env.JWT_SECRET);
+      console.log('🔍 JWT_SECRET length:', process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0);
+      
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('🔍 Token decoded successfully:', JSON.stringify(decoded, null, 2));
 
       // Find user by ID from token payload (using userId from token)
+      console.log('🔍 Looking for user with ID:', decoded.userId);
       const user = await User.findById(decoded.userId).select('-password');
+      console.log('🔍 User found:', user ? `${user.name} (${user.username})` : 'null');
 
       // Check if user still exists
       if (!user) {
@@ -59,6 +67,10 @@ const protect = async (req, res, next) => {
 
     } catch (tokenError) {
       // Handle specific JWT errors
+      console.error('🔍 Token verification error:', tokenError);
+      console.error('🔍 Error name:', tokenError.name);
+      console.error('🔍 Error message:', tokenError.message);
+      
       if (tokenError.name === 'TokenExpiredError') {
         return res.status(401).json({
           success: false,

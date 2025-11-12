@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './PostBillForm.css';
 
 const PostBillForm = ({ onSubmit, onCancel, isLoading = false }) => {
@@ -20,19 +20,23 @@ const PostBillForm = ({ onSubmit, onCancel, isLoading = false }) => {
     fetchFarmers();
   }, []);
 
+  // Filter farmers based on search term - memoized to prevent unnecessary re-renders
+  const filterFarmers = useCallback((searchValue, farmersData) => {
+    if (!searchValue) {
+      return farmersData;
+    }
+    return farmersData.filter(farmer =>
+      farmer.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+      farmer.email.toLowerCase().includes(searchValue.toLowerCase()) ||
+      farmer.phone.includes(searchValue)
+    );
+  }, []);
+
   // Filter farmers based on search term
   useEffect(() => {
-    if (searchTerm) {
-      const filtered = farmers.filter(farmer =>
-        farmer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        farmer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        farmer.phone.includes(searchTerm)
-      );
-      setFilteredFarmers(filtered);
-    } else {
-      setFilteredFarmers(farmers);
-    }
-  }, [searchTerm, farmers]);
+    const filtered = filterFarmers(searchTerm, farmers);
+    setFilteredFarmers(filtered);
+  }, [searchTerm, farmers, filterFarmers]);
 
   const fetchFarmers = async () => {
     setIsLoadingFarmers(true);
@@ -66,7 +70,7 @@ const PostBillForm = ({ onSubmit, onCancel, isLoading = false }) => {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -80,21 +84,21 @@ const PostBillForm = ({ onSubmit, onCancel, isLoading = false }) => {
         [name]: ''
       }));
     }
-  };
+  }, [errors]);
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange = useCallback((e) => {
     const value = e.target.value;
     setSearchTerm(value);
     setShowDropdown(true);
     
-    // Clear selected farmer if search term changes
-    if (selectedFarmer && !value.includes(selectedFarmer.name)) {
+    // Clear selected farmer if search term changes (only if it's a significant change)
+    if (selectedFarmer && value !== selectedFarmer.name && !value.toLowerCase().includes(selectedFarmer.name.toLowerCase())) {
       setSelectedFarmer(null);
       setFormData(prev => ({ ...prev, farmerId: '' }));
     }
-  };
+  }, [selectedFarmer]);
 
-  const handleFarmerSelect = (farmer) => {
+  const handleFarmerSelect = useCallback((farmer) => {
     setSelectedFarmer(farmer);
     setSearchTerm(farmer.name);
     setFormData(prev => ({
@@ -110,7 +114,7 @@ const PostBillForm = ({ onSubmit, onCancel, isLoading = false }) => {
         farmerId: ''
       }));
     }
-  };
+  }, [errors.farmerId]);
 
   const validateForm = () => {
     const newErrors = {};

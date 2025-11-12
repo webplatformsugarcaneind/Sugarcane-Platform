@@ -20,10 +20,19 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/public', require('./routes/public.routes'));
+app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/farmer', require('./routes/farmer.routes'));
 app.use('/api/hhm', require('./routes/hhm.routes'));
 app.use('/api/worker', require('./routes/worker.routes'));
 app.use('/api/factory', require('./routes/factory.routes'));
+app.use('/api/contracts', require('./routes/contract.routes'));
+app.use('/api/farmer-contracts', require('./routes/farmerContract.routes'));
+app.use('/api/orders', require('./routes/orders.routes'));
+app.use('/api/test-orders', require('./routes/test-orders.routes'));
+app.use('/api/minimal-test', require('./routes/minimal-test.routes'));
+
+// Register listings routes like other routes
+app.use('/api/listings', require('./routes/listings.routes'));
 
 // Basic API info route
 app.get('/', (req, res) => {
@@ -34,10 +43,13 @@ app.get('/', (req, res) => {
     endpoints: {
       auth: '/api/auth',
       public: '/api/public',
+      users: '/api/users',
       farmer: '/api/farmer',
       hhm: '/api/hhm',
       worker: '/api/worker',
       factory: '/api/factory',
+      contracts: '/api/contracts',
+      'farmer-contracts': '/api/farmer-contracts',
       health: '/api/health'
     }
   });
@@ -78,6 +90,8 @@ app.use((req, res) => {
       hhm: '/api/hhm (Protected - GET /schedules, POST /schedules, GET /workers, GET /applications, etc.)',
       worker: '/api/worker (Protected - GET /jobs, POST /applications, GET /invitations, etc.)',
       factory: '/api/factory (Protected - POST /bills, GET /bills, POST /maintenance-jobs, etc.)',
+      contracts: '/api/contracts (Protected - POST /request, PUT /respond/:id, GET /my-contracts, etc.)',
+      'farmer-contracts': '/api/farmer-contracts (Protected - POST /request, GET /my-contracts)',
       health: '/api/health (GET)',
       root: '/ (GET)'
     }
@@ -96,6 +110,7 @@ const server = app.listen(PORT, () => {
   console.log(`👨‍💼 HHM Endpoints: http://localhost:${PORT}/api/hhm`);
   console.log(`👷 Worker Endpoints: http://localhost:${PORT}/api/worker`);
   console.log(`🏭 Factory Endpoints: http://localhost:${PORT}/api/factory`);
+  console.log(`📋 Contract Endpoints: http://localhost:${PORT}/api/contracts`);
   console.log(`❤️  Health Check: http://localhost:${PORT}/api/health`);
 });
 

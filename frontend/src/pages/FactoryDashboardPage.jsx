@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PostBillForm from '../components/PostBillForm.jsx';
+import FactoryNotifications from '../components/FactoryNotifications.jsx';
 import './FactoryDashboardPage.css';
 
 const FactoryDashboardPage = () => {
@@ -88,6 +89,9 @@ const FactoryDashboardPage = () => {
         </div>
       </div>
 
+      {/* Notifications Section */}
+      <FactoryNotifications />
+
       {/* Action Cards Section */}
       <div className="action-cards-container">
         <h2 className="section-title">Factory Operations</h2>
@@ -145,57 +149,7 @@ const FactoryDashboardPage = () => {
             </div>
           </div>
 
-          {/* Sent Invitations Card */}
-          <div
-            className="action-card invitations-card"
-            onClick={() => navigate('/factory/sent-invitations')}
-            role="button"
-            tabIndex={0}
-          >
-            <div className="card-icon">
-              📨
-            </div>
-            <div className="card-content">
-              <h3 className="card-title">Sent Invitations</h3>
-              <p className="card-description">
-                Track status of invitations sent to HHMs
-              </p>
-              <div className="card-features">
-                <span className="feature-tag">• Track Status</span>
-                <span className="feature-tag">• Cancel Pending</span>
-              </div>
-            </div>
-            <div className="card-arrow">
-              →
-            </div>
-          </div>
-
-          {/* Received HHM Invitations Card */}
-          <div
-            className="action-card invitations-card"
-            onClick={() => navigate('/factory/received-invitations')}
-            role="button"
-            tabIndex={0}
-          >
-            <div className="card-icon">
-              📥
-            </div>
-            <div className="card-content">
-              <h3 className="card-title">Received Invitations</h3>
-              <p className="card-description">
-                View and respond to invitations from HHMs
-              </p>
-              <div className="card-features">
-                <span className="feature-tag">• Accept/Decline</span>
-                <span className="feature-tag">• View HHM Details</span>
-              </div>
-            </div>
-            <div className="card-arrow">
-              →
-            </div>
-          </div>
-
-          {/* Associated HHMs Card */}
+          {/* My Associated HHMs Card */}
           <div
             className="action-card associated-card"
             onClick={() => navigate('/factory/associated-hhms')}
@@ -206,7 +160,7 @@ const FactoryDashboardPage = () => {
               🤝
             </div>
             <div className="card-content">
-              <h3 className="card-title">Associated HHMs</h3>
+              <h3 className="card-title">My Associated HHMs</h3>
               <p className="card-description">
                 View and manage your HHM partnerships
               </p>
@@ -218,29 +172,6 @@ const FactoryDashboardPage = () => {
             <div className="card-arrow">
               →
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Stats Section */}
-      <div className="quick-stats-section">
-        <h2 className="section-title">Quick Overview</h2>
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-number">--</div>
-            <div className="stat-label">Active HHMs</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-number">--</div>
-            <div className="stat-label">Pending Bills</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-number">--</div>
-            <div className="stat-label">Total Revenue</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-number">--</div>
-            <div className="stat-label">Active Jobs</div>
           </div>
         </div>
       </div>

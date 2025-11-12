@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import NotificationToast from '../components/NotificationToast';
+import useNotifications from '../hooks/useNotifications';
 
 // Set axios base URL
 axios.defaults.baseURL = 'http://localhost:5000';
@@ -14,6 +16,7 @@ axios.defaults.baseURL = 'http://localhost:5000';
  */
 const FactoryHHMDirectoryPage = () => {
   const navigate = useNavigate();
+  const { notifications, dismissNotification, notify } = useNotifications();
   const [hhms, setHhms] = useState([]);
   const [filteredHhms, setFilteredHhms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,13 +32,72 @@ const FactoryHHMDirectoryPage = () => {
   const [sendingInvitation, setSendingInvitation] = useState(false);
   const [invitationSuccess, setInvitationSuccess] = useState(null);
 
+  // Sub-navigation state
+  const [activeTab, setActiveTab] = useState('allHHMs');
+
+  // Request and Application states
+  const [myRequests, setMyRequests] = useState([]);
+  const [receivedApplications, setReceivedApplications] = useState([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
+  const [applicationsLoading, setApplicationsLoading] = useState(false);
+
+  // Filter and sort function
+  const filterAndSortHHMs = useCallback(() => {
+    let filtered = [...hhms];
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(hhm =>
+        hhm.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        hhm.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        hhm.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        hhm.phone?.includes(searchTerm) ||
+        hhm.specialization?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply location filter
+    if (selectedLocation) {
+      filtered = filtered.filter(hhm =>
+        hhm.location?.toLowerCase().includes(selectedLocation.toLowerCase())
+      );
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return (a.name || '').localeCompare(b.name || '');
+        case 'username':
+          return (a.username || '').localeCompare(b.username || '');
+        case 'experience':
+          return (b.experience || 0) - (a.experience || 0);
+        case 'location':
+          return (a.location || '').localeCompare(b.location || '');
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredHhms(filtered);
+  }, [hhms, searchTerm, selectedLocation, sortBy]);
+
   useEffect(() => {
     fetchHHMs();
   }, []);
 
   useEffect(() => {
     filterAndSortHHMs();
-  }, [hhms, searchTerm, selectedLocation, sortBy]);
+  }, [filterAndSortHHMs]);
+
+  // Fetch data based on active tab
+  useEffect(() => {
+    if (activeTab === 'myRequests') {
+      fetchMyRequests();
+    } else if (activeTab === 'receivedApplications') {
+      fetchReceivedApplications();
+    }
+  }, [activeTab]);
 
   const fetchHHMs = async () => {
     try {
@@ -78,44 +140,89 @@ const FactoryHHMDirectoryPage = () => {
     }
   };
 
-  const filterAndSortHHMs = () => {
-    let filtered = [...hhms];
+  const fetchMyRequests = async () => {
+    try {
+      setRequestsLoading(true);
+      const token = localStorage.getItem('token');
+      
+      if (!token) return;
 
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(hhm =>
-        hhm.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        hhm.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        hhm.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        hhm.phone?.includes(searchTerm) ||
-        hhm.specialization?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      console.log('🔍 Fetching factory sent invitations...');
+
+      // Corrected API endpoint for factory's sent invitations to HHMs
+      const response = await axios.get('/api/factory/invitations', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      console.log('🔍 My Requests response:', response.data);
+      console.log('🔍 Sent invitations data:', response.data.data);
+      console.log('🔍 Sample invitation structure:', response.data.data[0]);
+
+      setMyRequests(response.data.data || []);
+    } catch (err) {
+      console.error('❌ Error fetching sent invitations:', err);
+      console.error('❌ Error response:', err.response?.data);
+    } finally {
+      setRequestsLoading(false);
     }
+  };
 
-    // Apply location filter
-    if (selectedLocation) {
-      filtered = filtered.filter(hhm =>
-        hhm.location?.toLowerCase().includes(selectedLocation.toLowerCase())
-      );
+  const fetchReceivedApplications = async () => {
+    try {
+      setApplicationsLoading(true);
+      const token = localStorage.getItem('token');
+      
+      if (!token) return;
+
+      console.log('🔍 Fetching factory received invitations...');
+
+      // Corrected API endpoint for invitations received by the factory from HHMs
+      const response = await axios.get('/api/factory/received-invitations', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      console.log('🔍 Received Applications response:', response.data);
+      console.log('🔍 Received invitations data:', response.data.data);
+      console.log('🔍 Sample received invitation structure:', response.data.data[0]);
+
+      setReceivedApplications(response.data.data || []);
+    } catch (err) {
+      console.error('❌ Error fetching received invitations:', err);
+      console.error('❌ Error response:', err.response?.data);
+    } finally {
+      setApplicationsLoading(false);
     }
+  };
 
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return (a.name || '').localeCompare(b.name || '');
-        case 'username':
-          return (a.username || '').localeCompare(b.username || '');
-        case 'experience':
-          return (b.experience || 0) - (a.experience || 0);
-        case 'location':
-          return (a.location || '').localeCompare(b.location || '');
-        default:
-          return 0;
-      }
-    });
+  // Handle application response (accept/decline)
+  const handleApplicationResponse = async (applicationId, status) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) return;
 
-    setFilteredHhms(filtered);
+      console.log(`🔄 Responding to application ${applicationId} with status: ${status}`);
+
+      const response = await axios.put(`/api/factory/received-invitations/${applicationId}`, {
+        status: status
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      console.log('✅ Application response sent:', response.data);
+
+      // Refresh the received applications list
+      await fetchReceivedApplications();
+
+      // Show success message using existing state
+      setInvitationSuccess(`Application ${status} successfully!`);
+      setTimeout(() => setInvitationSuccess(null), 3000);
+
+    } catch (err) {
+      console.error('❌ Error responding to application:', err);
+      setError('Failed to respond to application. Please try again.');
+      setTimeout(() => setError(null), 3000);
+    }
   };
 
   const handleSearchChange = (e) => {
@@ -159,7 +266,9 @@ const FactoryHHMDirectoryPage = () => {
   };
 
   const handleViewProfile = (hhm) => {
-    navigate(`/factory/hhm-profile/${hhm._id}`);
+    console.log('🔍 DEBUG: HHM data for profile viewing:', hhm);
+    console.log('🔍 DEBUG: HHM ID:', hhm._id);
+    navigate(hhm._id);
   };
 
   const handleSendInvitation = async () => {
@@ -169,11 +278,31 @@ const FactoryHHMDirectoryPage = () => {
       setSendingInvitation(true);
       const token = localStorage.getItem('token');
 
-      const response = await axios.post(
+      if (!token) {
+        setInvitationSuccess({
+          type: 'error',
+          message: 'Authentication required. Please login again.'
+        });
+        return;
+      }
+
+      console.log('Sending invitation to HHM:', selectedHHM._id);
+      console.log('With message:', invitationMessage);
+      
+      // Validate HHM ID format
+      if (!selectedHHM._id || selectedHHM._id.length !== 24) {
+        setInvitationSuccess({
+          type: 'error',
+          message: 'Invalid HHM selected. Please refresh the page and try again.'
+        });
+        return;
+      }
+      
+      await axios.post(
         '/api/factory/invite-hhm',
         {
           hhmId: selectedHHM._id,
-          message: invitationMessage
+          personalMessage: invitationMessage
         },
         {
           headers: {
@@ -183,10 +312,8 @@ const FactoryHHMDirectoryPage = () => {
         }
       );
 
-      setInvitationSuccess({
-        type: 'success',
-        message: `Invitation sent successfully to ${selectedHHM.name}!`
-      });
+      // Show simple one-line notification
+      notify.hhmInvitationSent('Factory', selectedHHM.name);
 
       // Close modal after 2 seconds
       setTimeout(() => {
@@ -197,9 +324,40 @@ const FactoryHHMDirectoryPage = () => {
 
     } catch (err) {
       console.error('Error sending invitation:', err);
+      console.error('Error response:', err.response?.data);
+      console.error('Error status:', err.response?.status);
+      console.error('Error headers:', err.response?.headers);
+      
+      let errorMessage = 'Failed to send invitation. Please try again.';
+      
+      if (err.response?.status === 401) {
+        // Unauthorized - token expired or invalid
+        errorMessage = 'Your session has expired. Please login again.';
+        // Optionally redirect to login page
+        // window.location.href = '/login';
+      } else if (err.response?.status === 403) {
+        // Forbidden - insufficient permissions
+        errorMessage = 'You do not have permission to send invitations. Please contact support.';
+      } else if (err.response?.status === 409) {
+        // Conflict - duplicate invitation
+        errorMessage = err.response.data.message || 'You have already sent an invitation to this HHM.';
+      } else if (err.response?.status === 429) {
+        // Too many requests - recent decline
+        errorMessage = err.response.data.message || 'Please wait before sending another invitation to this HHM.';
+      } else if (err.response?.status === 400) {
+        // Bad request - validation or already associated
+        errorMessage = err.response.data.message || 'Invalid invitation request.';
+      } else if (err.response?.status === 404) {
+        // Not found - HHM doesn't exist
+        errorMessage = 'The selected HHM was not found. Please refresh the page and try again.';
+      } else if (err.response?.data?.message) {
+        // Use server error message if available
+        errorMessage = err.response.data.message;
+      }
+      
       setInvitationSuccess({
         type: 'error',
-        message: err.response?.data?.message || 'Failed to send invitation. Please try again.'
+        message: errorMessage
       });
     } finally {
       setSendingInvitation(false);
@@ -222,7 +380,37 @@ const FactoryHHMDirectoryPage = () => {
         </p>
       </div>
 
-      {/* Search and Filter Section */}
+      {/* Sub-navigation tabs */}
+      <div className="sub-navigation">
+        <div className="tab-buttons">
+          <button
+            className={`tab-button ${activeTab === 'allHHMs' ? 'active' : ''}`}
+            onClick={() => setActiveTab('allHHMs')}
+          >
+            <span className="tab-icon">👥</span>
+            All HHMs
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'myRequests' ? 'active' : ''}`}
+            onClick={() => setActiveTab('myRequests')}
+          >
+            <span className="tab-icon">📤</span>
+            My Requests
+            {requestsLoading && <span className="loading-spinner">...</span>}
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'receivedApplications' ? 'active' : ''}`}
+            onClick={() => setActiveTab('receivedApplications')}
+          >
+            <span className="tab-icon">📥</span>
+            Received Applications
+            {applicationsLoading && <span className="loading-spinner">...</span>}
+          </button>
+        </div>
+      </div>
+
+      {/* Search and Filter Section - only show for All HHMs tab */}
+      {activeTab === 'allHHMs' && (
       <div className="filter-section">
         <div className="search-controls">
           <div className="search-input-group">
@@ -276,46 +464,50 @@ const FactoryHHMDirectoryPage = () => {
           </span>
         </div>
       </div>
+      )}
 
       {/* Content Section */}
       <div className="content-section">
-        {loading ? (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading harvest manager directory...</p>
-          </div>
-        ) : error ? (
-          <div className="error-container">
-            <div className="error-icon">⚠️</div>
-            <h3>Error Loading Directory</h3>
-            <p className="error-message">{error}</p>
-            <button
-              onClick={fetchHHMs}
-              className="retry-button"
-            >
-              Try Again
-            </button>
-          </div>
-        ) : filteredHhms.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">🌾</div>
-            <h3>No Harvest Managers Found</h3>
-            <p>
-              {searchTerm || selectedLocation
-                ? 'Try adjusting your search or filter criteria.'
-                : 'No harvest managers are currently available in the directory.'
-              }
-            </p>
-            {(searchTerm || selectedLocation) && (
-              <button
-                onClick={clearFilters}
-                className="clear-filters-btn"
-              >
-                Clear All Filters
-              </button>
-            )}
-          </div>
-        ) : (
+        {/* All HHMs Tab Content */}
+        {activeTab === 'allHHMs' && (
+          <>
+            {loading ? (
+              <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>Loading harvest manager directory...</p>
+              </div>
+            ) : error ? (
+              <div className="error-container">
+                <div className="error-icon">⚠️</div>
+                <h3>Error Loading Directory</h3>
+                <p className="error-message">{error}</p>
+                <button
+                  onClick={fetchHHMs}
+                  className="retry-button"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : filteredHhms.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">🌾</div>
+                <h3>No Harvest Managers Found</h3>
+                <p>
+                  {searchTerm || selectedLocation
+                    ? 'Try adjusting your search or filter criteria.'
+                    : 'No harvest managers are currently available in the directory.'
+                  }
+                </p>
+                {(searchTerm || selectedLocation) && (
+                  <button
+                    onClick={clearFilters}
+                    className="clear-filters-btn"
+                  >
+                    Clear All Filters
+                  </button>
+                )}
+              </div>
+            ) : (
           <div className="hhm-grid">
             {filteredHhms.map((hhm) => (
               <div key={hhm._id} className="hhm-card">
@@ -385,6 +577,116 @@ const FactoryHHMDirectoryPage = () => {
                 </div>
               </div>
             ))}
+          </div>
+            )}
+          </>
+        )}
+
+        {/* My Requests Tab Content */}
+        {activeTab === 'myRequests' && (
+          <div className="requests-section">
+            <h2>📤 My Sent Invitations</h2>
+            {requestsLoading ? (
+              <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>Loading your requests...</p>
+              </div>
+            ) : myRequests.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">📤</div>
+                <h3>No Sent Invitations</h3>
+                <p>You haven't sent any invitations to Harvest Managers yet.</p>
+              </div>
+            ) : (
+              <div className="requests-list">
+                {myRequests.map((request) => (
+                  <div key={request._id} className="request-card">
+                    <div className="request-info">
+                      <h4>{request.hhmId?.name || request.hhmName || 'Unknown HHM'}</h4>
+                      <p><strong>Status:</strong> {request.status}</p>
+                      <p><strong>Sent:</strong> {formatDate(request.createdAt)}</p>
+                      {request.hhmId?.email && <p><strong>Email:</strong> {request.hhmId.email}</p>}
+                      {request.hhmId?.phone && <p><strong>Phone:</strong> {request.hhmId.phone}</p>}
+                      {request.message && <p><strong>Message:</strong> {request.message}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Received Applications Tab Content */}
+        {activeTab === 'receivedApplications' && (
+          <div className="applications-section">
+            <h2>📥 Received Applications</h2>
+            {applicationsLoading ? (
+              <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>Loading applications...</p>
+              </div>
+            ) : receivedApplications.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">📥</div>
+                <h3>No Applications Received</h3>
+                <p>No Harvest Managers have applied to work with you yet.</p>
+              </div>
+            ) : (
+              <div className="applications-list">
+                {receivedApplications.map((application) => (
+                  <div key={application._id} className="application-card">
+                    <div className="application-info">
+                      <h4>{application.hhmId?.name || application.hhmName || 'Unknown HHM'}</h4>
+                      <p><strong>Status:</strong> {application.status}</p>
+                      <p><strong>Applied:</strong> {formatDate(application.createdAt)}</p>
+                      {application.hhmId?.email && <p><strong>Email:</strong> {application.hhmId.email}</p>}
+                      {application.hhmId?.phone && <p><strong>Phone:</strong> {application.hhmId.phone}</p>}
+                      {application.hhmId?.experience && <p><strong>Experience:</strong> {application.hhmId.experience} years</p>}
+                      {application.message && <p><strong>Message:</strong> {application.message}</p>}
+                    </div>
+                    {application.status === 'pending' && (
+                      <div className="application-actions" style={{
+                        marginTop: '15px',
+                        display: 'flex',
+                        gap: '10px',
+                        justifyContent: 'flex-end'
+                      }}>
+                        <button 
+                          className="btn-accept"
+                          onClick={() => handleApplicationResponse(application._id, 'accepted')}
+                          style={{
+                            backgroundColor: '#28a745',
+                            color: 'white',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '14px'
+                          }}
+                        >
+                          ✅ Accept
+                        </button>
+                        <button 
+                          className="btn-decline"
+                          onClick={() => handleApplicationResponse(application._id, 'declined')}
+                          style={{
+                            backgroundColor: '#dc3545',
+                            color: 'white',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '14px'
+                          }}
+                        >
+                          ❌ Decline
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -482,6 +784,106 @@ const FactoryHHMDirectoryPage = () => {
           color: #666;
           font-size: 1.1rem;
           margin: 0;
+        }
+
+        /* Sub-navigation Styles */
+        .sub-navigation {
+          margin-bottom: 2rem;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+        }
+
+        .tab-buttons {
+          display: flex;
+          border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab-button {
+          flex: 1;
+          padding: 1rem 1.5rem;
+          border: none;
+          background: white;
+          color: #666;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+          background: #f8fafc;
+          color: #2c5530;
+        }
+
+        .tab-button.active {
+          background: #f0f9ff;
+          color: #2c5530;
+          border-bottom-color: #2c5530;
+        }
+
+        .tab-icon {
+          font-size: 1.2rem;
+        }
+
+        .loading-spinner {
+          margin-left: 0.5rem;
+        }
+
+        /* Requests and Applications Styles */
+        .requests-section,
+        .applications-section {
+          background: white;
+          border-radius: 12px;
+          padding: 2rem;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .requests-section h2,
+        .applications-section h2 {
+          color: #2c5530;
+          margin-bottom: 1.5rem;
+        }
+
+        .requests-list,
+        .applications-list {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .request-card,
+        .application-card {
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 1.5rem;
+          transition: all 0.3s ease;
+        }
+
+        .request-card:hover,
+        .application-card:hover {
+          border-color: #2c5530;
+          box-shadow: 0 4px 12px rgba(44, 85, 48, 0.1);
+        }
+
+        .request-info h4,
+        .application-info h4 {
+          color: #2c5530;
+          margin: 0 0 0.5rem 0;
+          font-size: 1.2rem;
+        }
+
+        .request-info p,
+        .application-info p {
+          margin: 0.25rem 0;
+          color: #666;
         }
 
         .filter-section {
@@ -595,13 +997,7 @@ const FactoryHHMDirectoryPage = () => {
           border: 4px solid #f3f3f3;
           border-top: 4px solid #4caf50;
           border-radius: 50%;
-          animation: spin 1s linear infinite;
           margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
         }
 
         .error-icon, .empty-icon {
@@ -1097,6 +1493,13 @@ const FactoryHHMDirectoryPage = () => {
           }
         }
       `}</style>
+
+      {/* Notifications */}
+      <NotificationToast 
+        notifications={notifications}
+        onDismiss={dismissNotification}
+        position="top-right"
+      />
     </div>
   );
 };

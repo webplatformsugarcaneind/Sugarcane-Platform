@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 /**
@@ -9,6 +10,7 @@ import axios from 'axios';
  * Customized for Factory user perspective with emphasis on networking and collaboration.
  */
 const FactoryDirectoryPage = () => {
+  const navigate = useNavigate();
   const [factories, setFactories] = useState([]);
   const [filteredFactories, setFilteredFactories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -72,11 +74,12 @@ const FactoryDirectoryPage = () => {
           return (a.name || '').localeCompare(b.name || '');
         case 'location':
           return (a.location || '').localeCompare(b.location || '');
-        case 'capacity':
+        case 'capacity': {
           // Extract numeric value from capacity string for sorting
           const aCapacity = parseInt((a.capacity || '').match(/\d+/)?.[0] || '0');
           const bCapacity = parseInt((b.capacity || '').match(/\d+/)?.[0] || '0');
           return bCapacity - aCapacity;
+        }
         case 'established':
           return new Date(b.establishedYear || 0) - new Date(a.establishedYear || 0);
         default:
@@ -160,26 +163,18 @@ const FactoryDirectoryPage = () => {
     setSortBy('name');
   };
 
+  const handleViewProfile = (factory) => {
+    console.log('👁️ Viewing factory profile for:', factory.name);
+    // Navigate to factory profile page
+    navigate(`/factory/profile/${factory._id}`, { state: { factoryData: factory } });
+  };
+
   // Get unique locations for filter dropdown
   const uniqueLocations = [...new Set(
     (Array.isArray(factories) ? factories : [])
       .map(factory => factory.location)
       .filter(location => location)
   )];
-
-  const formatNumber = (num) => {
-    if (!num) return 'N/A';
-    return num.toLocaleString();
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
   const getCapacityColor = (capacity) => {
     if (!capacity) return '#666';
@@ -408,10 +403,11 @@ const FactoryDirectoryPage = () => {
 
                 <div className="card-footer">
                   <div className="action-buttons">
-                    <button className="contact-btn primary">
-                      🌐 Connect & Collaborate
-                    </button>
-                    <button className="contact-btn secondary">
+                    <button 
+                      className="contact-btn primary"
+                      onClick={() => handleViewProfile(factory)}
+                      title="View detailed factory profile"
+                    >
                       📋 View Full Profile
                     </button>
                   </div>
@@ -567,13 +563,7 @@ const FactoryDirectoryPage = () => {
           border: 4px solid #e0e0e0;
           border-top: 4px solid #4caf50;
           border-radius: 50%;
-          animation: spin 1s linear infinite;
           margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
         }
 
         .error-icon, .empty-icon {

@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ContractRequestModal from '../components/ContractRequestModal';
+
+axios.defaults.baseURL = 'http://localhost:5000';
 
 /**
  * HHMSpecificFactoryPage Component
@@ -16,14 +19,13 @@ const HHMSpecificFactoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [isAssociated, setIsAssociated] = useState(false);
+  const [checkingAssociation, setCheckingAssociation] = useState(false);
+  const [removingAssociation, setRemovingAssociation] = useState(false);
+  const [sendingInvitation, setSendingInvitation] = useState(false);
+  const [showContractModal, setShowContractModal] = useState(false);
 
-  useEffect(() => {
-    if (id) {
-      fetchFactoryDetails();
-    }
-  }, [id]);
-
-  const fetchFactoryDetails = async () => {
+  const fetchFactoryDetails = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -46,6 +48,144 @@ const HHMSpecificFactoryPage = () => {
       setError(err.response?.data?.message || err.message || 'Failed to load factory details');
     } finally {
       setLoading(false);
+    }
+  }, [id]);
+
+  const checkAssociation = useCallback(async () => {
+    try {
+      setCheckingAssociation(true);
+      const token = localStorage.getItem('token');
+      
+      const response = await axios.get('/api/hhm/associated-factories', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const associatedFactories = response.data.data || [];
+      const isAlreadyAssociated = associatedFactories.some(associatedFactory => associatedFactory._id === id);
+      setIsAssociated(isAlreadyAssociated);
+    } catch (err) {
+      console.error('Error checking association:', err);
+      // If we can't check association, default to showing invite option
+      setIsAssociated(false);
+    } finally {
+      setCheckingAssociation(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchFactoryDetails();
+      await checkAssociation();
+    };
+    fetchData();
+  }, [fetchFactoryDetails, checkAssociation]);
+
+  // Debug: Log factory object whenever it changes
+  useEffect(() => {
+    if (factory) {
+      console.log('🔍 Factory object updated:', factory);
+      console.log('🔍 Factory _id:', factory._id);
+      console.log('🔍 Factory id:', factory.id);
+      console.log('🔍 Factory ID type:', typeof (factory._id || factory.id));
+      console.log('🔍 Factory name:', factory.name);
+    }
+  }, [factory]);
+
+  const handleSendInvitation = async () => {
+    if (!factory) return;
+    
+    // Prevent multiple concurrent requests
+    if (sendingInvitation) return;
+
+    try {
+      setSendingInvitation(true);
+      const token = localStorage.getItem('token');
+
+      // Debug: Log the factory object and what we're sending
+      console.log('🔍 Factory object:', factory);
+      console.log('🔍 Factory ID being sent:', factory._id || factory.id);
+      
+      const requestData = {
+        factoryId: factory._id || factory.id,
+        personalMessage: `I would like to establish a partnership with ${factory.name}`,
+        invitationReason: 'Seeking collaboration opportunities for worker placement and operations'
+      };
+      
+      console.log('🔍 Request data being sent:', requestData);
+
+      await axios.post('/api/hhm/invite-factory', requestData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      alert('✅ Invitation sent successfully!');
+    } catch (err) {
+      console.error('Error sending invitation:', err);
+      console.error('Error response data:', err.response?.data);
+      
+      let errorMessage = 'Failed to send invitation';
+      
+      if (err.response?.data?.message) {
+        const backendMessage = err.response.data.message;
+        if (backendMessage.includes('pending invitation')) {
+          errorMessage = 'You have already sent a pending invitation to this factory. Please wait for their response.';
+        } else if (backendMessage.includes('already associated')) {
+          errorMessage = 'This factory is already associated with your profile.';
+        } else if (backendMessage.includes('invitation conflict')) {
+          errorMessage = 'There seems to be a pending invitation for this factory. Please try again in a few moments.';
+        } else {
+          errorMessage = backendMessage;
+        }
+      } else if (err.response?.status) {
+        errorMessage = `Failed to send invitation (Error ${err.response.status})`;
+      }
+      
+      alert(`❌ ${errorMessage}`);
+    } finally {
+      setSendingInvitation(false);
+    }
+  };
+
+  const handleRemoveAssociation = async () => {
+    if (!factory) return;
+    
+    // Show confirmation dialog
+    const confirmRemoval = window.confirm(
+      `Are you sure you want to end the contract/association with ${factory.name}? This action cannot be undone.`
+    );
+    
+    if (!confirmRemoval) return;
+    
+    try {
+      setRemovingAssociation(true);
+      const token = localStorage.getItem('token');
+
+      await axios.delete(`/api/hhm/associated-factories/${factory._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      alert('✅ Association removed successfully!');
+      setIsAssociated(false); // Update the state to show invite option again
+    } catch (err) {
+      console.error('Error removing association:', err);
+      console.error('Error response data:', err.response?.data);
+      
+      let errorMessage = 'Failed to remove association';
+      
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.status) {
+        errorMessage = `Failed to remove association (Error ${err.response.status})`;
+      }
+      
+      alert(`❌ ${errorMessage}`);
+    } finally {
+      setRemovingAssociation(false);
     }
   };
 
@@ -462,14 +602,40 @@ const HHMSpecificFactoryPage = () => {
                     partnership opportunities and explore collaboration possibilities.
                   </p>
                   <div style={styles.ctaButtons}>
+                    {isAssociated ? (
+                      <button 
+                        style={{
+                          ...styles.primaryButton,
+                          backgroundColor: '#dc3545',
+                          ':hover': { backgroundColor: '#c82333' }
+                        }}
+                        onClick={handleRemoveAssociation}
+                        disabled={removingAssociation || checkingAssociation}
+                      >
+                        {removingAssociation ? '🔄 Removing...' : '🚫 End Contract'}
+                      </button>
+                    ) : (
+                      <>
+                        <button 
+                          style={styles.primaryButton}
+                          onClick={handleSendInvitation}
+                          disabled={sendingInvitation || checkingAssociation}
+                        >
+                          {sendingInvitation ? '🔄 Sending...' : '📨 Send Partnership Invitation'}
+                        </button>
+                        <button 
+                          style={styles.contractButton}
+                          onClick={() => setShowContractModal(true)}
+                        >
+                          📋 Request Contract
+                        </button>
+                      </>
+                    )}
                     <button 
-                      style={styles.primaryButton}
+                      style={styles.secondaryButton}
                       onClick={() => setActiveTab('contact')}
                     >
-                      📞 View Contact Information
-                    </button>
-                    <button style={styles.secondaryButton}>
-                      📧 Send Partnership Inquiry
+                      � View Contact Information
                     </button>
                   </div>
                 </div>
@@ -478,6 +644,13 @@ const HHMSpecificFactoryPage = () => {
           </div>
         )}
       </div>
+
+      {/* Contract Request Modal */}
+      <ContractRequestModal 
+        isOpen={showContractModal}
+        onClose={() => setShowContractModal(false)}
+        factoryInfo={factory}
+      />
     </div>
   );
 };
@@ -907,6 +1080,18 @@ const styles = {
     fontSize: '1rem',
     fontWeight: '600',
     transition: 'all 0.2s'
+  },
+  contractButton: {
+    padding: '1rem 2rem',
+    backgroundColor: '#007bff',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    fontWeight: '600',
+    transition: 'background-color 0.2s',
+    marginLeft: '1rem'
   },
   loadingSection: {
     textAlign: 'center',

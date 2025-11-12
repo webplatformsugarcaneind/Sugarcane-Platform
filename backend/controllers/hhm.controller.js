@@ -1412,11 +1412,17 @@ const getMyPerformance = async (req, res) => {
 const inviteFactory = async (req, res) => {
   try {
     console.log('📨 HHM inviting Factory:', req.user._id);
+    console.log('🔍 Request body received:', req.body);
 
     const { factoryId, personalMessage, invitationReason } = req.body;
+    
+    console.log('🔍 Extracted factoryId:', factoryId);
+    console.log('🔍 Type of factoryId:', typeof factoryId);
+    console.log('🔍 factoryId exists:', !!factoryId);
 
     // Validate required fields
     if (!factoryId) {
+      console.log('❌ Factory ID validation failed');
       return res.status(400).json({
         success: false,
         message: 'Factory ID is required'
