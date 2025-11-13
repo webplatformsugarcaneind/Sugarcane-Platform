@@ -164,6 +164,10 @@ const FactoryDirectoryPage = () => {
     setSortBy('name');
   };
 
+  const handleViewProfile = (factoryId) => {
+    navigate(`/factory/factory-directory/${factoryId}`);
+  };
+
   // Get unique locations for filter dropdown
   const uniqueLocations = [...new Set(
     (Array.isArray(factories) ? factories : [])
@@ -185,10 +189,6 @@ const FactoryDirectoryPage = () => {
     if (numericCapacity < 1000) return 'Small Scale';
     if (numericCapacity < 5000) return 'Medium Scale';
     return 'Large Scale';
-  };
-
-  const handleViewProfile = (factoryId) => {
-    navigate(`/factory/factory-directory/${factoryId}`);
   };
 
   return (
