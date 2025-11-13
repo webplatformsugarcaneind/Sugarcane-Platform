@@ -50,8 +50,8 @@ const farmerContractSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Contract status is required'],
     enum: {
-      values: ['farmer_pending', 'hhm_accepted', 'hhm_rejected', 'auto_cancelled'],
-      message: 'Status must be one of: farmer_pending, hhm_accepted, hhm_rejected, auto_cancelled'
+      values: ['farmer_pending', 'hhm_accepted', 'hhm_rejected', 'auto_cancelled', 'completed'],
+      message: 'Status must be one of: farmer_pending, hhm_accepted, hhm_rejected, auto_cancelled, completed'
     },
     default: 'farmer_pending',
     index: true
@@ -78,6 +78,28 @@ const farmerContractSchema = new mongoose.Schema({
     default: 2,
     min: [1, 'Grace period must be at least 1 day'],
     max: [30, 'Grace period cannot exceed 30 days']
+  },
+
+  // Delivery Date - When the contract work was delivered/completed
+  delivery_date: {
+    type: Date,
+    required: false
+  },
+
+  // Payment Date - When payment was made for the contract
+  payment_date: {
+    type: Date,
+    required: false
+  },
+
+  // Payment Status - Whether payment has been made
+  payment_status: {
+    type: String,
+    enum: {
+      values: ['pending', 'paid'],
+      message: 'Payment status must be either pending or paid'
+    },
+    default: 'pending'
   }
 }, {
   timestamps: true, // Automatically adds createdAt and updatedAt fields

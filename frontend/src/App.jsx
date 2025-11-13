@@ -50,6 +50,8 @@ import FarmerContractRequestPage from './pages/FarmerContractRequestPage.jsx';
 import FarmerContractsDashboard from './pages/FarmerContractsDashboard.jsx';
 import HHMContractDashboard from './pages/HHMContractDashboard.jsx';
 import FarmerPublicProfilePage from './pages/FarmerPublicProfilePage.jsx';
+import FactoryAnalysisPage from './pages/FactoryAnalysisPage.jsx';
+import FactoryAnalysisDebug from './pages/FactoryAnalysisDebug.jsx';
 import ListingDetailsPage from './pages/ListingDetailsPage.jsx';
 import FarmerProfileViewPage from './pages/FarmerProfileViewPage.jsx';
 import WorkerHHMProfileViewPage from './pages/WorkerHHMProfileViewPage.jsx';
@@ -332,6 +334,13 @@ function App() {
               </SafeComponent>
             } />
 
+            {/* Debug Route - Temporary */}
+            <Route path="/debug-factory-analysis" element={
+              <SafeComponent name="FactoryAnalysisDebug">
+                <FactoryAnalysisDebug />
+              </SafeComponent>
+            } />
+
             {/* Notification Test Route */}
             <Route path="/notification-test" element={
               <SafeComponent name="NotificationTestPage">
@@ -434,6 +443,11 @@ function App() {
                 <Route path="contracts" element={
                   <SafeComponent name="FarmerContractsDashboard">
                     <FarmerContractsDashboard />
+                  </SafeComponent>
+                } />
+                <Route path="factory-analysis" element={
+                  <SafeComponent name="FactoryAnalysisPage">
+                    <FactoryAnalysisPage />
                   </SafeComponent>
                 } />
                 <Route path="profile/:farmerId" element={

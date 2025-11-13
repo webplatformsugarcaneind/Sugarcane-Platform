@@ -58,7 +58,8 @@ const contractSchema = new mongoose.Schema({
         'hhm_accepted',     // HHM accepted the factory's offer
         'hhm_rejected',     // HHM rejected the factory's offer
         'expired',          // Contract offer expired
-        'cancelled'         // Contract cancelled by either party
+        'cancelled',        // Contract cancelled by either party
+        'completed'         // Contract work completed
       ],
       message: '{VALUE} is not a valid contract status'
     },
@@ -188,6 +189,28 @@ const contractSchema = new mongoose.Schema({
   last_modified_by: {
     type: String,
     enum: ['hhm', 'factory']
+  },
+
+  // Delivery Date - When the contract work was delivered/completed
+  delivery_date: {
+    type: Date,
+    required: false
+  },
+
+  // Payment Date - When payment was made for the contract
+  payment_date: {
+    type: Date,
+    required: false
+  },
+
+  // Payment Status - Whether payment has been made
+  payment_status: {
+    type: String,
+    enum: {
+      values: ['pending', 'paid'],
+      message: 'Payment status must be either pending or paid'
+    },
+    default: 'pending'
   }
 }, {
   timestamps: true, // Automatically adds createdAt and updatedAt
@@ -225,7 +248,7 @@ contractSchema.virtual('isActive').get(function () {
 
 // Virtual for checking if contract is finalized
 contractSchema.virtual('isFinalized').get(function () {
-  return ['hhm_accepted', 'hhm_rejected', 'factory_rejected', 'expired', 'cancelled'].includes(this.status);
+  return ['hhm_accepted', 'hhm_rejected', 'factory_rejected', 'expired', 'cancelled', 'completed'].includes(this.status);
 });
 
 // Virtual for calculating days until expiration

@@ -85,4 +85,195 @@ router.get('/my-contracts', getMyContracts);
  */
 router.put('/respond/:contractId', authorize('HHM'), respondToContract);
 
+// ================================
+// FARMER CONTRACT LIFECYCLE MANAGEMENT
+// ================================
+
+/**
+ * @route   PUT /api/farmer-contracts/:contractId/mark-delivered
+ * @desc    Mark farmer contract as delivered (sets delivery_date to current date)
+ * @access  Private (Farmer or HHM - must be party to the contract)
+ * @params  contractId: string (required) - Contract ObjectId
+ * @example PUT /api/farmer-contracts/64f123456789abcdef123456/mark-delivered
+ */
+router.put('/:contractId/mark-delivered', authorize('Farmer', 'HHM'), async (req, res) => {
+  try {
+    const { contractId } = req.params;
+
+    // Import model
+    const FarmerContract = require('../models/farmerContract.model');
+
+    // Find the contract and verify user is a party
+    const contract = await FarmerContract.findById(contractId);
+    if (!contract) {
+      return res.status(404).json({
+        success: false,
+        message: 'Contract not found'
+      });
+    }
+
+    // Check if user is party to the contract
+    const isParty = contract.farmer_id.toString() === req.user._id.toString() || 
+                   contract.hhm_id.toString() === req.user._id.toString();
+
+    if (!isParty) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. You are not a party to this contract'
+      });
+    }
+
+    // Check if contract is in an accepted state
+    if (contract.status !== 'hhm_accepted') {
+      return res.status(400).json({
+        success: false,
+        message: 'Contract must be in accepted state to mark as delivered'
+      });
+    }
+
+    // Update delivery date
+    contract.delivery_date = new Date();
+    await contract.save();
+
+    res.status(200).json({
+      success: true,
+      data: contract,
+      message: 'Contract marked as delivered successfully'
+    });
+
+  } catch (error) {
+    console.error('❌ Error marking farmer contract as delivered:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error marking farmer contract as delivered',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * @route   PUT /api/farmer-contracts/:contractId/mark-paid
+ * @desc    Mark farmer contract as paid (sets payment_date to current date and payment_status to 'paid')
+ * @access  Private (Farmer or HHM - must be party to the contract)
+ * @params  contractId: string (required) - Contract ObjectId
+ * @example PUT /api/farmer-contracts/64f123456789abcdef123456/mark-paid
+ */
+router.put('/:contractId/mark-paid', authorize('Farmer', 'HHM'), async (req, res) => {
+  try {
+    const { contractId } = req.params;
+
+    // Import model
+    const FarmerContract = require('../models/farmerContract.model');
+
+    // Find the contract and verify user is a party
+    const contract = await FarmerContract.findById(contractId);
+    if (!contract) {
+      return res.status(404).json({
+        success: false,
+        message: 'Contract not found'
+      });
+    }
+
+    // Check if user is party to the contract
+    const isParty = contract.farmer_id.toString() === req.user._id.toString() || 
+                   contract.hhm_id.toString() === req.user._id.toString();
+
+    if (!isParty) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. You are not a party to this contract'
+      });
+    }
+
+    // Check if contract is in an accepted state
+    if (contract.status !== 'hhm_accepted') {
+      return res.status(400).json({
+        success: false,
+        message: 'Contract must be in accepted state to mark as paid'
+      });
+    }
+
+    // Update payment information
+    contract.payment_date = new Date();
+    contract.payment_status = 'paid';
+    await contract.save();
+
+    res.status(200).json({
+      success: true,
+      data: contract,
+      message: 'Contract marked as paid successfully'
+    });
+
+  } catch (error) {
+    console.error('❌ Error marking farmer contract as paid:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error marking farmer contract as paid',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * @route   PUT /api/farmer-contracts/:contractId/mark-completed
+ * @desc    Mark farmer contract as completed (sets status to 'completed')
+ * @access  Private (Farmer or HHM - must be party to the contract)
+ * @params  contractId: string (required) - Contract ObjectId
+ * @example PUT /api/farmer-contracts/64f123456789abcdef123456/mark-completed
+ */
+router.put('/:contractId/mark-completed', authorize('Farmer', 'HHM'), async (req, res) => {
+  try {
+    const { contractId } = req.params;
+
+    // Import model
+    const FarmerContract = require('../models/farmerContract.model');
+
+    // Find the contract and verify user is a party
+    const contract = await FarmerContract.findById(contractId);
+    if (!contract) {
+      return res.status(404).json({
+        success: false,
+        message: 'Contract not found'
+      });
+    }
+
+    // Check if user is party to the contract
+    const isParty = contract.farmer_id.toString() === req.user._id.toString() || 
+                   contract.hhm_id.toString() === req.user._id.toString();
+
+    if (!isParty) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. You are not a party to this contract'
+      });
+    }
+
+    // Check if contract has delivery date (should be delivered before completed)
+    if (!contract.delivery_date) {
+      return res.status(400).json({
+        success: false,
+        message: 'Contract must be delivered before it can be marked as completed'
+      });
+    }
+
+    // Update status to completed
+    contract.status = 'completed';
+    await contract.save();
+
+    res.status(200).json({
+      success: true,
+      data: contract,
+      message: 'Contract marked as completed successfully'
+    });
+
+  } catch (error) {
+    console.error('❌ Error marking farmer contract as completed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error marking farmer contract as completed',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

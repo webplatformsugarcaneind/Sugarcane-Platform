@@ -214,6 +214,17 @@ const Navbar = () => {
                     </li>
                     <li>
                       <NavLink 
+                        to="/farmer/factory-analysis" 
+                        className={({ isActive }) => 
+                          isActive ? 'nav-link active' : 'nav-link'
+                        }
+                        onClick={closeMenu}
+                      >
+                        📊 Factory Analysis
+                      </NavLink>
+                    </li>
+                    <li>
+                      <NavLink 
                         to="/farmer/profile" 
                         className={({ isActive }) => 
                           isActive ? 'nav-link active' : 'nav-link'
@@ -502,6 +513,15 @@ const Navbar = () => {
                     onClick={closeMenu}
                   >
                     Factories
+                  </NavLink>
+                  <NavLink 
+                    to="/farmer/factory-analysis" 
+                    className={({ isActive }) => 
+                      isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
+                    }
+                    onClick={closeMenu}
+                  >
+                    📊 Factory Analysis
                   </NavLink>
                   <NavLink 
                     to="/farmer/profile" 

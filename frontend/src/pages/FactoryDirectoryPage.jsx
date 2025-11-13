@@ -164,12 +164,6 @@ const FactoryDirectoryPage = () => {
     setSortBy('name');
   };
 
-  const handleViewProfile = (factory) => {
-    console.log('👁️ Viewing factory profile for:', factory.name);
-    // Navigate to factory profile page
-    navigate(`/factory/profile/${factory._id}`, { state: { factoryData: factory } });
-  };
-
   // Get unique locations for filter dropdown
   const uniqueLocations = [...new Set(
     (Array.isArray(factories) ? factories : [])
