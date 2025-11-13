@@ -20,7 +20,7 @@ const createApplicationsForAllHHM = async () => {
     console.log('\n');
 
     // Get ALL Worker users
-    let workerUsers = await User.find({ role: 'Worker' });
+    let workerUsers = await User.find({ role: 'Labour' });
     console.log(`Found ${workerUsers.length} Worker users\n`);
 
     // If not enough workers, create more
@@ -34,7 +34,7 @@ const createApplicationsForAllHHM = async () => {
           email: 'rajesh.verma@example.com',
           password: '123456',
           phone: '+91-9876543220',
-          role: 'Worker',
+          role: 'Labour',
           skills: 'Equipment operation, Irrigation, Maintenance',
           workPreferences: 'Full-time, Flexible hours',
           wageRate: '₹400 per day',
@@ -47,7 +47,7 @@ const createApplicationsForAllHHM = async () => {
           email: 'sunita.devi@example.com',
           password: '123456',
           phone: '+91-9876543221',
-          role: 'Worker',
+          role: 'Labour',
           skills: 'Planting, Weeding, Fertilizer application',
           workPreferences: 'Part-time, Morning shifts',
           wageRate: '₹280 per day',
@@ -60,7 +60,7 @@ const createApplicationsForAllHHM = async () => {
           email: 'prakash.yadav@example.com',
           password: '123456',
           phone: '+91-9876543222',
-          role: 'Worker',
+          role: 'Labour',
           skills: 'Irrigation, Pesticide application, Field preparation',
           workPreferences: 'Full-time, Flexible',
           wageRate: '₹380 per day',
@@ -73,7 +73,7 @@ const createApplicationsForAllHHM = async () => {
           email: 'kavita.singh@example.com',
           password: '123456',
           phone: '+91-9876543223',
-          role: 'Worker',
+          role: 'Labour',
           skills: 'Sorting, Packaging, Quality control',
           workPreferences: 'Part-time, Flexible',
           wageRate: '₹320 per day',

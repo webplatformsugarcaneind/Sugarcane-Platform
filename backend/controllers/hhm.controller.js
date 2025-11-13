@@ -363,8 +363,8 @@ const getWorkers = async (req, res) => {
       experience
     } = req.query;
 
-    // Build query for users with Worker role (updated from 'Labour')
-    const userQuery = { role: 'Worker' };
+    // Build query for users with Labour role
+    const userQuery = { role: 'Labour' };
 
     // Get worker user IDs
     const workers = await User.find(userQuery).select('_id');
@@ -516,7 +516,7 @@ const createInvitation = async (req, res) => {
     // Verify the worker exists and has Worker role
     const worker = await User.findOne({
       _id: workerId,
-      role: 'Worker'
+      role: 'Labour'
     });
 
     if (!worker) {
@@ -898,7 +898,7 @@ const updateWorkerAvailability = async (req, res) => {
     // Verify the worker exists and has Worker role
     const worker = await User.findOne({
       _id: workerId,
-      role: 'Worker'
+      role: 'Labour'
     });
 
     if (!worker) {

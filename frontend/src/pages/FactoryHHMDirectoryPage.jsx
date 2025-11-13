@@ -268,7 +268,7 @@ const FactoryHHMDirectoryPage = () => {
   const handleViewProfile = (hhm) => {
     console.log('🔍 DEBUG: HHM data for profile viewing:', hhm);
     console.log('🔍 DEBUG: HHM ID:', hhm._id);
-    navigate(hhm._id);
+    navigate(`/factory/hhm-directory/${hhm._id}`);
   };
 
   const handleSendInvitation = async () => {

@@ -17,9 +17,9 @@ const {
   updateAvailability,
   getHHMs
 } = require('../controllers/worker.controller');// Apply protection and authorization to all routes in this file
-// All routes require user to be authenticated and have 'Worker' role
+// All routes require user to be authenticated and have 'Labour' role
 router.use(protect);
-router.use(authorize('Worker'));
+router.use(authorize('Labour'));
 
 // ================================
 // PROFILE API ROUTES

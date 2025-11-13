@@ -297,7 +297,7 @@ const Navbar = () => {
                   </>
                 )}
 
-                {userRole === 'Worker' && (
+                {userRole === 'Labour' && (
                   <>
                     <li>
                       <NavLink 
@@ -576,7 +576,7 @@ const Navbar = () => {
                 </>
               )}
 
-              {userRole === 'Worker' && (
+              {userRole === 'Labour' && (
                 <>
                   <NavLink 
                     to="/worker/jobs" 

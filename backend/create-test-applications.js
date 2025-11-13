@@ -33,7 +33,7 @@ const createTestApplications = async () => {
     console.log(`✅ Found HHM user: ${hhmUser.name} (${hhmUser.email})`);
 
     // Step 2: Find or create Worker users
-    let workerUsers = await User.find({ role: 'Worker' }).limit(3);
+    let workerUsers = await User.find({ role: 'Labour' }).limit(3);
     
     if (workerUsers.length === 0) {
       console.log('⚠️  No Worker users found. Creating test workers...');
@@ -45,7 +45,7 @@ const createTestApplications = async () => {
           email: 'rajesh.worker@example.com',
           password: 'worker123',
           phone: '+91-9876543210',
-          role: 'Worker',
+          role: 'Labour',
           skills: ['harvesting', 'equipment operation', 'irrigation'],
           experience: 5,
           availabilityStatus: 'available'
@@ -56,7 +56,7 @@ const createTestApplications = async () => {
           email: 'priya.worker@example.com',
           password: 'worker123',
           phone: '+91-9876543211',
-          role: 'Worker',
+          role: 'Labour',
           skills: ['planting', 'soil preparation', 'weeding'],
           experience: 3,
           availabilityStatus: 'available'
@@ -67,7 +67,7 @@ const createTestApplications = async () => {
           email: 'amit.worker@example.com',
           password: 'worker123',
           phone: '+91-9876543212',
-          role: 'Worker',
+          role: 'Labour',
           skills: ['harvesting', 'transportation', 'loading'],
           experience: 4,
           availabilityStatus: 'available'

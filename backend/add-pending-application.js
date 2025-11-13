@@ -27,7 +27,7 @@ const addPendingApplication = async () => {
       email: 'rajesh.verma@example.com',
       password: '123456',
       phone: '+91-9876543220',
-      role: 'Worker',
+      role: 'Labour',
       skills: 'Equipment operation, Irrigation, Maintenance',
       workPreferences: 'Full-time, Flexible hours',
       wageRate: '₹400 per day',

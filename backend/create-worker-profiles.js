@@ -13,7 +13,7 @@ async function createWorkerProfiles() {
     console.log('Connected to MongoDB');
 
     // Find all Worker users
-    const workers = await User.find({ role: 'Worker' });
+    const workers = await User.find({ role: 'Labour' });
     console.log(`\nFound ${workers.length} Worker users`);
 
     if (workers.length === 0) {
@@ -43,7 +43,7 @@ async function createWorkerProfiles() {
       for (const worker of workersWithoutProfile) {
         const profile = new Profile({
           userId: worker._id,
-          role: 'Worker',
+          role: 'Labour',
           availabilityStatus: 'available',
           skills: worker.skills ? worker.skills.split(',').map(s => s.trim()) : ['General Labor', 'Farm Work'],
           workerProfile: {

@@ -13,7 +13,7 @@ async function updateWorkerProfilesWithSkills() {
     console.log('Connected to MongoDB');
 
     // Find all Worker users
-    const workers = await User.find({ role: 'Worker' });
+    const workers = await User.find({ role: 'Labour' });
     console.log(`\nFound ${workers.length} Worker users`);
 
     // Update each worker's profile with skills

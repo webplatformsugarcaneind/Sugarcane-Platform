@@ -40,8 +40,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Role is required'],
     enum: {
-      values: ['Farmer', 'HHM', 'Worker', 'Factory'],
-      message: 'Role must be one of: Farmer, HHM, Worker, Factory'
+      values: ['Farmer', 'HHM', 'Labour', 'Factory'],
+      message: 'Role must be one of: Farmer, HHM, Labour, Factory'
     }
   },
   password: {
@@ -180,7 +180,7 @@ const userSchema = new mongoose.Schema({
     }
   }],
 
-  // Worker-specific fields
+  // Labour-specific fields
   skills: {
     type: String,
     trim: true

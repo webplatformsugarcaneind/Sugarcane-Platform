@@ -102,7 +102,7 @@ router.get('/profile/:userId', async (req, res) => {
         };
         break;
 
-      case 'Worker':
+      case 'Labour':
         formattedProfile = {
           ...formattedProfile,
           skills: user.skills || 'Not specified',
@@ -157,7 +157,7 @@ router.get('/search', async (req, res) => {
     
     // Filter by role if specified
     if (role) {
-      const validRoles = ['Farmer', 'HHM', 'Worker', 'Factory'];
+      const validRoles = ['Farmer', 'HHM', 'Labour', 'Factory'];
       if (validRoles.includes(role)) {
         filter.role = role;
       }

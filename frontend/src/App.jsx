@@ -647,6 +647,11 @@ function App() {
                     <FactoryHHMDirectoryPage />
                   </SafeComponent>
                 } />
+                <Route path="hhm-directory/:userId" element={
+                  <SafeComponent name="UserProfilePage">
+                    <UserProfilePage />
+                  </SafeComponent>
+                } />
                 <Route path="hhm/profile/:id" element={
                   <SafeComponent name="FactoryHHMProfileViewPage">
                     <FactoryHHMProfileViewPage />
