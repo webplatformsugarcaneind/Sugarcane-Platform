@@ -4,20 +4,20 @@ A comprehensive web platform connecting Farmers, Hub Head Managers (HHMs), Worke
 
 ## 📋 Table of Contents
 
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Prerequisites](#-prerequisites)
-- [Installation & Setup](#-installation--setup)
-- [Environment Variables](#-environment-variables)
-- [Running the Application](#️-running-the-application)
-- [API Documentation](#-api-documentation)
-- [Architecture](#-architecture)
-- [Deployment](#-deployment)
-- [Testing](#-testing)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Support](#-support)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation & Setup](#installation--setup)
+- [Environment Variables](#environment-variables)
+- [Running the Application](#running-the-application)
+- [API Documentation](#api-documentation)
+- [Architecture](#architecture)
+- [Deployment](#deployment)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+- [Support](#support)
 
 ## ✨ Features
 
@@ -78,7 +78,7 @@ sugarcane-web-platform/
 │   ├── public/          # Static assets
 │   └── package.json     # Frontend dependencies
 │
-├── tests/               # Test files
+├── test/                # Test files
 ├── md/                  # Documentation files
 └── README.md           # This file
 ```
@@ -411,14 +411,14 @@ npm test
 
 ### Manual Testing
 
-Test files are located in the `tests/` directory:
+Test files are located in the `test/` directory:
 
 ```bash
 # Run specific test
-node tests/integration/test-auth.js
+node test/integration/test-auth.js
 
 # Run all integration tests
-node tests/integration/*.js
+node test/integration/*.js
 ```
 
 ## 🤝 Contributing
