@@ -4,21 +4,22 @@ A comprehensive web platform connecting Farmers, Hub Head Managers (HHMs), Worke
 
 ## 📋 Table of Contents
 
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Prerequisites](#-prerequisites)
-- [Installation & Setup](#-installation--setup)
-- [Environment Variables](#-environment-variables)
-- [Running the Application](#️-running-the-application)
-- [API Documentation](#-api-documentation)
-- [Architecture](#-architecture)
-- [Deployment](#-deployment)
-- [Testing](#-testing)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Support](#-support)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation & Setup](#installation--setup)
+- [Environment Variables](#environment-variables)
+- [Running the Application](#running-the-application)
+- [API Documentation](#api-documentation)
+- [Architecture](#architecture)
+- [Deployment](#deployment)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+- [Support](#support)
 
+<a id="features"></a>
 ## ✨ Features
 
 ### User Roles
@@ -39,6 +40,7 @@ A comprehensive web platform connecting Farmers, Hub Head Managers (HHMs), Worke
 - 🏭 **Partnership Management**: Factory-HHM associations with invitation workflow
 - 📊 **Dashboard Analytics**: Role-specific dashboards with statistics and insights
 
+<a id="tech-stack"></a>
 ## 🛠 Tech Stack
 
 ### Backend
@@ -55,6 +57,7 @@ A comprehensive web platform connecting Farmers, Hub Head Managers (HHMs), Worke
 - **Routing**: React Router DOM 7.x
 - **HTTP Client**: Axios
 
+<a id="project-structure"></a>
 ## 📁 Project Structure
 
 ```
@@ -78,11 +81,12 @@ sugarcane-web-platform/
 │   ├── public/          # Static assets
 │   └── package.json     # Frontend dependencies
 │
-├── tests/               # Test files
+├── test/                # Test files
 ├── md/                  # Documentation files
 └── README.md           # This file
 ```
 
+<a id="prerequisites"></a>
 ## 📦 Prerequisites
 
 Before you begin, ensure you have the following installed:
@@ -92,6 +96,7 @@ Before you begin, ensure you have the following installed:
 - **MongoDB** (v6 or higher) - Local installation or MongoDB Atlas account
 - **Git**
 
+<a id="installation--setup"></a>
 ## 🚀 Installation & Setup
 
 ### 1. Clone the Repository
@@ -155,6 +160,7 @@ npm install
 npm run data:import
 ```
 
+<a id="environment-variables"></a>
 ## 🔧 Environment Variables
 
 ### Backend (.env)
@@ -191,6 +197,7 @@ server: {
 }
 ```
 
+<a id="running-the-application"></a>
 ## ▶️ Running the Application
 
 ### Development Mode
@@ -229,6 +236,7 @@ cd backend
 NODE_ENV=production npm start
 ```
 
+<a id="api-documentation"></a>
 ## 📚 API Documentation
 
 ### Interactive API Documentation (Swagger)
@@ -289,6 +297,7 @@ For detailed API documentation with request/response examples, see:
 - [API Documentation](./docs/API.md)
 - [Swagger UI](http://localhost:5000/api-docs) (when server is running)
 
+<a id="architecture"></a>
 ## 🏗 Architecture
 
 ### System Architecture
@@ -338,6 +347,7 @@ For detailed API documentation with request/response examples, see:
 
 For detailed architecture documentation, see [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
+<a id="deployment"></a>
 ## 🚢 Deployment
 
 ### Backend Deployment
@@ -395,6 +405,7 @@ Ensure all production environment variables are set:
 - `JWT_SECRET` (strong, random secret)
 - `PORT` (if not using default)
 
+<a id="testing"></a>
 ## 🧪 Testing
 
 ### Running Tests
@@ -411,16 +422,17 @@ npm test
 
 ### Manual Testing
 
-Test files are located in the `tests/` directory:
+Test files are located in the `test/` directory:
 
 ```bash
 # Run specific test
-node tests/integration/test-auth.js
+node test/integration/test-auth.js
 
 # Run all integration tests
-node tests/integration/*.js
+node test/integration/*.js
 ```
 
+<a id="contributing"></a>
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -436,10 +448,12 @@ node tests/integration/*.js
 - Add comments for complex logic
 - Update documentation for new features
 
+<a id="license"></a>
 ## 📝 License
 
 This project is licensed under the ISC License.
 
+<a id="support"></a>
 ## 📞 Support
 
 For issues, questions, or contributions, please open an issue on the repository.
