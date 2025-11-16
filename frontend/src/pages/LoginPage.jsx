@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './LoginPage.css';
 
 const LoginPage = () => {
@@ -175,7 +175,7 @@ const LoginPage = () => {
                   <input type="checkbox" className="checkbox-input" />
                   <span>Remember me</span>
                 </label>
-                <a href="/forgot-password" className="forgot-link">Forgot password?</a>
+                <Link to="/forgot-password" className="forgot-link">Forgot password?</Link>
               </div>
 
               {/* Submit Button */}
@@ -200,7 +200,7 @@ const LoginPage = () => {
             {/* Sign Up Link */}
             <div className="signup-link">
               <span>Don't have an account? </span>
-              <a href="/signup">Create one here</a>
+              <Link to="/signup">Create one here</Link>
             </div>
           </div>
 
