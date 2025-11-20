@@ -428,7 +428,7 @@
 
 .separator {
   color: #d1d5db;
-  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* Responsive Design */

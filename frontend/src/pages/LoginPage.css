@@ -292,7 +292,7 @@
   font-size: 0.9375rem;
   color: #52525b;
   cursor: pointer;
-  user-select: none;
+  -webkit-user-select: none;
   font-weight: 400;
 }
 
@@ -444,6 +444,7 @@
 
 .separator {
   color: #d4d4d8;
+  -webkit-user-select: none;
   user-select: none;
   font-weight: 300;
 }
