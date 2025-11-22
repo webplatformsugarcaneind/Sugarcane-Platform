@@ -11,7 +11,7 @@ const ListingDetailsPage = () => {
   const { listingId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const [listing, setListing] = useState(location.state?.listing || null);
   const [loading, setLoading] = useState(!listing);
   const [error, setError] = useState(null);
@@ -20,7 +20,7 @@ const ListingDetailsPage = () => {
   const [isOwnListing, setIsOwnListing] = useState(false);
   const [listingOrders, setListingOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
-  
+
   // Edit form state
   const [showEditForm, setShowEditForm] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -34,7 +34,7 @@ const ListingDetailsPage = () => {
     status: 'active'
   });
   const [isUpdating, setIsUpdating] = useState(false);
-  
+
   // Buy form state
   const [buyForm, setBuyForm] = useState({
     buyerName: '',
@@ -51,7 +51,7 @@ const ListingDetailsPage = () => {
   useEffect(() => {
     const fetchListingDetails = async () => {
       if (listing) return; // Already have listing data
-      
+
       try {
         setLoading(true);
         setError(null);
@@ -65,7 +65,7 @@ const ListingDetailsPage = () => {
         const response = await axios.get(`http://localhost:5000/api/listings/${listingId}`, {
           headers
         });
-        
+
         setListing(response.data.data);
       } catch (err) {
         console.error('Error fetching listing details:', err);
@@ -85,7 +85,7 @@ const ListingDetailsPage = () => {
     try {
       setOrdersLoading(true);
       const token = localStorage.getItem('token');
-      
+
       const response = await axios.get(`http://localhost:5000/api/orders/listing/${listingId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -114,14 +114,14 @@ const ListingDetailsPage = () => {
         if (userResponse.data.success) {
           const user = userResponse.data.data.user;
           setCurrentUser(user);
-          
+
           // Check if this user owns the listing
           if (listing && listing.farmer_id) {
             // farmer_id can be either an object with _id or a string ID
-            const listingFarmerId = typeof listing.farmer_id === 'object' 
-              ? listing.farmer_id._id 
+            const listingFarmerId = typeof listing.farmer_id === 'object'
+              ? listing.farmer_id._id
               : listing.farmer_id;
-            
+
             if (listingFarmerId === user.id) {
               setIsOwnListing(true);
               // Fetch orders for this listing if user owns it
@@ -147,7 +147,7 @@ const ListingDetailsPage = () => {
 
   const handleShowBuyForm = () => {
     if (!listing) return;
-    
+
     setBuyForm(prev => ({
       ...prev,
       quantityWanted: listing.quantity_in_tons,
@@ -158,7 +158,7 @@ const ListingDetailsPage = () => {
 
   const handleSubmitBuyOrder = async (e) => {
     e.preventDefault();
-    
+
     if (!listing) return;
 
     try {
@@ -205,7 +205,7 @@ const ListingDetailsPage = () => {
   // Edit form handlers
   const handleShowEditForm = () => {
     if (!listing) return;
-    
+
     // Pre-fill the edit form with current listing data
     setEditForm({
       title: listing.title || '',
@@ -230,12 +230,12 @@ const ListingDetailsPage = () => {
 
   const handleSubmitEditForm = async (e) => {
     e.preventDefault();
-    
+
     if (!listing) return;
 
     try {
       setIsUpdating(true);
-      
+
       const token = localStorage.getItem('token');
       if (!token) {
         alert('Please login to update your listing');
@@ -318,7 +318,7 @@ const ListingDetailsPage = () => {
         return;
       }
 
-      const response = await axios.put(`http://localhost:5000/api/orders/${orderId}/status`, 
+      const response = await axios.put(`http://localhost:5000/api/orders/${orderId}/status`,
         { status: 'accepted' },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
@@ -345,7 +345,7 @@ const ListingDetailsPage = () => {
         return;
       }
 
-      const response = await axios.put(`http://localhost:5000/api/orders/${orderId}/status`, 
+      const response = await axios.put(`http://localhost:5000/api/orders/${orderId}/status`,
         { status: 'rejected' },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
@@ -480,7 +480,7 @@ const ListingDetailsPage = () => {
                   <div className="detail-content">
                     <label>Availability</label>
                     <span className="detail-value">
-                      {daysUntilHarvest > 0 
+                      {daysUntilHarvest > 0
                         ? `Ready in ${daysUntilHarvest} days`
                         : 'Available now'
                       }
@@ -517,7 +517,7 @@ const ListingDetailsPage = () => {
         {/* Farmer Information Card */}
         <div className="farmer-info-card">
           <h2>👨‍🌾 Farmer Information</h2>
-          
+
           <div className="farmer-profile">
             <div className="farmer-avatar">
               <span className="avatar-icon">👨‍🌾</span>
@@ -551,51 +551,56 @@ const ListingDetailsPage = () => {
 
           {/* Action Buttons */}
           {!isOwnListing ? (
-          <div className="action-buttons">
-            <button 
-              className="buy-btn-primary"
-              onClick={handleShowBuyForm}
-            >
-              🛒 Buy This Sugarcane
-            </button>
-            <div className="secondary-actions">
-              <button 
-                className="contact-btn"
-                onClick={() => {
-                  const message = `Hi ${farmer?.name}, I'm interested in your listing: "${listing.title}". Please let me know if it's still available.`;
-                  const mailtoLink = `mailto:${farmer?.email}?subject=Interested in ${listing.crop_variety}&body=${encodeURIComponent(message)}`;
-                  window.location.href = mailtoLink;
-                }}
+            <div className="action-buttons">
+              <button
+                className="buy-btn-primary"
+                onClick={handleShowBuyForm}
               >
-                📧 Contact Farmer
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+                Buy This Sugarcane
               </button>
-              <button 
-                className="profile-btn"
-                onClick={() => navigate(`farmer/${farmer?._id}`)}
-              >
-                👤 View Profile
-              </button>
+              <div className="secondary-actions">
+                <button
+                  className="contact-btn"
+                  onClick={() => {
+                    const message = `Hi ${farmer?.name}, I'm interested in your listing: "${listing.title}". Please let me know if it's still available.`;
+                    const mailtoLink = `mailto:${farmer?.email}?subject=Interested in ${listing.crop_variety}&body=${encodeURIComponent(message)}`;
+                    window.location.href = mailtoLink;
+                  }}
+                >
+                  📧 Contact Farmer
+                </button>
+                <button
+                  className="profile-btn"
+                  onClick={() => navigate(`farmer/${farmer?._id}`)}
+                >
+                  👤 View Profile
+                </button>
+              </div>
             </div>
-          </div>
           ) : (
-          <div className="action-buttons">
-            <button 
-              className="edit-btn-primary"
-              onClick={handleShowEditForm}
-            >
-              ✏️ Edit Listing
-            </button>
-            <div className="secondary-actions">
-              <button 
-                className="status-btn"
-                onClick={() => {
-                  alert('Status management coming soon!');
-                }}
+            <div className="action-buttons">
+              <button
+                className="edit-btn-primary"
+                onClick={handleShowEditForm}
               >
-                📊 Manage Status
+                ✏️ Edit Listing
               </button>
+              <div className="secondary-actions">
+                <button
+                  className="status-btn"
+                  onClick={() => {
+                    alert('Status management coming soon!');
+                  }}
+                >
+                  📊 Manage Status
+                </button>
+              </div>
             </div>
-          </div>
           )}
 
           {/* Own Listing - Show Requests and Buy Calls */}
@@ -620,7 +625,7 @@ const ListingDetailsPage = () => {
                   <div className="no-requests-icon">📭</div>
                   <h4>No requests yet</h4>
                   <p>When other farmers are interested in your sugarcane, their buy requests will appear here.</p>
-                  <button 
+                  <button
                     className="back-to-marketplace-btn"
                     onClick={() => navigate('/marketplace')}
                   >
@@ -680,8 +685,8 @@ const ListingDetailsPage = () => {
                         {order.orderDetails?.urgency && order.orderDetails.urgency !== 'normal' && (
                           <div className="urgency-indicator">
                             <span className={`urgency-badge urgency-${order.orderDetails.urgency}`}>
-                              {order.orderDetails.urgency === 'high' ? '⚡ High Priority' : 
-                               order.orderDetails.urgency === 'urgent' ? '🔥 Urgent' : order.orderDetails.urgency}
+                              {order.orderDetails.urgency === 'high' ? '⚡ High Priority' :
+                                order.orderDetails.urgency === 'urgent' ? '🔥 Urgent' : order.orderDetails.urgency}
                             </span>
                           </div>
                         )}
@@ -715,13 +720,13 @@ const ListingDetailsPage = () => {
                       <div className="request-actions">
                         {order.status === 'pending' && (
                           <div className="action-buttons">
-                            <button 
+                            <button
                               className="accept-btn"
                               onClick={() => handleAcceptOrder(order.orderId)}
                             >
                               ✅ Accept
                             </button>
-                            <button 
+                            <button
                               className="reject-btn"
                               onClick={() => handleRejectOrder(order.orderId)}
                             >
@@ -729,9 +734,9 @@ const ListingDetailsPage = () => {
                             </button>
                           </div>
                         )}
-                        
+
                         <div className="contact-buttons">
-                          <button 
+                          <button
                             className="contact-buyer-btn"
                             onClick={() => {
                               const message = `Hi ${order.buyerDetails?.name}, Thank you for your interest in my sugarcane listing. I received your request for ${order.orderDetails?.quantityWanted} tons. Let's discuss the details.`;
@@ -742,7 +747,7 @@ const ListingDetailsPage = () => {
                             📧 Contact Buyer
                           </button>
                           {order.buyer?.username && (
-                            <button 
+                            <button
                               className="view-buyer-profile-btn"
                               onClick={() => navigate(`/profile/${order.buyerId}`)}
                             >
@@ -766,7 +771,7 @@ const ListingDetailsPage = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>💰 Place Buy Order</h2>
-              <button 
+              <button
                 className="close-btn"
                 onClick={() => setShowBuyForm(false)}
               >
@@ -926,7 +931,7 @@ const ListingDetailsPage = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>✏️ Edit Listing</h2>
-              <button 
+              <button
                 className="close-btn"
                 onClick={handleCancelEdit}
               >
@@ -1049,16 +1054,16 @@ const ListingDetailsPage = () => {
                 </div>
 
                 <div className="form-actions">
-                  <button 
-                    type="button" 
-                    onClick={handleCancelEdit} 
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
                     className="cancel-btn"
                     disabled={isUpdating}
                   >
                     Cancel
                   </button>
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     className="submit-btn"
                     disabled={isUpdating}
                   >
@@ -1077,7 +1082,7 @@ const ListingDetailsPage = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>✏️ Edit Listing</h2>
-              <button 
+              <button
                 className="close-btn"
                 onClick={handleCancelEdit}
               >

@@ -157,21 +157,39 @@ const FactoryReceivedInvitationsPage = () => {
         <div className="factory-received-invitations-page">
             <div className="page-header">
                 <div className="header-content">
-                    <h1>📥 Received HHM Invitations</h1>
+                    <h1>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '28px', height: '28px', display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7,10 12,15 17,10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Received HHM Invitations
+                    </h1>
                     <p>Review and respond to partnership requests from Harvest Managers</p>
                 </div>
             </div>
 
             {error && (
                 <div className="alert alert-error">
-                    <span className="alert-icon">⚠️</span>
+                    <span className="alert-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '20px', height: '20px' }}>
+                            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </span>
                     <span>{error}</span>
                 </div>
             )}
 
             {success && (
                 <div className="alert alert-success">
-                    <span className="alert-icon">✅</span>
+                    <span className="alert-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '20px', height: '20px' }}>
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M9 12l2 2 4-4" />
+                        </svg>
+                    </span>
                     <span>{success}</span>
                 </div>
             )}
@@ -188,19 +206,30 @@ const FactoryReceivedInvitationsPage = () => {
                     className={`filter-tab ${statusFilter === 'pending' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('pending')}
                 >
-                    ⏳ Pending ({statusCounts.pending})
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12,6 12,12 16,14" />
+                    </svg>
+                    Pending ({statusCounts.pending})
                 </button>
                 <button
                     className={`filter-tab ${statusFilter === 'accepted' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('accepted')}
                 >
-                    ✅ Accepted ({statusCounts.accepted})
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M9 12l2 2 4-4" />
+                    </svg>
+                    Accepted ({statusCounts.accepted})
                 </button>
                 <button
                     className={`filter-tab ${statusFilter === 'declined' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('declined')}
                 >
-                    ❌ Declined ({statusCounts.declined})
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                    Declined ({statusCounts.declined})
                 </button>
             </div>
 
@@ -208,7 +237,13 @@ const FactoryReceivedInvitationsPage = () => {
             <div className="invitations-container">
                 {filteredInvitations.length === 0 ? (
                     <div className="empty-state">
-                        <div className="empty-icon">📭</div>
+                        <div className="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '64px', height: '64px' }}>
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17,10 12,15 7,10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                        </div>
                         <h3>No {statusFilter !== 'all' ? statusFilter : ''} invitations</h3>
                         <p>
                             {statusFilter === 'all'
@@ -222,11 +257,20 @@ const FactoryReceivedInvitationsPage = () => {
                             <div key={invitation._id} className="invitation-card">
                                 <div className="card-header">
                                     <div className="hhm-info">
-                                        <div className="hhm-avatar">🌾</div>
+                                        <div className="hhm-avatar">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '32px', height: '32px' }}>
+                                                <path d="M12 20v-8m0 0V4m0 8c2 0 3 1 3 3v5m-3-8c-2 0-3 1-3 3v5" />
+                                                <path d="M9 3s1 1 1 3-1 3-1 3m6-6s-1 1-1 3 1 3 1 3" />
+                                            </svg>
+                                        </div>
                                         <div className="hhm-details">
                                             <h3>{invitation.hhmId?.name || 'Unknown HHM'}</h3>
                                             <p className="hhm-location">
-                                                📍 {invitation.hhmId?.location || 'Location not specified'}
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                                    <circle cx="12" cy="10" r="3" />
+                                                </svg>
+                                                {invitation.hhmId?.location || 'Location not specified'}
                                             </p>
                                         </div>
                                     </div>
@@ -237,28 +281,62 @@ const FactoryReceivedInvitationsPage = () => {
 
                                 <div className="card-body">
                                     <div className="info-section">
-                                        <h4>📧 Contact Information</h4>
-                                        <p>✉️ {invitation.hhmId?.email || 'N/A'}</p>
-                                        <p>📞 {invitation.hhmId?.phone || 'N/A'}</p>
+                                        <h4>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '18px', height: '18px', display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                                <polyline points="22,6 12,13 2,6" />
+                                            </svg>
+                                            Contact Information
+                                        </h4>
+                                        <p>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                                <polyline points="22,6 12,13 2,6" />
+                                            </svg>
+                                            {invitation.hhmId?.email || 'N/A'}
+                                        </p>
+                                        <p>
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                            </svg>
+                                            {invitation.hhmId?.phone || 'N/A'}</p>
                                     </div>
 
                                     {invitation.personalMessage && (
                                         <div className="info-section">
-                                            <h4>💬 Message from HHM</h4>
+                                            <h4>
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '18px', height: '18px', display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                                </svg>
+                                                Message from HHM
+                                            </h4>
                                             <p className="message-text">{invitation.personalMessage}</p>
                                         </div>
                                     )}
 
                                     {invitation.invitationReason && (
                                         <div className="info-section">
-                                            <h4>📝 Reason for Partnership</h4>
+                                            <h4>
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '18px', height: '18px', display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                    <polyline points="14,2 14,8 20,8" />
+                                                    <line x1="16" y1="13" x2="8" y2="13" />
+                                                    <line x1="16" y1="17" x2="8" y2="17" />
+                                                </svg>
+                                                Reason for Partnership
+                                            </h4>
                                             <p className="reason-text">{invitation.invitationReason}</p>
                                         </div>
                                     )}
 
                                     {invitation.responseMessage && (
                                         <div className="info-section response-section">
-                                            <h4>💭 Your Response</h4>
+                                            <h4>
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '18px', height: '18px', display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                                </svg>
+                                                Your Response
+                                            </h4>
                                             <p className="response-text">{invitation.responseMessage}</p>
                                         </div>
                                     )}
@@ -283,14 +361,33 @@ const FactoryReceivedInvitationsPage = () => {
                                                 onClick={() => handleRespond(invitation)}
                                                 disabled={processingId === invitation._id}
                                             >
-                                                {processingId === invitation._id ? '⏳ Processing...' : '✅ Accept & Respond'}
+                                                {processingId === invitation._id ? (
+                                                    <>
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                            <circle cx="12" cy="12" r="10" />
+                                                            <polyline points="12,6 12,12 16,14" />
+                                                        </svg>
+                                                        Processing...
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                            <circle cx="12" cy="12" r="10" />
+                                                            <path d="M9 12l2 2 4-4" />
+                                                        </svg>
+                                                        Accept & Respond
+                                                    </>
+                                                )}
                                             </button>
                                             <button
                                                 className="action-button decline-button"
                                                 onClick={() => handleRespond(invitation)}
                                                 disabled={processingId === invitation._id}
                                             >
-                                                ❌ Decline
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px', display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                    <path d="M18 6L6 18M6 6l12 12" />
+                                                </svg>
+                                                Decline
                                             </button>
                                         </div>
                                     )}

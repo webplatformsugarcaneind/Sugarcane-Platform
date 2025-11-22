@@ -86,7 +86,7 @@ const HHMContractDashboard = () => {
       hhm_rejected: { text: 'Rejected', class: 'status-rejected' },
       auto_cancelled: { text: 'Auto Cancelled', class: 'status-cancelled' }
     };
-    
+
     const badge = badges[status] || { text: status, class: 'status-unknown' };
     return <span className={`status-badge ${badge.class}`}>{badge.text}</span>;
   };
@@ -116,27 +116,27 @@ const HHMContractDashboard = () => {
           <h1>Contract Management</h1>
           <p>Manage farmer contract requests and track active contracts</p>
         </div>
-        
+
         <div className="filter-tabs">
-          <button 
+          <button
             className={filter === 'all' ? 'active' : ''}
             onClick={() => setFilter('all')}
           >
             All ({contracts.length})
           </button>
-          <button 
+          <button
             className={filter === 'pending' ? 'active' : ''}
             onClick={() => setFilter('pending')}
           >
             Pending ({contracts.filter(c => c.status === 'farmer_pending').length})
           </button>
-          <button 
+          <button
             className={filter === 'accepted' ? 'active' : ''}
             onClick={() => setFilter('accepted')}
           >
             Accepted ({contracts.filter(c => c.status === 'hhm_accepted').length})
           </button>
-          <button 
+          <button
             className={filter === 'rejected' ? 'active' : ''}
             onClick={() => setFilter('rejected')}
           >
@@ -150,10 +150,17 @@ const HHMContractDashboard = () => {
       <div className="contracts-container">
         {filteredContracts.length === 0 ? (
           <div className="no-contracts">
-            <div className="no-contracts-icon">📋</div>
+            <div className="no-contracts-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '64px', height: '64px' }}>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14,2 14,8 20,8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+              </svg>
+            </div>
             <h3>No contracts found</h3>
             <p>
-              {filter === 'pending' 
+              {filter === 'pending'
                 ? "No pending contract requests at the moment."
                 : `No ${filter === 'all' ? '' : filter} contracts found.`
               }
@@ -177,17 +184,17 @@ const HHMContractDashboard = () => {
                     <strong>Work Type:</strong>
                     <span>{contract.contract_details?.workType || 'Not specified'}</span>
                   </div>
-                  
+
                   <div className="detail-item">
                     <strong>Location:</strong>
                     <span>{contract.contract_details?.farmLocation || 'Not specified'}</span>
                   </div>
-                  
+
                   <div className="detail-item">
                     <strong>Duration:</strong>
                     <span>{contract.duration_days} days</span>
                   </div>
-                  
+
                   <div className="detail-item">
                     <strong>Payment:</strong>
                     <span>{contract.contract_details?.paymentTerms || 'Not specified'}</span>
@@ -196,8 +203,8 @@ const HHMContractDashboard = () => {
                   <div className="detail-item">
                     <strong>Timeline:</strong>
                     <span>
-                      {contract.contract_details?.startDate ? formatDate(contract.contract_details.startDate) : 'TBD'} 
-                      {' to '} 
+                      {contract.contract_details?.startDate ? formatDate(contract.contract_details.startDate) : 'TBD'}
+                      {' to '}
                       {contract.contract_details?.endDate ? formatDate(contract.contract_details.endDate) : 'TBD'}
                     </span>
                   </div>
@@ -249,13 +256,24 @@ const HHMContractDashboard = () => {
 
                 {contract.status === 'hhm_accepted' && (
                   <div className="contract-status-info accepted">
-                    <span>✅ Contract accepted and active</span>
+                    <span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '18px', height: '18px', display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M9 12l2 2 4-4" />
+                      </svg>
+                      Contract accepted and active
+                    </span>
                   </div>
                 )}
 
                 {contract.status === 'hhm_rejected' && (
                   <div className="contract-status-info rejected">
-                    <span>❌ Contract rejected</span>
+                    <span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '18px', height: '18px', display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                        <path d="M18 6L6 18M6 6l12 12" />
+                      </svg>
+                      Contract rejected
+                    </span>
                   </div>
                 )}
 

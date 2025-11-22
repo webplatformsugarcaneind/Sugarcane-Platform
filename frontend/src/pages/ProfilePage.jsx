@@ -411,7 +411,14 @@ const ProfilePage = () => {
 
           <div className="info-section">
             <h2 className="section-header">
-              <span className="section-icon">🚜</span>
+              <span className="section-icon">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none">
+                  <rect x="3" y="3" width="7" height="9" />
+                  <rect x="14" y="3" width="7" height="5" />
+                  <rect x="14" y="12" width="7" height="9" />
+                  <rect x="3" y="16" width="7" height="5" />
+                </svg>
+              </span>
               Farm Equipment & Technology
             </h2>
             <div className="field-grid">

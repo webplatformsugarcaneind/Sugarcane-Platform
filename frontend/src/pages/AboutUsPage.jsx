@@ -20,8 +20,8 @@ const AboutUsPage = () => {
           <div className="section-header">
             <h2>Our Mission</h2>
             <p>
-              To create a comprehensive digital ecosystem that connects farmers, factories, and workers 
-              in the sugarcane industry, promoting fair trade, sustainable farming, and economic growth 
+              To create a comprehensive digital ecosystem that connects farmers, factories, and workers
+              in the sugarcane industry, promoting fair trade, sustainable farming, and economic growth
               for all stakeholders.
             </p>
           </div>
@@ -36,34 +36,61 @@ const AboutUsPage = () => {
           </div>
           <div className="features-grid">
             <div className="feature-card">
-              <div className="feature-icon">🌾</div>
+              <div className="feature-icon">
+                <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" strokeWidth="2" fill="none">
+                  <path d="M12 2v20M2 7h10M2 12h10M2 17h10" />
+                  <path d="M12 2l5 5-5 5m0 0l-5-5 5-5" />
+                </svg>
+              </div>
               <h3>Farmer Empowerment</h3>
               <p>
-                We provide farmers with tools for crop management, yield tracking, and direct 
+                We provide farmers with tools for crop management, yield tracking, and direct
                 factory connections, ensuring better prices and reduced intermediary costs.
               </p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">🏭</div>
+              <div className="feature-icon">
+                <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" strokeWidth="2" fill="none">
+                  <rect x="3" y="8" width="18" height="13" rx="1" />
+                  <path d="M8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3" />
+                  <line x1="7" y1="12" x2="7" y2="12.01" />
+                  <line x1="11" y1="12" x2="11" y2="12.01" />
+                  <line x1="15" y1="12" x2="15" y2="12.01" />
+                  <line x1="7" y1="16" x2="7" y2="16.01" />
+                  <line x1="11" y1="16" x2="11" y2="16.01" />
+                  <line x1="15" y1="16" x2="15" y2="16.01" />
+                </svg>
+              </div>
               <h3>Factory Optimization</h3>
               <p>
-                Our platform helps sugar factories streamline supply chain management, 
+                Our platform helps sugar factories streamline supply chain management,
                 optimize production planning, and maintain quality control systems.
               </p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">👥</div>
+              <div className="feature-icon">
+                <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" strokeWidth="2" fill="none">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
               <h3>Hub Management</h3>
               <p>
-                Hub Head Managers can coordinate operations between multiple farms and factories, 
+                Hub Head Managers can coordinate operations between multiple farms and factories,
                 improving efficiency and communication across the supply chain.
               </p>
             </div>
             <div className="feature-card">
-              <div className="feature-icon">⚒️</div>
+              <div className="feature-icon">
+                <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" strokeWidth="2" fill="none">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                </svg>
+              </div>
               <h3>Worker Support</h3>
               <p>
-                We connect agricultural workers with verified job opportunities, 
+                We connect agricultural workers with verified job opportunities,
                 fair wages, and skill development programs for career growth.
               </p>
             </div>
@@ -78,32 +105,53 @@ const AboutUsPage = () => {
             <div className="vision-text">
               <h2>Our Vision</h2>
               <p>
-                To become the leading digital platform in the agricultural sector, fostering 
-                sustainable farming practices, fair trade, and technological innovation that 
+                To become the leading digital platform in the agricultural sector, fostering
+                sustainable farming practices, fair trade, and technological innovation that
                 benefits farmers, factories, and communities worldwide.
               </p>
               <div className="vision-points">
                 <div className="vision-point">
-                  <span className="point-icon">✓</span>
+                  <span className="point-icon">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
                   <span>Sustainable Agriculture Practices</span>
                 </div>
                 <div className="vision-point">
-                  <span className="point-icon">✓</span>
+                  <span className="point-icon">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
                   <span>Fair Price Transparency</span>
                 </div>
                 <div className="vision-point">
-                  <span className="point-icon">✓</span>
+                  <span className="point-icon">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
                   <span>Technology-Driven Solutions</span>
                 </div>
                 <div className="vision-point">
-                  <span className="point-icon">✓</span>
+                  <span className="point-icon">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
                   <span>Community Empowerment</span>
                 </div>
               </div>
             </div>
             <div className="vision-image">
               <div className="image-placeholder">
-                <span className="placeholder-icon">🌱</span>
+                <span className="placeholder-icon">
+                  <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" strokeWidth="2" fill="none">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <path d="M12 8v4m0 4h.01" />
+                  </svg>
+                </span>
               </div>
             </div>
           </div>
@@ -143,7 +191,7 @@ const AboutUsPage = () => {
           <div className="cta-content">
             <h2>Join Our Platform</h2>
             <p>
-              Ready to be part of the future of agriculture? Connect with us and start 
+              Ready to be part of the future of agriculture? Connect with us and start
               your journey towards more efficient and profitable farming.
             </p>
             <div className="cta-buttons">

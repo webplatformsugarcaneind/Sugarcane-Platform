@@ -35,7 +35,7 @@ const WorkerHHMDirectoryPage = () => {
 
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setError('No authentication token found. Please login again.');
         return;
@@ -55,7 +55,7 @@ const WorkerHHMDirectoryPage = () => {
     } catch (err) {
       console.error('❌ Error fetching HHMs:', err);
       let errorMessage = 'Failed to load HHM directory';
-      
+
       if (err.response?.status === 401) {
         errorMessage = 'Authentication failed. Please login again.';
       } else if (err.response?.status === 403) {
@@ -63,7 +63,7 @@ const WorkerHHMDirectoryPage = () => {
       } else if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
       }
-      
+
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -136,7 +136,7 @@ const WorkerHHMDirectoryPage = () => {
       `I would like to discuss potential work opportunities.\n\n` +
       `Best regards`
     );
-    
+
     if (hhm.email) {
       window.location.href = `mailto:${hhm.email}?subject=${subject}&body=${body}`;
     }
@@ -165,7 +165,14 @@ const WorkerHHMDirectoryPage = () => {
     return (
       <div className="hhm-directory-page">
         <div className="error-container">
-          <h2>⚠️ Error Loading Directory</h2>
+          <h2>
+            <svg style={{ display: 'inline-block', width: '32px', height: '32px', marginRight: '8px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" strokeWidth="2" />
+              <line x1="12" y1="9" x2="12" y2="13" strokeWidth="2" strokeLinecap="round" />
+              <line x1="12" y1="17" x2="12" y2="17" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            Error Loading Directory
+          </h2>
           <p>{error}</p>
           <button onClick={fetchHHMs} className="retry-button">
             Try Again
@@ -178,7 +185,14 @@ const WorkerHHMDirectoryPage = () => {
   return (
     <div className="hhm-directory-page">
       <div className="page-header">
-        <h1>🧑‍💼 HHM Directory</h1>
+        <h1>
+          <svg style={{ display: 'inline-block', width: '36px', height: '36px', marginRight: '10px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="3" y="8" width="18" height="12" rx="2" strokeWidth="2" />
+            <path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" strokeWidth="2" strokeLinecap="round" />
+            <line x1="12" y1="12" x2="12" y2="16" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          HHM Directory
+        </h1>
         <p className="page-subtitle">
           Connect with Hub Head Managers for work opportunities
         </p>
@@ -188,7 +202,12 @@ const WorkerHHMDirectoryPage = () => {
       <div className="filter-section">
         <div className="search-controls">
           <div className="search-input-group">
-            <span className="search-icon">🔍</span>
+            <span className="search-icon">
+              <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" strokeWidth="2" />
+                <path d="M21 21l-4.35-4.35" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </span>
             <input
               type="text"
               placeholder="Search by name, username, email, or phone..."
@@ -233,7 +252,12 @@ const WorkerHHMDirectoryPage = () => {
       <div className="hhm-grid">
         {filteredHhms.length === 0 ? (
           <div className="no-results">
-            <div className="no-results-icon">🔍</div>
+            <div className="no-results-icon">
+              <svg style={{ width: '64px', height: '64px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" strokeWidth="2" />
+                <path d="M21 21l-4.35-4.35" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
             <h3>No HHMs Found</h3>
             <p>
               {searchTerm
@@ -251,7 +275,12 @@ const WorkerHHMDirectoryPage = () => {
             <div key={hhm._id} className="hhm-card">
               <div className="card-header">
                 <div className="hhm-avatar">
-                  <span className="avatar-icon">🧑‍💼</span>
+                  <span className="avatar-icon">
+                    <svg style={{ width: '32px', height: '32px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <rect x="3" y="8" width="18" height="12" rx="2" strokeWidth="2" />
+                      <path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </span>
                 </div>
                 <div className="hhm-basic-info">
                   <h3 className="hhm-name">{hhm.name || 'Name not available'}</h3>
@@ -265,7 +294,12 @@ const WorkerHHMDirectoryPage = () => {
               <div className="card-body">
                 <div className="hhm-details">
                   <div className="detail-item">
-                    <span className="detail-icon">📧</span>
+                    <span className="detail-icon">
+                      <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 8l9-5 9 5v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" strokeWidth="2" />
+                        <path d="M3 8l9 5 9-5" strokeWidth="2" strokeLinejoin="round" />
+                      </svg>
+                    </span>
                     <span className="detail-value">{hhm.email || 'Email not available'}</span>
                   </div>
                   <div className="detail-item">

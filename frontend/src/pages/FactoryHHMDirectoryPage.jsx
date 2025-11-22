@@ -144,7 +144,7 @@ const FactoryHHMDirectoryPage = () => {
     try {
       setRequestsLoading(true);
       const token = localStorage.getItem('token');
-      
+
       if (!token) return;
 
       console.log('🔍 Fetching factory sent invitations...');
@@ -171,7 +171,7 @@ const FactoryHHMDirectoryPage = () => {
     try {
       setApplicationsLoading(true);
       const token = localStorage.getItem('token');
-      
+
       if (!token) return;
 
       console.log('🔍 Fetching factory received invitations...');
@@ -198,7 +198,7 @@ const FactoryHHMDirectoryPage = () => {
   const handleApplicationResponse = async (applicationId, status) => {
     try {
       const token = localStorage.getItem('token');
-      
+
       if (!token) return;
 
       console.log(`🔄 Responding to application ${applicationId} with status: ${status}`);
@@ -288,7 +288,7 @@ const FactoryHHMDirectoryPage = () => {
 
       console.log('Sending invitation to HHM:', selectedHHM._id);
       console.log('With message:', invitationMessage);
-      
+
       // Validate HHM ID format
       if (!selectedHHM._id || selectedHHM._id.length !== 24) {
         setInvitationSuccess({
@@ -297,7 +297,7 @@ const FactoryHHMDirectoryPage = () => {
         });
         return;
       }
-      
+
       await axios.post(
         '/api/factory/invite-hhm',
         {
@@ -327,9 +327,9 @@ const FactoryHHMDirectoryPage = () => {
       console.error('Error response:', err.response?.data);
       console.error('Error status:', err.response?.status);
       console.error('Error headers:', err.response?.headers);
-      
+
       let errorMessage = 'Failed to send invitation. Please try again.';
-      
+
       if (err.response?.status === 401) {
         // Unauthorized - token expired or invalid
         errorMessage = 'Your session has expired. Please login again.';
@@ -354,7 +354,7 @@ const FactoryHHMDirectoryPage = () => {
         // Use server error message if available
         errorMessage = err.response.data.message;
       }
-      
+
       setInvitationSuccess({
         type: 'error',
         message: errorMessage
@@ -374,7 +374,15 @@ const FactoryHHMDirectoryPage = () => {
   return (
     <div className="hhm-directory-page">
       <div className="page-header">
-        <h1>🌾 Harvest Manager Directory</h1>
+        <h1>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline-block', width: '32px', height: '32px', verticalAlign: 'middle', marginRight: '0.5rem' }}>
+            <path d="M2 13c0-2.5 2-4.5 4.5-4.5S11 10.5 11 13v8H2v-8z" />
+            <path d="M13 13c0-2.5 2-4.5 4.5-4.5S22 10.5 22 13v8h-9v-8z" />
+            <line x1="6.5" y1="8.5" x2="6.5" y2="3" />
+            <line x1="17.5" y1="8.5" x2="17.5" y2="3" />
+          </svg>
+          Harvest Manager Directory
+        </h1>
         <p className="page-subtitle">
           Connect with experienced Harvest Managers for efficient crop coordination
         </p>
@@ -387,14 +395,28 @@ const FactoryHHMDirectoryPage = () => {
             className={`tab-button ${activeTab === 'allHHMs' ? 'active' : ''}`}
             onClick={() => setActiveTab('allHHMs')}
           >
-            <span className="tab-icon">👥</span>
+            <span className="tab-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle' }}>
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </span>
             All HHMs
           </button>
           <button
             className={`tab-button ${activeTab === 'myRequests' ? 'active' : ''}`}
             onClick={() => setActiveTab('myRequests')}
           >
-            <span className="tab-icon">📤</span>
+            <span className="tab-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle' }}>
+                <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+                <line x1="12" y1="8" x2="12" y2="2" />
+                <polyline points="9 5 12 2 15 5" />
+              </svg>
+            </span>
             My Requests
             {requestsLoading && <span className="loading-spinner">...</span>}
           </button>
@@ -402,7 +424,12 @@ const FactoryHHMDirectoryPage = () => {
             className={`tab-button ${activeTab === 'receivedApplications' ? 'active' : ''}`}
             onClick={() => setActiveTab('receivedApplications')}
           >
-            <span className="tab-icon">📥</span>
+            <span className="tab-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle' }}>
+                <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+              </svg>
+            </span>
             Received Applications
             {applicationsLoading && <span className="loading-spinner">...</span>}
           </button>
@@ -411,59 +438,64 @@ const FactoryHHMDirectoryPage = () => {
 
       {/* Search and Filter Section - only show for All HHMs tab */}
       {activeTab === 'allHHMs' && (
-      <div className="filter-section">
-        <div className="search-controls">
-          <div className="search-input-group">
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder="Search harvest managers by name, specialization, location..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="search-input"
-            />
+        <div className="filter-section">
+          <div className="search-controls">
+            <div className="search-input-group">
+              <span className="search-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ display: 'inline-block', width: '20px', height: '20px', verticalAlign: 'middle' }}>
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </span>
+              <input
+                type="text"
+                placeholder="Search harvest managers by name, specialization, location..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="search-input"
+              />
+            </div>
+
+            <div className="filter-controls">
+              <select
+                value={selectedLocation}
+                onChange={handleLocationChange}
+                className="filter-select"
+              >
+                <option value="">All Locations</option>
+                {uniqueLocations.map((location, index) => (
+                  <option key={index} value={location}>
+                    {location}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={sortBy}
+                onChange={handleSortChange}
+                className="sort-select"
+              >
+                <option value="name">Sort by Name</option>
+                <option value="experience">Sort by Experience</option>
+                <option value="location">Sort by Location</option>
+                <option value="username">Sort by Username</option>
+              </select>
+
+              <button
+                onClick={clearFilters}
+                className="clear-filters-btn"
+              >
+                Clear Filters
+              </button>
+            </div>
           </div>
 
-          <div className="filter-controls">
-            <select
-              value={selectedLocation}
-              onChange={handleLocationChange}
-              className="filter-select"
-            >
-              <option value="">All Locations</option>
-              {uniqueLocations.map((location, index) => (
-                <option key={index} value={location}>
-                  📍 {location}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={sortBy}
-              onChange={handleSortChange}
-              className="sort-select"
-            >
-              <option value="name">Sort by Name</option>
-              <option value="experience">Sort by Experience</option>
-              <option value="location">Sort by Location</option>
-              <option value="username">Sort by Username</option>
-            </select>
-
-            <button
-              onClick={clearFilters}
-              className="clear-filters-btn"
-            >
-              Clear Filters
-            </button>
+          <div className="results-info">
+            <span className="results-count">
+              {filteredHhms.length} harvest managers available for coordination
+            </span>
           </div>
         </div>
-
-        <div className="results-info">
-          <span className="results-count">
-            {filteredHhms.length} harvest managers available for coordination
-          </span>
-        </div>
-      </div>
       )}
 
       {/* Content Section */}
@@ -478,7 +510,13 @@ const FactoryHHMDirectoryPage = () => {
               </div>
             ) : error ? (
               <div className="error-container">
-                <div className="error-icon">⚠️</div>
+                <div className="error-icon">
+                  <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" strokeWidth="2" fill="none">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                </div>
                 <h3>Error Loading Directory</h3>
                 <p className="error-message">{error}</p>
                 <button
@@ -490,7 +528,12 @@ const FactoryHHMDirectoryPage = () => {
               </div>
             ) : filteredHhms.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">🌾</div>
+                <div className="empty-icon">
+                  <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" strokeWidth="2" fill="none">
+                    <path d="M12 2v20M2 7h10M2 12h10M2 17h10" />
+                    <path d="M12 2l5 5-5 5m0 0l-5-5 5-5" />
+                  </svg>
+                </div>
                 <h3>No Harvest Managers Found</h3>
                 <p>
                   {searchTerm || selectedLocation
@@ -508,76 +551,121 @@ const FactoryHHMDirectoryPage = () => {
                 )}
               </div>
             ) : (
-          <div className="hhm-grid">
-            {filteredHhms.map((hhm) => (
-              <div key={hhm._id} className="hhm-card">
-                <div className="card-header">
-                  <div className="hhm-avatar">
-                    <span className="avatar-icon">🌾</span>
-                  </div>
-                  <div className="hhm-basic-info">
-                    <h3 className="hhm-name">{hhm.name || 'Unknown Name'}</h3>
-                    <p className="hhm-username">@{hhm.username || 'unknown'}</p>
-                  </div>
-                </div>
-
-                <div className="card-body">
-                  <div className="hhm-details">
-                    <div className="detail-item">
-                      <span className="detail-icon">📍</span>
-                      <span className="detail-value">{hhm.location || 'Location not specified'}</span>
+              <div className="hhm-grid">
+                {filteredHhms.map((hhm) => (
+                  <div key={hhm._id} className="hhm-card">
+                    <div className="card-header">
+                      <div className="hhm-avatar">
+                        <span className="avatar-icon">
+                          <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" strokeWidth="2" fill="none">
+                            <path d="M12 2v20M2 7h10M2 12h10M2 17h10" />
+                            <path d="M12 2l5 5-5 5m0 0l-5-5 5-5" />
+                          </svg>
+                        </span>
+                      </div>
+                      <div className="hhm-basic-info">
+                        <h3 className="hhm-name">{hhm.name || 'Unknown Name'}</h3>
+                        <p className="hhm-username">@{hhm.username || 'unknown'}</p>
+                      </div>
                     </div>
 
-                    <div className="detail-item">
-                      <span className="detail-icon">📧</span>
-                      <span className="detail-value">{hhm.email || 'No email provided'}</span>
+                    <div className="card-body">
+                      <div className="hhm-details">
+                        <div className="detail-item">
+                          <span className="detail-icon">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                              <circle cx="12" cy="10" r="3" />
+                            </svg>
+                          </span>
+                          <span className="detail-value">{hhm.location || 'Location not specified'}</span>
+                        </div>
+
+                        <div className="detail-item">
+                          <span className="detail-icon">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                              <rect x="2" y="4" width="20" height="16" rx="2" />
+                              <path d="m2 7 10 6 10-6" />
+                            </svg>
+                          </span>
+                          <span className="detail-value">{hhm.email || 'No email provided'}</span>
+                        </div>
+
+                        <div className="detail-item">
+                          <span className="detail-icon">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                              <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                              <line x1="12" y1="18" x2="12.01" y2="18" />
+                            </svg>
+                          </span>
+                          <span className="detail-value">{hhm.phone || 'No phone provided'}</span>
+                        </div>
+
+                        {hhm.specialization && (
+                          <div className="detail-item">
+                            <span className="detail-icon">
+                              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 6v6l4 2" />
+                              </svg>
+                            </span>
+                            <span className="detail-value">{hhm.specialization}</span>
+                          </div>
+                        )}
+
+                        {hhm.experience && (
+                          <div className="detail-item">
+                            <span className="detail-icon">
+                              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                              </svg>
+                            </span>
+                            <span className="detail-value">{hhm.experience} years experience</span>
+                          </div>
+                        )}
+
+                        {hhm.certifications && hhm.certifications.length > 0 && (
+                          <div className="detail-item">
+                            <span className="detail-icon">
+                              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                                <circle cx="12" cy="8" r="7" />
+                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                              </svg>
+                            </span>
+                            <span className="detail-value">{hhm.certifications.join(', ')}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="card-actions">
+                        <button
+                          className="contact-btn primary"
+                          onClick={() => handleInviteClick(hhm)}
+                        >
+                          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                          </svg>
+                          Send Invitation
+                        </button>
+                        <button
+                          className="contact-btn secondary"
+                          onClick={() => handleViewProfile(hhm)}
+                        >
+                          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                            <polyline points="10 9 9 9 8 9" />
+                          </svg>
+                          View Profile
+                        </button>
+                      </div>
                     </div>
-
-                    <div className="detail-item">
-                      <span className="detail-icon">📱</span>
-                      <span className="detail-value">{hhm.phone || 'No phone provided'}</span>
-                    </div>
-
-                    {hhm.specialization && (
-                      <div className="detail-item">
-                        <span className="detail-icon">🎯</span>
-                        <span className="detail-value">{hhm.specialization}</span>
-                      </div>
-                    )}
-
-                    {hhm.experience && (
-                      <div className="detail-item">
-                        <span className="detail-icon">⭐</span>
-                        <span className="detail-value">{hhm.experience} years experience</span>
-                      </div>
-                    )}
-
-                    {hhm.certifications && hhm.certifications.length > 0 && (
-                      <div className="detail-item">
-                        <span className="detail-icon">🏆</span>
-                        <span className="detail-value">{hhm.certifications.join(', ')}</span>
-                      </div>
-                    )}
                   </div>
-
-                  <div className="card-actions">
-                    <button
-                      className="contact-btn primary"
-                      onClick={() => handleInviteClick(hhm)}
-                    >
-                      📨 Send Invitation
-                    </button>
-                    <button
-                      className="contact-btn secondary"
-                      onClick={() => handleViewProfile(hhm)}
-                    >
-                      📋 View Profile
-                    </button>
-                  </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
             )}
           </>
         )}
@@ -585,7 +673,14 @@ const FactoryHHMDirectoryPage = () => {
         {/* My Requests Tab Content */}
         {activeTab === 'myRequests' && (
           <div className="requests-section">
-            <h2>📤 My Sent Invitations</h2>
+            <h2>
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+                <path d="M12 13l-8 5" />
+              </svg>
+              My Sent Invitations
+            </h2>
             {requestsLoading ? (
               <div className="loading-container">
                 <div className="loading-spinner"></div>
@@ -593,7 +688,13 @@ const FactoryHHMDirectoryPage = () => {
               </div>
             ) : myRequests.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">📤</div>
+                <div className="empty-icon">
+                  <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" strokeWidth="2" fill="none">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                    <polyline points="22,6 12,13 2,6" />
+                    <path d="M12 13l-8 5" />
+                  </svg>
+                </div>
                 <h3>No Sent Invitations</h3>
                 <p>You haven't sent any invitations to Harvest Managers yet.</p>
               </div>
@@ -619,7 +720,13 @@ const FactoryHHMDirectoryPage = () => {
         {/* Received Applications Tab Content */}
         {activeTab === 'receivedApplications' && (
           <div className="applications-section">
-            <h2>📥 Received Applications</h2>
+            <h2>
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+              </svg>
+              Received Applications
+            </h2>
             {applicationsLoading ? (
               <div className="loading-container">
                 <div className="loading-spinner"></div>
@@ -627,7 +734,12 @@ const FactoryHHMDirectoryPage = () => {
               </div>
             ) : receivedApplications.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">📥</div>
+                <div className="empty-icon">
+                  <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" strokeWidth="2" fill="none">
+                    <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+                    <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+                  </svg>
+                </div>
                 <h3>No Applications Received</h3>
                 <p>No Harvest Managers have applied to work with you yet.</p>
               </div>
@@ -651,7 +763,7 @@ const FactoryHHMDirectoryPage = () => {
                         gap: '10px',
                         justifyContent: 'flex-end'
                       }}>
-                        <button 
+                        <button
                           className="btn-accept"
                           onClick={() => handleApplicationResponse(application._id, 'accepted')}
                           style={{
@@ -666,7 +778,7 @@ const FactoryHHMDirectoryPage = () => {
                         >
                           ✅ Accept
                         </button>
-                        <button 
+                        <button
                           className="btn-decline"
                           onClick={() => handleApplicationResponse(application._id, 'declined')}
                           style={{
@@ -1495,7 +1607,7 @@ const FactoryHHMDirectoryPage = () => {
       `}</style>
 
       {/* Notifications */}
-      <NotificationToast 
+      <NotificationToast
         notifications={notifications}
         onDismiss={dismissNotification}
         position="top-right"

@@ -22,7 +22,7 @@ const HHMFarmerProfilePage = () => {
 
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setError('No authentication token found. Please login again.');
         return;
@@ -41,7 +41,7 @@ const HHMFarmerProfilePage = () => {
     } catch (err) {
       console.error('Error fetching farmer profile:', err);
       setError(
-        err.response?.data?.message || 
+        err.response?.data?.message ||
         'Failed to fetch farmer profile. Please try again.'
       );
     } finally {
@@ -164,7 +164,7 @@ const HHMFarmerProfilePage = () => {
               </div>
             </div>
             <div className="profile-actions">
-              <button 
+              <button
                 className="contact-farmer-btn"
                 onClick={handleContactFarmer}
               >
@@ -212,7 +212,15 @@ const HHMFarmerProfilePage = () => {
 
           {/* Farm Information */}
           <div className="info-section">
-            <h3>🚜 Farm Information</h3>
+            <h3>
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                <rect x="3" y="3" width="7" height="9" />
+                <rect x="14" y="3" width="7" height="5" />
+                <rect x="14" y="12" width="7" height="9" />
+                <rect x="3" y="16" width="7" height="5" />
+              </svg>
+              Farm Information
+            </h3>
             <div className="info-content">
               {farmer.farmSize && (
                 <div className="info-item">
@@ -287,17 +295,17 @@ const HHMFarmerProfilePage = () => {
                     { key: 'farmType', label: 'Farm Type' },
                     { key: 'experience', label: 'Experience' }
                   ];
-                  
-                  const completedFields = fields.filter(field => 
+
+                  const completedFields = fields.filter(field =>
                     farmer[field.key] && farmer[field.key] !== ''
                   );
-                  
+
                   const completionPercentage = Math.round((completedFields.length / fields.length) * 100);
-                  
+
                   return (
                     <>
                       <div className="completion-bar">
-                        <div 
+                        <div
                           className="completion-fill"
                           style={{ width: `${completionPercentage}%` }}
                         ></div>
@@ -307,7 +315,7 @@ const HHMFarmerProfilePage = () => {
                       </p>
                       <div className="field-status">
                         {fields.map(field => (
-                          <span 
+                          <span
                             key={field.key}
                             className={`field-badge ${farmer[field.key] ? 'completed' : 'missing'}`}
                             title={`${field.label}: ${farmer[field.key] ? 'Completed' : 'Missing'}`}
@@ -326,20 +334,28 @@ const HHMFarmerProfilePage = () => {
 
         {/* Action Section */}
         <div className="action-section">
-          <h3>🤝 Actions</h3>
+          <h3>
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="19" y1="8" x2="19" y2="14" />
+              <line x1="22" y1="11" x2="16" y2="11" />
+            </svg>
+            Actions
+          </h3>
           <div className="action-buttons">
             <button className="action-btn primary" onClick={handleContactFarmer}>
               📧 Send Email
             </button>
             {farmer.phone && (
-              <button 
+              <button
                 className="action-btn secondary"
                 onClick={() => window.location.href = `tel:${farmer.phone}`}
               >
                 📞 Call Phone
               </button>
             )}
-            <button 
+            <button
               className="action-btn secondary"
               onClick={() => navigate('/hhm/farmers')}
             >

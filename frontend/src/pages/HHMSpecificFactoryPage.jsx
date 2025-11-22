@@ -14,7 +14,7 @@ axios.defaults.baseURL = 'http://localhost:5000';
 const HHMSpecificFactoryPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [factory, setFactory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,13 +29,13 @@ const HHMSpecificFactoryPage = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       console.log('🔄 Fetching factory details for ID:', id);
-      
+
       const response = await axios.get(`/api/public/factories/${id}`);
-      
+
       console.log('✅ Factory details response:', response.data);
-      
+
       if (response.data.success) {
         const factoryData = response.data.data?.factory || response.data.factory || null;
         setFactory(factoryData);
@@ -55,7 +55,7 @@ const HHMSpecificFactoryPage = () => {
     try {
       setCheckingAssociation(true);
       const token = localStorage.getItem('token');
-      
+
       const response = await axios.get('/api/hhm/associated-factories', {
         headers: {
           Authorization: `Bearer ${token}`
@@ -95,7 +95,7 @@ const HHMSpecificFactoryPage = () => {
 
   const handleSendInvitation = async () => {
     if (!factory) return;
-    
+
     // Prevent multiple concurrent requests
     if (sendingInvitation) return;
 
@@ -106,13 +106,13 @@ const HHMSpecificFactoryPage = () => {
       // Debug: Log the factory object and what we're sending
       console.log('🔍 Factory object:', factory);
       console.log('🔍 Factory ID being sent:', factory._id || factory.id);
-      
+
       const requestData = {
         factoryId: factory._id || factory.id,
         personalMessage: `I would like to establish a partnership with ${factory.name}`,
         invitationReason: 'Seeking collaboration opportunities for worker placement and operations'
       };
-      
+
       console.log('🔍 Request data being sent:', requestData);
 
       await axios.post('/api/hhm/invite-factory', requestData, {
@@ -125,9 +125,9 @@ const HHMSpecificFactoryPage = () => {
     } catch (err) {
       console.error('Error sending invitation:', err);
       console.error('Error response data:', err.response?.data);
-      
+
       let errorMessage = 'Failed to send invitation';
-      
+
       if (err.response?.data?.message) {
         const backendMessage = err.response.data.message;
         if (backendMessage.includes('pending invitation')) {
@@ -142,7 +142,7 @@ const HHMSpecificFactoryPage = () => {
       } else if (err.response?.status) {
         errorMessage = `Failed to send invitation (Error ${err.response.status})`;
       }
-      
+
       alert(`❌ ${errorMessage}`);
     } finally {
       setSendingInvitation(false);
@@ -151,14 +151,14 @@ const HHMSpecificFactoryPage = () => {
 
   const handleRemoveAssociation = async () => {
     if (!factory) return;
-    
+
     // Show confirmation dialog
     const confirmRemoval = window.confirm(
       `Are you sure you want to end the contract/association with ${factory.name}? This action cannot be undone.`
     );
-    
+
     if (!confirmRemoval) return;
-    
+
     try {
       setRemovingAssociation(true);
       const token = localStorage.getItem('token');
@@ -174,15 +174,15 @@ const HHMSpecificFactoryPage = () => {
     } catch (err) {
       console.error('Error removing association:', err);
       console.error('Error response data:', err.response?.data);
-      
+
       let errorMessage = 'Failed to remove association';
-      
+
       if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (err.response?.status) {
         errorMessage = `Failed to remove association (Error ${err.response.status})`;
       }
-      
+
       alert(`❌ ${errorMessage}`);
     } finally {
       setRemovingAssociation(false);
@@ -353,7 +353,13 @@ const HHMSpecificFactoryPage = () => {
           }}
           onClick={() => setActiveTab('partnership')}
         >
-          🤝 Partnership
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <line x1="19" y1="8" x2="19" y2="14" />
+            <line x1="22" y1="11" x2="16" y2="11" />
+          </svg>
+          Partnership
         </button>
       </div>
 
@@ -426,7 +432,7 @@ const HHMSpecificFactoryPage = () => {
                     </div>
                   </div>
                 )}
-                
+
                 {factory.contactInfo?.phone && (
                   <div style={styles.contactCard}>
                     <div style={styles.contactIcon}>📱</div>
@@ -438,15 +444,15 @@ const HHMSpecificFactoryPage = () => {
                     </div>
                   </div>
                 )}
-                
+
                 {factory.contactInfo?.website && (
                   <div style={styles.contactCard}>
                     <div style={styles.contactIcon}>🌐</div>
                     <div style={styles.contactContent}>
                       <div style={styles.contactLabel}>Website</div>
-                      <a 
-                        href={factory.contactInfo.website.startsWith('http') 
-                          ? factory.contactInfo.website 
+                      <a
+                        href={factory.contactInfo.website.startsWith('http')
+                          ? factory.contactInfo.website
                           : `https://${factory.contactInfo.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -554,7 +560,15 @@ const HHMSpecificFactoryPage = () => {
         {activeTab === 'partnership' && (
           <div style={styles.tabPanel}>
             <div style={styles.section}>
-              <h2 style={styles.sectionTitle}>🤝 Partnership Opportunities</h2>
+              <h2 style={styles.sectionTitle}>
+                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <line x1="19" y1="8" x2="19" y2="14" />
+                  <line x1="22" y1="11" x2="16" y2="11" />
+                </svg>
+                Partnership Opportunities
+              </h2>
               <div style={styles.partnershipContent}>
                 <p style={styles.partnershipIntro}>
                   Connect with this factory to explore mutually beneficial partnership opportunities
@@ -603,7 +617,7 @@ const HHMSpecificFactoryPage = () => {
                   </p>
                   <div style={styles.ctaButtons}>
                     {isAssociated ? (
-                      <button 
+                      <button
                         style={{
                           ...styles.primaryButton,
                           backgroundColor: '#dc3545',
@@ -612,18 +626,35 @@ const HHMSpecificFactoryPage = () => {
                         onClick={handleRemoveAssociation}
                         disabled={removingAssociation || checkingAssociation}
                       >
-                        {removingAssociation ? '🔄 Removing...' : '🚫 End Contract'}
+                        {removingAssociation ? (
+                          <>
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                              <polyline points="23 4 23 10 17 10" />
+                              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                            </svg>
+                            Removing...
+                          </>
+                        ) : (
+                          <>
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                              <circle cx="12" cy="12" r="10" />
+                              <line x1="15" y1="9" x2="9" y2="15" />
+                              <line x1="9" y1="9" x2="15" y2="15" />
+                            </svg>
+                            End Contract
+                          </>
+                        )}
                       </button>
                     ) : (
                       <>
-                        <button 
+                        <button
                           style={styles.primaryButton}
                           onClick={handleSendInvitation}
                           disabled={sendingInvitation || checkingAssociation}
                         >
                           {sendingInvitation ? '🔄 Sending...' : '📨 Send Partnership Invitation'}
                         </button>
-                        <button 
+                        <button
                           style={styles.contractButton}
                           onClick={() => setShowContractModal(true)}
                         >
@@ -631,7 +662,7 @@ const HHMSpecificFactoryPage = () => {
                         </button>
                       </>
                     )}
-                    <button 
+                    <button
                       style={styles.secondaryButton}
                       onClick={() => setActiveTab('contact')}
                     >
@@ -646,7 +677,7 @@ const HHMSpecificFactoryPage = () => {
       </div>
 
       {/* Contract Request Modal */}
-      <ContractRequestModal 
+      <ContractRequestModal
         isOpen={showContractModal}
         onClose={() => setShowContractModal(false)}
         factoryInfo={factory}

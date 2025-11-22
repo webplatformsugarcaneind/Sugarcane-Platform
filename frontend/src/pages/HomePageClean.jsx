@@ -133,17 +133,17 @@ const HomePage = () => {
     const fetchRolesData = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         // For now, use mock data directly since backend might not be running
         console.log('HomePage: Fetching roles data...');
         console.log('HomePage: Using mock data for development');
-        
+
         const mockData = getMockRolesData();
         console.log('HomePage: Mock data loaded:', mockData);
         setRolesData(mockData);
         setError(null);
-        
+
         // Uncomment below to use live API when backend is running
         /*
         const response = await axios.get('/api/public/roles-features');
@@ -166,7 +166,7 @@ const HomePage = () => {
           setRolesData(getMockRolesData());
         }
         */
-        
+
       } catch (err) {
         console.error('Error fetching roles data:', err);
         setError('Failed to load roles data. Using fallback data.');
@@ -184,7 +184,7 @@ const HomePage = () => {
     console.log('GuideBox clicked:', roleTitle); // Debug log
     console.log('Available roles data type:', typeof rolesData); // Debug log
     console.log('Available roles data keys:', Object.keys(rolesData || {})); // Debug log
-    
+
     // Check if rolesData is valid
     if (!rolesData || typeof rolesData !== 'object') {
       console.error('rolesData is not a valid object:', rolesData);
@@ -242,7 +242,12 @@ const HomePage = () => {
         <div className="role-details">
           {selectedRole.features && selectedRole.features.length > 0 && (
             <div className="features-section-modal">
-              <h3>🚀 Key Features</h3>
+              <h3>
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+                Key Features
+              </h3>
               <ul className="features-list">
                 {selectedRole.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
@@ -304,21 +309,21 @@ const HomePage = () => {
           </button>
         </div>
       </div>
-      
+
       {/* Error Message */}
       {error && (
         <div className="error-message">
           <p>{error}</p>
         </div>
       )}
-      
+
       {/* Roles Section with GuideBoxes */}
       <div className="roles-section">
         <h2>Choose Your Role</h2>
         <p className="roles-subtitle">
           Discover how our platform can help you succeed in your specific role within the sugar industry
         </p>
-        
+
         <div className="guide-boxes-grid">
           <GuideBox
             title="Farmer"
@@ -327,7 +332,7 @@ const HomePage = () => {
             color="farmer"
             className="debug-clickable"
           />
-          
+
           <GuideBox
             title="HHM"
             description="Coordinate operations and manage logistics"
@@ -335,7 +340,7 @@ const HomePage = () => {
             color="hhm"
             className="debug-clickable"
           />
-          
+
           <GuideBox
             title="Worker"
             description="Find work opportunities and manage your career"
@@ -343,7 +348,7 @@ const HomePage = () => {
             color="labour"
             className="debug-clickable"
           />
-          
+
           <GuideBox
             title="Factories"
             description="Optimize production and manage supply chains"

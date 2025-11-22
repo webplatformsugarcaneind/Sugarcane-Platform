@@ -320,7 +320,19 @@ const HHMFactoryDirectoryPage = () => {
   return (
     <div className="factory-directory-page">
       <div className="page-header">
-        <h1>🏭 Factory Partnership Directory</h1>
+        <h1>
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+            <rect x="3" y="8" width="18" height="13" rx="1" />
+            <path d="M8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3" />
+            <line x1="7" y1="12" x2="7" y2="12.01" />
+            <line x1="11" y1="12" x2="11" y2="12.01" />
+            <line x1="15" y1="12" x2="15" y2="12.01" />
+            <line x1="7" y1="16" x2="7" y2="16.01" />
+            <line x1="11" y1="16" x2="11" y2="16.01" />
+            <line x1="15" y1="16" x2="15" y2="16.01" />
+          </svg>
+          Factory Partnership Directory
+        </h1>
         <p className="page-subtitle">
           Connect with processing facilities for strategic partnerships and worker placement opportunities
         </p>
@@ -330,7 +342,12 @@ const HHMFactoryDirectoryPage = () => {
       <div className="filter-section">
         <div className="search-controls">
           <div className="search-input-group">
-            <span className="search-icon">🔍</span>
+            <span className="search-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+            </span>
             <input
               type="text"
               placeholder="Search factories for partnership opportunities..."
@@ -349,7 +366,7 @@ const HHMFactoryDirectoryPage = () => {
               <option value="">All Locations</option>
               {uniqueLocations.map((location, index) => (
                 <option key={index} value={location}>
-                  📍 {location}
+                  {location}
                 </option>
               ))}
             </select>
@@ -360,9 +377,9 @@ const HHMFactoryDirectoryPage = () => {
               className="filter-select"
             >
               <option value="">All Capacities</option>
-              <option value="small">🏭 Small Scale (&lt;1,000)</option>
-              <option value="medium">🏭 Medium Scale (1,000-5,000)</option>
-              <option value="large">🏭 Large Scale (5,000+)</option>
+              <option value="small">Small Scale (&lt;1,000)</option>
+              <option value="medium">Medium Scale (1,000-5,000)</option>
+              <option value="large">Large Scale (5,000+)</option>
             </select>
 
             <select
@@ -401,7 +418,13 @@ const HHMFactoryDirectoryPage = () => {
           </div>
         ) : error ? (
           <div className="error-container">
-            <div className="error-icon">⚠️</div>
+            <div className="error-icon">
+              <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" strokeWidth="2" fill="none">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
             <h3>Error Loading Directory</h3>
             <p className="error-message">{error}</p>
             <button
@@ -413,7 +436,18 @@ const HHMFactoryDirectoryPage = () => {
           </div>
         ) : filteredFactories.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">🏭</div>
+            <div className="empty-icon">
+              <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" strokeWidth="2" fill="none">
+                <rect x="3" y="8" width="18" height="13" rx="1" />
+                <path d="M8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3" />
+                <line x1="7" y1="12" x2="7" y2="12.01" />
+                <line x1="11" y1="12" x2="11" y2="12.01" />
+                <line x1="15" y1="12" x2="15" y2="12.01" />
+                <line x1="7" y1="16" x2="7" y2="16.01" />
+                <line x1="11" y1="16" x2="11" y2="16.01" />
+                <line x1="15" y1="16" x2="15" y2="16.01" />
+              </svg>
+            </div>
             <h3>No Partnership Opportunities Found</h3>
             <p>
               {searchTerm || selectedLocation || selectedCapacity
@@ -442,11 +476,28 @@ const HHMFactoryDirectoryPage = () => {
                 <div className="factory-card">
                   <div className="card-header">
                     <div className="factory-avatar">
-                      <span className="avatar-icon">🏭</span>
+                      <span className="avatar-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" strokeWidth="2" fill="none">
+                          <rect x="3" y="8" width="18" height="13" rx="1" />
+                          <path d="M8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3" />
+                          <line x1="7" y1="12" x2="7" y2="12.01" />
+                          <line x1="11" y1="12" x2="11" y2="12.01" />
+                          <line x1="15" y1="12" x2="15" y2="12.01" />
+                          <line x1="7" y1="16" x2="7" y2="16.01" />
+                          <line x1="11" y1="16" x2="11" y2="16.01" />
+                          <line x1="15" y1="16" x2="15" y2="16.01" />
+                        </svg>
+                      </span>
                     </div>
                     <div className="factory-basic-info">
                       <h3 className="factory-name">{factory.name || 'Unknown Factory'}</h3>
-                      <p className="factory-location">📍 {factory.location || 'Location not specified'}</p>
+                      <p className="factory-location">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                          <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        {factory.location || 'Location not specified'}
+                      </p>
                     </div>
                     <div className="capacity-badge" style={{ backgroundColor: getCapacityColor(factory.capacity) }}>
                       {getCapacityLabel(factory.capacity)}
@@ -487,16 +538,28 @@ const HHMFactoryDirectoryPage = () => {
                     )}
 
                     <div className="partnership-opportunities">
-                      <h4>🤝 Partnership Opportunities:</h4>
+                      <h4>
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                          <path d="M12 2v6m0 0 3-3m-3 3-3-3" />
+                          <path d="M3 13a9 9 0 0 0 9 9 9 9 0 0 0 9-9" />
+                          <path d="m16 16 2 2 4-4" />
+                        </svg>
+                        Partnership Opportunities:
+                      </h4>
                       <div className="opportunity-tags">
-                        <span className="opportunity-tag">👥 Worker Placement</span>
-                        <span className="opportunity-tag">⚙️ Maintenance Support</span>
-                        <span className="opportunity-tag">📊 Operations Coordination</span>
+                        <span className="opportunity-tag">Worker Placement</span>
+                        <span className="opportunity-tag">Maintenance Support</span>
+                        <span className="opportunity-tag">Operations Coordination</span>
                       </div>
                     </div>
 
                     <div className="contact-info">
-                      <h4>📞 Contact Information:</h4>
+                      <h4>
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                        Contact Information:
+                      </h4>
                       <div className="contact-details">
                         {factory.contactInfo?.email && (
                           <div className="contact-item">
@@ -524,7 +587,13 @@ const HHMFactoryDirectoryPage = () => {
                         )}
                         {factory.contactInfo?.website && (
                           <div className="contact-item">
-                            <span className="contact-icon">🌐</span>
+                            <span className="contact-icon">
+                              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="2" y1="12" x2="22" y2="12" />
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                              </svg>
+                            </span>
                             <a
                               href={factory.contactInfo.website.startsWith('http') ? factory.contactInfo.website : `https://${factory.contactInfo.website}`}
                               target="_blank"
@@ -546,7 +615,12 @@ const HHMFactoryDirectoryPage = () => {
                         className="contact-btn primary"
                         onClick={(e) => handleInitiatePartnership(e, factory)}
                       >
-                        🤝 Initiate Partnership
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                          <path d="M12 2v6m0 0 3-3m-3 3-3-3" />
+                          <path d="M3 13a9 9 0 0 0 9 9 9 9 0 0 0 9-9" />
+                          <path d="m16 16 2 2 4-4" />
+                        </svg>
+                        Initiate Partnership
                       </button>
                       <button
                         className="contact-btn secondary"
@@ -555,7 +629,14 @@ const HHMFactoryDirectoryPage = () => {
                           handleFactoryClick(factory._id || factory.id);
                         }}
                       >
-                        📋 View Details
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                          <polyline points="14 2 14 8 20 8" />
+                          <line x1="16" y1="13" x2="8" y2="13" />
+                          <line x1="16" y1="17" x2="8" y2="17" />
+                          <polyline points="10 9 9 9 8 9" />
+                        </svg>
+                        View Details
                       </button>
                     </div>
                   </div>
@@ -567,69 +648,78 @@ const HHMFactoryDirectoryPage = () => {
       </div>
 
       {/* Invitation Modal */}
-      {showInviteModal && selectedFactory && (
-        <div className="modal-overlay" onClick={closeInviteModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>📨 Send Invitation to {selectedFactory.name}</h2>
-              <button className="modal-close" onClick={closeInviteModal}>×</button>
-            </div>
+      {
+        showInviteModal && selectedFactory && (
+          <div className="modal-overlay" onClick={closeInviteModal}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h2>
+                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                    <polyline points="22,6 12,13 2,6" />
+                    <path d="M12 13l-8 5" />
+                  </svg>
+                  Send Invitation to {selectedFactory.name}
+                </h2>
+                <button className="modal-close" onClick={closeInviteModal}>×</button>
+              </div>
 
-            <div className="modal-body">
-              {invitationSuccess ? (
-                <div className={`alert ${invitationSuccess.type === 'success' ? 'alert-success' : 'alert-error'}`}>
-                  {invitationSuccess.message}
-                </div>
-              ) : (
-                <>
-                  <div className="factory-preview">
-                    <div className="factory-preview-avatar">🏭</div>
-                    <div className="factory-preview-info">
-                      <h3>{selectedFactory.name}</h3>
-                      <p>📍 {selectedFactory.location || 'Location not specified'}</p>
-                      <p>📧 {selectedFactory.email}</p>
+              <div className="modal-body">
+                {invitationSuccess ? (
+                  <div className={`alert ${invitationSuccess.type === 'success' ? 'alert-success' : 'alert-error'}`}>
+                    {invitationSuccess.message}
+                  </div>
+                ) : (
+                  <>
+                    <div className="factory-preview">
+                      <div className="factory-preview-avatar">🏭</div>
+                      <div className="factory-preview-info">
+                        <h3>{selectedFactory.name}</h3>
+                        <p>📍 {selectedFactory.location || 'Location not specified'}</p>
+                        <p>📧 {selectedFactory.email}</p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="form-group">
-                    <label htmlFor="invitation-message">Message (Optional)</label>
-                    <textarea
-                      id="invitation-message"
-                      value={invitationMessage}
-                      onChange={(e) => setInvitationMessage(e.target.value)}
-                      placeholder="Add a personal message to your invitation..."
-                      rows="4"
-                      className="invitation-textarea"
-                    />
-                    <small className="form-hint">
-                      Explain why you'd like to partner with this Factory
-                    </small>
-                  </div>
-                </>
+                    <div className="form-group">
+                      <label htmlFor="invitation-message">Message (Optional)</label>
+                      <textarea
+                        id="invitation-message"
+                        value={invitationMessage}
+                        onChange={(e) => setInvitationMessage(e.target.value)}
+                        placeholder="Add a personal message to your invitation..."
+                        rows="4"
+                        className="invitation-textarea"
+                      />
+                      <small className="form-hint">
+                        Explain why you'd like to partner with this Factory
+                      </small>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {!invitationSuccess && (
+                <div className="modal-footer">
+                  <button
+                    className="btn btn-secondary"
+                    onClick={closeInviteModal}
+                    disabled={sendingInvitation}
+                  >
+                    CANCEL
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleSendInvitation}
+                    disabled={sendingInvitation}
+                  >
+                    {sendingInvitation ? 'Sending...' : '📨 SEND INVITATION'}
+                  </button>
+                </div>
               )}
             </div>
-
-            {!invitationSuccess && (
-              <div className="modal-footer">
-                <button
-                  className="btn btn-secondary"
-                  onClick={closeInviteModal}
-                  disabled={sendingInvitation}
-                >
-                  CANCEL
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={handleSendInvitation}
-                  disabled={sendingInvitation}
-                >
-                  {sendingInvitation ? 'Sending...' : '📨 SEND INVITATION'}
-                </button>
-              </div>
-            )}
           </div>
-        </div>
-      )}
+        )
+      }
 
       <style jsx>{`
         .factory-directory-page {
@@ -1292,7 +1382,7 @@ const HHMFactoryDirectoryPage = () => {
           }
         }
       `}</style>
-    </div>
+    </div >
   );
 };
 

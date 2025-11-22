@@ -23,15 +23,15 @@ const HHMPublicProfilePage = () => {
     const [isAssociated, setIsAssociated] = useState(false);
     const [checkingAssociation, setCheckingAssociation] = useState(false);
     const [removingAssociation, setRemovingAssociation] = useState(false);
-    
+
     // Contract request state
     const [showContractModal, setShowContractModal] = useState(false);
     const [sendingContractRequest, setSendingContractRequest] = useState(false);
-    
+
     // Farmer job request state
     const [showJobRequestModal, setShowJobRequestModal] = useState(false);
     const [sendingJobRequest, setSendingJobRequest] = useState(false);
-    
+
     // User role state
     const [userRole, setUserRole] = useState('');
 
@@ -39,7 +39,7 @@ const HHMPublicProfilePage = () => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            
+
             // Get user role to determine the correct API endpoint
             const userData = localStorage.getItem('user');
             let currentUserRole = '';
@@ -77,7 +77,7 @@ const HHMPublicProfilePage = () => {
         } catch (err) {
             console.error('Error fetching HHM profile:', err);
             console.error('Error response:', err.response?.data);
-            
+
             if (err.response?.status === 401) {
                 setError('Please login to view HHM profiles');
                 navigate('/login');
@@ -97,7 +97,7 @@ const HHMPublicProfilePage = () => {
         try {
             setCheckingAssociation(true);
             const token = localStorage.getItem('token');
-            
+
             const response = await axios.get('/api/factory/associated-hhms', {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -123,7 +123,7 @@ const HHMPublicProfilePage = () => {
             const user = JSON.parse(userData);
             setUserRole(user.role || '');
         }
-        
+
         const fetchData = async () => {
             await fetchHHMProfile();
             await checkAssociation();
@@ -133,14 +133,14 @@ const HHMPublicProfilePage = () => {
 
     const handleRemoveAssociation = async () => {
         if (!hhm) return;
-        
+
         // Show confirmation dialog
         const confirmRemoval = window.confirm(
             `Are you sure you want to end the contract/association with ${hhm.name}? This action cannot be undone.`
         );
-        
+
         if (!confirmRemoval) return;
-        
+
         try {
             setRemovingAssociation(true);
             const token = localStorage.getItem('token');
@@ -156,15 +156,15 @@ const HHMPublicProfilePage = () => {
         } catch (err) {
             console.error('Error removing association:', err);
             console.error('Error response data:', err.response?.data);
-            
+
             let errorMessage = 'Failed to remove association';
-            
+
             if (err.response?.data?.message) {
                 errorMessage = err.response.data.message;
             } else if (err.response?.status) {
                 errorMessage = `Failed to remove association (Error ${err.response.status})`;
             }
-            
+
             alert(`❌ ${errorMessage}`);
         } finally {
             setRemovingAssociation(false);
@@ -173,7 +173,7 @@ const HHMPublicProfilePage = () => {
 
     const handleSendInvitation = async () => {
         if (!hhm) return;
-        
+
         // Prevent multiple concurrent requests
         if (sendingInvitation) return;
 
@@ -199,9 +199,9 @@ const HHMPublicProfilePage = () => {
             console.error('Error sending invitation:', err);
             console.error('Error response data:', err.response?.data);
             console.error('Error status:', err.response?.status);
-            
+
             let errorMessage = 'Failed to send invitation';
-            
+
             if (err.response?.data?.message) {
                 const backendMessage = err.response.data.message;
                 if (backendMessage.includes('pending invitation')) {
@@ -216,7 +216,7 @@ const HHMPublicProfilePage = () => {
             } else if (err.response?.status) {
                 errorMessage = `Failed to send invitation (Error ${err.response.status})`;
             }
-            
+
             alert(`❌ ${errorMessage}`);
         } finally {
             setSendingInvitation(false);
@@ -242,9 +242,9 @@ const HHMPublicProfilePage = () => {
         } catch (err) {
             console.error('Error sending contract request:', err);
             console.error('Error response data:', err.response?.data);
-            
+
             let errorMessage = 'Failed to send contract request';
-            
+
             if (err.response?.data?.message) {
                 const backendMessage = err.response.data.message;
                 if (backendMessage.includes('active contract')) {
@@ -255,7 +255,7 @@ const HHMPublicProfilePage = () => {
             } else if (err.response?.status) {
                 errorMessage = `Failed to send contract request (Error ${err.response.status})`;
             }
-            
+
             alert(`❌ ${errorMessage}`);
             throw err; // Re-throw to prevent modal from closing
         } finally {
@@ -296,9 +296,9 @@ const HHMPublicProfilePage = () => {
         } catch (err) {
             console.error('Error sending job request:', err);
             console.error('Error response data:', err.response?.data);
-            
+
             let errorMessage = 'Failed to send job request';
-            
+
             if (err.response?.data?.message) {
                 const backendMessage = err.response.data.message;
                 if (backendMessage.includes('pending request')) {
@@ -311,7 +311,7 @@ const HHMPublicProfilePage = () => {
             } else if (err.response?.status) {
                 errorMessage = `Failed to send job request (Error ${err.response.status})`;
             }
-            
+
             alert(`❌ ${errorMessage}`);
             throw err; // Re-throw to prevent modal from closing
         } finally {
@@ -355,52 +355,69 @@ const HHMPublicProfilePage = () => {
                 </p>
             }
 
-        </div> <div className="profile-actions"> 
-            {/* Show different buttons based on user role */}
-            {userRole === 'Factory' && (
-                <>
-                    {isAssociated ? (
-                        <button 
-                            className="btn btn-danger"
-                            onClick={handleRemoveAssociation}
-                            disabled={removingAssociation || checkingAssociation}
+        </div> <div className="profile-actions">
+                    {/* Show different buttons based on user role */}
+                    {userRole === 'Factory' && (
+                        <>
+                            {isAssociated ? (
+                                <button
+                                    className="btn btn-danger"
+                                    onClick={handleRemoveAssociation}
+                                    disabled={removingAssociation || checkingAssociation}
+                                >
+                                    {removingAssociation ? (
+                                        <>
+                                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                <polyline points="23 4 23 10 17 10" />
+                                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                                            </svg>
+                                            Removing...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                <circle cx="12" cy="12" r="10" />
+                                                <line x1="15" y1="9" x2="9" y2="15" />
+                                                <line x1="9" y1="9" x2="15" y2="15" />
+                                            </svg>
+                                            End Contract
+                                        </>
+                                    )}
+                                </button>
+                            ) : (
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => setShowInviteModal(true)}
+                                    disabled={checkingAssociation}
+                                >
+                                    📨 Invite to Join
+                                </button>
+                            )}
+                        </>
+                    )}
+
+                    {/* Contract Request button for HHMs */}
+                    {userRole === 'HHM' && (
+                        <button
+                            className="btn btn-success"
+                            onClick={() => setShowContractModal(true)}
+                            disabled={sendingContractRequest}
                         >
-                            {removingAssociation ? '🔄 Removing...' : '🚫 End Contract'}
-                        </button>
-                    ) : (
-                        <button 
-                            className="btn btn-primary"
-                            onClick={() => setShowInviteModal(true)}
-                            disabled={checkingAssociation}
-                        >
-                            📨 Invite to Join
+                            📋 Request Contract
                         </button>
                     )}
-                </>
-            )}
-            
-            {/* Contract Request button for HHMs */}
-            {userRole === 'HHM' && (
-                <button 
-                    className="btn btn-success"
-                    onClick={() => setShowContractModal(true)}
-                    disabled={sendingContractRequest}
-                >
-                    📋 Request Contract
-                </button>
-            )}
 
-            {/* Job Request button for Farmers */}
-            {userRole === 'Farmer' && (
-                <button 
-                    className="btn btn-primary"
-                    onClick={() => setShowJobRequestModal(true)}
-                    disabled={sendingJobRequest}
-                >
-                    🌾 Send Job Request
-                </button>
-            )}
-        </div> </div> </div> {
+                    {/* Job Request button for Farmers */}
+                    {userRole === 'Farmer' && (
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => setShowJobRequestModal(true)}
+                            disabled={sendingJobRequest}
+                        >
+                            🌾 Send Job Request
+                        </button>
+                    )}
+                </div> </div> </div> {
             /* Main Content */
         }
 
@@ -449,16 +466,21 @@ const HHMPublicProfilePage = () => {
             }
 
             {
-                hhm.servicesOffered && (<div className="profile-card"> <h2 className="card-title">🛠️ Services Offered</h2> <div className="tags-container"> {
+                hhm.servicesOffered && (<div className="profile-card"> <h2 className="card-title">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                    </svg>
+                    Services Offered
+                </h2> <div className="tags-container"> {
                     // Handle servicesOffered as string (split by comma) or array
-                    Array.isArray(hhm.servicesOffered) 
+                    Array.isArray(hhm.servicesOffered)
                         ? hhm.servicesOffered.map((service, index) => (<span key={index} className="tag"> {service} </span>))
-                        : hhm.servicesOffered.includes(',') 
-                        ? hhm.servicesOffered.split(',').map((service, index) => (<span key={index} className="tag"> {service.trim()} </span>))
-                        : (<span className="tag"> {hhm.servicesOffered} </span>)
+                        : hhm.servicesOffered.includes(',')
+                            ? hhm.servicesOffered.split(',').map((service, index) => (<span key={index} className="tag"> {service.trim()} </span>))
+                            : (<span className="tag"> {hhm.servicesOffered} </span>)
                 }
 
-                </div> </div>)
+                    </div> </div>)
             }
 
             {
@@ -471,8 +493,8 @@ const HHMPublicProfilePage = () => {
                     Array.isArray(hhm.certifications)
                         ? hhm.certifications.map((cert, index) => (<li key={index}>✓ {cert}</li>))
                         : hhm.certifications.includes(',')
-                        ? hhm.certifications.split(',').map((cert, index) => (<li key={index}>✓ {cert.trim()}</li>))
-                        : (<li>✓ {hhm.certifications}</li>)
+                            ? hhm.certifications.split(',').map((cert, index) => (<li key={index}>✓ {cert.trim()}</li>))
+                            : (<li>✓ {hhm.certifications}</li>)
                 }
 
                 </ul> </div>)

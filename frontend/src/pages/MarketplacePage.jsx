@@ -21,12 +21,12 @@ const MarketplacePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterVariety, setFilterVariety] = useState('');
   const [sortBy, setSortBy] = useState('createdAt');
-  
+
   // My Listings states
   const [myListings, setMyListings] = useState([]);
   const [showMyListings, setShowMyListings] = useState(false);
   const [myListingsLoading, setMyListingsLoading] = useState(false);
-  
+
   // My Orders states
   const [myOrders, setMyOrders] = useState([]);
   const [showMyOrders, setShowMyOrders] = useState(false);
@@ -39,7 +39,7 @@ const MarketplacePage = () => {
 
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setError('No authentication token found. Please login again.');
         return;
@@ -67,7 +67,7 @@ const MarketplacePage = () => {
       setListings(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (err) {
       console.error('Error fetching listings:', err);
-      
+
       // Handle authentication errors by redirecting to login
       if (err.response?.status === 401 || err.response?.status === 403) {
         localStorage.removeItem('token');
@@ -75,9 +75,9 @@ const MarketplacePage = () => {
         window.location.href = '/login';
         return;
       }
-      
+
       setError(
-        err.response?.data?.message || 
+        err.response?.data?.message ||
         'Failed to fetch listings. Please try again.'
       );
     } finally {
@@ -95,7 +95,7 @@ const MarketplacePage = () => {
 
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         throw new Error('No authentication token found. Please login again.');
       }
@@ -111,15 +111,15 @@ const MarketplacePage = () => {
       });
 
       console.log('Created listing response:', response.data);
-      
+
       // Add new listing to the state (at the beginning since it's newest)
       if (response.data.data && response.data.data._id) {
         setListings(prev => [response.data.data, ...prev]);
       }
-      
+
       // Close modal
       setIsModalOpen(false);
-      
+
       // Show success message
       alert('🎉 Listing created successfully!');
     } catch (err) {
@@ -137,7 +137,7 @@ const MarketplacePage = () => {
       alert('Listing details not available');
       return;
     }
-    
+
     // Navigate to listing details page with listing data
     navigate(`/farmer/listing/${listing._id}`, {
       state: { listing }
@@ -147,7 +147,7 @@ const MarketplacePage = () => {
   const fetchMyListings = async () => {
     try {
       setMyListingsLoading(true);
-      
+
       const token = localStorage.getItem('token');
       if (!token) {
         console.log('No auth token found');
@@ -200,7 +200,7 @@ const MarketplacePage = () => {
   const fetchMyOrders = async () => {
     try {
       setMyOrdersLoading(true);
-      
+
       const token = localStorage.getItem('token');
       if (!token) {
         console.log('No auth token found');
@@ -237,8 +237,8 @@ const MarketplacePage = () => {
 
   const handleEditListing = (listing) => {
     // Navigate to ListingDetailsPage where edit functionality is implemented
-    navigate(`/farmer/listing/${listing._id}`, { 
-      state: { listing } 
+    navigate(`/farmer/listing/${listing._id}`, {
+      state: { listing }
     });
   };
 
@@ -305,16 +305,16 @@ const MarketplacePage = () => {
       if (response.data.success) {
         // Show detailed result message
         let message = '✅ Order accepted successfully!';
-        
+
         if (response.data.order && response.data.order.isPartialFulfillment) {
           message = `🔄 Order partially fulfilled!\n`;
           message += `Original request: ${response.data.order.originalQuantityRequested} tons\n`;
           message += `Fulfilled amount: ${response.data.order.orderDetails.quantityWanted} tons\n`;
           message += `Adjusted total: ₹${response.data.order.orderDetails.totalAmount.toLocaleString()}`;
         }
-        
+
         alert(message);
-        
+
         // Refresh orders to show updated status
         await fetchMyOrders();
       } else {
@@ -355,11 +355,11 @@ const MarketplacePage = () => {
 
   // Filter listings based on search term
   const filteredListings = listings.filter(listing => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       listing.crop_variety.toLowerCase().includes(searchTerm.toLowerCase()) ||
       listing.location.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     return matchesSearch;
   });
 
@@ -368,7 +368,15 @@ const MarketplacePage = () => {
       {/* Header */}
       <div className="marketplace-header">
         <div className="header-content">
-          <h1>🌾 Sugarcane Marketplace</h1>
+          <h1>
+            <svg style={{ display: 'inline-block', width: '36px', height: '36px', marginRight: '10px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L12 8M12 8L9 11M12 8L15 11" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M8 8L8 14M16 8L16 14" strokeWidth="2" strokeLinecap="round" />
+              <path d="M12 16L12 22" strokeWidth="2" strokeLinecap="round" />
+              <path d="M6 18C6 16 7 14 8 14M18 18C18 16 17 14 16 14" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            Sugarcane Marketplace
+          </h1>
           <p className="page-subtitle">Discover and trade quality sugarcane crops</p>
         </div>
       </div>
@@ -381,7 +389,7 @@ const MarketplacePage = () => {
           </button>
           <input
             type="text"
-            placeholder="🔍 Search by title, variety, or location..."
+            placeholder="Search by title, variety, or location..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
@@ -397,7 +405,7 @@ const MarketplacePage = () => {
             <option value="harvest">Sort by: Harvest Date</option>
           </select>
         </div>
-        
+
         <div className="filter-controls">
           <select
             value={filterVariety}
@@ -411,28 +419,28 @@ const MarketplacePage = () => {
             <option value="Co 62175">Co 62175</option>
           </select>
 
-          <button 
+          <button
             className="action-btn all-listing-btn"
             onClick={showAllListings}
           >
             📋 All Listing
           </button>
-          
-          <button 
+
+          <button
             className="action-btn add-listing-btn"
             onClick={() => setIsModalOpen(true)}
           >
             ➕ Add Listing
           </button>
-          
-          <button 
+
+          <button
             className="action-btn my-listing-btn"
             onClick={viewMyListings}
           >
             👤 My Listing
           </button>
-          
-          <button 
+
+          <button
             className="action-btn my-orders-btn"
             onClick={viewMyOrders}
           >
@@ -452,7 +460,7 @@ const MarketplacePage = () => {
               <span className="listings-count">({myListings.length} listings)</span>
             )}
           </div>
-          
+
           {myListingsLoading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
@@ -463,7 +471,7 @@ const MarketplacePage = () => {
               <div className="empty-icon">📝</div>
               <h3>No listings yet</h3>
               <p>You haven't created any listings yet. Create your first listing to get started!</p>
-              <button 
+              <button
                 className="create-first-listing-btn"
                 onClick={() => setIsModalOpen(true)}
               >
@@ -482,7 +490,7 @@ const MarketplacePage = () => {
                         {listing.status.toUpperCase()}
                       </span>
                     </div>
-                    
+
                     <div className="my-listing-details">
                       <div className="my-listing-detail">
                         <span>Variety</span>
@@ -501,21 +509,21 @@ const MarketplacePage = () => {
                         <span><strong>{formatPrice(totalValue)}</strong></span>
                       </div>
                     </div>
-                    
+
                     <div className="my-listing-actions">
-                      <button 
+                      <button
                         className="view-details-btn"
                         onClick={() => handleViewDetails(listing)}
                       >
                         👁️ View Details
                       </button>
-                      <button 
+                      <button
                         className="edit-btn"
                         onClick={() => handleEditListing(listing)}
                       >
                         ✏️ Edit
                       </button>
-                      <button 
+                      <button
                         className="delete-btn"
                         onClick={() => handleDeleteListing(listing._id, listing.title)}
                       >
@@ -534,14 +542,21 @@ const MarketplacePage = () => {
       {showMyOrders && (
         <div className="my-orders-section">
           <div className="my-orders-header">
-            <h2>📦 My Orders</h2>
+            <h2>
+              <svg style={{ display: 'inline-block', width: '28px', height: '28px', marginRight: '8px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" strokeWidth="2" />
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96" strokeWidth="2" />
+                <line x1="12" y1="22.08" x2="12" y2="12" strokeWidth="2" />
+              </svg>
+              My Orders
+            </h2>
             {myOrdersLoading ? (
               <div className="my-orders-loading">Loading...</div>
             ) : (
               <span className="orders-count">({myOrders.length} orders)</span>
             )}
           </div>
-          
+
           {myOrdersLoading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
@@ -558,12 +573,19 @@ const MarketplacePage = () => {
               {myOrders.map((order) => (
                 <div key={order._id} className="my-order-card">
                   <div className="my-order-header">
-                    <h3>🌾 {order.orderDetails?.quantityWanted || 'N/A'} tons</h3>
+                    <h3>
+                      <svg style={{ display: 'inline-block', width: '24px', height: '24px', marginRight: '6px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L12 8M12 8L9 11M12 8L15 11" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M8 8L8 14M16 8L16 14" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M12 16L12 22" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                      {order.orderDetails?.quantityWanted || 'N/A'} tons
+                    </h3>
                     <span className={`my-order-status status-${order.status}`}>
                       {order.status.toUpperCase()}
                     </span>
                   </div>
-                  
+
                   <div className="my-order-details">
                     <div className="my-order-detail">
                       <span>Buyer</span>
@@ -607,16 +629,16 @@ const MarketplacePage = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   {order.status === 'pending' && (
                     <div className="my-order-actions">
-                      <button 
+                      <button
                         className="accept-order-btn"
                         onClick={() => handleAcceptOrder(order.orderId)}
                       >
                         ✅ Accept Order
                       </button>
-                      <button 
+                      <button
                         className="reject-order-btn"
                         onClick={() => handleRejectOrder(order.orderId)}
                       >
@@ -624,7 +646,7 @@ const MarketplacePage = () => {
                       </button>
                     </div>
                   )}
-                  
+
                   <div className="my-order-timestamp">
                     <small>Created: {new Date(order.createdAt).toLocaleDateString()}</small>
                   </div>
@@ -638,133 +660,152 @@ const MarketplacePage = () => {
       {/* Listings Section - Only show when not viewing My Listings or My Orders */}
       {!showMyListings && !showMyOrders && (
         <div className="listings-section">
-        {loading ? (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading marketplace listings...</p>
-          </div>
-        ) : error ? (
-          <div className="error-container">
-            <div className="error-icon">⚠️</div>
-            <p className="error-message">{error}</p>
-            <button onClick={fetchListings} className="retry-button">
-              Try Again
-            </button>
-          </div>
-        ) : filteredListings.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">📦</div>
-            <h3>No listings found</h3>
-            <p>
-              {listings.length === 0 
-                ? "Be the first to create a listing in the marketplace!"
-                : "Try adjusting your search or filters to find more listings."
-              }
-            </p>
-            <button 
-              className="create-first-listing-btn"
-              onClick={() => setIsModalOpen(true)}
-            >
-              Create Your First Listing
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="listings-header">
-              <h2>Available Listings ({filteredListings.length})</h2>
+          {loading ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p>Loading marketplace listings...</p>
             </div>
-            
-            <div className="listings-grid">
-              {filteredListings.map((listing) => {
-                const daysUntilHarvest = getDaysUntilHarvest(listing.harvest_availability_date);
-                const totalValue = listing.quantity_in_tons * listing.expected_price_per_ton;
-                
-                return (
-                  <div key={listing._id} className="listing-card">
-                    <div className="listing-header">
-                      <h3 className="listing-title">{listing.title}</h3>
-                      <div className="status-badge active">✅ Active</div>
-                    </div>
-
-                    <div className="listing-content">
-                      <div className="crop-info">
-                        <div className="crop-variety">
-                          <span className="label">🌾 Variety:</span>
-                          <span className="value">{listing.crop_variety}</span>
-                        </div>
-                      </div>
-
-                      <div className="listing-details">
-                        <div className="detail-row">
-                          <div className="detail-item">
-                            <span className="detail-icon">⚖️</span>
-                            <span className="detail-text">
-                              <strong>{listing.quantity_in_tons}</strong> tons
-                            </span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="detail-icon">💰</span>
-                            <span className="detail-text">
-                              <strong>{formatPrice(listing.expected_price_per_ton)}</strong>/ton
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="detail-row">
-                          <div className="detail-item">
-                            <span className="detail-icon">📍</span>
-                            <span className="detail-text">{listing.location}</span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="detail-icon">📅</span>
-                            <span className="detail-text">
-                              {daysUntilHarvest > 0 
-                                ? `${daysUntilHarvest} days`
-                                : 'Available now'
-                              }
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="total-value">
-                          <span className="total-label">Total Value:</span>
-                          <span className="total-amount">{formatPrice(totalValue)}</span>
-                        </div>
-
-                        {listing.description && (
-                          <div className="description">
-                            <p>{listing.description}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="listing-footer">
-                      <div className="seller-info">
-                        <div className="seller-name">
-                          👤 {listing.farmer_id?.name || 'Unknown Farmer'}
-                        </div>
-                        <div className="listing-date">
-                          Posted {formatDate(listing.createdAt)}
-                        </div>
-                      </div>
-                      
-                      <div className="listing-actions">
-                        <button 
-                          className="view-details-btn"
-                          onClick={() => handleViewDetails(listing)}
-                        >
-                          �️ View Details
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+          ) : error ? (
+            <div className="error-container">
+              <div className="error-icon">⚠️</div>
+              <p className="error-message">{error}</p>
+              <button onClick={fetchListings} className="retry-button">
+                Try Again
+              </button>
             </div>
-          </>
-        )}
-      </div>
+          ) : filteredListings.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">
+                <svg style={{ width: '64px', height: '64px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" strokeWidth="2" />
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96" strokeWidth="2" />
+                  <line x1="12" y1="22.08" x2="12" y2="12" strokeWidth="2" />
+                </svg>
+              </div>
+              <h3>No listings found</h3>
+              <p>
+                {listings.length === 0
+                  ? "Be the first to create a listing in the marketplace!"
+                  : "Try adjusting your search or filters to find more listings."
+                }
+              </p>
+              <button
+                className="create-first-listing-btn"
+                onClick={() => setIsModalOpen(true)}
+              >
+                Create Your First Listing
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="listings-header">
+                <h2>Available Listings ({filteredListings.length})</h2>
+              </div>
+
+              <div className="listings-grid">
+                {filteredListings.map((listing) => {
+                  const daysUntilHarvest = getDaysUntilHarvest(listing.harvest_availability_date);
+                  const totalValue = listing.quantity_in_tons * listing.expected_price_per_ton;
+
+                  return (
+                    <div key={listing._id} className="listing-card">
+                      <div className="listing-header">
+                        <h3 className="listing-title">{listing.title}</h3>
+                        <div className="status-badge active">✅ Active</div>
+                      </div>
+
+                      <div className="listing-content">
+                        <div className="crop-info">
+                          <div className="crop-variety">
+                            <span className="label">
+                              <svg style={{ display: 'inline-block', width: '16px', height: '16px', marginRight: '4px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2L12 8M12 8L9 11M12 8L15 11" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M8 8L8 14M16 8L16 14" strokeWidth="2" strokeLinecap="round" />
+                              </svg>
+                              Variety:
+                            </span>
+                            <span className="value">{listing.crop_variety}</span>
+                          </div>
+                        </div>
+
+                        <div className="listing-details">
+                          <div className="detail-row">
+                            <div className="detail-item">
+                              <span className="detail-icon">⚖️</span>
+                              <span className="detail-text">
+                                <strong>{listing.quantity_in_tons}</strong> tons
+                              </span>
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-icon">
+                                <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                                  <line x1="12" y1="6" x2="12" y2="8" strokeWidth="2" strokeLinecap="round" />
+                                  <path d="M15 9.5A3.5 3.5 0 0 0 11.5 6H10a3.5 3.5 0 0 0 0 7h4a3.5 3.5 0 0 1 0 7h-1.5A3.5 3.5 0 0 1 9 17" strokeWidth="2" strokeLinecap="round" />
+                                  <line x1="12" y1="16" x2="12" y2="18" strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+                              </span>
+                              <span className="detail-text">
+                                <strong>{formatPrice(listing.expected_price_per_ton)}</strong>/ton
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="detail-row">
+                            <div className="detail-item">
+                              <span className="detail-icon">📍</span>
+                              <span className="detail-text">{listing.location}</span>
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-icon">📅</span>
+                              <span className="detail-text">
+                                {daysUntilHarvest > 0
+                                  ? `${daysUntilHarvest} days`
+                                  : 'Available now'
+                                }
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="total-value">
+                            <span className="total-label">Total Value:</span>
+                            <span className="total-amount">{formatPrice(totalValue)}</span>
+                          </div>
+
+                          {listing.description && (
+                            <div className="description">
+                              <p>{listing.description}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="listing-footer">
+                        <div className="seller-info">
+                          <div className="seller-name">
+                            👤 {listing.farmer_id?.name || 'Unknown Farmer'}
+                          </div>
+                          <div className="listing-date">
+                            Posted {formatDate(listing.createdAt)}
+                          </div>
+                        </div>
+
+                        <div className="listing-actions">
+                          <button
+                            className="view-details-btn"
+                            onClick={() => handleViewDetails(listing)}
+                          >
+                            �️ View Details
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
       )}
 
       {/* Modal for Create Listing Form */}
@@ -773,7 +814,7 @@ const MarketplacePage = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Create New Listing</h2>
-              <button 
+              <button
                 className="close-btn"
                 onClick={() => setIsModalOpen(false)}
                 disabled={isSubmitting}
@@ -781,9 +822,9 @@ const MarketplacePage = () => {
                 ✕
               </button>
             </div>
-            
+
             <div className="modal-body">
-              <CreateListingForm 
+              <CreateListingForm
                 onSubmit={handleCreateListing}
                 isSubmitting={isSubmitting}
               />

@@ -89,10 +89,10 @@ const FactoryAnalysisDebug = () => {
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
       <h1>🔧 Factory Analysis Debug Panel</h1>
-      
+
       <div style={{ marginBottom: '2rem' }}>
-        <button 
-          onClick={runDiagnostics} 
+        <button
+          onClick={runDiagnostics}
           disabled={loading}
           style={{
             background: '#4caf50',
@@ -104,10 +104,26 @@ const FactoryAnalysisDebug = () => {
             marginRight: '1rem'
           }}
         >
-          {loading ? '🔄 Running Tests...' : '🧪 Run Diagnostics'}
+          {loading ? (
+            <>
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                <polyline points="23 4 23 10 17 10" />
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+              </svg>
+              Running Tests...
+            </>
+          ) : (
+            <>
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                <path d="M9 11l3 3L22 4" />
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+              </svg>
+              Run Diagnostics
+            </>
+          )}
         </button>
-        
-        <button 
+
+        <button
           onClick={clearStorage}
           style={{
             background: '#ff9800',
@@ -153,7 +169,12 @@ const FactoryAnalysisDebug = () => {
       </div>
 
       <div style={{ marginTop: '2rem', padding: '1rem', background: '#fff3e0', borderRadius: '4px' }}>
-        <h3>🛠️ Common Solutions:</h3>
+        <h3>
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+          </svg>
+          Common Solutions:
+        </h3>
         <ol>
           <li><strong>If "Route not found":</strong> Backend server might not be running</li>
           <li><strong>If "401 Unauthorized":</strong> Token is missing or invalid</li>

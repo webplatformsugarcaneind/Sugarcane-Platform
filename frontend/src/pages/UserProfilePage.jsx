@@ -11,7 +11,7 @@ import axios from 'axios';
 const UserProfilePage = () => {
     const { userId } = useParams();
     const navigate = useNavigate();
-    
+
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -22,11 +22,11 @@ const UserProfilePage = () => {
             try {
                 setLoading(true);
                 setError(null);
-                
+
                 console.log('🔍 Fetching profile for user ID:', userId);
-                
+
                 const response = await axios.get(`/api/users/profile/${userId}`);
-                
+
                 if (response.data.success) {
                     setUser(response.data.data);
                     console.log('✅ Profile data loaded:', response.data.data);
@@ -163,7 +163,7 @@ const UserProfilePage = () => {
                     <p style={{ color: '#7f8c8d', margin: '0 0 2rem 0', fontSize: '1.1rem' }}>
                         {error || 'Unable to load user profile information.'}
                     </p>
-                    <button 
+                    <button
                         onClick={handleGoBack}
                         style={{
                             background: 'linear-gradient(135deg, #3498db, #2980b9)',
@@ -194,7 +194,7 @@ const UserProfilePage = () => {
                 padding: '2rem',
                 marginBottom: '2rem'
             }}>
-                <button 
+                <button
                     onClick={handleGoBack}
                     style={{
                         background: '#6c757d',
@@ -209,7 +209,7 @@ const UserProfilePage = () => {
                 >
                     ← Back
                 </button>
-                
+
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -232,7 +232,7 @@ const UserProfilePage = () => {
                     }}>
                         {roleStyles.icon}
                     </div>
-                    
+
                     <div style={{ flex: 1 }}>
                         <h1 style={{
                             fontSize: '2.5rem',
@@ -310,7 +310,7 @@ const UserProfilePage = () => {
                                 <div style={{ fontSize: '1rem', color: '#2c3e50', fontWeight: '500' }}>{user.email}</div>
                             </div>
                         </div>
-                        
+
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -325,7 +325,7 @@ const UserProfilePage = () => {
                                 <div style={{ fontSize: '1rem', color: '#2c3e50', fontWeight: '500' }}>{user.phone}</div>
                             </div>
                         </div>
-                        
+
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -361,7 +361,7 @@ const UserProfilePage = () => {
                 justifyContent: 'center',
                 flexWrap: 'wrap'
             }}>
-                <button 
+                <button
                     onClick={handleRoleSpecificAction}
                     style={{
                         background: roleStyles.gradient,
@@ -389,8 +389,8 @@ const UserProfilePage = () => {
                 >
                     {roleStyles.icon} Connect
                 </button>
-                
-                <button 
+
+                <button
                     onClick={handleContact}
                     style={{
                         background: 'linear-gradient(135deg, #3498db, #2980b9)',
@@ -418,7 +418,7 @@ const UserProfilePage = () => {
                 >
                     📧 Email
                 </button>
-                
+
                 {user.phone && (
                     <a
                         href={`tel:${user.phone}`}
@@ -450,8 +450,8 @@ const UserProfilePage = () => {
                         📱 Call
                     </a>
                 )}
-                
-                <button 
+
+                <button
                     onClick={handleGoBack}
                     style={{
                         background: 'transparent',
@@ -539,7 +539,7 @@ const RoleSpecificInfo = ({ user }) => {
                 🌾 Farm Information
             </h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                <InfoItem icon="🚜" label="Farm Size" value={user.farmSize} />
+                <InfoItem icon={<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><rect x="3" y="3" width="7" height="9" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="12" width="7" height="9" /><rect x="3" y="16" width="7" height="5" /></svg>} label="Farm Size" value={user.farmSize} />
                 <InfoItem icon="📊" label="Experience" value={user.farmingExperience} />
                 <InfoItem icon="🌱" label="Crop Types" value={user.cropTypes} />
                 <InfoItem icon="💧" label="Irrigation" value={user.irrigationType} />
@@ -571,7 +571,7 @@ const RoleSpecificInfo = ({ user }) => {
                 <InfoItem icon="📊" label="Experience" value={user.managementExperience} />
                 <InfoItem icon="👥" label="Team Size" value={user.teamSize} />
                 <InfoItem icon="⚙️" label="Operations" value={user.managementOperations} />
-                <InfoItem icon="🛠️" label="Services" value={user.servicesOffered} />
+                <InfoItem icon={<svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>} label="Services" value={user.servicesOffered} />
             </div>
         </div>
     );

@@ -77,7 +77,14 @@ const HHMDashboardPage = () => {
     <div style={styles.container}>
       {/* Header Section */}
       <div style={styles.header}>
-        <h1 style={styles.title}>👨‍💼 HHM Dashboard</h1>
+        <h1 style={styles.title}>
+          <svg style={{ display: 'inline-block', width: '32px', height: '32px', marginRight: '8px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="3" y="8" width="18" height="12" rx="2" strokeWidth="2" />
+            <path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" strokeWidth="2" strokeLinecap="round" />
+            <line x1="12" y1="12" x2="12" y2="16" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          HHM Dashboard
+        </h1>
         <p style={styles.subtitle}>
           Welcome to your Hub Head Manager dashboard. Manage job schedules, applications, and farmer requests.
         </p>
@@ -85,17 +92,28 @@ const HHMDashboardPage = () => {
 
       {/* Tab Navigation */}
       <div style={styles.tabNavigation}>
-        <button 
-          style={activeTab === 'overview' ? {...styles.tabButton, ...styles.activeTabButton} : styles.tabButton}
+        <button
+          style={activeTab === 'overview' ? { ...styles.tabButton, ...styles.activeTabButton } : styles.tabButton}
           onClick={() => setActiveTab('overview')}
         >
-          📊 Overview
+          <svg style={{ display: 'inline-block', width: '20px', height: '20px', marginRight: '6px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="3" y="10" width="4" height="10" rx="1" strokeWidth="2" />
+            <rect x="10" y="6" width="4" height="14" rx="1" strokeWidth="2" />
+            <rect x="17" y="13" width="4" height="7" rx="1" strokeWidth="2" />
+          </svg>
+          Overview
         </button>
-        <button 
-          style={activeTab === 'job-requests' ? {...styles.tabButton, ...styles.activeTabButton} : styles.tabButton}
+        <button
+          style={activeTab === 'job-requests' ? { ...styles.tabButton, ...styles.activeTabButton } : styles.tabButton}
           onClick={() => setActiveTab('job-requests')}
         >
-          🌾 Farmer Job Requests
+          <svg style={{ display: 'inline-block', width: '20px', height: '20px', marginRight: '6px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L12 8M12 8L9 11M12 8L15 11" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M8 8L8 14M16 8L16 14" strokeWidth="2" strokeLinecap="round" />
+            <path d="M12 16L12 22" strokeWidth="2" strokeLinecap="round" />
+            <path d="M6 18C6 16 7 14 8 14M18 18C18 16 17 14 16 14" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          Farmer Job Requests
         </button>
       </div>
 
@@ -107,7 +125,14 @@ const HHMDashboardPage = () => {
             <div style={styles.statsGrid}>
               {/* Schedules Card */}
               <div style={styles.statCard}>
-                <div style={styles.statIcon}>📅</div>
+                <div style={styles.statIcon}>
+                  <svg style={{ width: '32px', height: '32px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" strokeWidth="2" />
+                    <line x1="3" y1="9" x2="21" y2="9" strokeWidth="2" />
+                    <line x1="8" y1="2" x2="8" y2="6" strokeWidth="2" strokeLinecap="round" />
+                    <line x1="16" y1="2" x2="16" y2="6" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </div>
                 <div style={styles.statContent}>
                   <h3 style={styles.statTitle}>Job Schedules</h3>
                   <div style={styles.statNumbers}>
@@ -129,7 +154,14 @@ const HHMDashboardPage = () => {
 
               {/* Applications Card */}
               <div style={styles.statCard}>
-                <div style={styles.statIcon}>📋</div>
+                <div style={styles.statIcon}>
+                  <svg style={{ width: '32px', height: '32px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="8" y="2" width="8" height="4" rx="1" strokeWidth="2" />
+                    <path d="M6 4h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" strokeWidth="2" />
+                    <line x1="9" y1="12" x2="15" y2="12" strokeWidth="2" strokeLinecap="round" />
+                    <line x1="9" y1="16" x2="15" y2="16" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </div>
                 <div style={styles.statContent}>
                   <h3 style={styles.statTitle}>Applications</h3>
                   <div style={styles.statNumbers}>
@@ -214,7 +246,13 @@ const HHMDashboardPage = () => {
                   style={styles.actionCard}
                   onClick={() => navigate('/hhm/performance')}
                 >
-                  <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>📊</div>
+                  <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
+                    <svg style={{ width: '40px', height: '40px' }} fill="none" stroke="white" viewBox="0 0 24 24">
+                      <rect x="3" y="10" width="4" height="10" rx="1" strokeWidth="2" />
+                      <rect x="10" y="6" width="4" height="14" rx="1" strokeWidth="2" />
+                      <rect x="17" y="13" width="4" height="7" rx="1" strokeWidth="2" />
+                    </svg>
+                  </div>
                   <h3 style={styles.actionTitle}>My Performance</h3>
                   <p style={styles.actionDescription}>Track your success metrics and KPIs</p>
                   <button style={styles.actionButton}>View Performance →</button>
@@ -239,7 +277,14 @@ const HHMDashboardPage = () => {
                   style={styles.actionCard}
                   onClick={() => navigate('/hhm/farmers')}
                 >
-                  <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>🌾</div>
+                  <div style={{ ...styles.actionIcon, background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
+                    <svg style={{ width: '40px', height: '40px' }} fill="none" stroke="white" viewBox="0 0 24 24">
+                      <path d="M12 2L12 8M12 8L9 11M12 8L15 11" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M8 8L8 14M16 8L16 14" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M12 16L12 22" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M6 18C6 16 7 14 8 14M18 18C18 16 17 14 16 14" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </div>
                   <h3 style={styles.actionTitle}>Farmer Directory</h3>
                   <p style={styles.actionDescription}>Browse and connect with farmers in your network</p>
                   <button style={styles.actionButton}>View Farmers →</button>
@@ -251,7 +296,13 @@ const HHMDashboardPage = () => {
             <div style={styles.recentActivity}>
               <h2 style={styles.sectionTitle}>Recent Activity</h2>
               <div style={styles.activityPlaceholder}>
-                <div style={styles.placeholderIcon}>📊</div>
+                <div style={styles.placeholderIcon}>
+                  <svg style={{ width: '48px', height: '48px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="3" y="10" width="4" height="10" rx="1" strokeWidth="2" />
+                    <rect x="10" y="6" width="4" height="14" rx="1" strokeWidth="2" />
+                    <rect x="17" y="13" width="4" height="7" rx="1" strokeWidth="2" />
+                  </svg>
+                </div>
                 <p style={styles.placeholderText}>Recent activity tracking is coming soon!</p>
                 <p style={styles.placeholderSubtext}>
                   We're building a comprehensive activity feed to help you track applications,

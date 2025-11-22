@@ -20,18 +20,18 @@ const FactoriesPage = () => {
       try {
         setLoading(true);
         const response = await axios.get('/api/public/factories');
-        
+
         // Check if response has the expected structure
         if (response.data && response.data.success && response.data.data && response.data.data.factories) {
           const factoriesData = response.data.data.factories;
-          
+
           setFactories(factoriesData);
           setFilteredFactories(factoriesData);
-          
+
           // Extract unique locations for filter dropdown
           const uniqueLocations = [...new Set(factoriesData.map(factory => factory.location))];
           setLocations(uniqueLocations.sort());
-          
+
           setError(null);
         } else {
           throw new Error('Invalid response structure');
@@ -39,7 +39,7 @@ const FactoriesPage = () => {
       } catch (err) {
         console.error('Error fetching factories:', err);
         setError('Failed to load factories. Please try again later.');
-        
+
         // Mock data with real Maharashtra sugar factories - using CSS-based factory images
         const mockFactories = [
           {
@@ -133,10 +133,10 @@ const FactoriesPage = () => {
             imageUrl: null // Will use CSS factory icon
           }
         ];
-        
+
         setFactories(mockFactories);
         setFilteredFactories(mockFactories);
-        
+
         const uniqueLocations = [...new Set(mockFactories.map(factory => factory.location))];
         setLocations(uniqueLocations.sort());
       } finally {
@@ -212,7 +212,12 @@ const FactoriesPage = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
               />
-              <span className="search-icon">🔍</span>
+              <span className="search-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+              </span>
             </div>
           </div>
 
@@ -276,7 +281,18 @@ const FactoriesPage = () => {
         ) : (
           <div className="no-results">
             <div className="no-results-content">
-              <span className="no-results-icon">🏭</span>
+              <span className="no-results-icon">
+                <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" strokeWidth="2" fill="none">
+                  <rect x="3" y="8" width="18" height="13" rx="1" />
+                  <path d="M8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3" />
+                  <line x1="7" y1="12" x2="7" y2="12.01" />
+                  <line x1="11" y1="12" x2="11" y2="12.01" />
+                  <line x1="15" y1="12" x2="15" y2="12.01" />
+                  <line x1="7" y1="16" x2="7" y2="16.01" />
+                  <line x1="11" y1="16" x2="11" y2="16.01" />
+                  <line x1="15" y1="16" x2="15" y2="16.01" />
+                </svg>
+              </span>
               <h3>No factories found</h3>
               <p>
                 {searchTerm || locationFilter

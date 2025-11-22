@@ -25,7 +25,7 @@ const LaborManagementPage = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
-  
+
   // Hire Labour tab state
   const [workers, setWorkers] = useState([]);
   const [filteredWorkers, setFilteredWorkers] = useState([]);
@@ -88,16 +88,16 @@ const LaborManagementPage = () => {
     try {
       setLoadingApplications(true);
       setError(null);
-      
+
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setError('No authentication token found. Please login again.');
         return;
       }
 
       console.log('🔄 Fetching applications from backend...');
-      
+
       const response = await axios.get('/api/hhm/applications', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -106,10 +106,10 @@ const LaborManagementPage = () => {
       console.log('Received applications from API:', response.data);
 
       console.log('✅ Applications fetched successfully:', response.data);
-      
+
       // Extract the applications array from response
       const applicationsData = response.data.data || response.data;
-      
+
       // Map the backend response to match the display format
       // Backend sends: app.worker.name, app.schedule.title
       // Frontend expects: app.workerId.name, app.scheduleId.title
@@ -149,10 +149,10 @@ const LaborManagementPage = () => {
 
       console.log('📊 Mapped applications:', mappedApplications.length, 'applications');
       setApplications(mappedApplications);
-      
+
     } catch (err) {
       console.error('❌ Error fetching applications:', err);
-      
+
       // Set appropriate error message
       if (err.response?.status === 401) {
         setError('Authentication failed. Please login again.');
@@ -165,7 +165,7 @@ const LaborManagementPage = () => {
       } else {
         setError('An unexpected error occurred while loading applications.');
       }
-      
+
       setApplications([]);
     } finally {
       setLoadingApplications(false);
@@ -177,7 +177,7 @@ const LaborManagementPage = () => {
     try {
       setLoadingWorkers(true);
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -188,11 +188,11 @@ const LaborManagementPage = () => {
       });
 
       console.log('✅ Backend response:', response.data);
-      
+
       // Map backend data to frontend format
       const backendWorkers = response.data.data || response.data || [];
       console.log('👥 Workers from backend:', backendWorkers.length, 'workers');
-      
+
       const mappedWorkers = backendWorkers.map(worker => ({
         _id: worker.workerId || worker._id,
         name: worker.name,
@@ -211,7 +211,7 @@ const LaborManagementPage = () => {
         profileImage: worker.profileImage,
         isVerified: worker.isVerified
       }));
-      
+
       console.log('✅ Mapped workers:', mappedWorkers);
       setWorkers(mappedWorkers);
       setFilteredWorkers(mappedWorkers);
@@ -313,7 +313,7 @@ const LaborManagementPage = () => {
     // Apply skill filter
     if (selectedSkillFilter) {
       filtered = filtered.filter(worker =>
-        worker.skills?.some(skill => 
+        worker.skills?.some(skill =>
           skill.toLowerCase().includes(selectedSkillFilter.toLowerCase())
         )
       );
@@ -337,7 +337,7 @@ const LaborManagementPage = () => {
 
     // Apply status filter
     if (applicationStatusFilter && applicationStatusFilter !== 'all') {
-      filtered = filtered.filter(application => 
+      filtered = filtered.filter(application =>
         application.status === applicationStatusFilter
       );
     }
@@ -350,7 +350,7 @@ const LaborManagementPage = () => {
     try {
       setLoadingSchedules(true);
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -364,7 +364,7 @@ const LaborManagementPage = () => {
       console.log('✅ Schedules response:', response.data);
       const schedulesData = response.data.data || response.data || [];
       setMySchedules(schedulesData);
-      
+
     } catch (err) {
       console.error('❌ Error fetching schedules:', err.response?.data || err.message);
       alert('Failed to load job schedules. Please try again.');
@@ -380,7 +380,7 @@ const LaborManagementPage = () => {
     setShowInviteModal(true);
     setSelectedScheduleId('');
     setInvitationMessage('');
-    
+
     // Fetch schedules when modal opens
     await fetchSchedules();
   };
@@ -409,7 +409,7 @@ const LaborManagementPage = () => {
     try {
       setSendingInvitation(true);
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -430,10 +430,10 @@ const LaborManagementPage = () => {
       });
 
       console.log('✅ Invitation sent:', response.data);
-      
+
       alert(`✅ Invitation sent successfully to ${selectedWorker.name}!`);
       handleCloseInviteModal();
-      
+
     } catch (err) {
       console.error('❌ Error sending invitation:', err.response?.data || err.message);
       const errorMessage = err.response?.data?.message || 'Failed to send invitation. Please try again.';
@@ -448,7 +448,7 @@ const LaborManagementPage = () => {
     try {
       setLoadingMyLabours(true);
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -459,10 +459,10 @@ const LaborManagementPage = () => {
       });
 
       console.log('✅ Backend response for my labours:', response.data);
-      
+
       const approvedApplications = response.data.data || response.data || [];
       console.log('👥 Approved labours from backend:', approvedApplications.length, 'workers');
-      
+
       // Transform applications to labour data
       const laboursData = approvedApplications.map(app => ({
         _id: app.worker?.id || app._id,
@@ -485,7 +485,7 @@ const LaborManagementPage = () => {
         expectedWage: app.expectedWage,
         availability: app.availability
       }));
-      
+
       console.log('✅ Mapped labours:', laboursData);
       setMyLabours(laboursData);
       setFilteredMyLabours(laboursData);
@@ -519,7 +519,7 @@ const LaborManagementPage = () => {
   const handleApplicationAction = async (applicationId, action) => {
     try {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         alert('⚠️ Authentication required. Please login again.');
         return;
@@ -531,7 +531,7 @@ const LaborManagementPage = () => {
 
       // Make API request to update application status
       const response = await axios.put(
-        `/api/hhm/applications/${applicationId}`, 
+        `/api/hhm/applications/${applicationId}`,
         { status: action },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -576,10 +576,10 @@ const LaborManagementPage = () => {
       }
 
       // Show success message
-      const successMsg = action === 'approved' 
+      const successMsg = action === 'approved'
         ? '✅ Application approved successfully! The worker has been notified.'
         : '❌ Application rejected. The worker has been notified.';
-      
+
       alert(successMsg);
 
       // If approved, refetch the "My Labours" data to update that tab
@@ -589,10 +589,10 @@ const LaborManagementPage = () => {
 
     } catch (err) {
       console.error('❌ Error updating application:', err);
-      
+
       // Show detailed error message
       let errorMsg = 'Failed to update application status. ';
-      
+
       if (err.response?.status === 401) {
         errorMsg = '🔒 Authentication failed. Please login again.';
       } else if (err.response?.status === 403) {
@@ -606,7 +606,7 @@ const LaborManagementPage = () => {
       } else if (err.request) {
         errorMsg = '🌐 Unable to reach the server. Please check your internet connection.';
       }
-      
+
       alert(errorMsg);
     }
   };
@@ -614,18 +614,18 @@ const LaborManagementPage = () => {
   // Handle schedule form submission
   const handleScheduleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Clear previous messages and errors
     setSuccessMessage('');
     setErrorMessage('');
     setFieldErrors({});
-    
+
     try {
       setSubmittingSchedule(true);
-      
+
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setErrorMessage('Authentication required. Please login again.');
         return;
@@ -671,9 +671,9 @@ const LaborManagementPage = () => {
       // Validate dates
       if (!scheduleForm.startDate || !scheduleForm.endDate) {
         setErrorMessage('❌ Both Start Date and End Date are required.');
-        setFieldErrors({ 
-          startDate: !scheduleForm.startDate, 
-          endDate: !scheduleForm.endDate 
+        setFieldErrors({
+          startDate: !scheduleForm.startDate,
+          endDate: !scheduleForm.endDate
         });
         return;
       }
@@ -741,7 +741,7 @@ const LaborManagementPage = () => {
 
       // Make API request to create schedule
       const response = await axios.post('/api/hhm/schedules', scheduleData, {
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
@@ -770,16 +770,16 @@ const LaborManagementPage = () => {
       setTimeout(() => {
         setSuccessMessage('');
       }, 5000);
-      
+
     } catch (err) {
       console.error('❌ Error creating schedule:', err);
-      
+
       // Handle specific error cases
       if (err.response) {
         // Server responded with error
         const errorMsg = err.response.data?.message || 'Failed to create job schedule';
         const errorDetails = err.response.data?.error || '';
-        
+
         if (err.response.status === 401) {
           setErrorMessage('🔒 Authentication failed. Please login again.');
         } else if (err.response.status === 403) {
@@ -802,7 +802,7 @@ const LaborManagementPage = () => {
       setTimeout(() => {
         setErrorMessage('');
       }, 7000);
-      
+
     } finally {
       setSubmittingSchedule(false);
     }
@@ -856,7 +856,7 @@ const LaborManagementPage = () => {
         <div style={styles.errorMessage}>
           <h2>⚠️ Error Loading Data</h2>
           <p>{error}</p>
-          <button 
+          <button
             style={styles.retryButton}
             onClick={() => window.location.reload()}
           >
@@ -899,7 +899,7 @@ const LaborManagementPage = () => {
           }
         `}
       </style>
-      
+
       {/* Header */}
       <div style={styles.header}>
         <h1 style={styles.title}>Labor Management</h1>
@@ -953,7 +953,7 @@ const LaborManagementPage = () => {
               <div style={styles.successAlert}>
                 <span style={styles.alertIcon}>✅</span>
                 <span>{successMessage}</span>
-                <button 
+                <button
                   style={styles.closeAlert}
                   onClick={() => setSuccessMessage('')}
                   aria-label="Close"
@@ -968,7 +968,7 @@ const LaborManagementPage = () => {
               <div style={styles.errorAlert}>
                 <span style={styles.alertIcon}>⚠️</span>
                 <span>{errorMessage}</span>
-                <button 
+                <button
                   style={styles.closeAlert}
                   onClick={() => setErrorMessage('')}
                   aria-label="Close"
@@ -977,7 +977,7 @@ const LaborManagementPage = () => {
                 </button>
               </div>
             )}
-            
+
             <form onSubmit={handleScheduleSubmit} style={styles.form}>
               <div style={styles.formGrid}>
                 <div style={styles.formGroup}>
@@ -1156,7 +1156,7 @@ const LaborManagementPage = () => {
                 Review and respond to job applications from workers
               </p>
             </div>
-            
+
             {loadingApplications ? (
               <div style={styles.loadingSection}>
                 <div style={styles.spinner}></div>
@@ -1166,7 +1166,7 @@ const LaborManagementPage = () => {
               <div style={styles.errorAlert}>
                 <span style={styles.alertIcon}>⚠️</span>
                 <span>{error}</span>
-                <button 
+                <button
                   style={styles.closeAlert}
                   onClick={() => {
                     setError(null);
@@ -1190,26 +1190,26 @@ const LaborManagementPage = () => {
               <div style={styles.applicationsList}>
                 {/* Filter buttons for application status */}
                 <div style={styles.filterButtonGroup}>
-                  <button 
-                    style={applicationStatusFilter === 'all' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+                  <button
+                    style={applicationStatusFilter === 'all' ? { ...styles.filterBtn, ...styles.activeFilterBtn } : styles.filterBtn}
                     onClick={() => setApplicationStatusFilter('all')}
                   >
                     All ({applications.length})
                   </button>
-                  <button 
-                    style={applicationStatusFilter === 'pending' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+                  <button
+                    style={applicationStatusFilter === 'pending' ? { ...styles.filterBtn, ...styles.activeFilterBtn } : styles.filterBtn}
                     onClick={() => setApplicationStatusFilter('pending')}
                   >
                     Pending ({applications.filter(app => app.status === 'pending').length})
                   </button>
-                  <button 
-                    style={applicationStatusFilter === 'approved' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+                  <button
+                    style={applicationStatusFilter === 'approved' ? { ...styles.filterBtn, ...styles.activeFilterBtn } : styles.filterBtn}
                     onClick={() => setApplicationStatusFilter('approved')}
                   >
                     Approved ({applications.filter(app => app.status === 'approved').length})
                   </button>
-                  <button 
-                    style={applicationStatusFilter === 'rejected' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+                  <button
+                    style={applicationStatusFilter === 'rejected' ? { ...styles.filterBtn, ...styles.activeFilterBtn } : styles.filterBtn}
                     onClick={() => setApplicationStatusFilter('rejected')}
                   >
                     Rejected ({applications.filter(app => app.status === 'rejected').length})
@@ -1287,7 +1287,12 @@ const LaborManagementPage = () => {
 
                       {application.skills && application.skills.length > 0 && (
                         <div style={styles.skillsSection}>
-                          <strong>🛠️ Skills:</strong>
+                          <strong>
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                            </svg>
+                            Skills:
+                          </strong>
                           <div style={styles.skillTagsContainer}>
                             {application.skills.map((skill, idx) => (
                               <span key={idx} style={styles.skillTag}>
@@ -1326,7 +1331,7 @@ const LaborManagementPage = () => {
                         >
                           ❌ Reject Application
                         </button>
-                        <button 
+                        <button
                           style={styles.contactButton}
                           onClick={() => window.location.href = `tel:${application.workerId ? application.workerId.phone : ''}`}
                         >
@@ -1340,7 +1345,7 @@ const LaborManagementPage = () => {
                         <div style={styles.approvedMessage}>
                           ✅ This application has been approved. The worker is now in your "My Labours" list.
                         </div>
-                        <button 
+                        <button
                           style={styles.contactButton}
                           onClick={() => window.location.href = `tel:${application.workerId ? application.workerId.phone : ''}`}
                         >
@@ -1477,8 +1482,8 @@ const LaborManagementPage = () => {
                       </div>
                       <div style={styles.availabilityBadge}>
                         <span style={
-                          worker.availability === 'Available' 
-                            ? styles.availableBadge 
+                          worker.availability === 'Available'
+                            ? styles.availableBadge
                             : styles.busyBadge
                         }>
                           {worker.availability === 'Available' ? '✅ Available' : '⏳ Busy'}
@@ -1608,8 +1613,8 @@ const LaborManagementPage = () => {
                   {labourSearchTerm
                     ? 'No workers match your search'
                     : myLabours.length === 0
-                    ? 'No hired workers yet'
-                    : 'No workers found'}
+                      ? 'No hired workers yet'
+                      : 'No workers found'}
                 </p>
                 <p style={styles.placeholderText}>
                   {labourSearchTerm
@@ -1670,8 +1675,8 @@ const LaborManagementPage = () => {
                         <div style={styles.workerDetailRow}>
                           <span style={styles.detailLabel}>📅 Experience:</span>
                           <span style={styles.detailValue}>
-                            {typeof labour.experience === 'number' 
-                              ? `${labour.experience} years` 
+                            {typeof labour.experience === 'number'
+                              ? `${labour.experience} years`
                               : labour.experience || 'N/A'}
                           </span>
                         </div>
@@ -1685,7 +1690,12 @@ const LaborManagementPage = () => {
 
                       {labour.skills && labour.skills.length > 0 && (
                         <div style={styles.labourSection}>
-                          <h4 style={styles.sectionTitle}>🛠️ Skills</h4>
+                          <h4 style={styles.sectionTitle}>
+                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                            </svg>
+                            Skills
+                          </h4>
                           <div style={styles.skillTagsContainer}>
                             {labour.skills.map((skill, index) => (
                               <span key={`${labour._id}-skill-${index}`} style={styles.skillTag}>
@@ -1774,7 +1784,7 @@ const LaborManagementPage = () => {
                 <label style={styles.modalLabel}>
                   Select Job Schedule <span style={styles.required}>*</span>
                 </label>
-                
+
                 {loadingSchedules ? (
                   <div style={styles.modalLoading}>
                     <div style={styles.spinner}></div>
@@ -1933,7 +1943,7 @@ const styles = {
     color: '#636e72',
     margin: '0.5rem 0 0 0'
   },
-  
+
   // Form Styles
   form: {
     maxWidth: '800px'

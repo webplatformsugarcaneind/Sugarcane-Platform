@@ -72,7 +72,7 @@ const AvailableJobsPage = () => {
   const handleApply = async (jobId) => {
     try {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         alert('Please login to apply for jobs');
         return;
@@ -100,10 +100,10 @@ const AvailableJobsPage = () => {
       });
 
       alert('Application submitted successfully! You will be notified of the status soon.');
-      
+
       // Update applied count in UI
-      setJobs(prev => prev.map(j => 
-        j._id === jobId 
+      setJobs(prev => prev.map(j =>
+        j._id === jobId
           ? { ...j, appliedCount: j.appliedCount + 1, hasApplied: true }
           : j
       ));
@@ -115,14 +115,14 @@ const AvailableJobsPage = () => {
   };
 
   const filteredJobs = jobs.filter(job => {
-    const matchesLocation = !filters.location || 
+    const matchesLocation = !filters.location ||
       job.location.toLowerCase().includes(filters.location.toLowerCase());
-    const matchesSkills = !filters.skills || 
-      job.requiredSkills.some(skill => 
+    const matchesSkills = !filters.skills ||
+      job.requiredSkills.some(skill =>
         skill.toLowerCase().includes(filters.skills.toLowerCase())
       );
     const matchesWage = !filters.wageMin || job.wageOffered >= parseInt(filters.wageMin);
-    
+
     return matchesLocation && matchesSkills && matchesWage;
   });
 
@@ -207,7 +207,13 @@ const AvailableJobsPage = () => {
                     {job.title}
                     {job.isUrgent && <span style={styles.urgentBadge}>URGENT</span>}
                   </h3>
-                  <p style={styles.jobLocation}>📍 {job.location}</p>
+                  <p style={styles.jobLocation}>
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    {job.location}
+                  </p>
                 </div>
                 <div style={styles.jobWage}>
                   <span style={styles.wageAmount}>₹{job.wageOffered}</span>
@@ -217,7 +223,7 @@ const AvailableJobsPage = () => {
 
               <div style={styles.jobContent}>
                 <p style={styles.jobDescription}>{job.description}</p>
-                
+
                 <div style={styles.jobDetails}>
                   <div style={styles.jobDetailItem}>
                     <strong>Start Date:</strong> {new Date(job.startDate).toLocaleDateString()}
@@ -243,7 +249,7 @@ const AvailableJobsPage = () => {
                 </div>
 
                 <div style={styles.farmerInfo}>
-                  <strong>Farmer:</strong> {job.farmer.name} 
+                  <strong>Farmer:</strong> {job.farmer.name}
                   <span style={styles.rating}>⭐ {job.farmer.rating}</span>
                 </div>
               </div>
@@ -251,10 +257,13 @@ const AvailableJobsPage = () => {
               <div style={styles.jobActions}>
                 {job.hasApplied ? (
                   <button style={styles.appliedButton} disabled>
-                    ✅ Applied
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Applied
                   </button>
                 ) : (
-                  <button 
+                  <button
                     style={styles.applyButton}
                     onClick={() => handleApply(job._id)}
                   >

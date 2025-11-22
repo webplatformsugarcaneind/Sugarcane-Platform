@@ -23,7 +23,7 @@ const FarmerDashboardPage = () => {
 
         // Get JWT token from localStorage
         const token = localStorage.getItem('token');
-        
+
         if (!token) {
           setError('No authentication token found');
           return;
@@ -41,7 +41,7 @@ const FarmerDashboardPage = () => {
       } catch (err) {
         console.error('Error fetching announcements:', err);
         setError(
-          err.response?.data?.message || 
+          err.response?.data?.message ||
           'Failed to fetch announcements. Please try again.'
         );
       } finally {
@@ -74,23 +74,42 @@ const FarmerDashboardPage = () => {
   return (
     <div className="farmer-dashboard-page">
       <div className="dashboard-header">
-        <h1>🌾 Farmer Dashboard</h1>
+        <h1>
+          <svg style={{ display: 'inline-block', width: '40px', height: '40px', marginRight: '12px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L12 8M12 8L9 11M12 8L15 11" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M8 8L8 14M16 8L16 14" strokeWidth="2" strokeLinecap="round" />
+            <path d="M12 16L12 22" strokeWidth="2" strokeLinecap="round" />
+            <path d="M6 18C6 16 7 14 8 14M18 18C18 16 17 14 16 14" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          Farmer Dashboard
+        </h1>
         <p className="dashboard-subtitle">Welcome back! Manage your farm activities and job requests.</p>
       </div>
 
       {/* Tab Navigation */}
       <div className="tab-navigation">
-        <button 
+        <button
           className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
-          📊 Overview
+          <svg style={{ display: 'inline-block', width: '20px', height: '20px', marginRight: '6px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="3" y="10" width="4" height="10" rx="1" strokeWidth="2" />
+            <rect x="10" y="6" width="4" height="14" rx="1" strokeWidth="2" />
+            <rect x="17" y="13" width="4" height="7" rx="1" strokeWidth="2" />
+          </svg>
+          Overview
         </button>
-        <button 
+        <button
           className={`tab-button ${activeTab === 'contracts' ? 'active' : ''}`}
           onClick={() => setActiveTab('contracts')}
         >
-          📋 Job Contracts
+          <svg style={{ display: 'inline-block', width: '20px', height: '20px', marginRight: '6px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="8" y="2" width="8" height="4" rx="1" strokeWidth="2" />
+            <path d="M6 4h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" strokeWidth="2" />
+            <line x1="9" y1="12" x2="15" y2="12" strokeWidth="2" strokeLinecap="round" />
+            <line x1="9" y1="16" x2="15" y2="16" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          Job Contracts
         </button>
       </div>
 
@@ -100,8 +119,16 @@ const FarmerDashboardPage = () => {
           <div className="overview-tab">
             {/* Announcements Section */}
             <div className="announcements-section">
-              <h2 className="section-title">📢 Latest Announcements</h2>
-              
+              <h2 className="section-title">
+                <svg style={{ display: 'inline-block', width: '28px', height: '28px', marginRight: '8px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L4 8v8l8 6 8-6V8l-8-6z" strokeWidth="2" strokeLinejoin="round" />
+                  <path d="M12 8v8" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M8.5 10.5l7 3" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M8.5 13.5l7-3" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+                Latest Announcements
+              </h2>
+
               {loading ? (
                 <div className="loading-container">
                   <div className="loading-spinner"></div>
@@ -110,8 +137,8 @@ const FarmerDashboardPage = () => {
               ) : error ? (
                 <div className="error-container">
                   <p className="error-message">⚠️ {error}</p>
-                  <button 
-                    onClick={() => window.location.reload()} 
+                  <button
+                    onClick={() => window.location.reload()}
                     className="retry-button"
                   >
                     Retry
@@ -127,16 +154,16 @@ const FarmerDashboardPage = () => {
                     <div key={announcement._id} className="announcement-card">
                       <div className="announcement-header">
                         <h3 className="announcement-title">{announcement.title}</h3>
-                        <span 
+                        <span
                           className="priority-badge"
                           style={{ backgroundColor: getPriorityColor(announcement.priority) }}
                         >
                           {announcement.priority || 'Normal'}
                         </span>
                       </div>
-                      
+
                       <p className="announcement-content">{announcement.content}</p>
-                      
+
                       <div className="announcement-footer">
                         <span className="announcement-date">
                           📅 {formatDate(announcement.createdAt)}

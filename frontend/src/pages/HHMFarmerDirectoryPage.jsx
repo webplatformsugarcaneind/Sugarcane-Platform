@@ -68,7 +68,7 @@ const HHMFarmerDirectoryPage = () => {
 
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setError('No authentication token found. Please login again.');
         return;
@@ -87,7 +87,7 @@ const HHMFarmerDirectoryPage = () => {
     } catch (err) {
       console.error('Error fetching farmers:', err);
       setError(
-        err.response?.data?.message || 
+        err.response?.data?.message ||
         'Failed to fetch farmer directory. Please try again.'
       );
     } finally {
@@ -204,8 +204,8 @@ const HHMFarmerDirectoryPage = () => {
             <div className="error-icon">⚠️</div>
             <h3>Error Loading Directory</h3>
             <p className="error-message">{error}</p>
-            <button 
-              onClick={fetchFarmers} 
+            <button
+              onClick={fetchFarmers}
               className="retry-button"
             >
               Try Again
@@ -216,8 +216,8 @@ const HHMFarmerDirectoryPage = () => {
             <div className="empty-icon">🌾</div>
             <h3>No Farmers Found</h3>
             <p>
-              {searchTerm || selectedLocation 
-                ? 'Try adjusting your search or filter criteria.' 
+              {searchTerm || selectedLocation
+                ? 'Try adjusting your search or filter criteria.'
                 : 'No farmers are currently available in the directory.'
               }
             </p>
@@ -270,7 +270,15 @@ const HHMFarmerDirectoryPage = () => {
                   {/* Farm Information */}
                   {(farmer.farmSize || farmer.farmType || farmer.experience) && (
                     <div className="farm-info">
-                      <h4>🚜 Farm Details</h4>
+                      <h4>
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                          <rect x="3" y="3" width="7" height="9" />
+                          <rect x="14" y="3" width="7" height="5" />
+                          <rect x="14" y="12" width="7" height="9" />
+                          <rect x="3" y="16" width="7" height="5" />
+                        </svg>
+                        Farm Details
+                      </h4>
                       {farmer.farmSize && (
                         <div className="info-item">
                           <span className="info-label">Farm Size:</span>
@@ -309,7 +317,7 @@ const HHMFarmerDirectoryPage = () => {
                 </div>
 
                 <div className="card-actions">
-                  <button 
+                  <button
                     className="contact-btn"
                     onClick={() => {
                       if (farmer.email) {
@@ -319,7 +327,7 @@ const HHMFarmerDirectoryPage = () => {
                   >
                     📧 Contact
                   </button>
-                  <button 
+                  <button
                     className="view-profile-btn"
                     onClick={() => navigate(farmer._id)}
                   >
