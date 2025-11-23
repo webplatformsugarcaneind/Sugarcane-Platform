@@ -182,8 +182,6 @@ const HomePage = () => {
 
   // Handle GuideBox click
   const handleGuideBoxClick = (roleTitle) => {
-    console.log('GuideBox clicked:', roleTitle); // Debug log
-    console.log('Available roles data type:', typeof rolesData); // Debug log
     console.log('Available roles data keys:', Object.keys(rolesData || {})); // Debug log
 
     // Check if rolesData is valid
@@ -241,63 +239,95 @@ const HomePage = () => {
     if (!selectedRole) return null;
 
     return (
-      <div className="role-modal-content">
-        <div className="role-header">
-          <span className="role-icon">{selectedRole.icon}</span>
-          <div className="role-info">
+      <div className="role-guide-content">
+        {/* Custom Header */}
+        <div className="role-guide-header">
+          <div className="header-title-group">
             <h2>{selectedRole.title}</h2>
-            <p className="role-description">{selectedRole.description}</p>
+            <span className="header-divider"></span>
+            <span className="header-subtitle">Features & Benefits</span>
+          </div>
+          <button className="role-guide-close-btn" onClick={handleModalClose} aria-label="Close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="role-guide-body">
+          <p className="role-guide-description">{selectedRole.description}</p>
+
+          <div className="role-guide-grid">
+            {/* Features Column */}
+            <div className="role-guide-column features-column">
+              <h3 className="column-title">
+                <span className="icon-box feature-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                </span>
+                Key Features
+              </h3>
+              {selectedRole.features && selectedRole.features.length > 0 ? (
+                <ul className="role-guide-list">
+                  {selectedRole.features.map((feature, index) => (
+                    <li key={index}>
+                      <span className="list-icon-wrapper check">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="no-data-text">No features available.</p>
+              )}
+            </div>
+
+            {/* Benefits Column */}
+            <div className="role-guide-column benefits-column">
+              <h3 className="column-title">
+                <span className="icon-box benefit-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                </span>
+                Benefits
+              </h3>
+              {selectedRole.benefits && selectedRole.benefits.length > 0 ? (
+                <ul className="role-guide-list">
+                  {selectedRole.benefits.map((benefit, index) => (
+                    <li key={index}>
+                      <span className="list-icon-wrapper target">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      </span>
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="no-data-text">No benefits available.</p>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="role-details">
-          {selectedRole.features && selectedRole.features.length > 0 && (
-            <div className="features-section-modal">
-              <h3>
-                <svg style={{ display: 'inline-block', width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10" strokeWidth="2" />
-                  <path d="M8 12l2 2 4-4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                Key Features
-              </h3>
-              <ul className="features-list">
-                {selectedRole.features.map((feature, index) => (
-                  <li key={index}>{feature}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {selectedRole.benefits && selectedRole.benefits.length > 0 && (
-            <div className="benefits-section-modal">
-              <h3>
-                <svg style={{ display: 'inline-block', width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="5" strokeWidth="2" />
-                  <line x1="12" y1="1" x2="12" y2="3" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="12" y1="21" x2="12" y2="23" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="1" y1="12" x2="3" y2="12" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="21" y1="12" x2="23" y2="12" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" strokeWidth="2" strokeLinecap="round" />
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-                Benefits
-              </h3>
-              <ul className="benefits-list">
-                {selectedRole.benefits.map((benefit, index) => (
-                  <li key={index}>{benefit}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        <div className="modal-actions">
-          <button className="btn-primary" onClick={handleModalClose}>
-            Get Started as {selectedRole.title}
+        {/* Footer Actions */}
+        <div className="role-guide-actions">
+          <button className="btn-guide-primary" onClick={handleModalClose}>
+            Get Started
           </button>
-          <button className="btn-secondary" onClick={handleModalClose}>
+          <button className="btn-guide-secondary" onClick={handleModalClose}>
             Learn More
           </button>
         </div>
@@ -384,11 +414,12 @@ const HomePage = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        title={selectedRole ? `${selectedRole.title} - Features & Benefits` : ''}
+        title={null}
         size="large"
-        showCloseButton={true}
+        showCloseButton={false}
         closeOnBackdropClick={true}
         closeOnEscape={true}
+        className="role-guide-modal"
       >
         {renderModalContent()}
       </Modal>
