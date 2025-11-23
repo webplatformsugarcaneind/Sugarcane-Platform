@@ -20,7 +20,7 @@ const HomePage = () => {
     return {
       farmer: {
         title: 'Farmer',
-        icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 2L12 8M12 8L9 11M12 8L15 11" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M8 8L8 14M16 8L16 14" strokeWidth="2" strokeLinecap="round" /><path d="M12 16L12 22" strokeWidth="2" strokeLinecap="round" /><path d="M6 18C6 16 7 14 8 14M18 18C18 16 17 14 16 14" strokeWidth="2" strokeLinecap="round" /></svg>',
+        // icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 2L12 8M12 8L9 11M12 8L15 11" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M8 8L8 14M16 8L16 14" strokeWidth="2" strokeLinecap="round" /><path d="M12 16L12 22" strokeWidth="2" strokeLinecap="round" /><path d="M6 18C6 16 7 14 8 14M18 18C18 16 17 14 16 14" strokeWidth="2" strokeLinecap="round" /></svg>',
         description: 'Manage your agricultural operations efficiently',
         features: [
           'Crop Management & Planning',
@@ -47,7 +47,7 @@ const HomePage = () => {
       },
       hhm: {
         title: 'HHM (Hub Head Manager)',
-        icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4" strokeWidth="2" /><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" strokeWidth="2" /><circle cx="17" cy="9" r="3" strokeWidth="2" /><path d="M21 21v-1a3 3 0 0 0-3-3h-1" strokeWidth="2" /></svg>',
+        // icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4" strokeWidth="2" /><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" strokeWidth="2" /><circle cx="17" cy="9" r="3" strokeWidth="2" /><path d="M21 21v-1a3 3 0 0 0-3-3h-1" strokeWidth="2" /></svg>',
         description: 'Coordinate operations between farmers and factories',
         features: [
           'Multi-Farm Coordination',
@@ -74,7 +74,7 @@ const HomePage = () => {
       },
       labour: {
         title: 'Worker',
-        icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" strokeWidth="2" /></svg>',
+        // icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" strokeWidth="2" /></svg>',
         description: 'Find work opportunities and manage your career',
         features: [
           'Job Opportunity Listings',
