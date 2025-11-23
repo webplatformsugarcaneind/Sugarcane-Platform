@@ -62,7 +62,7 @@ const ListingDetailsPage = () => {
           headers.Authorization = `Bearer ${token}`;
         }
 
-        const response = await axios.get(`http://localhost:5000/api/listings/${listingId}`, {
+        const response = await axios.get(`/api/listings/${listingId}`, {
           headers
         });
 
@@ -86,7 +86,7 @@ const ListingDetailsPage = () => {
       setOrdersLoading(true);
       const token = localStorage.getItem('token');
 
-      const response = await axios.get(`http://localhost:5000/api/orders/listing/${listingId}`, {
+      const response = await axios.get(`/api/orders/listing/${listingId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -107,7 +107,7 @@ const ListingDetailsPage = () => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        const userResponse = await axios.get('http://localhost:5000/api/auth/verify', {
+        const userResponse = await axios.get('/api/auth/verify', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -176,7 +176,7 @@ const ListingDetailsPage = () => {
         totalAmount: parseFloat(buyForm.quantityWanted) * parseFloat(buyForm.proposedPrice)
       };
 
-      await axios.post('http://localhost:5000/api/orders/create', orderData, {
+      await axios.post('/api/orders/create', orderData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -255,7 +255,7 @@ const ListingDetailsPage = () => {
         status: editForm.status
       };
 
-      const response = await axios.put(`http://localhost:5000/api/listings/${listing._id}`, updateData, {
+      const response = await axios.put(`/api/listings/${listing._id}`, updateData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -318,7 +318,7 @@ const ListingDetailsPage = () => {
         return;
       }
 
-      const response = await axios.put(`http://localhost:5000/api/orders/${orderId}/status`,
+      const response = await axios.put(`/api/orders/${orderId}/status`,
         { status: 'accepted' },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
@@ -345,7 +345,7 @@ const ListingDetailsPage = () => {
         return;
       }
 
-      const response = await axios.put(`http://localhost:5000/api/orders/${orderId}/status`,
+      const response = await axios.put(`/api/orders/${orderId}/status`,
         { status: 'rejected' },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );

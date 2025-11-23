@@ -13,9 +13,10 @@ import {
 
   from 'react-router-dom';
 import './SignUpPage.css';
+import { configureAxios } from '../config/api';
 
-// Configure axios base URL
-axios.defaults.baseURL = 'http://localhost:5000';
+// Configure axios base URL from environment
+configureAxios(axios);
 
 const SignUpPage = () => {
   const navigate = useNavigate();

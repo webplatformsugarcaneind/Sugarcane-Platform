@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import HHMJobRequestsTab from '../components/HHMJobRequestsTab';
+import { configureAxios } from '../config/api';
 
 // Configure axios base URL
-axios.defaults.baseURL = 'http://localhost:5000';
+configureAxios(axios);
 
 const HHMDashboardPage = () => {
   const navigate = useNavigate();

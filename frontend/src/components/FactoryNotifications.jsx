@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './FactoryNotifications.css';
+import { configureAxios } from '../config/api';
 
 // Set axios base URL
-axios.defaults.baseURL = 'http://localhost:5000';
+configureAxios(axios);
 
 const FactoryNotifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -19,9 +20,9 @@ const FactoryNotifications = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      
+
       console.log('🔍 Fetching factory notifications...');
-      
+
       const response = await axios.get('/api/factory/received-invitations', {
         headers: {
           Authorization: `Bearer ${token}`
@@ -34,7 +35,7 @@ const FactoryNotifications = () => {
         const invitations = response.data.data || [];
         console.log('🔍 Raw invitations data:', invitations);
         console.log('🔍 Number of invitations:', invitations.length);
-        
+
         // Transform invitations into notifications
         const notificationData = invitations.map(invitation => ({
           id: invitation._id,
@@ -49,7 +50,7 @@ const FactoryNotifications = () => {
           invitationReason: invitation.invitationReason,
           invitationId: invitation._id
         }));
-        
+
         console.log('🔍 Transformed notifications:', notificationData);
         setNotifications(notificationData);
       } else {
@@ -67,7 +68,7 @@ const FactoryNotifications = () => {
   const handleRespondToInvitation = async (invitationId, action) => {
     try {
       const token = localStorage.getItem('token');
-      
+
       await axios.put(`/api/factory/received-invitations/${invitationId}`, {
         action: action // 'accept' or 'decline'
       }, {
@@ -78,7 +79,7 @@ const FactoryNotifications = () => {
 
       // Refresh notifications
       fetchNotifications();
-      
+
       if (action === 'accept') {
         alert('✅ Partnership accepted successfully!');
       } else {
@@ -104,7 +105,7 @@ const FactoryNotifications = () => {
 
   const handleClearNotification = (notificationId) => {
     if (window.confirm('Are you sure you want to clear this notification?')) {
-      setNotifications(prevNotifications => 
+      setNotifications(prevNotifications =>
         prevNotifications.filter(notification => notification.id !== notificationId)
       );
     }
@@ -146,7 +147,7 @@ const FactoryNotifications = () => {
             <span className="unread-badge">{unreadCount}</span>
           )}
           {notifications.length > 0 && (
-            <button 
+            <button
               className="clear-all-btn"
               onClick={handleClearAllNotifications}
               title="Clear all notifications"
@@ -165,8 +166,8 @@ const FactoryNotifications = () => {
           </div>
         ) : (
           displayNotifications.map((notification) => (
-            <div 
-              key={notification.id} 
+            <div
+              key={notification.id}
               className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
             >
               <div className="notification-content">
@@ -174,7 +175,7 @@ const FactoryNotifications = () => {
                   <h4 className="notification-title">{notification.title}</h4>
                   <div className="notification-header-right">
                     <span className="notification-time">{notification.time}</span>
-                    <button 
+                    <button
                       className="clear-notification-btn"
                       onClick={() => handleClearNotification(notification.id)}
                       title="Clear this notification"
@@ -183,15 +184,15 @@ const FactoryNotifications = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 <p className="notification-message">{notification.message}</p>
-                
+
                 {notification.personalMessage && (
                   <div className="notification-details">
                     <strong>Message:</strong> "{notification.personalMessage}"
                   </div>
                 )}
-                
+
                 {notification.invitationReason && (
                   <div className="notification-details">
                     <strong>Reason:</strong> {notification.invitationReason}
@@ -200,13 +201,13 @@ const FactoryNotifications = () => {
 
                 {notification.status === 'pending' && (
                   <div className="notification-actions">
-                    <button 
+                    <button
                       className="btn-accept"
                       onClick={() => handleRespondToInvitation(notification.invitationId, 'accept')}
                     >
                       ✅ Accept
                     </button>
-                    <button 
+                    <button
                       className="btn-decline"
                       onClick={() => handleRespondToInvitation(notification.invitationId, 'decline')}
                     >
@@ -232,7 +233,7 @@ const FactoryNotifications = () => {
         )}
 
         {notifications.length > 3 && (
-          <button 
+          <button
             className="show-more-btn"
             onClick={() => setShowAll(!showAll)}
           >

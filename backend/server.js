@@ -13,8 +13,23 @@ connectDB();
 const app = express();
 
 // Middleware
+// CORS Configuration for production and development
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'];
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.warn(`⚠️  CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -59,7 +74,7 @@ app.use('/api/listings', require('./routes/listings.routes'));
 
 // Basic API info route
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Sugarcane Platform API is running!',
     version: '1.0.0',
     status: 'active',
@@ -81,8 +96,8 @@ app.get('/', (req, res) => {
 
 // Health check route
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     database: 'Connected',
     uptime: process.uptime(),
@@ -93,10 +108,10 @@ app.get('/api/health', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('❌ Error occurred:', err.stack);
-  
+
   // Prevent server crash by always sending a response
   if (!res.headersSent) {
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: 'Internal server error',
       error: process.env.NODE_ENV === 'production' ? 'Something went wrong!' : err.message,
@@ -118,7 +133,7 @@ process.on('unhandledRejection', (err) => {
 
 // 404 handler - catch all unmatched routes
 app.use((req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     success: false,
     message: 'Route not found',
     path: req.originalUrl,

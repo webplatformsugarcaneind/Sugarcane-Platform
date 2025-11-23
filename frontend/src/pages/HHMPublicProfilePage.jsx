@@ -4,8 +4,9 @@ import axios from 'axios';
 import ContractRequestModal from '../components/ContractRequestModal';
 import FarmerJobRequestModal from '../components/FarmerJobRequestModal';
 import './HHMPublicProfilePage.css';
+import { configureAxios } from '../config/api';
 
-axios.defaults.baseURL = 'http://localhost:5000';
+configureAxios(axios);
 
 /**
  * HHMPublicProfilePage Component

@@ -56,7 +56,7 @@ const MarketplacePage = () => {
       }
 
       // Make API request to the new marketplace endpoint
-      const response = await axios.get(`http://localhost:5000/api/listings/marketplace?${params.toString()}`, {
+      const response = await axios.get(`/api/listings/marketplace?${params.toString()}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -103,7 +103,7 @@ const MarketplacePage = () => {
       console.log('Creating listing with data:', formData);
 
       // Make POST request to create new listing
-      const response = await axios.post('http://localhost:5000/api/listings/create', formData, {
+      const response = await axios.post('/api/listings/create', formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -155,7 +155,7 @@ const MarketplacePage = () => {
       }
 
       // Use the CropListing API which has the actual listings
-      const response = await axios.get('http://localhost:5000/api/listings/my-listings', {
+      const response = await axios.get('/api/listings/my-listings', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -173,7 +173,7 @@ const MarketplacePage = () => {
       try {
         const token = localStorage.getItem('token');
         console.log('Trying fallback to embedded User.listings...');
-        const userResponse = await axios.get('http://localhost:5000/api/auth/verify', {
+        const userResponse = await axios.get('/api/auth/verify', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -208,7 +208,7 @@ const MarketplacePage = () => {
       }
 
       // Fetch received orders (orders for farmer's listings)
-      const response = await axios.get('http://localhost:5000/api/orders/received', {
+      const response = await axios.get('/api/orders/received', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -249,7 +249,7 @@ const MarketplacePage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/listings/${listingId}`, {
+      await axios.delete(`/api/listings/${listingId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

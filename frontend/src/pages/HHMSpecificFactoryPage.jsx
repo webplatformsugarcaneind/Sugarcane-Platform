@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ContractRequestModal from '../components/ContractRequestModal';
+import { configureAxios } from '../config/api';
 
-axios.defaults.baseURL = 'http://localhost:5000';
+configureAxios(axios);
 
 /**
  * HHMSpecificFactoryPage Component

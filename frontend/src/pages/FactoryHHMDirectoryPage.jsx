@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NotificationToast from '../components/NotificationToast';
 import useNotifications from '../hooks/useNotifications';
+import { configureAxios } from '../config/api';
 
 // Set axios base URL
-axios.defaults.baseURL = 'http://localhost:5000';
+configureAxios(axios);
 
 /**
  * FactoryHHMDirectoryPage Component

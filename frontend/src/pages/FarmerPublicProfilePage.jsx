@@ -39,11 +39,11 @@ const FarmerPublicProfilePage = () => {
         setError(null);
 
         // Fetch farmer profile (public route)
-        const profileResponse = await axios.get(`http://localhost:5000/api/public/farmers/${farmerId}`);
+        const profileResponse = await axios.get(`/api/public/farmers/${farmerId}`);
         setFarmer(profileResponse.data.data);
 
         // Fetch farmer's listings
-        const listingsResponse = await axios.get(`http://localhost:5000/api/listings/marketplace?farmer_id=${farmerId}`);
+        const listingsResponse = await axios.get(`/api/listings/marketplace?farmer_id=${farmerId}`);
         setListings(listingsResponse.data.data || []);
 
       } catch (err) {
@@ -99,7 +99,7 @@ const FarmerPublicProfilePage = () => {
       };
 
       // Submit buy order (you'll need to create this API endpoint)
-      await axios.post('http://localhost:5000/api/orders/create', orderData, {
+      await axios.post('/api/orders/create', orderData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

@@ -7,9 +7,10 @@ import React,
     from 'react';
 import axios from 'axios';
 import './FactorySentInvitationsPage.css';
+import { configureAxios } from '../config/api';
 
 // Set axios base URL
-axios.defaults.baseURL = 'http://localhost:5000';
+configureAxios(axios);
 
 /**
  * FactorySentInvitationsPage Component

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { configureAxios } from '../config/api';
 
 // Set axios base URL
-axios.defaults.baseURL = 'http://localhost:5000';
+configureAxios(axios);
 
 /**
  * HHMProfileViewPage Component
@@ -15,7 +16,7 @@ const HHMProfileViewPage = () => {
     const { hhmId } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
-    
+
     const [hhm, setHhm] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -24,7 +25,7 @@ const HHMProfileViewPage = () => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
-            
+
             if (!token) {
                 setError('Authentication required');
                 return;
@@ -63,10 +64,10 @@ const HHMProfileViewPage = () => {
 
     if (loading) {
         return (
-            <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 minHeight: '400px',
                 flexDirection: 'column'
             }}>
@@ -86,10 +87,10 @@ const HHMProfileViewPage = () => {
 
     if (error || !hhm) {
         return (
-            <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 minHeight: '400px',
                 flexDirection: 'column',
                 textAlign: 'center'
@@ -99,7 +100,7 @@ const HHMProfileViewPage = () => {
                 <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
                     {error || 'HHM profile not found'}
                 </p>
-                <button 
+                <button
                     onClick={handleGoBack}
                     style={{
                         padding: '0.75rem 1.5rem',
@@ -118,9 +119,9 @@ const HHMProfileViewPage = () => {
     }
 
     return (
-        <div style={{ 
-            maxWidth: '800px', 
-            margin: '0 auto', 
+        <div style={{
+            maxWidth: '800px',
+            margin: '0 auto',
             padding: '2rem',
             fontFamily: 'Arial, sans-serif'
         }}>
@@ -132,7 +133,7 @@ const HHMProfileViewPage = () => {
                 paddingBottom: '1rem',
                 borderBottom: '2px solid #e9ecef'
             }}>
-                <button 
+                <button
                     onClick={handleGoBack}
                     style={{
                         padding: '0.5rem 1rem',
@@ -181,8 +182,8 @@ const HHMProfileViewPage = () => {
                     <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '2rem' }}>
                         {hhm.name || 'Unknown Name'}
                     </h2>
-                    <p style={{ 
-                        margin: 0, 
+                    <p style={{
+                        margin: 0,
                         fontSize: '1.1rem',
                         opacity: 0.9
                     }}>
@@ -211,8 +212,8 @@ const HHMProfileViewPage = () => {
                     }}>
                         {/* Contact Information */}
                         <div>
-                            <h3 style={{ 
-                                color: '#2c3e50', 
+                            <h3 style={{
+                                color: '#2c3e50',
                                 marginBottom: '1rem',
                                 fontSize: '1.2rem',
                                 display: 'flex',
@@ -245,8 +246,8 @@ const HHMProfileViewPage = () => {
 
                         {/* Professional Information */}
                         <div>
-                            <h3 style={{ 
-                                color: '#2c3e50', 
+                            <h3 style={{
+                                color: '#2c3e50',
                                 marginBottom: '1rem',
                                 fontSize: '1.2rem',
                                 display: 'flex',
@@ -281,8 +282,8 @@ const HHMProfileViewPage = () => {
                     {/* Additional Information */}
                     {(hhm.bio || hhm.skills || hhm.certifications) && (
                         <div style={{ marginTop: '2rem' }}>
-                            <h3 style={{ 
-                                color: '#2c3e50', 
+                            <h3 style={{
+                                color: '#2c3e50',
                                 marginBottom: '1rem',
                                 fontSize: '1.2rem',
                                 display: 'flex',
@@ -291,7 +292,7 @@ const HHMProfileViewPage = () => {
                             }}>
                                 📋 Additional Information
                             </h3>
-                            
+
                             {hhm.bio && (
                                 <div style={{ marginBottom: '1rem' }}>
                                     <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>Bio:</h4>

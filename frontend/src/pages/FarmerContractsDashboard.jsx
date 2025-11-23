@@ -16,7 +16,7 @@ const FarmerContractsDashboard = () => {
   const fetchContracts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/farmer-contracts/my-contracts', {
+      const response = await fetch(apiURL('/api/farmer-contracts/my-contracts'), {
         headers: { Authorization: `Bearer ${token}` }
       });
 

@@ -51,7 +51,7 @@ const MarketplacePage = () => {
       }
 
       // Make API request to the new marketplace endpoint
-      const response = await axios.get(`http://localhost:5000/api/listings/marketplace?${params.toString()}`, {
+      const response = await axios.get(`/api/listings/marketplace?${params.toString()}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -89,7 +89,7 @@ const MarketplacePage = () => {
       console.log('Creating listing with data:', formData);
 
       // Make POST request to create new listing
-      const response = await axios.post('http://localhost:5000/api/listings/create', formData, {
+      const response = await axios.post('/api/listings/create', formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -133,7 +133,7 @@ const MarketplacePage = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:5000/api/listings/my-listings', {
+      const response = await fetch(apiURL('/api/listings/my-listings'), {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

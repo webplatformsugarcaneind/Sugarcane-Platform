@@ -40,7 +40,7 @@ const MyListingsDashboard = () => {
       }
 
       // Make API request to get user's listings
-      const response = await axios.get('http://localhost:5000/api/listings/my-listings', {
+      const response = await axios.get('/api/listings/my-listings', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -197,7 +197,7 @@ const MyListingsDashboard = () => {
       console.log('Deleting listing:', listingId);
 
       // Make DELETE request
-      await axios.delete(`http://localhost:5000/api/listings/${listingId}`, {
+      await axios.delete(`/api/listings/${listingId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
