@@ -40,12 +40,23 @@
   background: linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   transform: translateY(-100%);
+<<<<<<< HEAD
   transition: transform 0.3s ease;
+=======
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   z-index: 999;
 }
 
 .mobile-menu.active {
   transform: translateY(0);
+<<<<<<< HEAD
+=======
+  opacity: 1;
+  visibility: visible;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 }
 
 .mobile-menu-content {
@@ -296,6 +307,13 @@
 }
 
 @media (max-width: 768px) {
+<<<<<<< HEAD
+=======
+  .navbar {
+    min-height: 60px;
+  }
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   .navbar-container {
     padding: 0 15px;
     height: 60px;

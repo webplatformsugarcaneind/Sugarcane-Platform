@@ -15,7 +15,11 @@ const WorkerDashboardPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -95,7 +99,11 @@ const WorkerDashboardPage = () => {
     try {
       setApplying(prev => ({ ...prev, [jobId]: true }));
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -122,7 +130,11 @@ const WorkerDashboardPage = () => {
 
       console.log('Application response:', response.data);
       alert('Application submitted successfully!');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       // Update the job to show it's been applied to
       setJobs(prev =>
         prev.map(job =>
@@ -135,11 +147,19 @@ const WorkerDashboardPage = () => {
     } catch (err) {
       console.error('Error applying for job:', err);
       console.error('Error response:', err.response?.data);
+<<<<<<< HEAD
       
       // Show specific error message from backend
       const errorMessage = err.response?.data?.message || err.message || 'Failed to submit application';
       alert(`Error: ${errorMessage}`);
       
+=======
+
+      // Show specific error message from backend
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to submit application';
+      alert(`Error: ${errorMessage}`);
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     } finally {
       setApplying(prev => ({ ...prev, [jobId]: false }));
     }
@@ -169,7 +189,11 @@ const WorkerDashboardPage = () => {
           </div>
         )}
       </div>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       <div style={styles.content}>
         <div style={styles.statsSection}>
           <div style={styles.statsCard}>
@@ -205,7 +229,11 @@ const WorkerDashboardPage = () => {
                 const employerInfo = job.hhmId || job.employer || {};
                 const employerName = employerInfo.name || employerInfo.companyName || 'Unknown Employer';
                 const employerRating = employerInfo.rating || 'N/A';
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 return (
                   <div key={job._id} style={styles.jobCard}>
                     <div style={styles.jobHeader}>
@@ -225,6 +253,7 @@ const WorkerDashboardPage = () => {
                       <div style={styles.detailRow}>
                         <span style={styles.detailLabel}>📍 Location:</span>
                         <span>{job.location || 'Not specified'}</span>
+<<<<<<< HEAD
                     </div>
                     <div style={styles.detailRow}>
                       <span style={styles.detailLabel}>👥 Workers Needed:</span>
@@ -291,6 +320,79 @@ const WorkerDashboardPage = () => {
                   </div>
                 </div>
               );
+=======
+                      </div>
+                      <div style={styles.detailRow}>
+                        <span style={styles.detailLabel}>👥 Workers Needed:</span>
+                        <span>{job.workerCount || 'Not specified'}</span>
+                      </div>
+                      <div style={styles.detailRow}>
+                        <span style={styles.detailLabel}>🗓️ Duration:</span>
+                        <span>
+                          {job.startDate ? new Date(job.startDate).toLocaleDateString() : 'TBD'} - {job.endDate ? new Date(job.endDate).toLocaleDateString() : 'TBD'}
+                        </span>
+                      </div>
+                      <div style={styles.detailRow}>
+                        <span style={styles.detailLabel}>⏰ Working Hours:</span>
+                        <span>{job.workingHours || 'Not specified'}</span>
+                      </div>
+                      <div style={styles.detailRow}>
+                        <span style={styles.detailLabel}>
+                          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                          </svg>
+                          Work Type:
+                        </span>
+                        <span style={styles.workTypeTag}>{job.workType || 'General'}</span>
+                      </div>
+                    </div>
+
+                    {job.requiredSkills && job.requiredSkills.length > 0 && (
+                      <div style={styles.jobSkills}>
+                        <strong>Required Skills:</strong>
+                        <div style={styles.skillTags}>
+                          {job.requiredSkills.map((skill, index) => (
+                            <span key={`${job._id}-skill-${index}`} style={styles.skillTag}>
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={styles.jobDescription}>
+                      <strong>Description:</strong>
+                      <p style={styles.descriptionText}>{job.description || 'No description provided'}</p>
+                    </div>
+
+                    <div style={styles.jobActions}>
+                      <div style={styles.jobMeta}>
+                        <span style={styles.postedDate}>
+                          Posted: {job.postedAt ? new Date(job.postedAt).toLocaleDateString() : 'Recently'}
+                        </span>
+                      </div>
+                      <div style={styles.actionButtons}>
+                        {job.hasApplied || job.applicationStatus ? (
+                          <button style={styles.appliedButton} disabled>
+                            ✅ Applied
+                          </button>
+                        ) : (
+                          <button
+                            style={styles.applyButton}
+                            onClick={() => handleApply(job._id)}
+                            disabled={applying[job._id]}
+                          >
+                            {applying[job._id] ? 'Applying...' : '📝 Apply Now'}
+                          </button>
+                        )}
+                        <button style={styles.detailsButton}>
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
               })}
             </div>
           )}

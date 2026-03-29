@@ -2,7 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import CreateListingFormNew from '../components/CreateListingFormNew';
+<<<<<<< HEAD
 import QuickLogin from '../components/QuickLogin';
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 import './MarketplacePageNew.css';
 
 /**
@@ -16,9 +19,12 @@ const MarketplacePage = () => {
   const [listings, setListings] = useState([]);
   const [myListings, setMyListings] = useState([]);
   const [showMyListings, setShowMyListings] = useState(false);
+<<<<<<< HEAD
   const [myOrders, setMyOrders] = useState([]);
   const [showMyOrders, setShowMyOrders] = useState(false);
   const [myOrdersLoading, setMyOrdersLoading] = useState(false);
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,6 +35,7 @@ const MarketplacePage = () => {
   const [filterLocation, setFilterLocation] = useState('');
   const [filterVariety, setFilterVariety] = useState('');
   const [sortBy, setSortBy] = useState('createdAt');
+<<<<<<< HEAD
   
   // Authentication state
   const [user, setUser] = useState(null);
@@ -82,15 +89,25 @@ const MarketplacePage = () => {
     }
     return true;
   };
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
   const fetchListings = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
+<<<<<<< HEAD
       // Check authentication before making API calls
       if (!isAuthenticated) {
         // Don't set an error, just return - the UI will show login options
+=======
+      // Get JWT token from localStorage
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setError('No authentication token found. Please login again.');
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         return;
       }
 
@@ -105,11 +122,16 @@ const MarketplacePage = () => {
         else if (sortBy === 'harvest') params.append('sort', 'harvest');
       }
 
+<<<<<<< HEAD
       // Get token from localStorage
       const token = localStorage.getItem('token');
       
       // Make API request to the new marketplace endpoint
       const response = await axios.get(`http://localhost:5000/api/listings/marketplace?${params.toString()}`, {
+=======
+      // Make API request to the new marketplace endpoint
+      const response = await axios.get(`/api/listings/marketplace?${params.toString()}`, {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -117,6 +139,7 @@ const MarketplacePage = () => {
       });
 
       console.log('Fetched listings response:', response.data);
+<<<<<<< HEAD
       
       const fetchedListings = Array.isArray(response.data.data) ? response.data.data : [];
       
@@ -141,6 +164,9 @@ const MarketplacePage = () => {
       });
       
       setListings(validListings);
+=======
+      setListings(Array.isArray(response.data.data) ? response.data.data : []);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     } catch (err) {
       console.error('Error fetching listings:', err);
       setError(
@@ -150,6 +176,7 @@ const MarketplacePage = () => {
     } finally {
       setLoading(false);
     }
+<<<<<<< HEAD
   }, [filterVariety, filterLocation, sortBy, isAuthenticated]);
 
   useEffect(() => {
@@ -158,6 +185,13 @@ const MarketplacePage = () => {
       fetchListings();
     }
   }, [fetchListings, isAuthenticated]);
+=======
+  }, [filterVariety, filterLocation, sortBy]);
+
+  useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
   const handleCreateListing = async (formData) => {
     try {
@@ -172,6 +206,7 @@ const MarketplacePage = () => {
 
       console.log('Creating listing with data:', formData);
 
+<<<<<<< HEAD
       // Determine content type based on data type
       const isFormData = formData instanceof FormData;
       
@@ -187,6 +222,14 @@ const MarketplacePage = () => {
       // Make POST request to create new listing
       const response = await axios.post('http://localhost:5000/api/listings/create', formData, {
         headers
+=======
+      // Make POST request to create new listing
+      const response = await axios.post('/api/listings/create', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       });
 
       console.log('Created listing response:', response.data);
@@ -200,11 +243,15 @@ const MarketplacePage = () => {
       setIsModalOpen(false);
       
       // Show success message
+<<<<<<< HEAD
       alert('🎉 Sugarcane listing created successfully!');
       
       // Refresh listings to get updated data
       fetchListings();
       
+=======
+      alert('🎉 Listing created successfully!');
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     } catch (err) {
       console.error('Error creating listing:', err);
       const errorMessage = err.response?.data?.message || 'Failed to create listing. Please try again.';
@@ -223,6 +270,7 @@ const MarketplacePage = () => {
   };
 
   const fetchMyListings = async () => {
+<<<<<<< HEAD
     if (!isAuthenticated) {
       console.log('❌ Not authenticated - cannot fetch my listings');
       return;
@@ -245,6 +293,35 @@ const MarketplacePage = () => {
       } else {
         setMyListings([]);
       }
+=======
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No auth token found');
+        return;
+      }
+
+      const response = await fetch(apiURL('/api/listings/my-listings'), {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMyListings(data.data || []);
+      } else if (response.status === 401) {
+        console.log('Not authenticated or session expired');
+        setMyListings([]);
+      } else {
+        console.error('Error fetching my listings:', response.status);
+        setMyListings([]);
+      }
+    } catch (error) {
+      console.error('Error fetching my listings:', error);
+      setMyListings([]);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }
   };
 
@@ -255,6 +332,7 @@ const MarketplacePage = () => {
     setShowMyListings(!showMyListings);
   };
 
+<<<<<<< HEAD
   const showAllListings = () => {
     setShowMyListings(false);
     setShowMyOrders(false);
@@ -355,6 +433,8 @@ const MarketplacePage = () => {
     }
   };
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
@@ -391,16 +471,20 @@ const MarketplacePage = () => {
 
   return (
     <div className="marketplace-page">
+<<<<<<< HEAD
       {/* Quick Login Overlay */}
       {showQuickLogin && (
         <QuickLogin onLoginSuccess={handleLoginSuccess} />
       )}
       
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       {/* Header */}
       <div className="marketplace-header">
         <div className="header-content">
           <h1>🌾 Sugarcane Marketplace</h1>
           <p className="page-subtitle">Discover and trade quality sugarcane crops</p>
+<<<<<<< HEAD
           
           {/* Authentication Status */}
           <div style={{ 
@@ -433,6 +517,15 @@ const MarketplacePage = () => {
             )}
           </div>
         </div>
+=======
+        </div>
+        <button 
+          className="create-listing-btn"
+          onClick={() => setIsModalOpen(true)}
+        >
+          ➕ Post New Listing
+        </button>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       </div>
 
       {/* Filters and Search */}
@@ -445,7 +538,13 @@ const MarketplacePage = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
           />
+<<<<<<< HEAD
           
+=======
+        </div>
+        
+        <div className="filter-controls">
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           <select
             value={filterVariety}
             onChange={(e) => setFilterVariety(e.target.value)}
@@ -458,6 +557,17 @@ const MarketplacePage = () => {
             <option value="Co 62175">Co 62175</option>
           </select>
 
+<<<<<<< HEAD
+=======
+          <input
+            type="text"
+            placeholder="Filter by location..."
+            value={filterLocation}
+            onChange={(e) => setFilterLocation(e.target.value)}
+            className="filter-input"
+          />
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
@@ -468,6 +578,7 @@ const MarketplacePage = () => {
             <option value="quantity">Sort by: Quantity</option>
             <option value="harvest">Sort by: Harvest Date</option>
           </select>
+<<<<<<< HEAD
         </div>
         
         <div className="filter-controls">
@@ -505,6 +616,15 @@ const MarketplacePage = () => {
             onClick={viewMyOrders}
           >
             📦 My Orders
+=======
+
+          <button onClick={fetchListings} className="refresh-btn">
+            🔄 Refresh
+          </button>
+          
+          <button onClick={toggleMyListings} className="my-listings-btn">
+            📋 {showMyListings ? 'Hide My Listings' : 'Show My Listings'}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           </button>
         </div>
       </div>
@@ -524,6 +644,7 @@ const MarketplacePage = () => {
           ) : (
             <div className="listings-grid">
               {myListings.map((listing) => {
+<<<<<<< HEAD
                 // Support both new and legacy formats
                 const variety = listing.sugarcane_variety || listing.crop_variety;
                 const quantityValue = listing.quantity_available?.value || listing.quantity_in_tons || 0;
@@ -567,12 +688,19 @@ const MarketplacePage = () => {
                 
                 // Calculate total value
                 const totalValue = quantityValue * actualPrice;
+=======
+                const daysUntilHarvest = Math.ceil(
+                  (new Date(listing.harvest_availability_date) - new Date()) / (1000 * 60 * 60 * 24)
+                );
+                const totalValue = listing.quantity_in_tons * listing.expected_price_per_ton;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
                 return (
                   <div key={listing._id} className="listing-card my-listing">
                     <div className="listing-header">
                       <span className="status-badge status-badge-my">{listing.status.toUpperCase()}</span>
                       <div className="listing-actions-header">
+<<<<<<< HEAD
                         <button 
                           className="edit-btn" 
                           title="Edit Listing"
@@ -593,6 +721,10 @@ const MarketplacePage = () => {
                         >
                           🗑️
                         </button>
+=======
+                        <button className="edit-btn" title="Edit Listing">✏️</button>
+                        <button className="delete-btn" title="Delete Listing">🗑️</button>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                       </div>
                     </div>
                     
@@ -600,6 +732,7 @@ const MarketplacePage = () => {
                       <div className="listing-title-row">
                         <h3 className="listing-title">{listing.title}</h3>
                         <div className="variety-info">
+<<<<<<< HEAD
                           <span className="variety-badge">{variety}</span>
                         </div>
                       </div>
@@ -618,17 +751,28 @@ const MarketplacePage = () => {
                         </div>
                       )}
 
+=======
+                          <span className="variety-badge">{listing.crop_variety}</span>
+                        </div>
+                      </div>
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                       <div className="listing-details">
                         <div className="detail-row">
                           <div className="detail-item">
                             <span className="detail-icon">⚖️</span>
                             <span className="detail-text">
+<<<<<<< HEAD
                               <strong>{quantity}</strong>
+=======
+                              <strong>{listing.quantity_in_tons}</strong> tons
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                             </span>
                           </div>
                           <div className="detail-item">
                             <span className="detail-icon">💰</span>
                             <span className="detail-text">
+<<<<<<< HEAD
                               <strong>{price}</strong>/{priceUnit}
                               {(() => {
                                 // Only show (Negotiable) if price comes from price_details AND negotiable is true
@@ -654,6 +798,9 @@ const MarketplacePage = () => {
                                   <span className="negotiable-tag"> (Negotiable)</span>
                                 ) : null;
                               })()}
+=======
+                              <strong>{formatPrice(listing.expected_price_per_ton)}</strong>/ton
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                             </span>
                           </div>
                         </div>
@@ -661,13 +808,22 @@ const MarketplacePage = () => {
                         <div className="detail-row">
                           <div className="detail-item">
                             <span className="detail-icon">📍</span>
+<<<<<<< HEAD
                             <span className="detail-text">{location}</span>
+=======
+                            <span className="detail-text">{listing.location}</span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           </div>
                           <div className="detail-item">
                             <span className="detail-icon">📅</span>
                             <span className="detail-text">
+<<<<<<< HEAD
                               {daysUntilAvailable > 0 
                                 ? `${daysUntilAvailable} days`
+=======
+                              {daysUntilHarvest > 0 
+                                ? `${daysUntilHarvest} days`
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                 : 'Available now'
                               }
                             </span>
@@ -702,6 +858,7 @@ const MarketplacePage = () => {
         </div>
       )}
 
+<<<<<<< HEAD
       {/* My Orders Section */}
       {showMyOrders && (
         <div className="my-orders-section">
@@ -841,6 +998,11 @@ const MarketplacePage = () => {
             </button>
           </div>
         ) : loading ? (
+=======
+      {/* Listings Section */}
+      <div className="listings-section">
+        {loading ? (
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           <div className="loading-container">
             <div className="loading-spinner"></div>
             <p>Loading marketplace listings...</p>
@@ -878,6 +1040,7 @@ const MarketplacePage = () => {
             
             <div className="listings-grid">
               {filteredListings.map((listing) => {
+<<<<<<< HEAD
                 // Support both new and legacy formats
                 const variety = listing.sugarcane_variety || listing.crop_variety;
                 const quantityValue = listing.quantity_available?.value || listing.quantity_in_tons || 0;
@@ -919,6 +1082,10 @@ const MarketplacePage = () => {
                 
                 // Calculate total value
                 const totalValue = quantityValue * actualPrice;
+=======
+                const daysUntilHarvest = getDaysUntilHarvest(listing.harvest_availability_date);
+                const totalValue = listing.quantity_in_tons * listing.expected_price_per_ton;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 
                 return (
                   <div key={listing._id} className="listing-card">
@@ -931,6 +1098,7 @@ const MarketplacePage = () => {
                       <div className="crop-info">
                         <div className="crop-variety">
                           <span className="label">🌾 Variety:</span>
+<<<<<<< HEAD
                           <span className="value">{variety}</span>
                         </div>
                         
@@ -955,6 +1123,10 @@ const MarketplacePage = () => {
                             )}
                           </div>
                         )}
+=======
+                          <span className="value">{listing.crop_variety}</span>
+                        </div>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                       </div>
 
                       <div className="listing-details">
@@ -962,12 +1134,17 @@ const MarketplacePage = () => {
                           <div className="detail-item">
                             <span className="detail-icon">⚖️</span>
                             <span className="detail-text">
+<<<<<<< HEAD
                               <strong>{quantity}</strong>
+=======
+                              <strong>{listing.quantity_in_tons}</strong> tons
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                             </span>
                           </div>
                           <div className="detail-item">
                             <span className="detail-icon">💰</span>
                             <span className="detail-text">
+<<<<<<< HEAD
                               <strong>{price}</strong>/{priceUnit}
                               {(() => {
                                 // Only show (Negotiable) if price comes from price_details AND negotiable is true
@@ -993,6 +1170,9 @@ const MarketplacePage = () => {
                                   <span className="negotiable-tag"> (Negotiable)</span>
                                 ) : null;
                               })()}
+=======
+                              <strong>{formatPrice(listing.expected_price_per_ton)}</strong>/ton
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                             </span>
                           </div>
                         </div>
@@ -1000,19 +1180,29 @@ const MarketplacePage = () => {
                         <div className="detail-row">
                           <div className="detail-item">
                             <span className="detail-icon">📍</span>
+<<<<<<< HEAD
                             <span className="detail-text">{location}</span>
+=======
+                            <span className="detail-text">{listing.location}</span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           </div>
                           <div className="detail-item">
                             <span className="detail-icon">📅</span>
                             <span className="detail-text">
+<<<<<<< HEAD
                               {daysUntilAvailable > 0 
                                 ? `${daysUntilAvailable} days`
+=======
+                              {daysUntilHarvest > 0 
+                                ? `${daysUntilHarvest} days`
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                 : 'Available now'
                               }
                             </span>
                           </div>
                         </div>
 
+<<<<<<< HEAD
                         {/* Show crop age if available */}
                         {listing.crop_age && (
                           <div className="detail-row">
@@ -1029,6 +1219,8 @@ const MarketplacePage = () => {
                           </div>
                         )}
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         <div className="total-value">
                           <span className="total-label">Total Value:</span>
                           <span className="total-amount">{formatPrice(totalValue)}</span>
@@ -1039,6 +1231,7 @@ const MarketplacePage = () => {
                             <p>{listing.description}</p>
                           </div>
                         )}
+<<<<<<< HEAD
 
                         {/* Show farm images if available */}
                         {listing.farm_images && listing.farm_images.length > 0 && (
@@ -1046,23 +1239,32 @@ const MarketplacePage = () => {
                             <div className="image-count">📸 {listing.farm_images.length} image(s)</div>
                           </div>
                         )}
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                       </div>
                     </div>
 
                     <div className="listing-footer">
                       <div className="seller-info">
                         <div className="seller-name">
+<<<<<<< HEAD
                           👤 {listing.farmer_id.name}
+=======
+                          👤 {listing.farmer_id?.name || 'Unknown Farmer'}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         </div>
                         <div className="listing-date">
                           Posted {formatDate(listing.createdAt)}
                         </div>
+<<<<<<< HEAD
                         {/* Show additional farmer info if available */}
                         {listing.farmer_id?.location && (
                           <div className="farmer-location" style={{fontSize: '0.85em', color: '#666'}}>
                             📍 {listing.farmer_id.location}
                           </div>
                         )}
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                       </div>
                       
                       <div className="listing-actions">
@@ -1081,7 +1283,10 @@ const MarketplacePage = () => {
           </>
         )}
       </div>
+<<<<<<< HEAD
       )}
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
       {/* Modal for Create Listing Form */}
       {isModalOpen && (
@@ -1108,7 +1313,11 @@ const MarketplacePage = () => {
         </div>
       )}
 
+<<<<<<< HEAD
       <style jsx={true}>{`
+=======
+      <style jsx>{`
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         .marketplace-page {
           padding: 2rem;
           max-width: 1400px;

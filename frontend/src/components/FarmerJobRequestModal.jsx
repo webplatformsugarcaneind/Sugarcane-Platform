@@ -113,7 +113,11 @@ const FarmerJobRequestModal = ({
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     if (!validateForm() || loading) {
       return;
     }
@@ -122,7 +126,11 @@ const FarmerJobRequestModal = ({
 
     try {
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -167,7 +175,11 @@ const FarmerJobRequestModal = ({
 
     } catch (error) {
       console.error('Error sending job request:', error);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (error.response?.data?.message) {
         alert(`Error: ${error.response.data.message}`);
       } else {
@@ -415,7 +427,16 @@ const FarmerJobRequestModal = ({
               </>
             ) : (
               <>
+<<<<<<< HEAD
                 🚀 Send Job Request
+=======
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                  <path d="M12 13l-8 5" />
+                </svg>
+                Send Job Request
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
               </>
             )}
           </button>

@@ -191,11 +191,26 @@ const applyForJob = async (req, res) => {
       });
     }
 
+<<<<<<< HEAD
     // Check worker availability status - use req.user since worker data is stored in User model
     const worker = req.user;
     const workerAvailability = (worker.availability || 'Available').toLowerCase();
     
     if (workerAvailability !== 'available') {
+=======
+    // Get worker's profile for additional validation
+    const workerProfile = await Profile.findOne({ userId: req.user._id });
+    
+    if (!workerProfile) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please complete your profile before applying for jobs'
+      });
+    }
+
+    // Check worker availability status
+    if (workerProfile.availabilityStatus !== 'available') {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       return res.status(400).json({
         success: false,
         message: 'You must be available to apply for jobs. Update your availability status in your profile.'
@@ -206,7 +221,11 @@ const applyForJob = async (req, res) => {
     const application = await Application.create({
       workerId: req.user._id,
       scheduleId: scheduleId,
+<<<<<<< HEAD
       hhmId: schedule.hhmId._id || schedule.hhmId, // Handle both populated and unpopulated hhmId
+=======
+      hhmId: schedule.hhmId._id,
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       applicationMessage: applicationMessage || '',
       workerSkills: workerSkills,
       experience: experience || '',
@@ -680,7 +699,10 @@ const getProfile = async (req, res) => {
       isActive: worker.isActive,
       createdAt: worker.createdAt,
       updatedAt: worker.updatedAt,
+<<<<<<< HEAD
       availability: worker.availability || 'Available', // ALWAYS include availability field
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     };
 
     // Helper function to check if a value is meaningful
@@ -705,6 +727,7 @@ const getProfile = async (req, res) => {
       profileData.farmSize = worker.farmSize;
     }
     
+<<<<<<< HEAD
     // Skills - ensure always returned as string for frontend form compatibility
     if (hasValue(worker.skills)) {
       // Force skills to always be a string to match frontend form input expectations
@@ -719,6 +742,20 @@ const getProfile = async (req, res) => {
     
     // availabilityStatus for UI display (lowercase version)
     profileData.availabilityStatus = (worker.availability || 'Available').toLowerCase();
+=======
+    // Skills - convert string to array and only add if not empty
+    if (hasValue(worker.skills)) {
+      const skillsArray = worker.skills.split(',').map(skill => skill.trim()).filter(skill => skill);
+      if (skillsArray.length > 0) {
+        profileData.skills = skillsArray;
+      }
+    }
+    
+    // Availability status mapping
+    if (hasValue(worker.availability)) {
+      profileData.availabilityStatus = worker.availability.toLowerCase();
+    }
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     
     // Work experience mapping
     if (hasValue(worker.workExperience)) {
@@ -767,9 +804,12 @@ const getProfile = async (req, res) => {
     // Profile completeness check
     profileData.profileComplete = !!(worker.skills && worker.availability);
 
+<<<<<<< HEAD
     console.log('🔥 FINAL profileData.availability:', profileData.availability);
     console.log('🔥 FINAL profileData keys:', Object.keys(profileData));
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     res.status(200).json({
       success: true,
       message: 'Worker profile retrieved successfully',
@@ -804,15 +844,19 @@ const updateProfile = async (req, res) => {
     const workerId = req.user._id;
     const updateData = req.body;
 
+<<<<<<< HEAD
     console.log('📝 Update data received:', JSON.stringify(updateData, null, 2));
     console.log('📝 Availability in updateData:', updateData.availability);
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Remove fields that shouldn't be updated via profile
     delete updateData.password;
     delete updateData.role;
     delete updateData._id;
     delete updateData.createdAt;
 
+<<<<<<< HEAD
     // Fix skills field: Convert array to comma-separated string if it's an array
     if (Array.isArray(updateData.skills)) {
       updateData.skills = updateData.skills.join(', ');
@@ -822,6 +866,9 @@ const updateProfile = async (req, res) => {
     // Update worker profile directly in User model
     console.log('💾 Saving to database with availability:', updateData.availability);
     
+=======
+    // Update worker profile directly in User model
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     const updatedWorker = await User.findByIdAndUpdate(
       workerId,
       updateData,
@@ -831,8 +878,11 @@ const updateProfile = async (req, res) => {
       }
     ).select('-password');
 
+<<<<<<< HEAD
     console.log('✅ Database updated. New availability:', updatedWorker?.availability);
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     if (!updatedWorker) {
       return res.status(404).json({
         success: false,

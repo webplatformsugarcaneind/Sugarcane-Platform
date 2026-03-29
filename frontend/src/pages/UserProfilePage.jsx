@@ -11,7 +11,11 @@ import axios from 'axios';
 const UserProfilePage = () => {
     const { userId } = useParams();
     const navigate = useNavigate();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -22,11 +26,19 @@ const UserProfilePage = () => {
             try {
                 setLoading(true);
                 setError(null);
+<<<<<<< HEAD
                 
                 console.log('🔍 Fetching profile for user ID:', userId);
                 
                 const response = await axios.get(`/api/users/profile/${userId}`);
                 
+=======
+
+                console.log('🔍 Fetching profile for user ID:', userId);
+
+                const response = await axios.get(`/api/users/profile/${userId}`);
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 if (response.data.success) {
                     setUser(response.data.data);
                     console.log('✅ Profile data loaded:', response.data.data);
@@ -163,7 +175,11 @@ const UserProfilePage = () => {
                     <p style={{ color: '#7f8c8d', margin: '0 0 2rem 0', fontSize: '1.1rem' }}>
                         {error || 'Unable to load user profile information.'}
                     </p>
+<<<<<<< HEAD
                     <button 
+=======
+                    <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         onClick={handleGoBack}
                         style={{
                             background: 'linear-gradient(135deg, #3498db, #2980b9)',
@@ -194,7 +210,11 @@ const UserProfilePage = () => {
                 padding: '2rem',
                 marginBottom: '2rem'
             }}>
+<<<<<<< HEAD
                 <button 
+=======
+                <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     onClick={handleGoBack}
                     style={{
                         background: '#6c757d',
@@ -209,7 +229,11 @@ const UserProfilePage = () => {
                 >
                     ← Back
                 </button>
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -232,7 +256,11 @@ const UserProfilePage = () => {
                     }}>
                         {roleStyles.icon}
                     </div>
+<<<<<<< HEAD
                     
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <div style={{ flex: 1 }}>
                         <h1 style={{
                             fontSize: '2.5rem',
@@ -310,7 +338,11 @@ const UserProfilePage = () => {
                                 <div style={{ fontSize: '1rem', color: '#2c3e50', fontWeight: '500' }}>{user.email}</div>
                             </div>
                         </div>
+<<<<<<< HEAD
                         
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -325,7 +357,11 @@ const UserProfilePage = () => {
                                 <div style={{ fontSize: '1rem', color: '#2c3e50', fontWeight: '500' }}>{user.phone}</div>
                             </div>
                         </div>
+<<<<<<< HEAD
                         
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         <div style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -361,7 +397,11 @@ const UserProfilePage = () => {
                 justifyContent: 'center',
                 flexWrap: 'wrap'
             }}>
+<<<<<<< HEAD
                 <button 
+=======
+                <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     onClick={handleRoleSpecificAction}
                     style={{
                         background: roleStyles.gradient,
@@ -389,8 +429,13 @@ const UserProfilePage = () => {
                 >
                     {roleStyles.icon} Connect
                 </button>
+<<<<<<< HEAD
                 
                 <button 
+=======
+
+                <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     onClick={handleContact}
                     style={{
                         background: 'linear-gradient(135deg, #3498db, #2980b9)',
@@ -418,7 +463,11 @@ const UserProfilePage = () => {
                 >
                     📧 Email
                 </button>
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 {user.phone && (
                     <a
                         href={`tel:${user.phone}`}
@@ -450,8 +499,13 @@ const UserProfilePage = () => {
                         📱 Call
                     </a>
                 )}
+<<<<<<< HEAD
                 
                 <button 
+=======
+
+                <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     onClick={handleGoBack}
                     style={{
                         background: 'transparent',
@@ -511,13 +565,17 @@ const RoleSpecificInfo = ({ user }) => {
                 <InfoItem icon="⚡" label="Capacity" value={user.capacity} />
                 <InfoItem icon="🎯" label="Specialization" value={user.specialization} />
                 <InfoItem icon="📊" label="Experience" value={user.experience} />
+<<<<<<< HEAD
                 <InfoItem icon="📅" label="Operating Season" value={user.operatingSeason} />
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             </div>
             {user.factoryDescription && (
                 <div style={{ marginTop: '1.5rem', padding: '1rem', background: '#f8f9fa', borderRadius: '8px' }}>
                     <strong>Description:</strong> {user.factoryDescription}
                 </div>
             )}
+<<<<<<< HEAD
             
             {/* HHM Association Section */}
             <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '2px solid #e9ecef' }}>
@@ -667,6 +725,8 @@ const RoleSpecificInfo = ({ user }) => {
                     </div>
                 )}
             </div>
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         </div>
     );
 
@@ -723,6 +783,7 @@ const RoleSpecificInfo = ({ user }) => {
                 <InfoItem icon="⚙️" label="Operations" value={user.managementOperations} />
                 <InfoItem icon="🛠️" label="Services" value={user.servicesOffered} />
             </div>
+<<<<<<< HEAD
 
             {/* Associated Factories Section */}
             <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '2px solid #e9ecef' }}>
@@ -847,6 +908,8 @@ const RoleSpecificInfo = ({ user }) => {
                     </div>
                 )}
             </div>
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         </div>
     );
 

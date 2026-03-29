@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import { handleApiError } from '../utils/authUtils';
 import './ProfilePage.css';
 
@@ -10,13 +11,29 @@ import './ProfilePage.css';
 const ProfilePage = () => {
   const navigate = useNavigate();
   
+=======
+import './ProfilePage.css';
+
+/**
+ * ProfilePage Component - Role-based profile layouts with VIEW/EDIT mode
+ */
+const ProfilePage = () => {
+  const navigate = useNavigate();
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   const [profileData, setProfileData] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [userRole, setUserRole] = useState('');
+<<<<<<< HEAD
   
+=======
+  const [editMode, setEditMode] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   // My Labours state for HHM users
   const [myLabours, setMyLabours] = useState([]);
   const [loadingMyLabours, setLoadingMyLabours] = useState(false);
@@ -29,7 +46,11 @@ const ProfilePage = () => {
     if (userData) {
       const user = JSON.parse(userData);
       setUserRole(user.role || '');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       // Fetch labours if user is HHM
       if (user.role === 'HHM') {
         fetchMyLabours();
@@ -46,19 +67,33 @@ const ProfilePage = () => {
   const fetchProfile = async () => {
     setLoading(true);
     setError(null);
+<<<<<<< HEAD
     
     try {
       const token = localStorage.getItem('token');
       
       if (!token) {
         setError('No authentication token found');
+=======
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        setError('No authentication token found. Please log in again.');
+        setTimeout(() => navigate('/login'), 2000);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         return;
       }
 
       // Determine API endpoint based on user role
       const userData = localStorage.getItem('user');
       const user = userData ? JSON.parse(userData) : {};
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       let apiEndpoint;
       switch (user.role) {
         case 'Worker':
@@ -78,6 +113,7 @@ const ProfilePage = () => {
       }
 
       const response = await axios.get(apiEndpoint, {
+<<<<<<< HEAD
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -101,28 +137,59 @@ const ProfilePage = () => {
     } catch (err) {
       console.error('Error fetching profile:', err);
       handleApiError(err, setError, 'Failed to fetch profile data. Please try again.');
+=======
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.data.profile) {
+        setProfileData(response.data.profile);
+      } else if (response.data) {
+        setProfileData(response.data);
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+        'Failed to load profile. Please try again.'
+      );
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     } finally {
       setLoading(false);
     }
   };
 
   const handleInputChange = (e) => {
+<<<<<<< HEAD
     const { name, value, type, checked } = e.target;
     
     if (name.includes('.')) {
       // Handle nested properties
+=======
+    const { name, value } = e.target;
+
+    // Handle nested object updates (e.g., contactInfo.website)
+    if (name.includes('.')) {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       const [parent, child] = name.split('.');
       setProfileData(prev => ({
         ...prev,
         [parent]: {
+<<<<<<< HEAD
           ...prev[parent],
           [child]: type === 'checkbox' ? checked : value
+=======
+          ...(prev[parent] || {}),
+          [child]: value
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         }
       }));
     } else {
       setProfileData(prev => ({
         ...prev,
+<<<<<<< HEAD
         [name]: type === 'checkbox' ? checked : value
+=======
+        [name]: value
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       }));
     }
   };
@@ -135,7 +202,11 @@ const ProfilePage = () => {
 
     try {
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         setError('No authentication token found');
         return;
@@ -144,7 +215,11 @@ const ProfilePage = () => {
       // Determine API endpoint based on user role
       const userData = localStorage.getItem('user');
       const user = userData ? JSON.parse(userData) : {};
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       let apiEndpoint;
       switch (user.role) {
         case 'Worker':
@@ -171,6 +246,7 @@ const ProfilePage = () => {
       });
 
       setSuccessMessage('Profile updated successfully!');
+<<<<<<< HEAD
       
       // Update profile data with the response
       if (response.data.profile) {
@@ -189,6 +265,24 @@ const ProfilePage = () => {
     } catch (err) {
       console.error('Error updating profile:', err);
       handleApiError(err, setError, 'Failed to update profile. Please try again.');
+=======
+
+      // Update profile data with the response
+      if (response.data.profile) {
+        setProfileData(response.data.profile);
+      }
+
+      // Switch back to view mode after save
+      setEditMode(false);
+
+      setTimeout(() => setSuccessMessage(''), 3000);
+
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+        'Failed to update profile. Please try again.'
+      );
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     } finally {
       setSaving(false);
     }
@@ -199,7 +293,11 @@ const ProfilePage = () => {
     try {
       setLoadingMyLabours(true);
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -209,6 +307,7 @@ const ProfilePage = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
+<<<<<<< HEAD
       console.log('✅ Backend response for my labours:', response.data);
       
       const approvedApplications = response.data.data || response.data || [];
@@ -245,6 +344,39 @@ const ProfilePage = () => {
       // Show empty state on error
       setMyLabours([]);
       setFilteredMyLabours([]);
+=======
+      console.log('✅ Response received:', response.data);
+
+      if (response.data.applications && Array.isArray(response.data.applications)) {
+        // Extract unique workers from approved applications
+        const uniqueWorkers = new Map();
+
+        response.data.applications.forEach(app => {
+          if (app.workerId && app.workerDetails) {
+            const workerId = app.workerId._id || app.workerId;
+            if (!uniqueWorkers.has(workerId)) {
+              uniqueWorkers.set(workerId, {
+                ...app.workerDetails,
+                _id: workerId,
+                applicationId: app._id,
+                appliedDate: app.createdAt,
+                status: app.status
+              });
+            }
+          }
+        });
+
+        const labours = Array.from(uniqueWorkers.values());
+        console.log('👷 Extracted labours:', labours);
+        setMyLabours(labours);
+      } else {
+        console.warn('⚠️ No applications array found in response');
+        setMyLabours([]);
+      }
+    } catch (err) {
+      console.error('❌ Error fetching labours:', err);
+      setMyLabours([]);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     } finally {
       setLoadingMyLabours(false);
     }
@@ -252,6 +384,7 @@ const ProfilePage = () => {
 
   // Filter my labours based on search term
   const filterMyLabours = useCallback(() => {
+<<<<<<< HEAD
     let filtered = [...myLabours];
 
     if (labourSearchTerm) {
@@ -443,10 +576,245 @@ const ProfilePage = () => {
           {saving ? 'Saving...' : 'Save Profile'}
         </button>
       </div>
+=======
+    if (!labourSearchTerm.trim()) {
+      setFilteredMyLabours(myLabours);
+      return;
+    }
+
+    const searchLower = labourSearchTerm.toLowerCase();
+    const filtered = myLabours.filter(labour =>
+      (labour.name && labour.name.toLowerCase().includes(searchLower)) ||
+      (labour.skills && labour.skills.toLowerCase().includes(searchLower)) ||
+      (labour.phone && labour.phone.includes(searchLower))
+    );
+
+    setFilteredMyLabours(filtered);
+  }, [myLabours, labourSearchTerm]);
+
+  // Get role icon
+  const getRoleIcon = () => {
+    switch (userRole) {
+      case 'Factory': return '🏭';
+      case 'Farmer': return '🌾';
+      case 'HHM': return '👔';
+      case 'Worker':
+      case 'Labour': return '👷';
+      default: return '👤';
+    }
+  };
+
+  // Sidebar profile card component
+  const ProfileSidebar = () => (
+    <div className="profile-sidebar">
+      <div className="sidebar-card">
+        <div className="profile-avatar">
+          {getRoleIcon()}
+        </div>
+        <h3 className="profile-name">{profileData.name || profileData.factoryName || 'User'}</h3>
+        <p className="profile-location">
+          {profileData.location || profileData.factoryLocation || 'Location not set'}
+        </p>
+        <button
+          className="edit-profile-btn"
+          onClick={() => setEditMode(!editMode)}
+        >
+          {editMode ? '❌ Cancel' : '✏️ Edit Profile'}
+        </button>
+      </div>
+
+      <div className="sidebar-menu">
+        <button
+          className={`menu-item ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          <span className="menu-icon">📋</span>
+          Overview
+        </button>
+        <button
+          className={`menu-item ${activeTab === 'contact' ? 'active' : ''}`}
+          onClick={() => setActiveTab('contact')}
+        >
+          <span className="menu-icon">📞</span>
+          Contact Details
+        </button>
+        {(userRole === 'Factory' || userRole === 'Farmer') && (
+          <button
+            className={`menu-item ${activeTab === 'hours' ? 'active' : ''}`}
+            onClick={() => setActiveTab('hours')}
+          >
+            <span className="menu-icon">🕒</span>
+            Operating Hours
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
+  // Field component for view/edit mode
+  const Field = ({ label, name, value, type = 'text', placeholder, options, rows }) => {
+    if (type === 'select') {
+      return (
+        <div className="field-group">
+          <label className="field-label">{label}</label>
+          {editMode ? (
+            <select
+              name={name}
+              value={value || ''}
+              onChange={handleInputChange}
+              className="form-input"
+            >
+              <option value="">Select {label}</option>
+              {options?.map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          ) : (
+            <div className="read-value">{value || '—'}</div>
+          )}
+        </div>
+      );
+    }
+
+    if (type === 'textarea') {
+      return (
+        <div className="field-group full-width">
+          <label className="field-label">{label}</label>
+          {editMode ? (
+            <textarea
+              name={name}
+              value={value || ''}
+              onChange={handleInputChange}
+              className="form-input"
+              rows={rows || 3}
+              placeholder={placeholder}
+            />
+          ) : (
+            <div className="read-value">{value || '—'}</div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="field-group">
+        <label className="field-label">{label}</label>
+        {editMode ? (
+          <input
+            type={type}
+            name={name}
+            value={value || ''}
+            onChange={handleInputChange}
+            className="form-input"
+            placeholder={placeholder}
+          />
+        ) : (
+          <div className="read-value">{value || '—'}</div>
+        )}
+      </div>
+    );
+  };
+
+  // Role-specific profile rendering functions
+  const renderFarmerProfile = () => (
+    <form onSubmit={handleSubmit} className="profile-form">
+      {activeTab === 'overview' && (
+        <>
+          <div className="info-section">
+            <h2 className="section-header">
+              <span className="section-icon">🌾</span>
+              Farmer Information
+            </h2>
+            <div className="field-grid">
+              <Field label="Full Name" name="name" value={profileData.name} />
+              <Field label="Email Address" name="email" value={profileData.email} type="email" />
+              <Field label="Phone Number" name="phone" value={profileData.phone} type="tel" />
+              <Field label="Location" name="location" value={profileData.location} placeholder="e.g., Nashik, Maharashtra" />
+              <Field label="Farm Size" name="farmSize" value={profileData.farmSize} placeholder="e.g., 25 acres" />
+              <Field label="Farming Experience" name="farmingExperience" value={profileData.farmingExperience} placeholder="e.g., 12 years" />
+              <Field label="Primary Crops" name="cropTypes" value={profileData.cropTypes} placeholder="e.g., Sugarcane, Rice" />
+              <Field
+                label="Irrigation Type"
+                name="irrigationType"
+                value={profileData.irrigationType}
+                type="select"
+                options={[
+                  { value: 'drip', label: 'Drip Irrigation' },
+                  { value: 'sprinkler', label: 'Sprinkler System' },
+                  { value: 'flood', label: 'Flood Irrigation' },
+                  { value: 'furrow', label: 'Furrow Irrigation' },
+                  { value: 'rainfed', label: 'Rain-fed' }
+                ]}
+              />
+            </div>
+          </div>
+
+          <div className="info-section">
+            <h2 className="section-header">
+              <span className="section-icon">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none">
+                  <rect x="3" y="3" width="7" height="9" />
+                  <rect x="14" y="3" width="7" height="5" />
+                  <rect x="14" y="12" width="7" height="9" />
+                  <rect x="3" y="16" width="7" height="5" />
+                </svg>
+              </span>
+              Farm Equipment & Technology
+            </h2>
+            <div className="field-grid">
+              <Field
+                label="Available Equipment"
+                name="equipment"
+                value={profileData.equipment}
+                type="textarea"
+                placeholder="e.g., Tractor, Harvester, Plow"
+              />
+              <Field
+                label="Farming Methods"
+                name="farmingMethods"
+                value={profileData.farmingMethods}
+                type="textarea"
+                rows={2}
+                placeholder="e.g., Organic farming, Drip irrigation"
+              />
+              <Field
+                label="Certifications"
+                name="certifications"
+                value={profileData.certifications}
+                placeholder="e.g., Organic Farming Certificate"
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      {activeTab === 'contact' && (
+        <div className="info-section">
+          <h2 className="section-header">
+            <span className="section-icon">📞</span>
+            Contact Information
+          </h2>
+          <div className="field-grid">
+            <Field label="Email Address" name="email" value={profileData.email} type="email" />
+            <Field label="Phone Number" name="phone" value={profileData.phone} type="tel" />
+            <Field label="Location" name="location" value={profileData.location} />
+          </div>
+        </div>
+      )}
+
+      {editMode && (
+        <div className="form-actions">
+          <button type="submit" className="save-btn" disabled={saving}>
+            {saving ? 'Saving...' : '💾 Save Changes'}
+          </button>
+        </div>
+      )}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     </form>
   );
 
   const renderFactoryProfile = () => (
+<<<<<<< HEAD
     <form onSubmit={handleSubmit} className="profile-form factory-profile">
       <div className="form-section">
         <h2 className="section-title">🏭 Factory Information</h2>
@@ -678,10 +1046,82 @@ const ProfilePage = () => {
           {saving ? 'Saving...' : 'Update Factory Profile'}
         </button>
       </div>
+=======
+    <form onSubmit={handleSubmit} className="profile-form">
+      {activeTab === 'overview' && (
+        <>
+          <div className="info-section">
+            <h2 className="section-header">
+              <span className="section-icon">🏭</span>
+              Factory Information
+            </h2>
+            <div className="field-grid">
+              <Field label="Contact Person Name" name="name" value={profileData.name} />
+              <Field label="Factory Name" name="factoryName" value={profileData.factoryName} />
+              <Field label="Factory Location" name="factoryLocation" value={profileData.factoryLocation} placeholder="e.g., Pune, Maharashtra" />
+              <Field label="Processing Capacity" name="capacity" value={profileData.capacity} placeholder="e.g., 2500 TCD" />
+              <Field label="Years in Operation" name="experience" value={profileData.experience} placeholder="e.g., 15 years" />
+              <Field label="Specialization" name="specialization" value={profileData.specialization} placeholder="e.g., Sugar Processing" />
+              <Field
+                label="Factory Description"
+                name="factoryDescription"
+                value={profileData.factoryDescription}
+                type="textarea"
+                placeholder="Describe your factory's capabilities..."
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      {activeTab === 'contact' && (
+        <div className="info-section">
+          <h2 className="section-header">
+            <span className="section-icon">📞</span>
+            Contact Details
+          </h2>
+          <div className="field-grid">
+            <Field label="Primary Contact" name="name" value={profileData.name} />
+            <Field label="Phone Number" name="phone" value={profileData.phone} type="tel" />
+            <Field label="Email Address" name="email" value={profileData.email} type="email" />
+            <Field label="Website" name="contactInfo.website" value={profileData.contactInfo?.website} type="url" placeholder="https://yourfactory.com" />
+            <Field label="Fax Number" name="contactInfo.fax" value={profileData.contactInfo?.fax} type="tel" placeholder="+91-20-12345678" />
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'hours' && (
+        <div className="info-section">
+          <h2 className="section-header">
+            <span className="section-icon">🕒</span>
+            Hours of Operation
+          </h2>
+          <div className="field-grid">
+            <Field label="Operating Season" name="operatingHours.season" value={profileData.operatingHours?.season} placeholder="e.g., October to March" />
+            <Field label="Monday Hours" name="operatingHours.monday" value={profileData.operatingHours?.monday} placeholder="e.g., 6:00 AM - 10:00 PM" />
+            <Field label="Tuesday Hours" name="operatingHours.tuesday" value={profileData.operatingHours?.tuesday} placeholder="e.g., 6:00 AM - 10:00 PM" />
+            <Field label="Wednesday Hours" name="operatingHours.wednesday" value={profileData.operatingHours?.wednesday} placeholder="e.g., 6:00 AM - 10:00 PM" />
+            <Field label="Thursday Hours" name="operatingHours.thursday" value={profileData.operatingHours?.thursday} placeholder="e.g., 6:00 AM - 10:00 PM" />
+            <Field label="Friday Hours" name="operatingHours.friday" value={profileData.operatingHours?.friday} placeholder="e.g., 6:00 AM - 10:00 PM" />
+            <Field label="Saturday Hours" name="operatingHours.saturday" value={profileData.operatingHours?.saturday} placeholder="e.g., 6:00 AM - 10:00 PM" />
+            <Field label="Sunday Hours" name="operatingHours.sunday" value={profileData.operatingHours?.sunday} placeholder="e.g., Closed" />
+          </div>
+        </div>
+      )}
+
+      {editMode && (
+        <div className="form-actions">
+          <button type="submit" className="save-btn" disabled={saving}>
+            {saving ? 'Saving...' : '💾 Save Changes'}
+          </button>
+        </div>
+      )}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     </form>
   );
 
   const renderHHMProfile = () => (
+<<<<<<< HEAD
     <form onSubmit={handleSubmit} className="profile-form hhm-profile">
       <div className="form-section">
         <h2 className="section-title">👥 HHM Information</h2>
@@ -1011,10 +1451,66 @@ const ProfilePage = () => {
           {saving ? 'Saving...' : 'Update HHM Profile'}
         </button>
       </div>
+=======
+    <form onSubmit={handleSubmit} className="profile-form">
+      {activeTab === 'overview' && (
+        <>
+          <div className="info-section">
+            <h2 className="section-header">
+              <span className="section-icon">👔</span>
+              HHM Information
+            </h2>
+            <div className="field-grid">
+              <Field label="Full Name" name="name" value={profileData.name} />
+              <Field label="Email Address" name="email" value={profileData.email} type="email" />
+              <Field label="Phone Number" name="phone" value={profileData.phone} type="tel" />
+              <Field label="Management Experience" name="managementExperience" value={profileData.managementExperience} placeholder="e.g., 10 years" />
+              <Field label="Team Size" name="teamSize" value={profileData.teamSize} placeholder="e.g., 50 workers" />
+              <Field
+                label="Services Offered"
+                name="servicesOffered"
+                value={profileData.servicesOffered}
+                type="textarea"
+                placeholder="e.g., Labour management, Payroll, Scheduling"
+              />
+              <Field
+                label="Management Operations"
+                name="managementOperations"
+                value={profileData.managementOperations}
+                type="textarea"
+                placeholder="Describe your operations..."
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      {activeTab === 'contact' && (
+        <div className="info-section">
+          <h2 className="section-header">
+            <span className="section-icon">📞</span>
+            Contact Details
+          </h2>
+          <div className="field-grid">
+            <Field label="Email Address" name="email" value={profileData.email} type="email" />
+            <Field label="Phone Number" name="phone" value={profileData.phone} type="tel" />
+          </div>
+        </div>
+      )}
+
+      {editMode && (
+        <div className="form-actions">
+          <button type="submit" className="save-btn" disabled={saving}>
+            {saving ? 'Saving...' : '💾 Save Changes'}
+          </button>
+        </div>
+      )}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     </form>
   );
 
   const renderLabourProfile = () => (
+<<<<<<< HEAD
     <form onSubmit={handleSubmit} className="profile-form labour-profile">
       <div className="form-section">
         <h2 className="section-title">👷 Worker Information</h2>
@@ -1134,6 +1630,76 @@ const ProfilePage = () => {
           {saving ? 'Saving...' : 'Update Worker Profile'}
         </button>
       </div>
+=======
+    <form onSubmit={handleSubmit} className="profile-form">
+      {activeTab === 'overview' && (
+        <>
+          <div className="info-section">
+            <h2 className="section-header">
+              <span className="section-icon">👷</span>
+              Worker Information
+            </h2>
+            <div className="field-grid">
+              <Field label="Full Name" name="name" value={profileData.name} />
+              <Field label="Email Address" name="email" value={profileData.email} type="email" />
+              <Field label="Phone Number" name="phone" value={profileData.phone} type="tel" />
+              <Field
+                label="Skills"
+                name="skills"
+                value={profileData.skills}
+                type="textarea"
+                placeholder="e.g., Harvesting, Planting, Machine operation"
+              />
+              <Field
+                label="Work Experience"
+                name="workExperience"
+                value={profileData.workExperience}
+                placeholder="e.g., 5 years"
+              />
+              <Field
+                label="Work Preferences"
+                name="workPreferences"
+                value={profileData.workPreferences}
+                type="textarea"
+                placeholder="e.g., Day shift, Weekend availability"
+              />
+              <Field label="Wage Rate" name="wageRate" value={profileData.wageRate} placeholder="e.g., ₹500/day" />
+              <Field
+                label="Availability"
+                name="availability"
+                value={profileData.availability}
+                type="select"
+                options={[
+                  { value: 'Available', label: 'Available' },
+                  { value: 'Unavailable', label: 'Unavailable' }
+                ]}
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      {activeTab === 'contact' && (
+        <div className="info-section">
+          <h2 className="section-header">
+            <span className="section-icon">📞</span>
+            Contact Details
+          </h2>
+          <div className="field-grid">
+            <Field label="Email Address" name="email" value={profileData.email} type="email" />
+            <Field label="Phone Number" name="phone" value={profileData.phone} type="tel" />
+          </div>
+        </div>
+      )}
+
+      {editMode && (
+        <div className="form-actions">
+          <button type="submit" className="save-btn" disabled={saving}>
+            {saving ? 'Saving...' : '💾 Save Changes'}
+          </button>
+        </div>
+      )}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     </form>
   );
 
@@ -1149,7 +1715,11 @@ const ProfilePage = () => {
       case 'Labour':
         return renderLabourProfile();
       default:
+<<<<<<< HEAD
         return renderFarmerProfile(); // Default fallback
+=======
+        return renderFarmerProfile();
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }
   };
 
@@ -1166,6 +1736,7 @@ const ProfilePage = () => {
 
   return (
     <div className="profile-page">
+<<<<<<< HEAD
       <div className="profile-header">
         <div className="header-content">
           <h1>My Profile</h1>
@@ -1193,9 +1764,33 @@ const ProfilePage = () => {
         )}
 
         {renderProfileByRole()}
+=======
+      {error && (
+        <div className="error-banner">
+          ⚠️ {error}
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="success-banner">
+          ✅ {successMessage}
+        </div>
+      )}
+
+      <div className="profile-container">
+        <ProfileSidebar />
+
+        <div className="profile-main">
+          {renderProfileByRole()}
+        </div>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       </div>
     </div>
   );
 };
 
+<<<<<<< HEAD
 export default ProfilePage;
+=======
+export default ProfilePage;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3

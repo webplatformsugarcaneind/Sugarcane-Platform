@@ -458,8 +458,12 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
       if (farmer.listings && farmer.listings.length > 0) {
         listing = farmer.listings.find(l => l._id.toString() === listingId);
         if (listing) {
+<<<<<<< HEAD
           // Check multiple quantity fields (same priority as frontend)
           availableQuantity = listing.quantity_available?.value || listing.quantity_in_tons || 0;
+=======
+          availableQuantity = listing.quantity_in_tons;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           console.log(`📋 Found listing in User.listings: ${availableQuantity} tons available`);
         }
       }
@@ -472,8 +476,12 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
           console.log(`🔍 CropListing re-required: ${typeof CropListingModel}`);
           listing = await CropListingModel.findById(listingId);
           if (listing) {
+<<<<<<< HEAD
             // Check multiple quantity fields (same priority as frontend)
             availableQuantity = listing.quantity_available?.value || listing.quantity_in_tons || 0;
+=======
+            availableQuantity = listing.quantity_in_tons;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             console.log(`📋 Found listing in CropListing collection: ${availableQuantity} tons available`);
           } else {
             console.log(`⚠️  Listing ${listingId} not found in CropListing collection`);
@@ -532,10 +540,13 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
             console.log(`🗑️  Listing removed from User.listings (quantity depleted)`);
           } else {
             farmer.listings[listingIndex].quantity_in_tons = newQuantity;
+<<<<<<< HEAD
             // Also update quantity_available if it exists
             if (farmer.listings[listingIndex].quantity_available) {
               farmer.listings[listingIndex].quantity_available.value = newQuantity;
             }
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             console.log(`📝 Updated User.listings quantity to ${newQuantity} tons`);
           }
         } else {
@@ -556,6 +567,7 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
             await CropListingModel.findByIdAndDelete(listingId);
             console.log(`🗑️  Listing removed from CropListing collection (quantity depleted)`);
           } else {
+<<<<<<< HEAD
             // Update both quantity fields to keep them synchronized
             const updateFields = { 
               quantity_in_tons: newQuantity 
@@ -568,6 +580,12 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
             
             await CropListingModel.findByIdAndUpdate(listingId, updateFields);
             console.log(`✅ Updated CropListing quantity to ${newQuantity} tons (both fields synchronized)`);
+=======
+            await CropListingModel.findByIdAndUpdate(listingId, { 
+              quantity_in_tons: newQuantity 
+            });
+            console.log(`✅ Updated CropListing quantity to ${newQuantity} tons`);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           }
         } else {
           console.log(`ℹ️  Listing ${listingId} not found in CropListing collection`);
@@ -655,6 +673,7 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
       updatedAt: farmer.receivedOrders[orderIndex].updatedAt
     };
 
+<<<<<<< HEAD
     // Add quantity management information for accepted orders
     if (status === 'accepted') {
       const order = farmer.receivedOrders[orderIndex];
@@ -673,6 +692,15 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
           newTotalAmount: order.orderDetails.totalAmount
         };
       }
+=======
+    if (status === 'accepted' && farmer.receivedOrders[orderIndex].isPartialFulfillment) {
+      message = `Order accepted with partial fulfillment`;
+      responseData.partialFulfillment = {
+        originalQuantity: farmer.receivedOrders[orderIndex].originalQuantityRequested,
+        fulfilledQuantity: farmer.receivedOrders[orderIndex].orderDetails.quantityWanted,
+        newTotalAmount: farmer.receivedOrders[orderIndex].orderDetails.totalAmount
+      };
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }
 
     res.json({
@@ -702,6 +730,7 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 /**
  * @route   GET /api/orders/my-orders
  * @desc    Get all orders for the logged-in farmer (both sent and received)
@@ -810,4 +839,6 @@ router.get('/my-orders', authorize('Farmer'), async (req, res) => {
   }
 });
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 module.exports = router;

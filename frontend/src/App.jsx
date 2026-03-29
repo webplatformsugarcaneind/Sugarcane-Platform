@@ -14,11 +14,18 @@ import AboutUsPage from './pages/AboutUsPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
 import FarmerDashboardPage from './pages/FarmerDashboardPage.jsx';
+<<<<<<< HEAD
 import MarketplacePage from './pages/MarketplacePageNew.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import FarmerHHMDirectoryPage from './pages/FarmerHHMDirectoryPage.jsx';
 import FarmerFactoryDirectoryPage from './pages/FarmerFactoryDirectoryPage.jsx';
 import AssociateHHMPage from './pages/AssociateHHMPage.jsx';
+=======
+import MarketplacePage from './pages/MarketplacePage.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
+import FarmerHHMDirectoryPage from './pages/FarmerHHMDirectoryPage.jsx';
+import FarmerFactoryDirectoryPage from './pages/FarmerFactoryDirectoryPage.jsx';
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 import HHMFactoryDirectoryPage from './pages/HHMFactoryDirectoryPage.jsx';
 import HHMSpecificFactoryPage from './pages/HHMSpecificFactoryPage.jsx';
 import FactoryDirectoryPage from './pages/FactoryDirectoryPage.jsx';
@@ -54,10 +61,15 @@ import FarmerPublicProfilePage from './pages/FarmerPublicProfilePage.jsx';
 import FactoryAnalysisPage from './pages/FactoryAnalysisPage.jsx';
 import FactoryAnalysisDebug from './pages/FactoryAnalysisDebug.jsx';
 import ListingDetailsPage from './pages/ListingDetailsPage.jsx';
+<<<<<<< HEAD
 import EditListingPage from './pages/EditListingPage.jsx';
 import FarmerProfileViewPage from './pages/FarmerProfileViewPage.jsx';
 import WorkerHHMProfileViewPage from './pages/WorkerHHMProfileViewPage.jsx';
 import HHMWorkerProfileViewPage from './pages/HHMWorkerProfileViewPage.jsx';
+=======
+import FarmerProfileViewPage from './pages/FarmerProfileViewPage.jsx';
+import WorkerHHMProfileViewPage from './pages/WorkerHHMProfileViewPage.jsx';
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 import FactoryHHMProfileViewPage from './pages/FactoryHHMProfileViewPage.jsx';
 import UserProfilePage from './pages/UserProfilePage.jsx';
 
@@ -428,11 +440,14 @@ function App() {
                     <UserProfilePage />
                   </SafeComponent>
                 } />
+<<<<<<< HEAD
                 <Route path="associate-hhm/:factoryId" element={
                   <SafeComponent name="AssociateHHMPage">
                     <AssociateHHMPage />
                   </SafeComponent>
                 } />
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 <Route path="factory/profile/:id" element={
                   <SafeComponent name="FarmerProfileViewPage">
                     <FarmerProfileViewPage />
@@ -468,11 +483,14 @@ function App() {
                     <ListingDetailsPage />
                   </SafeComponent>
                 } />
+<<<<<<< HEAD
                 <Route path="listing/edit/:listingId" element={
                   <SafeComponent name="EditListingPage">
                     <EditListingPage />
                   </SafeComponent>
                 } />
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 <Route path="listing/:listingId/farmer/:userId" element={
                   <SafeComponent name="UserProfilePage">
                     <UserProfilePage />
@@ -507,11 +525,14 @@ function App() {
                     <LaborManagementPage />
                   </SafeComponent>
                 } />
+<<<<<<< HEAD
                 <Route path="labour/:labourId" element={
                   <SafeComponent name="HHMWorkerProfileViewPage">
                     <HHMWorkerProfileViewPage />
                   </SafeComponent>
                 } />
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 <Route path="profile" element={
                   <SafeComponent name="ProfilePage">
                     <ProfilePage />
@@ -741,7 +762,15 @@ function App() {
                 justifyContent: 'center',
                 alignItems: 'center'
               }}>
+<<<<<<< HEAD
                 <h1 style={{ fontSize: '3rem', margin: '0' }}>🚫</h1>
+=======
+                <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" strokeWidth="2" fill="none" style={{ color: '#e74c3c' }}>
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="15" y1="9" x2="9" y2="15" />
+                  <line x1="9" y1="9" x2="15" y2="15" />
+                </svg>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 <h2 style={{ fontSize: '2rem', margin: '1rem 0' }}>Access Denied</h2>
                 <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
                   You don't have permission to access this page.

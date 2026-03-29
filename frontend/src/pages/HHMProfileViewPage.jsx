@@ -1,9 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+<<<<<<< HEAD
 
 // Set axios base URL
 axios.defaults.baseURL = 'http://localhost:5000';
+=======
+import { configureAxios } from '../config/api';
+
+// Set axios base URL
+configureAxios(axios);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
 /**
  * HHMProfileViewPage Component
@@ -15,7 +22,11 @@ const HHMProfileViewPage = () => {
     const { hhmId } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     const [hhm, setHhm] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -24,7 +35,11 @@ const HHMProfileViewPage = () => {
         try {
             setLoading(true);
             const token = localStorage.getItem('token');
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             if (!token) {
                 setError('Authentication required');
                 return;
@@ -61,6 +76,7 @@ const HHMProfileViewPage = () => {
         navigate(-1); // Go back to previous page
     };
 
+<<<<<<< HEAD
     const handleSendRequest = async (hhmId) => {
         try {
             const token = localStorage.getItem('token');
@@ -103,6 +119,14 @@ const HHMProfileViewPage = () => {
                 display: 'flex', 
                 justifyContent: 'center', 
                 alignItems: 'center', 
+=======
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 minHeight: '400px',
                 flexDirection: 'column'
             }}>
@@ -122,10 +146,17 @@ const HHMProfileViewPage = () => {
 
     if (error || !hhm) {
         return (
+<<<<<<< HEAD
             <div style={{ 
                 display: 'flex', 
                 justifyContent: 'center', 
                 alignItems: 'center', 
+=======
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 minHeight: '400px',
                 flexDirection: 'column',
                 textAlign: 'center'
@@ -135,7 +166,11 @@ const HHMProfileViewPage = () => {
                 <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
                     {error || 'HHM profile not found'}
                 </p>
+<<<<<<< HEAD
                 <button 
+=======
+                <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     onClick={handleGoBack}
                     style={{
                         padding: '0.75rem 1.5rem',
@@ -154,9 +189,15 @@ const HHMProfileViewPage = () => {
     }
 
     return (
+<<<<<<< HEAD
         <div style={{ 
             maxWidth: '800px', 
             margin: '0 auto', 
+=======
+        <div style={{
+            maxWidth: '800px',
+            margin: '0 auto',
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             padding: '2rem',
             fontFamily: 'Arial, sans-serif'
         }}>
@@ -168,7 +209,11 @@ const HHMProfileViewPage = () => {
                 paddingBottom: '1rem',
                 borderBottom: '2px solid #e9ecef'
             }}>
+<<<<<<< HEAD
                 <button 
+=======
+                <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     onClick={handleGoBack}
                     style={{
                         padding: '0.5rem 1rem',
@@ -217,8 +262,13 @@ const HHMProfileViewPage = () => {
                     <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '2rem' }}>
                         {hhm.name || 'Unknown Name'}
                     </h2>
+<<<<<<< HEAD
                     <p style={{ 
                         margin: 0, 
+=======
+                    <p style={{
+                        margin: 0,
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         fontSize: '1.1rem',
                         opacity: 0.9
                     }}>
@@ -247,8 +297,13 @@ const HHMProfileViewPage = () => {
                     }}>
                         {/* Contact Information */}
                         <div>
+<<<<<<< HEAD
                             <h3 style={{ 
                                 color: '#2c3e50', 
+=======
+                            <h3 style={{
+                                color: '#2c3e50',
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                 marginBottom: '1rem',
                                 fontSize: '1.2rem',
                                 display: 'flex',
@@ -281,8 +336,13 @@ const HHMProfileViewPage = () => {
 
                         {/* Professional Information */}
                         <div>
+<<<<<<< HEAD
                             <h3 style={{ 
                                 color: '#2c3e50', 
+=======
+                            <h3 style={{
+                                color: '#2c3e50',
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                 marginBottom: '1rem',
                                 fontSize: '1.2rem',
                                 display: 'flex',
@@ -317,8 +377,13 @@ const HHMProfileViewPage = () => {
                     {/* Additional Information */}
                     {(hhm.bio || hhm.skills || hhm.certifications) && (
                         <div style={{ marginTop: '2rem' }}>
+<<<<<<< HEAD
                             <h3 style={{ 
                                 color: '#2c3e50', 
+=======
+                            <h3 style={{
+                                color: '#2c3e50',
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                 marginBottom: '1rem',
                                 fontSize: '1.2rem',
                                 display: 'flex',
@@ -327,7 +392,11 @@ const HHMProfileViewPage = () => {
                             }}>
                                 📋 Additional Information
                             </h3>
+<<<<<<< HEAD
                             
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                             {hhm.bio && (
                                 <div style={{ marginBottom: '1rem' }}>
                                     <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>Bio:</h4>
@@ -350,6 +419,7 @@ const HHMProfileViewPage = () => {
                             )}
                         </div>
                     )}
+<<<<<<< HEAD
 
                     {/* Action Buttons */}
                     <div style={{ 
@@ -391,6 +461,8 @@ const HHMProfileViewPage = () => {
                             👥 Send Request
                         </button>
                     </div>
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 </div>
             </div>
         </div>

@@ -11,7 +11,11 @@ const ListingDetailsPage = () => {
   const { listingId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   const [listing, setListing] = useState(location.state?.listing || null);
   const [loading, setLoading] = useState(!listing);
   const [error, setError] = useState(null);
@@ -20,7 +24,11 @@ const ListingDetailsPage = () => {
   const [isOwnListing, setIsOwnListing] = useState(false);
   const [listingOrders, setListingOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   // Edit form state
   const [showEditForm, setShowEditForm] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -35,6 +43,7 @@ const ListingDetailsPage = () => {
   });
   const [isUpdating, setIsUpdating] = useState(false);
 
+<<<<<<< HEAD
   // Enhanced navigation function with fallback options
   const navigateToMarketplace = () => {
     try {
@@ -59,6 +68,8 @@ const ListingDetailsPage = () => {
     }
   };
   
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   // Buy form state
   const [buyForm, setBuyForm] = useState({
     buyerName: '',
@@ -75,7 +86,11 @@ const ListingDetailsPage = () => {
   useEffect(() => {
     const fetchListingDetails = async () => {
       if (listing) return; // Already have listing data
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       try {
         setLoading(true);
         setError(null);
@@ -86,10 +101,17 @@ const ListingDetailsPage = () => {
           headers.Authorization = `Bearer ${token}`;
         }
 
+<<<<<<< HEAD
         const response = await axios.get(`http://localhost:5000/api/listings/${listingId}`, {
           headers
         });
         
+=======
+        const response = await axios.get(`/api/listings/${listingId}`, {
+          headers
+        });
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         setListing(response.data.data);
       } catch (err) {
         console.error('Error fetching listing details:', err);
@@ -109,8 +131,13 @@ const ListingDetailsPage = () => {
     try {
       setOrdersLoading(true);
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
       const response = await axios.get(`http://localhost:5000/api/orders/listing/${listingId}`, {
+=======
+
+      const response = await axios.get(`/api/orders/listing/${listingId}`, {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -131,13 +158,18 @@ const ListingDetailsPage = () => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
+<<<<<<< HEAD
         const userResponse = await axios.get('http://localhost:5000/api/auth/verify', {
+=======
+        const userResponse = await axios.get('/api/auth/verify', {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (userResponse.data.success) {
           const user = userResponse.data.data.user;
           setCurrentUser(user);
+<<<<<<< HEAD
           
           // Check if this user owns the listing
           if (listing && listing.farmer_id) {
@@ -146,6 +178,16 @@ const ListingDetailsPage = () => {
               ? listing.farmer_id._id 
               : listing.farmer_id;
             
+=======
+
+          // Check if this user owns the listing
+          if (listing && listing.farmer_id) {
+            // farmer_id can be either an object with _id or a string ID
+            const listingFarmerId = typeof listing.farmer_id === 'object'
+              ? listing.farmer_id._id
+              : listing.farmer_id;
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             if (listingFarmerId === user.id) {
               setIsOwnListing(true);
               // Fetch orders for this listing if user owns it
@@ -171,6 +213,7 @@ const ListingDetailsPage = () => {
 
   const handleShowBuyForm = () => {
     if (!listing) return;
+<<<<<<< HEAD
     
     // Use the calculated values for price and quantity
     const pricePerTon = listing.price_details?.base_price_per_ton || 
@@ -182,13 +225,24 @@ const ListingDetailsPage = () => {
       ...prev,
       quantityWanted: quantityInTons,
       proposedPrice: pricePerTon
+=======
+
+    setBuyForm(prev => ({
+      ...prev,
+      quantityWanted: listing.quantity_in_tons,
+      proposedPrice: listing.expected_price_per_ton
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }));
     setShowBuyForm(true);
   };
 
   const handleSubmitBuyOrder = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     if (!listing) return;
 
     try {
@@ -206,7 +260,11 @@ const ListingDetailsPage = () => {
         totalAmount: parseFloat(buyForm.quantityWanted) * parseFloat(buyForm.proposedPrice)
       };
 
+<<<<<<< HEAD
       await axios.post('http://localhost:5000/api/orders/create', orderData, {
+=======
+      await axios.post('/api/orders/create', orderData, {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -235,11 +293,27 @@ const ListingDetailsPage = () => {
   // Edit form handlers
   const handleShowEditForm = () => {
     if (!listing) return;
+<<<<<<< HEAD
     
     // Navigate to edit page with listing data
     navigate(`/farmer/listing/edit/${listing._id}`, { 
       state: { listing } 
     });
+=======
+
+    // Pre-fill the edit form with current listing data
+    setEditForm({
+      title: listing.title || '',
+      crop_variety: listing.crop_variety || '',
+      quantity_in_tons: listing.quantity_in_tons?.toString() || '',
+      expected_price_per_ton: listing.expected_price_per_ton?.toString() || '',
+      harvest_availability_date: listing.harvest_availability_date ? listing.harvest_availability_date.split('T')[0] : '',
+      location: listing.location || '',
+      description: listing.description || '',
+      status: listing.status || 'active'
+    });
+    setShowEditForm(true);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   };
 
   const handleEditFormChange = (e) => {
@@ -252,12 +326,20 @@ const ListingDetailsPage = () => {
 
   const handleSubmitEditForm = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     if (!listing) return;
 
     try {
       setIsUpdating(true);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       const token = localStorage.getItem('token');
       if (!token) {
         alert('Please login to update your listing');
@@ -277,7 +359,11 @@ const ListingDetailsPage = () => {
         status: editForm.status
       };
 
+<<<<<<< HEAD
       const response = await axios.put(`http://localhost:5000/api/listings/${listing._id}`, updateData, {
+=======
+      const response = await axios.put(`/api/listings/${listing._id}`, updateData, {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -340,12 +426,17 @@ const ListingDetailsPage = () => {
         return;
       }
 
+<<<<<<< HEAD
       const response = await axios.put(`http://localhost:5000/api/orders/${orderId}/status`, 
+=======
+      const response = await axios.put(`/api/orders/${orderId}/status`,
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         { status: 'accepted' },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
 
       if (response.data.success) {
+<<<<<<< HEAD
         // Show detailed result message
         let message = '✅ Order accepted successfully!';
         
@@ -388,6 +479,11 @@ const ListingDetailsPage = () => {
             // Just refresh the orders list
           }
         }
+=======
+        alert('✅ Order accepted successfully!');
+        // Refresh the orders list
+        fetchListingOrders();
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       } else {
         alert('❌ Failed to accept order: ' + response.data.message);
       }
@@ -406,7 +502,11 @@ const ListingDetailsPage = () => {
         return;
       }
 
+<<<<<<< HEAD
       const response = await axios.put(`http://localhost:5000/api/orders/${orderId}/status`, 
+=======
+      const response = await axios.put(`/api/orders/${orderId}/status`,
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         { status: 'rejected' },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
@@ -424,6 +524,7 @@ const ListingDetailsPage = () => {
     }
   };
 
+<<<<<<< HEAD
   // Handle deleting a listing
   const handleDeleteListing = async () => {
     if (!listing) return;
@@ -460,6 +561,8 @@ const ListingDetailsPage = () => {
     }
   };
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   if (loading) {
     return (
       <div className="loading-container">
@@ -474,7 +577,11 @@ const ListingDetailsPage = () => {
       <div className="error-container">
         <h2>❌ Error</h2>
         <p>{error}</p>
+<<<<<<< HEAD
         <button onClick={navigateToMarketplace} className="back-btn">
+=======
+        <button onClick={() => navigate('/farmer/marketplace')} className="back-btn">
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           ← Back to Marketplace
         </button>
       </div>
@@ -486,7 +593,11 @@ const ListingDetailsPage = () => {
       <div className="error-container">
         <h2>❌ Listing Not Found</h2>
         <p>The listing you're looking for doesn't exist.</p>
+<<<<<<< HEAD
         <button onClick={navigateToMarketplace} className="back-btn">
+=======
+        <button onClick={() => navigate('/farmer/marketplace')} className="back-btn">
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           ← Back to Marketplace
         </button>
       </div>
@@ -497,6 +608,7 @@ const ListingDetailsPage = () => {
   const daysUntilHarvest = Math.ceil(
     (new Date(listing.harvest_availability_date) - new Date()) / (1000 * 60 * 60 * 24)
   );
+<<<<<<< HEAD
   
   // Handle both old and new schema for price and quantity
   const pricePerTon = listing.price_details?.base_price_per_ton || 
@@ -505,12 +617,19 @@ const ListingDetailsPage = () => {
   const quantityInTons = listing.quantity_available?.value || listing.quantity_in_tons || 0;
   const isNegotiable = listing.price_details?.negotiable || false;
   const totalValue = quantityInTons * pricePerTon;
+=======
+  const totalValue = listing.quantity_in_tons * listing.expected_price_per_ton;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
   return (
     <div className="listing-details-page">
       {/* Header */}
       <div className="page-header">
+<<<<<<< HEAD
         <button onClick={navigateToMarketplace} className="back-btn">
+=======
+        <button onClick={() => navigate('/farmer/marketplace')} className="back-btn">
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           ← Back to Marketplace
         </button>
         <h1>Listing Details</h1>
@@ -541,17 +660,26 @@ const ListingDetailsPage = () => {
                   <span className="detail-icon">⚖️</span>
                   <div className="detail-content">
                     <label>Available Quantity</label>
+<<<<<<< HEAD
                     <span className="detail-value">{quantityInTons} gunthas</span>
+=======
+                    <span className="detail-value">{listing.quantity_in_tons} tons</span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                   </div>
                 </div>
                 <div className="detail-item">
                   <span className="detail-icon">💰</span>
                   <div className="detail-content">
+<<<<<<< HEAD
                     <label>Price per Guntha</label>
                     <span className="detail-value">
                       {formatPrice(pricePerTon)}
                       {isNegotiable && <span className="negotiable-badge"> (Negotiable)</span>}
                     </span>
+=======
+                    <label>Price per Ton</label>
+                    <span className="detail-value">{formatPrice(listing.expected_price_per_ton)}</span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                   </div>
                 </div>
                 <div className="detail-item total-value">
@@ -587,7 +715,11 @@ const ListingDetailsPage = () => {
                   <div className="detail-content">
                     <label>Availability</label>
                     <span className="detail-value">
+<<<<<<< HEAD
                       {daysUntilHarvest > 0 
+=======
+                      {daysUntilHarvest > 0
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         ? `Ready in ${daysUntilHarvest} days`
                         : 'Available now'
                       }
@@ -608,6 +740,7 @@ const ListingDetailsPage = () => {
             </div>
           )}
 
+<<<<<<< HEAD
           {/* Farm Images Section */}
           {listing.farm_images && listing.farm_images.length > 0 && (
             <div className="farm-images-section">
@@ -640,6 +773,8 @@ const ListingDetailsPage = () => {
             </div>
           )}
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           {/* Listing Info */}
           <div className="listing-meta">
             <div className="meta-item">
@@ -656,7 +791,11 @@ const ListingDetailsPage = () => {
         {/* Farmer Information Card */}
         <div className="farmer-info-card">
           <h2>👨‍🌾 Farmer Information</h2>
+<<<<<<< HEAD
           
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           <div className="farmer-profile">
             <div className="farmer-avatar">
               <span className="avatar-icon">👨‍🌾</span>
@@ -690,6 +829,7 @@ const ListingDetailsPage = () => {
 
           {/* Action Buttons */}
           {!isOwnListing ? (
+<<<<<<< HEAD
           <div className="action-buttons">
             <button 
               className="buy-btn-primary"
@@ -733,6 +873,58 @@ const ListingDetailsPage = () => {
               </button>
             </div>
           </div>
+=======
+            <div className="action-buttons">
+              <button
+                className="buy-btn-primary"
+                onClick={handleShowBuyForm}
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+                Buy This Sugarcane
+              </button>
+              <div className="secondary-actions">
+                <button
+                  className="contact-btn"
+                  onClick={() => {
+                    const message = `Hi ${farmer?.name}, I'm interested in your listing: "${listing.title}". Please let me know if it's still available.`;
+                    const mailtoLink = `mailto:${farmer?.email}?subject=Interested in ${listing.crop_variety}&body=${encodeURIComponent(message)}`;
+                    window.location.href = mailtoLink;
+                  }}
+                >
+                  📧 Contact Farmer
+                </button>
+                <button
+                  className="profile-btn"
+                  onClick={() => navigate(`farmer/${farmer?._id}`)}
+                >
+                  👤 View Profile
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="action-buttons">
+              <button
+                className="edit-btn-primary"
+                onClick={handleShowEditForm}
+              >
+                ✏️ Edit Listing
+              </button>
+              <div className="secondary-actions">
+                <button
+                  className="status-btn"
+                  onClick={() => {
+                    alert('Status management coming soon!');
+                  }}
+                >
+                  📊 Manage Status
+                </button>
+              </div>
+            </div>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           )}
 
           {/* Own Listing - Show Requests and Buy Calls */}
@@ -757,9 +949,15 @@ const ListingDetailsPage = () => {
                   <div className="no-requests-icon">📭</div>
                   <h4>No requests yet</h4>
                   <p>When other farmers are interested in your sugarcane, their buy requests will appear here.</p>
+<<<<<<< HEAD
                   <button 
                     className="back-to-marketplace-btn"
                     onClick={navigateToMarketplace}
+=======
+                  <button
+                    className="back-to-marketplace-btn"
+                    onClick={() => navigate('/marketplace')}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                   >
                     ← Back to Marketplace
                   </button>
@@ -795,11 +993,19 @@ const ListingDetailsPage = () => {
                         <div className="detail-row">
                           <div className="detail-item">
                             <span className="detail-label">Quantity Wanted:</span>
+<<<<<<< HEAD
                             <span className="detail-value">{order.orderDetails?.quantityWanted} gunthas</span>
                           </div>
                           <div className="detail-item">
                             <span className="detail-label">Proposed Price:</span>
                             <span className="detail-value">{formatPrice(order.orderDetails?.proposedPrice)}/guntha</span>
+=======
+                            <span className="detail-value">{order.orderDetails?.quantityWanted} tons</span>
+                          </div>
+                          <div className="detail-item">
+                            <span className="detail-label">Proposed Price:</span>
+                            <span className="detail-value">{formatPrice(order.orderDetails?.proposedPrice)}/ton</span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           </div>
                           <div className="detail-item">
                             <span className="detail-label">Total Amount:</span>
@@ -817,8 +1023,13 @@ const ListingDetailsPage = () => {
                         {order.orderDetails?.urgency && order.orderDetails.urgency !== 'normal' && (
                           <div className="urgency-indicator">
                             <span className={`urgency-badge urgency-${order.orderDetails.urgency}`}>
+<<<<<<< HEAD
                               {order.orderDetails.urgency === 'high' ? '⚡ High Priority' : 
                                order.orderDetails.urgency === 'urgent' ? '🔥 Urgent' : order.orderDetails.urgency}
+=======
+                              {order.orderDetails.urgency === 'high' ? '⚡ High Priority' :
+                                order.orderDetails.urgency === 'urgent' ? '🔥 Urgent' : order.orderDetails.urgency}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                             </span>
                           </div>
                         )}
@@ -852,13 +1063,21 @@ const ListingDetailsPage = () => {
                       <div className="request-actions">
                         {order.status === 'pending' && (
                           <div className="action-buttons">
+<<<<<<< HEAD
                             <button 
+=======
+                            <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                               className="accept-btn"
                               onClick={() => handleAcceptOrder(order.orderId)}
                             >
                               ✅ Accept
                             </button>
+<<<<<<< HEAD
                             <button 
+=======
+                            <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                               className="reject-btn"
                               onClick={() => handleRejectOrder(order.orderId)}
                             >
@@ -866,12 +1085,21 @@ const ListingDetailsPage = () => {
                             </button>
                           </div>
                         )}
+<<<<<<< HEAD
                         
                         <div className="contact-buttons">
                           <button 
                             className="contact-buyer-btn"
                             onClick={() => {
                               const message = `Hi ${order.buyerDetails?.name}, Thank you for your interest in my sugarcane listing. I received your request for ${order.orderDetails?.quantityWanted} gunthas. Let's discuss the details.`;
+=======
+
+                        <div className="contact-buttons">
+                          <button
+                            className="contact-buyer-btn"
+                            onClick={() => {
+                              const message = `Hi ${order.buyerDetails?.name}, Thank you for your interest in my sugarcane listing. I received your request for ${order.orderDetails?.quantityWanted} tons. Let's discuss the details.`;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                               const mailtoLink = `mailto:${order.buyerDetails?.email}?subject=Response to your sugarcane request&body=${encodeURIComponent(message)}`;
                               window.location.href = mailtoLink;
                             }}
@@ -879,7 +1107,11 @@ const ListingDetailsPage = () => {
                             📧 Contact Buyer
                           </button>
                           {order.buyer?.username && (
+<<<<<<< HEAD
                             <button 
+=======
+                            <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                               className="view-buyer-profile-btn"
                               onClick={() => navigate(`/profile/${order.buyerId}`)}
                             >
@@ -903,7 +1135,11 @@ const ListingDetailsPage = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>💰 Place Buy Order</h2>
+<<<<<<< HEAD
               <button 
+=======
+              <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 className="close-btn"
                 onClick={() => setShowBuyForm(false)}
               >
@@ -915,9 +1151,15 @@ const ListingDetailsPage = () => {
               <div className="order-summary">
                 <h3>Order Summary</h3>
                 <p><strong>Crop:</strong> {listing.title}</p>
+<<<<<<< HEAD
                 <p><strong>Variety:</strong> {listing.sugarcane_variety || listing.crop_variety}</p>
                 <p><strong>Available Quantity:</strong> {quantityInTons} gunthas</p>
                 <p><strong>Listed Price:</strong> {formatPrice(pricePerTon)}/guntha {isNegotiable && '(Negotiable)'}</p>
+=======
+                <p><strong>Variety:</strong> {listing.crop_variety}</p>
+                <p><strong>Available Quantity:</strong> {listing.quantity_in_tons} tons</p>
+                <p><strong>Listed Price:</strong> {formatPrice(listing.expected_price_per_ton)}/ton</p>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
               </div>
 
               <form onSubmit={handleSubmitBuyOrder} className="buy-form">
@@ -963,7 +1205,11 @@ const ListingDetailsPage = () => {
                     />
                   </div>
                   <div className="form-group">
+<<<<<<< HEAD
                     <label htmlFor="quantityWanted">Quantity Wanted (gunthas) *</label>
+=======
+                    <label htmlFor="quantityWanted">Quantity Wanted (tons) *</label>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <input
                       type="number"
                       id="quantityWanted"
@@ -981,7 +1227,11 @@ const ListingDetailsPage = () => {
 
                 <div className="form-row">
                   <div className="form-group">
+<<<<<<< HEAD
                     <label htmlFor="proposedPrice">Proposed Price per Guntha *</label>
+=======
+                    <label htmlFor="proposedPrice">Proposed Price per Ton *</label>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <input
                       type="number"
                       id="proposedPrice"
@@ -1063,7 +1313,11 @@ const ListingDetailsPage = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>✏️ Edit Listing</h2>
+<<<<<<< HEAD
               <button 
+=======
+              <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 className="close-btn"
                 onClick={handleCancelEdit}
               >
@@ -1102,7 +1356,11 @@ const ListingDetailsPage = () => {
 
                 <div className="form-row">
                   <div className="form-group">
+<<<<<<< HEAD
                     <label htmlFor="editQuantity">Quantity (gunthas) *</label>
+=======
+                    <label htmlFor="editQuantity">Quantity (tons) *</label>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <input
                       type="number"
                       id="editQuantity"
@@ -1112,11 +1370,19 @@ const ListingDetailsPage = () => {
                       required
                       min="0.1"
                       step="0.1"
+<<<<<<< HEAD
                       placeholder="Enter quantity in gunthas"
                     />
                   </div>
                   <div className="form-group">
                     <label htmlFor="editPrice">Expected Price per Guntha (₹) *</label>
+=======
+                      placeholder="Enter quantity in tons"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="editPrice">Expected Price per Ton (₹) *</label>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <input
                       type="number"
                       id="editPrice"
@@ -1126,7 +1392,11 @@ const ListingDetailsPage = () => {
                       required
                       min="1000"
                       step="100"
+<<<<<<< HEAD
                       placeholder="Enter price per guntha"
+=======
+                      placeholder="Enter price per ton"
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     />
                   </div>
                 </div>
@@ -1186,16 +1456,27 @@ const ListingDetailsPage = () => {
                 </div>
 
                 <div className="form-actions">
+<<<<<<< HEAD
                   <button 
                     type="button" 
                     onClick={handleCancelEdit} 
+=======
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     className="cancel-btn"
                     disabled={isUpdating}
                   >
                     Cancel
                   </button>
+<<<<<<< HEAD
                   <button 
                     type="submit" 
+=======
+                  <button
+                    type="submit"
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     className="submit-btn"
                     disabled={isUpdating}
                   >
@@ -1214,7 +1495,11 @@ const ListingDetailsPage = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>✏️ Edit Listing</h2>
+<<<<<<< HEAD
               <button 
+=======
+              <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 className="close-btn"
                 onClick={handleCancelEdit}
               >
@@ -1258,7 +1543,11 @@ const ListingDetailsPage = () => {
 
                 <div className="form-row">
                   <div className="form-group">
+<<<<<<< HEAD
                     <label htmlFor="editQuantity">Quantity (gunthas) *</label>
+=======
+                    <label htmlFor="editQuantity">Quantity (tons) *</label>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <input
                       type="number"
                       id="editQuantity"
@@ -1272,7 +1561,11 @@ const ListingDetailsPage = () => {
                     />
                   </div>
                   <div className="form-group">
+<<<<<<< HEAD
                     <label htmlFor="editPrice">Price per Guntha (₹) *</label>
+=======
+                    <label htmlFor="editPrice">Price per Ton (₹) *</label>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <input
                       type="number"
                       id="editPrice"
@@ -1282,7 +1575,11 @@ const ListingDetailsPage = () => {
                       required
                       min="1000"
                       step="100"
+<<<<<<< HEAD
                       placeholder="Enter price per guntha"
+=======
+                      placeholder="Enter price per ton"
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     />
                   </div>
                 </div>
@@ -1354,7 +1651,11 @@ const ListingDetailsPage = () => {
         </div>
       )}
 
+<<<<<<< HEAD
       <style>{`
+=======
+      <style jsx>{`
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         .listing-details-page {
           max-width: 1400px;
           margin: 0 auto;
@@ -1478,6 +1779,7 @@ const ListingDetailsPage = () => {
           margin-bottom: 0.25rem;
         }
 
+<<<<<<< HEAD
         .negotiable-badge {
           font-size: 0.85rem;
           color: #4caf50;
@@ -1485,6 +1787,8 @@ const ListingDetailsPage = () => {
           font-style: italic;
         }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         .detail-value {
           font-weight: 600;
           color: #333;
@@ -1669,6 +1973,7 @@ const ListingDetailsPage = () => {
           box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
         }
 
+<<<<<<< HEAD
         .delete-btn {
           background: linear-gradient(135deg, #f44336, #d32f2f);
           color: white;
@@ -1687,6 +1992,8 @@ const ListingDetailsPage = () => {
           box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
         }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         .secondary-actions {
           display: flex;
           gap: 1rem;
@@ -2277,6 +2584,7 @@ const ListingDetailsPage = () => {
           box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
         }
 
+<<<<<<< HEAD
         /* Farm Images Section */
         .farm-images-section {
           margin: 1.5rem 0;
@@ -2318,6 +2626,8 @@ const ListingDetailsPage = () => {
           display: block;
         }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         @media (max-width: 768px) {
           .listing-details-page {
             padding: 1rem;

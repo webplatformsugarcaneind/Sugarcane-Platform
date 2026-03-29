@@ -17,7 +17,10 @@ const {
   getApplications,
   updateApplicationStatus,
   updateWorkerAvailability,
+<<<<<<< HEAD
   releaseWorker,
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   getProfile,
   updateProfile,
   getFactoryInvitations,
@@ -145,6 +148,7 @@ router.get('/workers', getWorkers);
  */
 router.put('/workers/:workerId/availability', updateWorkerAvailability);
 
+<<<<<<< HEAD
 /**
  * @route   POST /api/hhm/release-worker
  * @desc    Release a worker from exclusive employment (end contract)
@@ -153,6 +157,8 @@ router.put('/workers/:workerId/availability', updateWorkerAvailability);
  */
 router.post('/release-worker', releaseWorker);
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 // ================================
 // INVITATION MANAGEMENT ROUTES (DIRECT HIRE)
 // ================================

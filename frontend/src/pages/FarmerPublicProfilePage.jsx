@@ -31,6 +31,7 @@ const FarmerPublicProfilePage = () => {
     urgency: 'normal'
   });
 
+<<<<<<< HEAD
   // Enhanced navigation function with fallback options
   const navigateToMarketplace = () => {
     try {
@@ -55,6 +56,8 @@ const FarmerPublicProfilePage = () => {
     }
   };
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   // Fetch farmer profile and listings
   useEffect(() => {
     const fetchFarmerData = async () => {
@@ -63,11 +66,19 @@ const FarmerPublicProfilePage = () => {
         setError(null);
 
         // Fetch farmer profile (public route)
+<<<<<<< HEAD
         const profileResponse = await axios.get(`http://localhost:5000/api/public/farmers/${farmerId}`);
         setFarmer(profileResponse.data.data);
 
         // Fetch farmer's listings
         const listingsResponse = await axios.get(`http://localhost:5000/api/listings/marketplace?farmer_id=${farmerId}`);
+=======
+        const profileResponse = await axios.get(`/api/public/farmers/${farmerId}`);
+        setFarmer(profileResponse.data.data);
+
+        // Fetch farmer's listings
+        const listingsResponse = await axios.get(`/api/listings/marketplace?farmer_id=${farmerId}`);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         setListings(listingsResponse.data.data || []);
 
       } catch (err) {
@@ -123,7 +134,11 @@ const FarmerPublicProfilePage = () => {
       };
 
       // Submit buy order (you'll need to create this API endpoint)
+<<<<<<< HEAD
       await axios.post('http://localhost:5000/api/orders/create', orderData, {
+=======
+      await axios.post('/api/orders/create', orderData, {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -178,7 +193,11 @@ const FarmerPublicProfilePage = () => {
       <div className="error-container">
         <h2>❌ Error</h2>
         <p>{error}</p>
+<<<<<<< HEAD
         <button onClick={navigateToMarketplace} className="back-btn">
+=======
+        <button onClick={() => navigate('/farmer/marketplace')} className="back-btn">
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           ← Back to Marketplace
         </button>
       </div>
@@ -190,7 +209,11 @@ const FarmerPublicProfilePage = () => {
       <div className="error-container">
         <h2>❌ Farmer Not Found</h2>
         <p>The farmer profile you're looking for doesn't exist.</p>
+<<<<<<< HEAD
         <button onClick={navigateToMarketplace} className="back-btn">
+=======
+        <button onClick={() => navigate('/farmer/marketplace')} className="back-btn">
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           ← Back to Marketplace
         </button>
       </div>
@@ -201,7 +224,11 @@ const FarmerPublicProfilePage = () => {
     <div className="farmer-profile-page">
       {/* Header */}
       <div className="page-header">
+<<<<<<< HEAD
         <button onClick={navigateToMarketplace} className="back-btn">
+=======
+        <button onClick={() => navigate('/farmer/marketplace')} className="back-btn">
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           ← Back to Marketplace
         </button>
         <h1>Farmer Profile</h1>
@@ -286,10 +313,17 @@ const FarmerPublicProfilePage = () => {
                 <div className="listing-details">
                   <div className="detail-item">
                     <span className="detail-label">Quantity</span>
+<<<<<<< HEAD
                     <span className="detail-value">{listing.quantity_in_tons} gunthas</span>
                   </div>
                   <div className="detail-item">
                     <span className="detail-label">Price per guntha</span>
+=======
+                    <span className="detail-value">{listing.quantity_in_tons} tons</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Price per ton</span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <span className="detail-value">{formatPrice(listing.expected_price_per_ton)}</span>
                   </div>
                   <div className="detail-item">
@@ -358,8 +392,13 @@ const FarmerPublicProfilePage = () => {
                 <h3>Order Summary</h3>
                 <p><strong>Crop:</strong> {selectedListing.title}</p>
                 <p><strong>Variety:</strong> {selectedListing.crop_variety}</p>
+<<<<<<< HEAD
                 <p><strong>Available Quantity:</strong> {selectedListing.quantity_in_tons} gunthas</p>
                 <p><strong>Listed Price:</strong> {formatPrice(selectedListing.expected_price_per_ton)}/guntha</p>
+=======
+                <p><strong>Available Quantity:</strong> {selectedListing.quantity_in_tons} tons</p>
+                <p><strong>Listed Price:</strong> {formatPrice(selectedListing.expected_price_per_ton)}/ton</p>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
               </div>
 
               <form onSubmit={handleSubmitBuyOrder} className="buy-form">
@@ -404,7 +443,11 @@ const FarmerPublicProfilePage = () => {
                     />
                   </div>
                   <div className="form-group">
+<<<<<<< HEAD
                     <label htmlFor="quantityWanted">Quantity Wanted (gunthas) *</label>
+=======
+                    <label htmlFor="quantityWanted">Quantity Wanted (tons) *</label>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <input
                       type="number"
                       id="quantityWanted"
@@ -422,7 +465,11 @@ const FarmerPublicProfilePage = () => {
 
                 <div className="form-row">
                   <div className="form-group">
+<<<<<<< HEAD
                     <label htmlFor="proposedPrice">Proposed Price per Guntha *</label>
+=======
+                    <label htmlFor="proposedPrice">Proposed Price per Ton *</label>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <input
                       type="number"
                       id="proposedPrice"

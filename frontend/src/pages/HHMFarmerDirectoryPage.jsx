@@ -68,7 +68,11 @@ const HHMFarmerDirectoryPage = () => {
 
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         setError('No authentication token found. Please login again.');
         return;
@@ -87,7 +91,11 @@ const HHMFarmerDirectoryPage = () => {
     } catch (err) {
       console.error('Error fetching farmers:', err);
       setError(
+<<<<<<< HEAD
         err.response?.data?.message || 
+=======
+        err.response?.data?.message ||
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         'Failed to fetch farmer directory. Please try again.'
       );
     } finally {
@@ -204,8 +212,13 @@ const HHMFarmerDirectoryPage = () => {
             <div className="error-icon">⚠️</div>
             <h3>Error Loading Directory</h3>
             <p className="error-message">{error}</p>
+<<<<<<< HEAD
             <button 
               onClick={fetchFarmers} 
+=======
+            <button
+              onClick={fetchFarmers}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
               className="retry-button"
             >
               Try Again
@@ -216,8 +229,13 @@ const HHMFarmerDirectoryPage = () => {
             <div className="empty-icon">🌾</div>
             <h3>No Farmers Found</h3>
             <p>
+<<<<<<< HEAD
               {searchTerm || selectedLocation 
                 ? 'Try adjusting your search or filter criteria.' 
+=======
+              {searchTerm || selectedLocation
+                ? 'Try adjusting your search or filter criteria.'
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 : 'No farmers are currently available in the directory.'
               }
             </p>
@@ -270,7 +288,19 @@ const HHMFarmerDirectoryPage = () => {
                   {/* Farm Information */}
                   {(farmer.farmSize || farmer.farmType || farmer.experience) && (
                     <div className="farm-info">
+<<<<<<< HEAD
                       <h4>🚜 Farm Details</h4>
+=======
+                      <h4>
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                          <rect x="3" y="3" width="7" height="9" />
+                          <rect x="14" y="3" width="7" height="5" />
+                          <rect x="14" y="12" width="7" height="9" />
+                          <rect x="3" y="16" width="7" height="5" />
+                        </svg>
+                        Farm Details
+                      </h4>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                       {farmer.farmSize && (
                         <div className="info-item">
                           <span className="info-label">Farm Size:</span>
@@ -309,7 +339,11 @@ const HHMFarmerDirectoryPage = () => {
                 </div>
 
                 <div className="card-actions">
+<<<<<<< HEAD
                   <button 
+=======
+                  <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     className="contact-btn"
                     onClick={() => {
                       if (farmer.email) {
@@ -319,7 +353,11 @@ const HHMFarmerDirectoryPage = () => {
                   >
                     📧 Contact
                   </button>
+<<<<<<< HEAD
                   <button 
+=======
+                  <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     className="view-profile-btn"
                     onClick={() => navigate(farmer._id)}
                   >

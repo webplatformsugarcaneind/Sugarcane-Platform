@@ -2,8 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ContractRequestModal from '../components/ContractRequestModal';
+<<<<<<< HEAD
 
 axios.defaults.baseURL = 'http://localhost:5000';
+=======
+import { configureAxios } from '../config/api';
+
+configureAxios(axios);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
 /**
  * HHMSpecificFactoryPage Component
@@ -14,7 +20,11 @@ axios.defaults.baseURL = 'http://localhost:5000';
 const HHMSpecificFactoryPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   const [factory, setFactory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,6 +39,7 @@ const HHMSpecificFactoryPage = () => {
     try {
       setLoading(true);
       setError(null);
+<<<<<<< HEAD
       
       console.log('🔄 Fetching factory details for ID:', id);
       
@@ -36,6 +47,15 @@ const HHMSpecificFactoryPage = () => {
       
       console.log('✅ Factory details response:', response.data);
       
+=======
+
+      console.log('🔄 Fetching factory details for ID:', id);
+
+      const response = await axios.get(`/api/public/factories/${id}`);
+
+      console.log('✅ Factory details response:', response.data);
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (response.data.success) {
         const factoryData = response.data.data?.factory || response.data.factory || null;
         setFactory(factoryData);
@@ -55,7 +75,11 @@ const HHMSpecificFactoryPage = () => {
     try {
       setCheckingAssociation(true);
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       const response = await axios.get('/api/hhm/associated-factories', {
         headers: {
           Authorization: `Bearer ${token}`
@@ -95,7 +119,11 @@ const HHMSpecificFactoryPage = () => {
 
   const handleSendInvitation = async () => {
     if (!factory) return;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Prevent multiple concurrent requests
     if (sendingInvitation) return;
 
@@ -106,13 +134,21 @@ const HHMSpecificFactoryPage = () => {
       // Debug: Log the factory object and what we're sending
       console.log('🔍 Factory object:', factory);
       console.log('🔍 Factory ID being sent:', factory._id || factory.id);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       const requestData = {
         factoryId: factory._id || factory.id,
         personalMessage: `I would like to establish a partnership with ${factory.name}`,
         invitationReason: 'Seeking collaboration opportunities for worker placement and operations'
       };
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       console.log('🔍 Request data being sent:', requestData);
 
       await axios.post('/api/hhm/invite-factory', requestData, {
@@ -125,9 +161,15 @@ const HHMSpecificFactoryPage = () => {
     } catch (err) {
       console.error('Error sending invitation:', err);
       console.error('Error response data:', err.response?.data);
+<<<<<<< HEAD
       
       let errorMessage = 'Failed to send invitation';
       
+=======
+
+      let errorMessage = 'Failed to send invitation';
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (err.response?.data?.message) {
         const backendMessage = err.response.data.message;
         if (backendMessage.includes('pending invitation')) {
@@ -142,7 +184,11 @@ const HHMSpecificFactoryPage = () => {
       } else if (err.response?.status) {
         errorMessage = `Failed to send invitation (Error ${err.response.status})`;
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       alert(`❌ ${errorMessage}`);
     } finally {
       setSendingInvitation(false);
@@ -151,14 +197,24 @@ const HHMSpecificFactoryPage = () => {
 
   const handleRemoveAssociation = async () => {
     if (!factory) return;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Show confirmation dialog
     const confirmRemoval = window.confirm(
       `Are you sure you want to end the contract/association with ${factory.name}? This action cannot be undone.`
     );
+<<<<<<< HEAD
     
     if (!confirmRemoval) return;
     
+=======
+
+    if (!confirmRemoval) return;
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     try {
       setRemovingAssociation(true);
       const token = localStorage.getItem('token');
@@ -174,15 +230,25 @@ const HHMSpecificFactoryPage = () => {
     } catch (err) {
       console.error('Error removing association:', err);
       console.error('Error response data:', err.response?.data);
+<<<<<<< HEAD
       
       let errorMessage = 'Failed to remove association';
       
+=======
+
+      let errorMessage = 'Failed to remove association';
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (err.response?.status) {
         errorMessage = `Failed to remove association (Error ${err.response.status})`;
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       alert(`❌ ${errorMessage}`);
     } finally {
       setRemovingAssociation(false);
@@ -353,7 +419,17 @@ const HHMSpecificFactoryPage = () => {
           }}
           onClick={() => setActiveTab('partnership')}
         >
+<<<<<<< HEAD
           🤝 Partnership
+=======
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <line x1="19" y1="8" x2="19" y2="14" />
+            <line x1="22" y1="11" x2="16" y2="11" />
+          </svg>
+          Partnership
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         </button>
       </div>
 
@@ -426,7 +502,11 @@ const HHMSpecificFactoryPage = () => {
                     </div>
                   </div>
                 )}
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 {factory.contactInfo?.phone && (
                   <div style={styles.contactCard}>
                     <div style={styles.contactIcon}>📱</div>
@@ -438,15 +518,25 @@ const HHMSpecificFactoryPage = () => {
                     </div>
                   </div>
                 )}
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 {factory.contactInfo?.website && (
                   <div style={styles.contactCard}>
                     <div style={styles.contactIcon}>🌐</div>
                     <div style={styles.contactContent}>
                       <div style={styles.contactLabel}>Website</div>
+<<<<<<< HEAD
                       <a 
                         href={factory.contactInfo.website.startsWith('http') 
                           ? factory.contactInfo.website 
+=======
+                      <a
+                        href={factory.contactInfo.website.startsWith('http')
+                          ? factory.contactInfo.website
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           : `https://${factory.contactInfo.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -500,6 +590,7 @@ const HHMSpecificFactoryPage = () => {
         {activeTab === 'operations' && (
           <div style={styles.tabPanel}>
             <div style={styles.section}>
+<<<<<<< HEAD
               <h2 style={styles.sectionTitle}>⚙️ Operations</h2>
               {factory.operatingSeason && (
                 <div style={styles.operatingSeasonCard}>
@@ -509,6 +600,22 @@ const HHMSpecificFactoryPage = () => {
                     <div style={styles.seasonValue}>{factory.operatingSeason}</div>
                   </div>
                 </div>
+=======
+              <h2 style={styles.sectionTitle}>Operating Hours</h2>
+              {factory.operatingHours && Object.keys(factory.operatingHours).length > 0 ? (
+                <div style={styles.operatingHoursGrid}>
+                  {Object.entries(factory.operatingHours).map(([key, value]) => (
+                    <div key={key} style={styles.operatingHourCard}>
+                      <span style={styles.dayLabel}>{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+                      <span style={styles.timeValue}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={styles.noDataMessage}>
+                  Operating hours information not available. Please contact the factory directly.
+                </p>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
               )}
             </div>
 
@@ -549,7 +656,19 @@ const HHMSpecificFactoryPage = () => {
         {activeTab === 'partnership' && (
           <div style={styles.tabPanel}>
             <div style={styles.section}>
+<<<<<<< HEAD
               <h2 style={styles.sectionTitle}>🤝 Partnership Opportunities</h2>
+=======
+              <h2 style={styles.sectionTitle}>
+                <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <line x1="19" y1="8" x2="19" y2="14" />
+                  <line x1="22" y1="11" x2="16" y2="11" />
+                </svg>
+                Partnership Opportunities
+              </h2>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
               <div style={styles.partnershipContent}>
                 <p style={styles.partnershipIntro}>
                   Connect with this factory to explore mutually beneficial partnership opportunities
@@ -598,7 +717,11 @@ const HHMSpecificFactoryPage = () => {
                   </p>
                   <div style={styles.ctaButtons}>
                     {isAssociated ? (
+<<<<<<< HEAD
                       <button 
+=======
+                      <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         style={{
                           ...styles.primaryButton,
                           backgroundColor: '#dc3545',
@@ -607,18 +730,47 @@ const HHMSpecificFactoryPage = () => {
                         onClick={handleRemoveAssociation}
                         disabled={removingAssociation || checkingAssociation}
                       >
+<<<<<<< HEAD
                         {removingAssociation ? '🔄 Removing...' : '🚫 End Contract'}
                       </button>
                     ) : (
                       <>
                         <button 
+=======
+                        {removingAssociation ? (
+                          <>
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                              <polyline points="23 4 23 10 17 10" />
+                              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                            </svg>
+                            Removing...
+                          </>
+                        ) : (
+                          <>
+                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                              <circle cx="12" cy="12" r="10" />
+                              <line x1="15" y1="9" x2="9" y2="15" />
+                              <line x1="9" y1="9" x2="15" y2="15" />
+                            </svg>
+                            End Contract
+                          </>
+                        )}
+                      </button>
+                    ) : (
+                      <>
+                        <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           style={styles.primaryButton}
                           onClick={handleSendInvitation}
                           disabled={sendingInvitation || checkingAssociation}
                         >
                           {sendingInvitation ? '🔄 Sending...' : '📨 Send Partnership Invitation'}
                         </button>
+<<<<<<< HEAD
                         <button 
+=======
+                        <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           style={styles.contractButton}
                           onClick={() => setShowContractModal(true)}
                         >
@@ -626,7 +778,11 @@ const HHMSpecificFactoryPage = () => {
                         </button>
                       </>
                     )}
+<<<<<<< HEAD
                     <button 
+=======
+                    <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                       style={styles.secondaryButton}
                       onClick={() => setActiveTab('contact')}
                     >
@@ -641,7 +797,11 @@ const HHMSpecificFactoryPage = () => {
       </div>
 
       {/* Contract Request Modal */}
+<<<<<<< HEAD
       <ContractRequestModal 
+=======
+      <ContractRequestModal
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         isOpen={showContractModal}
         onClose={() => setShowContractModal(false)}
         factoryInfo={factory}
@@ -887,6 +1047,7 @@ const styles = {
     gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
     gap: '1rem'
   },
+<<<<<<< HEAD
   operatingSeasonCard: {
     display: 'flex',
     alignItems: 'center',
@@ -916,6 +1077,8 @@ const styles = {
     fontWeight: '700',
     color: '#1b5e20'
   },
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   operatingHourCard: {
     display: 'flex',
     justifyContent: 'space-between',

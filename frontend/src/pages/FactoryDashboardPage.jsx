@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PostBillForm from '../components/PostBillForm.jsx';
 import FactoryNotifications from '../components/FactoryNotifications.jsx';
+<<<<<<< HEAD
 import { CRUSHING_STATUS, getCrushingStatusDisplay, DEFAULT_CRUSHING_STATUS } from '../constants/crushingStatus.js';
 import { handleApiError, handleAuthError } from '../utils/authUtils';
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 import './FactoryDashboardPage.css';
 
 const FactoryDashboardPage = () => {
@@ -14,6 +17,7 @@ const FactoryDashboardPage = () => {
   const [success, setSuccess] = useState(null);
   const [dashboardStats, setDashboardStats] = useState({
     activeHHMs: 0,
+<<<<<<< HEAD
     totalRevenue: 0,
     productionVolume: 0,
     totalOrders: 0
@@ -22,6 +26,13 @@ const FactoryDashboardPage = () => {
   const [crushingStatus, setCrushingStatus] = useState(DEFAULT_CRUSHING_STATUS);
   const [crushingStatusLoading, setCrushingStatusLoading] = useState(true);
   const [crushingStatusUpdating, setCrushingStatusUpdating] = useState(false);
+=======
+    pendingBills: 0,
+    totalRevenue: 0,
+    activeJobs: 0
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   const navigate = useNavigate();
 
   // Get user information on component mount
@@ -31,10 +42,13 @@ const FactoryDashboardPage = () => {
       try {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
+<<<<<<< HEAD
         // Set initial crushing status from localStorage if available
         if (parsedUser.crushingStatus) {
           setCrushingStatus(parsedUser.crushingStatus);
         }
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       } catch (error) {
         console.error('Error parsing user data:', error);
       }
@@ -69,6 +83,7 @@ const FactoryDashboardPage = () => {
     fetchDashboardStats();
   }, []);
 
+<<<<<<< HEAD
   // Fetch crushing status
   useEffect(() => {
     const fetchCrushingStatus = async () => {
@@ -109,6 +124,8 @@ const FactoryDashboardPage = () => {
     fetchCrushingStatus();
   }, []);
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   const handlePostBill = () => {
     setIsModalOpen(true);
     setError(null);
@@ -159,6 +176,7 @@ const FactoryDashboardPage = () => {
     }
   };
 
+<<<<<<< HEAD
   const handleCrushingStatusChange = async (newStatus) => {
     if (crushingStatusUpdating) return;
 
@@ -220,10 +238,13 @@ const FactoryDashboardPage = () => {
     }
   };
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   return (
     <div className="factory-dashboard">
       {/* Header Section */}
       <div className="dashboard-header">
+<<<<<<< HEAD
         <div className="header-grid">
           <div className="welcome-section">
             <h1 className="dashboard-title">
@@ -257,6 +278,15 @@ const FactoryDashboardPage = () => {
               )}
             </div>
           </div>
+=======
+        <div className="welcome-section">
+          <h1 className="dashboard-title">
+            Welcome, {user?.name || 'Factory User'}!
+          </h1>
+          <p className="dashboard-subtitle">
+            Manage your factory operations and connect with the sugarcane ecosystem
+          </p>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         </div>
       </div>
 
@@ -328,7 +358,22 @@ const FactoryDashboardPage = () => {
             tabIndex={0}
           >
             <div className="card-icon">
+<<<<<<< HEAD
               🤝
+=======
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="icon"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             </div>
             <div className="card-content">
               <h3 className="card-title">My Associated HHMs</h3>
@@ -341,7 +386,72 @@ const FactoryDashboardPage = () => {
               </div>
             </div>
             <div className="card-arrow">
+<<<<<<< HEAD
               →
+=======
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="arrow-icon"
+              >
+                <path d="M5 12h14" />
+                <path d="M12 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Contract Management Card */}
+          <div
+            className="action-card contracts-card"
+            onClick={() => navigate('/factory/contracts')}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                navigate('/factory/contracts');
+              }
+            }}
+          >
+            <div className="card-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="icon"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14,2 14,8 20,8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <line x1="10" y1="9" x2="8" y2="9" />
+              </svg>
+            </div>
+            <div className="card-content">
+              <h3 className="card-title">Contract Management</h3>
+              <p className="card-description">
+                View and manage contract requests from HHMs
+              </p>
+              <div className="card-features">
+                <span className="feature-tag">• Approve/Reject</span>
+                <span className="feature-tag">• Track Status</span>
+                <span className="feature-tag">• View History</span>
+              </div>
+            </div>
+            <div className="card-arrow">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="arrow-icon"
+              >
+                <path d="M5 12h14" />
+                <path d="M12 5l7 7-7 7" />
+              </svg>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             </div>
           </div>
         </div>
@@ -359,6 +469,7 @@ const FactoryDashboardPage = () => {
           </div>
           <div className="stat-card">
             <div className="stat-number">
+<<<<<<< HEAD
               {statsLoading ? '...' : `₹${dashboardStats.totalRevenue.toLocaleString()}`}
             </div>
             <div className="stat-label">Factory Revenue</div>
@@ -377,6 +488,23 @@ const FactoryDashboardPage = () => {
             </div>
             <div className="stat-label">Customer Orders</div>
             <div className="stat-note">Coming Soon</div>
+=======
+              {statsLoading ? '...' : dashboardStats.pendingBills}
+            </div>
+            <div className="stat-label">Pending Bills</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">
+              {statsLoading ? '...' : `₹${dashboardStats.totalRevenue.toLocaleString()}`}
+            </div>
+            <div className="stat-label">Total Revenue</div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-number">
+              {statsLoading ? '...' : dashboardStats.activeJobs}
+            </div>
+            <div className="stat-label">Active Jobs</div>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           </div>
         </div>
       </div>
@@ -397,14 +525,33 @@ const FactoryDashboardPage = () => {
 
             {error && (
               <div className="alert alert-error">
+<<<<<<< HEAD
                 <span className="alert-icon">⚠️</span>
+=======
+                <span className="alert-icon">
+                  <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" strokeWidth="2" />
+                    <line x1="12" y1="9" x2="12" y2="13" strokeWidth="2" strokeLinecap="round" />
+                    <line x1="12" y1="17" x2="12" y2="17" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 {error}
               </div>
             )}
 
             {success && (
               <div className="alert alert-success">
+<<<<<<< HEAD
                 <span className="alert-icon">✅</span>
+=======
+                <span className="alert-icon">
+                  <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9" strokeWidth="2" />
+                    <path d="M9 12l2 2 4-4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 {success}
               </div>
             )}

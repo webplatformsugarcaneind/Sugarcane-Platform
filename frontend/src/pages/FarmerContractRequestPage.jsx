@@ -31,7 +31,11 @@ const FarmerContractRequestPage = () => {
   const fetchHHMDetails = async () => {
     try {
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       const response = await fetch(`http://localhost:5000/api/farmer/hhms/${hhmId}`, {
+=======
+      const response = await fetch(apiURL(`/api/farmer/hhms/${hhmId}`), {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -94,7 +98,11 @@ const FarmerContractRequestPage = () => {
         grace_period_days: parseInt(contractForm.grace_period_days)
       };
 
+<<<<<<< HEAD
       const response = await fetch('http://localhost:5000/api/farmer-contracts/request', {
+=======
+      const response = await fetch(apiURL('/api/farmer-contracts/request'), {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

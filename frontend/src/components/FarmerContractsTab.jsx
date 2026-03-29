@@ -19,7 +19,11 @@ const FarmerContractsTab = () => {
     try {
       setLoading(true);
       setError(null);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No authentication token found');
@@ -244,11 +248,19 @@ const FarmerContractsTab = () => {
                 <div className="contract-header">
                   <div className="contract-title">
                     <h4>{contract.contract_details?.workType || 'Job Request'}</h4>
+<<<<<<< HEAD
                     <span 
                       className="status-badge"
                       style={{ 
                         backgroundColor: statusStyle.bg, 
                         color: statusStyle.color 
+=======
+                    <span
+                      className="status-badge"
+                      style={{
+                        backgroundColor: statusStyle.bg,
+                        color: statusStyle.color
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                       }}
                     >
                       {statusStyle.label}
@@ -286,21 +298,53 @@ const FarmerContractsTab = () => {
                   </div>
 
                   {/* Show additional info based on status */}
+<<<<<<< HEAD
                   {contract.status === 'hhm_accepted' && (
                     <div className="status-info accepted">
                       <p>✅ Great! This HHM has accepted your job request. You can expect them to contact you soon.</p>
+=======
+                  {contract.status === 'accepted' && (
+                    <div className="status-info accepted">
+                      <p>
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Great! This HHM has accepted your job request. You can expect them to contact you soon.
+                      </p>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     </div>
                   )}
 
                   {contract.status === 'auto_cancelled' && (
                     <div className="status-info cancelled">
+<<<<<<< HEAD
                       <p>🚫 This request was automatically cancelled because another HHM accepted a different request from you.</p>
+=======
+                      <p>
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="15" y1="9" x2="9" y2="15" />
+                          <line x1="9" y1="9" x2="15" y2="15" />
+                        </svg>
+                        This request was automatically cancelled because another HHM accepted a different request from you.
+                      </p>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     </div>
                   )}
 
                   {contract.status === 'hhm_rejected' && (
                     <div className="status-info rejected">
+<<<<<<< HEAD
                       <p>❌ Unfortunately, this HHM couldn't take on your job request. You can send requests to other HHMs.</p>
+=======
+                      <p>
+                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                        Unfortunately, this HHM couldn't take on your job request. You can send requests to other HHMs.
+                      </p>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     </div>
                   )}
 

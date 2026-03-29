@@ -58,14 +58,21 @@ router.get('/factories', async (req, res) => {
       hhmCount: 0,
       isActive: true,
       capacity: user.capacity || 'Not specified',
+<<<<<<< HEAD
       crushingStatus: user.crushingStatus || 'OFF',
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       contactInfo: {
         phone: user.phone,
         email: user.email,
         website: user.contactInfo?.website || '',
         ...user.contactInfo
       },
+<<<<<<< HEAD
       operatingSeason: user.operatingSeason,
+=======
+      operatingHours: user.operatingHours || {},
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       experience: user.experience || 'Not specified',
       specialization: user.specialization || 'Sugar Processing',
       createdAt: user.createdAt,
@@ -161,14 +168,21 @@ router.get('/factories/:id', async (req, res) => {
       hhmCount: associatedHHMs ? associatedHHMs.length : 0,
       isActive: true,
       capacity: factoryUser.capacity || 'Not specified',
+<<<<<<< HEAD
       crushingStatus: factoryUser.crushingStatus || 'OFF',
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       contactInfo: {
         phone: factoryUser.phone,
         email: factoryUser.email,
         website: factoryUser.contactInfo?.website || '',
         ...factoryUser.contactInfo
       },
+<<<<<<< HEAD
       operatingSeason: factoryUser.operatingSeason,
+=======
+      operatingHours: factoryUser.operatingHours || {},
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       experience: factoryUser.experience || 'Not specified',
       specialization: factoryUser.specialization || 'Sugar Processing',
       createdAt: factoryUser.createdAt,

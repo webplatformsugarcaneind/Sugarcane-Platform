@@ -16,10 +16,14 @@ const {
   updateListing,
   deleteListing,
   getHHMs,
+<<<<<<< HEAD
   getFactories,
   getFactoryById,
   associateHHMs,
   removeHHMAssociation
+=======
+  getFactories
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 } = require('../controllers/farmer.controller');
 
 // Apply protection and authorization to all routes in this file
@@ -205,6 +209,7 @@ router.get('/hhms/:id', async (req, res) => {
  */
 router.get('/factories', getFactories);
 
+<<<<<<< HEAD
 /**
  * @route   GET /api/farmer/factories/:factoryId
  * @desc    Get specific factory details with HHM associations
@@ -226,4 +231,6 @@ router.post('/factories/:factoryId/associate-hhms', associateHHMs);
  */
 router.delete('/factories/:factoryId/remove-hhm/:hhmId', removeHHMAssociation);
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 module.exports = router;

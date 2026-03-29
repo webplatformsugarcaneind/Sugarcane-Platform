@@ -245,14 +245,22 @@ const PostBillForm = ({ onSubmit, onCancel, isLoading = false }) => {
         {/* Crop Quantity */}
         <div className="form-group">
           <label htmlFor="cropQuantity" className="form-label">
+<<<<<<< HEAD
             Crop Quantity (gunthas) *
+=======
+            Crop Quantity (tons) *
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           </label>
           <input
             type="number"
             id="cropQuantity"
             name="cropQuantity"
             className={`form-input ${errors.cropQuantity ? 'error' : ''}`}
+<<<<<<< HEAD
             placeholder="Enter quantity in gunthas"
+=======
+            placeholder="Enter quantity in tons"
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             value={formData.cropQuantity}
             onChange={handleInputChange}
             min="0"
@@ -284,7 +292,11 @@ const PostBillForm = ({ onSubmit, onCancel, isLoading = false }) => {
         {formData.cropQuantity && formData.totalAmount && (
           <div className="calculation-display">
             <div className="rate-info">
+<<<<<<< HEAD
               Rate per guntha: ${(parseFloat(formData.totalAmount) / parseFloat(formData.cropQuantity)).toFixed(2)}
+=======
+              Rate per ton: ${(parseFloat(formData.totalAmount) / parseFloat(formData.cropQuantity)).toFixed(2)}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             </div>
           </div>
         )}

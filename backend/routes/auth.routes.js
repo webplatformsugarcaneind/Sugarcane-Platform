@@ -204,8 +204,13 @@ router.post('/login', async (req, res) => {
       });
     }
 
+<<<<<<< HEAD
     // Compare password using the model's method
     const isPasswordValid = await user.comparePassword(password);
+=======
+    // Compare password using bcryptjs
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
     if (!isPasswordValid) {
       return res.status(401).json({

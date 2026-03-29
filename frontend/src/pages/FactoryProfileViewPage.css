@@ -126,6 +126,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
+<<<<<<< HEAD
 .badges-container {
     display: flex;
     gap: 1rem;
@@ -172,6 +173,8 @@
     }
 }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 .profile-content {
     max-width: 1200px;
     margin: 0 auto;
@@ -228,6 +231,7 @@
     font-weight: 500;
 }
 
+<<<<<<< HEAD
 .status-value {
     display: inline-flex;
     align-items: center;
@@ -471,6 +475,8 @@
     }
 }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 .description-content {
     background: #f1f8e9;
     padding: 1.5rem;

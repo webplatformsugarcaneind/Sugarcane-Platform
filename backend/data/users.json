@@ -69,7 +69,11 @@
     "username": "amitlabour",
     "phone": "9876543212",
     "email": "amit.kumar@example.com",
+<<<<<<< HEAD
     "role": "Labour",
+=======
+    "role": "Worker",
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     "password": "123456",
     "skills": "Sugarcane cutting, Field preparation, Irrigation, Equipment operation",
     "workPreferences": "Full-time, Day shifts, Outdoor work",
@@ -82,7 +86,11 @@
     "username": "meenalabour",
     "phone": "9876543215",
     "email": "meena.kumari@example.com",
+<<<<<<< HEAD
     "role": "Labour",
+=======
+    "role": "Worker",
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     "password": "123456",
     "skills": "Harvesting, Sorting, Packaging, Quality inspection",
     "workPreferences": "Part-time, Flexible hours, Seasonal work",
@@ -107,8 +115,16 @@
       "website": "https://maharashtrasugar.com",
       "fax": "+91-20-12345678"
     },
+<<<<<<< HEAD
     "operatingSeason": "October to March",
     "crushingStatus": "ON"
+=======
+    "operatingHours": {
+      "monday": "6:00 AM - 10:00 PM",
+      "tuesday": "6:00 AM - 10:00 PM",
+      "season": "October to March"
+    }
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   },
   {
     "name": "Rajesh Patel",
@@ -127,8 +143,16 @@
       "website": "https://goldensugarcane.com",
       "fax": "+91-20-12345678"
     },
+<<<<<<< HEAD
     "operatingSeason": "October to March",
     "crushingStatus": "OFF"
+=======
+    "operatingHours": {
+      "monday": "6:00 AM - 10:00 PM",
+      "tuesday": "6:00 AM - 10:00 PM",
+      "season": "October to March"
+    }
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   },
   {
     "name": "Deepak Sharma",
@@ -147,8 +171,16 @@
       "website": "https://sunrisesugar.co.in",
       "landline": "+91-253-2345678"
     },
+<<<<<<< HEAD
     "operatingSeason": "October to March",
     "crushingStatus": "ON"
+=======
+    "operatingHours": {
+      "shift1": "6:00 AM - 2:00 PM",
+      "shift2": "2:00 PM - 10:00 PM",
+      "season": "November to April"
+    }
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   },
   {
     "name": "Anita Joshi",
@@ -167,7 +199,15 @@
       "website": "https://greenvalleysugar.com",
       "tollfree": "1800-123-4567"
     },
+<<<<<<< HEAD
     "operatingSeason": "October to March",
     "crushingStatus": "ON"
+=======
+    "operatingHours": {
+      "daily": "5:00 AM - 11:00 PM",
+      "maintenance": "Sunday 11:00 PM - Monday 5:00 AM",
+      "season": "October to May"
+    }
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   }
 ]

@@ -6,8 +6,13 @@ import React, { useState } from 'react';
  * A form component for creating new crop listings with fields for:
  * - Title
  * - Crop variety  
+<<<<<<< HEAD
  * - Quantity in gunthas
  * - Expected price per guntha
+=======
+ * - Quantity in tons
+ * - Expected price per ton
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
  * - Harvest availability date
  * - Location
  * - Description (optional)
@@ -178,7 +183,11 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
         <div className="form-row">
           <div className="form-group">
             <label htmlFor="quantity_in_tons" className="form-label">
+<<<<<<< HEAD
               Quantity (gunthas) *
+=======
+              Quantity (tons) *
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             </label>
             <input
               type="number"
@@ -197,7 +206,11 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
 
           <div className="form-group">
             <label htmlFor="expected_price_per_ton" className="form-label">
+<<<<<<< HEAD
               Price per Guntha (₹) *
+=======
+              Price per Ton (₹) *
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             </label>
             <input
               type="number"

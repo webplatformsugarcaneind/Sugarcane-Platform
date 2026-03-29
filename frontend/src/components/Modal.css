@@ -6,7 +6,10 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
+<<<<<<< HEAD
   -webkit-backdrop-filter: blur(4px);
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -37,10 +40,13 @@
   flex-direction: column;
 }
 
+<<<<<<< HEAD
 .modal-container:focus {
   outline: none;
 }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 .modal-backdrop.open .modal-container {
   transform: scale(1) translateY(0);
 }
@@ -72,6 +78,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+<<<<<<< HEAD
   padding: 12px 24px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   margin-bottom: 0;
@@ -87,22 +94,48 @@
   line-height: 1.2;
   flex: 1;
   text-align: center;
+=======
+  padding: 24px 24px 0 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.modal-title {
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c5f2d;
+  line-height: 1.3;
+  flex: 1;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 }
 
 .modal-close-button {
   background: none;
   border: none;
   cursor: pointer;
+<<<<<<< HEAD
   padding: 4px;
   border-radius: 50%;
   width: 30px;
   height: 30px;
+=======
+  padding: 8px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
   color: #666;
   flex-shrink: 0;
+<<<<<<< HEAD
+=======
+  margin-bottom: 20px;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 }
 
 .modal-close-button:hover {
@@ -117,7 +150,11 @@
 }
 
 .close-icon {
+<<<<<<< HEAD
   font-size: 20px;
+=======
+  font-size: 24px;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   line-height: 1;
   font-weight: 300;
 }
@@ -287,12 +324,18 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
+<<<<<<< HEAD
     -webkit-backdrop-filter: blur(0px);
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     backdrop-filter: blur(0px);
   }
   to {
     opacity: 1;
+<<<<<<< HEAD
     -webkit-backdrop-filter: blur(4px);
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     backdrop-filter: blur(4px);
   }
 }
@@ -300,12 +343,18 @@
 @keyframes fadeOut {
   from {
     opacity: 1;
+<<<<<<< HEAD
     -webkit-backdrop-filter: blur(4px);
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     backdrop-filter: blur(4px);
   }
   to {
     opacity: 0;
+<<<<<<< HEAD
     -webkit-backdrop-filter: blur(0px);
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     backdrop-filter: blur(0px);
   }
 }

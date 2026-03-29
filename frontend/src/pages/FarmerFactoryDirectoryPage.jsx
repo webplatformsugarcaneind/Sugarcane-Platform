@@ -23,11 +23,14 @@ const FarmerFactoryDirectoryPage = () => {
     fetchFactories();
   }, []);
 
+<<<<<<< HEAD
   const handleAssociateHHM = (factoryId) => {
     // Navigate to HHM association page
     navigate(`/farmer/associate-hhm/${factoryId}`);
   };
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   const filterAndSortFactories = useCallback(() => {
     let filtered = [...factories];
 
@@ -417,6 +420,7 @@ const FarmerFactoryDirectoryPage = () => {
                       </div>
                     )}
                   </div>
+<<<<<<< HEAD
 
                   {/* Associated HHMs Section */}
                   {factory.associatedHHMs && factory.associatedHHMs.length > 0 && (
@@ -478,6 +482,8 @@ const FarmerFactoryDirectoryPage = () => {
                       </button>
                     </div>
                   )}
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 </div>
 
                 <div className="card-actions">
@@ -925,6 +931,7 @@ const FarmerFactoryDirectoryPage = () => {
           color: #666;
         }
 
+<<<<<<< HEAD
         /* Associated HHMs Styles */
         .associated-hhms-section {
           margin-top: 1rem;
@@ -1084,6 +1091,8 @@ const FarmerFactoryDirectoryPage = () => {
           font-size: 0.8rem;
         }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         .card-actions {
           display: flex;
           gap: 0.5rem;
@@ -1092,8 +1101,12 @@ const FarmerFactoryDirectoryPage = () => {
 
         .contact-btn,
         .visit-website-btn,
+<<<<<<< HEAD
         .view-details-btn,
         .associate-hhm-action-btn {
+=======
+        .view-details-btn {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           flex: 1;
           min-width: 120px;
           padding: 0.75rem;
@@ -1133,6 +1146,7 @@ const FarmerFactoryDirectoryPage = () => {
           border-color: #adb5bd;
         }
 
+<<<<<<< HEAD
         .associate-hhm-action-btn {
           background: #ff9800;
           color: white;
@@ -1142,6 +1156,8 @@ const FarmerFactoryDirectoryPage = () => {
           background: #f57c00;
         }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         @media (max-width: 768px) {
           .factory-directory-page {
             padding: 1rem;

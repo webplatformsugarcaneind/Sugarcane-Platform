@@ -10,7 +10,11 @@ dotenv.config();
 const User = require('./models/user.model');
 
 // Connect to MongoDB
+<<<<<<< HEAD
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sugarcane-ecosystem', {
+=======
+mongoose.connect(process.env.MONGO_URI, {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });

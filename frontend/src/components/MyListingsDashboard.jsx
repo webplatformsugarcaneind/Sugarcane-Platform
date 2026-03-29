@@ -40,7 +40,11 @@ const MyListingsDashboard = () => {
       }
 
       // Make API request to get user's listings
+<<<<<<< HEAD
       const response = await axios.get('http://localhost:5000/api/listings/my-listings', {
+=======
+      const response = await axios.get('/api/listings/my-listings', {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -111,7 +115,11 @@ const MyListingsDashboard = () => {
       }
 
       if (!formData.expected_price_per_ton || parseFloat(formData.expected_price_per_ton) <= 0) {
+<<<<<<< HEAD
         alert('❌ Please provide a valid price per guntha');
+=======
+        alert('❌ Please provide a valid price per ton');
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         return;
       }
 
@@ -197,7 +205,11 @@ const MyListingsDashboard = () => {
       console.log('Deleting listing:', listingId);
 
       // Make DELETE request
+<<<<<<< HEAD
       await axios.delete(`http://localhost:5000/api/listings/${listingId}`, {
+=======
+      await axios.delete(`/api/listings/${listingId}`, {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -368,13 +380,21 @@ const MyListingsDashboard = () => {
                               <div className="detail-item">
                                 <span className="detail-icon">⚖️</span>
                                 <span className="detail-text">
+<<<<<<< HEAD
                                   <strong>{listing.quantity_in_tons}</strong> gunthas
+=======
+                                  <strong>{listing.quantity_in_tons}</strong> tons
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                 </span>
                               </div>
                               <div className="detail-item">
                                 <span className="detail-icon">💰</span>
                                 <span className="detail-text">
+<<<<<<< HEAD
                                   <strong>{formatPrice(listing.expected_price_per_ton)}</strong>/guntha
+=======
+                                  <strong>{formatPrice(listing.expected_price_per_ton)}</strong>/ton
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                 </span>
                               </div>
                             </div>
@@ -505,7 +525,11 @@ const MyListingsDashboard = () => {
 
                           <div className="form-row">
                             <div className="form-group">
+<<<<<<< HEAD
                               <label>Quantity (gunthas) *</label>
+=======
+                              <label>Quantity (tons) *</label>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                               <input
                                 type="number"
                                 name="quantity_in_tons"
@@ -517,7 +541,11 @@ const MyListingsDashboard = () => {
                               />
                             </div>
                             <div className="form-group">
+<<<<<<< HEAD
                               <label>Expected Price (₹/guntha) *</label>
+=======
+                              <label>Expected Price (₹/ton) *</label>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                               <input
                                 type="number"
                                 name="expected_price_per_ton"

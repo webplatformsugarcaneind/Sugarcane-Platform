@@ -372,6 +372,7 @@ const getWorkers = async (req, res) => {
 
     console.log('👤 Found', workers.length, 'users with Worker role');
 
+<<<<<<< HEAD
     // Build profile query with exclusivity logic
     const profileQuery = {
       userId: { $in: workerIds },
@@ -382,6 +383,11 @@ const getWorkers = async (req, res) => {
         { currentEmployer: null },
         { currentEmployer: req.user._id }
       ]
+=======
+    // Build profile query
+    const profileQuery = {
+      userId: { $in: workerIds }
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     };
 
     // Add availabilityStatus filter - default to 'available' if not specified
@@ -394,9 +400,12 @@ const getWorkers = async (req, res) => {
       console.log('🔍 Default filter: showing only available workers');
     }
 
+<<<<<<< HEAD
     console.log('🏢 Applying worker exclusivity for HHM:', req.user._id);
     console.log('📋 Profile query with exclusivity:', JSON.stringify(profileQuery, null, 2));
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Add skills filter if provided
     if (skills) {
       const skillsArray = Array.isArray(skills) ? skills : skills.split(',');
@@ -443,10 +452,13 @@ const getWorkers = async (req, res) => {
       profileImage: profile.profileImageUrl,
       joinedDate: profile.userId.createdAt,
       isVerified: profile.isVerified,
+<<<<<<< HEAD
       // Employment status information
       isEmployedByMe: profile.isEmployedBy ? profile.isEmployedBy(req.user._id) : false,
       employmentStartDate: profile.employmentStartDate,
       isCurrentEmployee: profile.currentEmployer ? profile.currentEmployer.toString() === req.user._id.toString() : false,
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       // Additional profile information that might be useful for hiring decisions
       profileId: profile._id,
       rating: profile.rating || 0,
@@ -848,6 +860,7 @@ const updateApplicationStatus = async (req, res) => {
     if (status === 'approved') {
       await application.approve(reviewNotes);
 
+<<<<<<< HEAD
       // Mark worker as hired by this HHM (exclusive employment)
       try {
         const workerProfile = await Profile.findOne({ userId: application.workerId._id });
@@ -866,6 +879,19 @@ const updateApplicationStatus = async (req, res) => {
       } catch (employmentError) {
         console.error('❌ Error updating worker employment status:', employmentError);
         // Continue with the response even if employment status update fails
+=======
+      // Mark worker as unavailable when application is approved
+      try {
+        await User.findByIdAndUpdate(
+          application.workerId._id,
+          { availability: 'busy' },
+          { new: true }
+        );
+        console.log(`✅ Worker ${application.workerId.name} marked as unavailable`);
+      } catch (availabilityError) {
+        console.error('❌ Error updating worker availability:', availabilityError);
+        // Continue with the response even if availability update fails
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       }
     } else {
       await application.reject(reviewNotes);
@@ -1186,6 +1212,7 @@ const respondToFactoryInvitation = async (req, res) => {
       });
     }
 
+<<<<<<< HEAD
     // Check if invitation has expired
     if (invitation.expiresAt && new Date(invitation.expiresAt) < new Date()) {
       return res.status(400).json({
@@ -1194,6 +1221,8 @@ const respondToFactoryInvitation = async (req, res) => {
       });
     }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Update invitation status
     invitation.status = status;
     invitation.respondedAt = new Date();
@@ -1204,6 +1233,7 @@ const respondToFactoryInvitation = async (req, res) => {
 
     // If accepted, create bidirectional association
     if (status === 'accepted') {
+<<<<<<< HEAD
       try {
         // Add factory to HHM's associatedFactories
         const hhm = await User.findById(req.user._id);
@@ -1234,6 +1264,19 @@ const respondToFactoryInvitation = async (req, res) => {
         console.warn('⚠️  Association creation warning:', associationError.message);
         // Continue with the invitation acceptance even if association fails
       }
+=======
+      // Add factory to HHM's associatedFactories
+      const hhm = await User.findById(req.user._id);
+      await hhm.addFactory(invitation.factoryId);
+
+      // Add HHM to factory's associatedHHMs
+      const factory = await User.findById(invitation.factoryId);
+      if (factory) {
+        await factory.addHHM(req.user._id);
+      }
+
+      console.log('✅ Association created between factory and HHM');
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }
 
     // Populate invitation details
@@ -1267,7 +1310,11 @@ const getAssociatedFactories = async (req, res) => {
     console.log('📋 Getting associated factories for HHM:', req.user._id);
 
     const hhm = await User.findById(req.user._id)
+<<<<<<< HEAD
       .populate('associatedFactories', 'name email phone factoryName factoryLocation capacity contactInfo operatingSeason crushingStatus experience createdAt');
+=======
+      .populate('associatedFactories', 'name email phone factoryName factoryLocation capacity contactInfo experience createdAt');
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
     if (!hhm) {
       return res.status(404).json({
@@ -1734,6 +1781,7 @@ const getMyFactoryInvitations = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 /**
  * @desc    Release a worker (end exclusive employment)
  * @route   POST /api/hhm/release-worker
@@ -1799,6 +1847,8 @@ const releaseWorker = async (req, res) => {
   }
 };
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 module.exports = {
   // Schedule management
   createSchedule,
@@ -1819,7 +1869,10 @@ module.exports = {
 
   // Worker availability management
   updateWorkerAvailability,
+<<<<<<< HEAD
   releaseWorker,
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
   // Profile management
   getProfile,

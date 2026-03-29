@@ -10,7 +10,11 @@ import './FarmerProfileViewPage.css';
 const FarmerProfileViewPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Get farmer data from navigation state or fallback
     const farmerData = location.state?.farmerData || null;
 
@@ -40,6 +44,7 @@ const FarmerProfileViewPage = () => {
                 <button className="back-button" onClick={handleGoBack}>
                     ← Back to Directory
                 </button>
+<<<<<<< HEAD
                 
                 <div className="farmer-header">
                     <div className="farmer-avatar">
@@ -52,6 +57,23 @@ const FarmerProfileViewPage = () => {
                         <h1>{farmerData.name || 'Unknown Farmer'}</h1>
                         <p className="farmer-subtitle">
                             {farmerData.farmSize ? `${farmerData.farmSize} acres` : 'Farm Size Unknown'} • 
+=======
+
+                <div className="farmer-header">
+                    <div className="farmer-avatar">
+                        <div className="avatar-placeholder">
+                            <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" strokeWidth="2" fill="none">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div className="farmer-info">
+                        <h1>{farmerData.name || 'Unknown Farmer'}</h1>
+                        <p className="farmer-subtitle">
+                            {farmerData.farmSize ? `${farmerData.farmSize} acres` : 'Farm Size Unknown'} •
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                             {farmerData.location || 'Location Unknown'}
                         </p>
                         <p className="farmer-description">
@@ -74,7 +96,11 @@ const FarmerProfileViewPage = () => {
                                 <span>{farmerData.email || 'Not available'}</span>
                             </div>
                         </div>
+<<<<<<< HEAD
                         
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         <div className="contact-item">
                             <span className="contact-icon">📱</span>
                             <div className="contact-details">
@@ -82,7 +108,11 @@ const FarmerProfileViewPage = () => {
                                 <span>{farmerData.phone || 'Not available'}</span>
                             </div>
                         </div>
+<<<<<<< HEAD
                         
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         <div className="contact-item">
                             <span className="contact-icon">📍</span>
                             <div className="contact-details">
@@ -95,7 +125,19 @@ const FarmerProfileViewPage = () => {
 
                 {/* Farm Details */}
                 <div className="info-section">
+<<<<<<< HEAD
                     <h3>🚜 Farm Details</h3>
+=======
+                    <h3>
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                            <rect x="3" y="3" width="7" height="9" />
+                            <rect x="14" y="3" width="7" height="5" />
+                            <rect x="14" y="12" width="7" height="9" />
+                            <rect x="3" y="16" width="7" height="5" />
+                        </svg>
+                        Farm Details
+                    </h3>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <div className="farm-grid">
                         <div className="farm-detail">
                             <div className="detail-header">
@@ -139,12 +181,20 @@ const FarmerProfileViewPage = () => {
                             <span className="info-icon">👤</span>
                             <span>Username: {farmerData.username || 'Not available'}</span>
                         </div>
+<<<<<<< HEAD
                         
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         <div className="info-item">
                             <span className="info-icon">📅</span>
                             <span>Member since: {farmerData.createdAt ? new Date(farmerData.createdAt).toLocaleDateString() : 'Not available'}</span>
                         </div>
+<<<<<<< HEAD
                         
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         <div className="info-item">
                             <span className="info-icon">🔄</span>
                             <span>Last updated: {farmerData.updatedAt ? new Date(farmerData.updatedAt).toLocaleDateString() : 'Not available'}</span>
@@ -162,7 +212,11 @@ const FarmerProfileViewPage = () => {
                 }}>
                     📧 Send Email
                 </button>
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 {farmerData.phone && (
                     <button className="btn btn-secondary" onClick={() => {
                         window.location.href = `tel:${farmerData.phone}`;
@@ -170,7 +224,11 @@ const FarmerProfileViewPage = () => {
                         📱 Call
                     </button>
                 )}
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 <button className="btn btn-outline" onClick={handleGoBack}>
                     ← Back to Directory
                 </button>

@@ -6,8 +6,13 @@ import React, { useState } from 'react';
  * A form component for creating new crop listings with fields for:
  * - Title
  * - Crop variety  
+<<<<<<< HEAD
  * - Quantity in gunthas
  * - Expected price per guntha
+=======
+ * - Quantity in tons
+ * - Expected price per ton
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
  * - Harvest availability date
  * - Location
  * - Description (optional)
@@ -16,6 +21,7 @@ import React, { useState } from 'react';
  * <CreateListingForm onSubmit={handleSubmit} isSubmitting={false} />
  */
 const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
+<<<<<<< HEAD
   const [
     formData, setFormData] = useState({
     // Basic Information
@@ -49,10 +55,15 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
     description: '',
     
     // Legacy fields for backward compatibility
+=======
+  const [formData, setFormData] = useState({
+    title: '',
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     crop_variety: '',
     quantity_in_tons: '',
     expected_price_per_ton: '',
     harvest_availability_date: '',
+<<<<<<< HEAD
     location: ''
   });
 
@@ -93,6 +104,19 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
+=======
+    location: '',
+    description: ''
+  });
+
+  const [errors, setErrors] = useState({});
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }));
 
     // Clear error for this field when user starts typing
@@ -104,6 +128,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
     }
   };
 
+<<<<<<< HEAD
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     
@@ -156,11 +181,14 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
     setImageFiles(newFiles);
   };
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   const validateForm = () => {
     const newErrors = {};
 
     // Required field validation
     if (!formData.title.trim()) {
+<<<<<<< HEAD
       newErrors.title = 'Product title is required';
     }
 
@@ -227,11 +255,50 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
     // Minimum order quantity validation
     if (formData.minimum_order_quantity && Number(formData.minimum_order_quantity) > Number(formData.quantity_value)) {
       newErrors.minimum_order_quantity = 'Minimum order quantity cannot be greater than available quantity';
+=======
+      newErrors.title = 'Title is required';
+    }
+
+    if (!formData.crop_variety.trim()) {
+      newErrors.crop_variety = 'Crop variety is required';
+    }
+
+    if (!formData.quantity_in_tons) {
+      newErrors.quantity_in_tons = 'Quantity is required';
+    } else if (parseFloat(formData.quantity_in_tons) <= 0) {
+      newErrors.quantity_in_tons = 'Quantity must be greater than 0';
+    }
+
+    if (!formData.expected_price_per_ton) {
+      newErrors.expected_price_per_ton = 'Price is required';
+    } else if (parseFloat(formData.expected_price_per_ton) <= 0) {
+      newErrors.expected_price_per_ton = 'Price must be greater than 0';
+    }
+
+    if (!formData.harvest_availability_date) {
+      newErrors.harvest_availability_date = 'Harvest date is required';
+    } else {
+      const harvestDate = new Date(formData.harvest_availability_date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (harvestDate < today) {
+        newErrors.harvest_availability_date = 'Harvest date cannot be in the past';
+      }
+    }
+
+    if (!formData.location.trim()) {
+      newErrors.location = 'Location is required';
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+<<<<<<< HEAD
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -240,6 +307,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
     }
 
     try {
+<<<<<<< HEAD
       // Create FormData for file upload
       const submissionData = new FormData();
       
@@ -293,6 +361,18 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
       }
       submissionData.append('harvest_availability_date', formData.available_from);
       submissionData.append('location', formData.delivery_location.trim());
+=======
+      // Prepare form data for submission
+      const submissionData = {
+        title: formData.title.trim(),
+        crop_variety: formData.crop_variety.trim(),
+        quantity_in_tons: parseFloat(formData.quantity_in_tons),
+        expected_price_per_ton: parseFloat(formData.expected_price_per_ton),
+        harvest_availability_date: formData.harvest_availability_date,
+        location: formData.location.trim(),
+        description: formData.description.trim() || undefined
+      };
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
       // Call the onSubmit prop if provided
       if (onSubmit) {
@@ -302,6 +382,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
       // Reset form after successful submission
       setFormData({
         title: '',
+<<<<<<< HEAD
         sugarcane_variety: '',
         disease_free_status: '',
         certification_details: '',
@@ -319,13 +400,21 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
         preferred_delivery_time: '',
         farm_images: [],
         description: '',
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         crop_variety: '',
         quantity_in_tons: '',
         expected_price_per_ton: '',
         harvest_availability_date: '',
+<<<<<<< HEAD
         location: ''
       });
       setImageFiles([]);
+=======
+        location: '',
+        description: ''
+      });
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       setErrors({});
     } catch (error) {
       console.error('Error submitting listing:', error);
@@ -342,6 +431,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
   return (
     <div className="create-listing-form">
       <form onSubmit={handleSubmit} className="listing-form">
+<<<<<<< HEAD
         
         {/* Header */}
         <div className="form-header">
@@ -726,10 +816,124 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
                 ))}
               </div>
             )}
+=======
+        {/* Title */}
+        <div className="form-group">
+          <label htmlFor="title" className="form-label">
+            Listing Title *
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className={`form-input ${errors.title ? 'error' : ''}`}
+            placeholder="e.g., Premium Quality Sugarcane for Sale"
+            disabled={isSubmitting}
+          />
+          {errors.title && <span className="error-message">{errors.title}</span>}
+        </div>
+
+        {/* Crop Variety */}
+        <div className="form-group">
+          <label htmlFor="crop_variety" className="form-label">
+            Crop Variety *
+          </label>
+          <input
+            type="text"
+            id="crop_variety"
+            name="crop_variety"
+            value={formData.crop_variety}
+            onChange={handleChange}
+            className={`form-input ${errors.crop_variety ? 'error' : ''}`}
+            placeholder="e.g., Co 86032, Co 238, Co 0233"
+            disabled={isSubmitting}
+          />
+          {errors.crop_variety && <span className="error-message">{errors.crop_variety}</span>}
+        </div>
+
+        {/* Quantity and Price Row */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="quantity_in_tons" className="form-label">
+              Quantity (tons) *
+            </label>
+            <input
+              type="number"
+              id="quantity_in_tons"
+              name="quantity_in_tons"
+              value={formData.quantity_in_tons}
+              onChange={handleChange}
+              className={`form-input ${errors.quantity_in_tons ? 'error' : ''}`}
+              placeholder="25.5"
+              min="0"
+              step="0.1"
+              disabled={isSubmitting}
+            />
+            {errors.quantity_in_tons && <span className="error-message">{errors.quantity_in_tons}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="expected_price_per_ton" className="form-label">
+              Price per Ton (₹) *
+            </label>
+            <input
+              type="number"
+              id="expected_price_per_ton"
+              name="expected_price_per_ton"
+              value={formData.expected_price_per_ton}
+              onChange={handleChange}
+              className={`form-input ${errors.expected_price_per_ton ? 'error' : ''}`}
+              placeholder="3500"
+              min="0"
+              step="1"
+              disabled={isSubmitting}
+            />
+            {errors.expected_price_per_ton && <span className="error-message">{errors.expected_price_per_ton}</span>}
+          </div>
+        </div>
+
+        {/* Harvest Date and Location Row */}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="harvest_availability_date" className="form-label">
+              Harvest Available Date *
+            </label>
+            <input
+              type="date"
+              id="harvest_availability_date"
+              name="harvest_availability_date"
+              value={formData.harvest_availability_date}
+              onChange={handleChange}
+              className={`form-input ${errors.harvest_availability_date ? 'error' : ''}`}
+              min={getMinDate()}
+              disabled={isSubmitting}
+            />
+            {errors.harvest_availability_date && <span className="error-message">{errors.harvest_availability_date}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="location" className="form-label">
+              Location *
+            </label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              className={`form-input ${errors.location ? 'error' : ''}`}
+              placeholder="e.g., Pune, Maharashtra"
+              disabled={isSubmitting}
+            />
+            {errors.location && <span className="error-message">{errors.location}</span>}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           </div>
         </div>
 
         {/* Description */}
+<<<<<<< HEAD
         <div className="form-section">
           <h3>📝 Additional Details</h3>
           
@@ -750,6 +954,34 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
           </div>
         </div>
 
+=======
+        <div className="form-group">
+          <label htmlFor="description" className="form-label">
+            Description (optional)
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="form-textarea"
+            placeholder="Additional details about the crop quality, farming methods, etc."
+            rows="4"
+            disabled={isSubmitting}
+          />
+        </div>
+
+        {/* Total Value Display */}
+        {formData.quantity_in_tons && formData.expected_price_per_ton && (
+          <div className="total-value-display">
+            <span className="total-label">Total Expected Value:</span>
+            <span className="total-amount">
+              ₹{(parseFloat(formData.quantity_in_tons || 0) * parseFloat(formData.expected_price_per_ton || 0)).toLocaleString()}
+            </span>
+          </div>
+        )}
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         {/* Submit Button */}
         <div className="form-actions">
           <button
@@ -771,6 +1003,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
 
       <style jsx>{`
         .create-listing-form {
+<<<<<<< HEAD
           max-width: 800px;
           margin: 2rem auto;
           background: white;
@@ -812,21 +1045,33 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
           display: flex;
           align-items: center;
           gap: 0.5rem;
+=======
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 2rem;
+          background: #fff;
+          border-radius: 8px;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         }
 
         .listing-form {
           display: flex;
           flex-direction: column;
+<<<<<<< HEAD
           gap: 0;
         }
 
         .form-group {
           margin-bottom: 1.5rem;
+=======
+          gap: 1.5rem;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         }
 
         .form-row {
           display: grid;
           grid-template-columns: 1fr 1fr;
+<<<<<<< HEAD
           gap: 1.5rem;
           margin-bottom: 1.5rem;
         }
@@ -834,6 +1079,18 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
         .form-label {
           display: block;
           margin-bottom: 0.5rem;
+=======
+          gap: 1rem;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .form-label {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           font-weight: 600;
           color: #2c5530;
           font-size: 0.9rem;
@@ -841,7 +1098,10 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
 
         .form-input,
         .form-textarea {
+<<<<<<< HEAD
           width: 100%;
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           padding: 0.75rem;
           border: 2px solid #e1e5e9;
           border-radius: 6px;
@@ -874,6 +1134,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
           color: #999;
         }
 
+<<<<<<< HEAD
         .field-hint {
           color: #666;
           font-size: 0.8rem;
@@ -881,10 +1142,13 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
           display: block;
         }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         .error-message {
           color: #f44336;
           font-size: 0.8rem;
           margin-top: 0.25rem;
+<<<<<<< HEAD
           display: block;
         }
 
@@ -966,6 +1230,8 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         }
 
         .total-value-display {
@@ -976,7 +1242,10 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
           justify-content: space-between;
           align-items: center;
           border-left: 4px solid #4CAF50;
+<<<<<<< HEAD
           margin-top: 1rem;
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         }
 
         .total-label {
@@ -991,19 +1260,31 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
         }
 
         .form-actions {
+<<<<<<< HEAD
           margin-top: 2rem;
           padding-top: 1.5rem;
           border-top: 2px solid #e1e5e9;
+=======
+          margin-top: 1rem;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         }
 
         .submit-button {
           width: 100%;
+<<<<<<< HEAD
           padding: 1rem 2rem;
+=======
+          padding: 1rem;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           background: #4CAF50;
           color: white;
           border: none;
           border-radius: 8px;
+<<<<<<< HEAD
           font-size: 1.1rem;
+=======
+          font-size: 1rem;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
@@ -1027,6 +1308,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
         }
 
         .loading-spinner {
+<<<<<<< HEAD
           width: 20px;
           height: 20px;
           border: 2px solid rgba(255, 255, 255, 0.3);
@@ -1039,17 +1321,30 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+=======
+          width: 25px;
+          height: 25px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-top: 3px solid white;
+          border-radius: 50%;
+          display: inline-block;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
           .create-listing-form {
             padding: 1.5rem;
+<<<<<<< HEAD
             margin: 1rem;
+=======
+            margin: 0;
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           }
 
           .form-row {
             grid-template-columns: 1fr;
+<<<<<<< HEAD
             gap: 1rem;
           }
 
@@ -1074,6 +1369,8 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
 
           .form-section h3 {
             font-size: 1.1rem;
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           }
         }
       `}</style>

@@ -35,7 +35,11 @@ const testUsers = {
       operatingHours: {
         monday: '7:00 AM - 9:00 PM',
         tuesday: '7:00 AM - 9:00 PM',
+<<<<<<< HEAD
         season: 'October to March'
+=======
+        season: 'November to April'
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       }
     }
   },

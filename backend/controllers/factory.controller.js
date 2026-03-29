@@ -3,7 +3,10 @@ const Schedule=require('../models/schedule.model');
 const Application=require('../models/application.model');
 const User=require('../models/user.model');
 const Invitation=require('../models/invitation.model');
+<<<<<<< HEAD
 const mongoose=require('mongoose');
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
 /**
  * @desc    Create a new bill record for a farmer
@@ -505,6 +508,7 @@ const getProfile=async (req, res)=> {
       );
     }
 
+<<<<<<< HEAD
     // Convert mongoose document to plain object with all virtuals and getters
     const factoryData = factory.toObject ? factory.toObject({ getters: true, virtuals: true }) : factory;
 
@@ -543,6 +547,47 @@ const getProfile=async (req, res)=> {
       message: 'Factory profile retrieved successfully',
       profile: profileData
     });
+=======
+    // Debug: Log the full user object
+    console.log('🔍 Full user object:', JSON.stringify(factory, null, 2));
+    console.log('🏭 Factory name from user:', factory.factoryName);
+
+    // Format profile data specific to factory users
+    const profileData= {
+
+      _id: factory._id,
+      name: factory.name,
+      username: factory.username,
+      email: factory.email,
+      phone: factory.phone,
+      role: factory.role,
+      factoryName: factory.factoryName,
+      factoryLocation: factory.factoryLocation,
+      factoryDescription: factory.factoryDescription,
+      capacity: factory.capacity,
+      experience: factory.experience,
+      specialization: factory.specialization,
+      contactInfo: factory.contactInfo || {}
+
+      ,
+      operatingHours: factory.operatingHours || {}
+
+      ,
+      isActive: factory.isActive,
+      createdAt: factory.createdAt,
+      updatedAt: factory.updatedAt
+    }
+
+    ;
+
+    res.status(200).json( {
+        success: true,
+        message: 'Factory profile retrieved successfully',
+        profile: profileData
+      }
+
+    );
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
   }
 
@@ -1525,6 +1570,7 @@ const respondToHHMInvitation=async (req, res)=> {
       );
     }
 
+<<<<<<< HEAD
     // Check if invitation has expired
     if (invitation.expiresAt && new Date(invitation.expiresAt) < new Date()) {
       return res.status(400).json({
@@ -1533,6 +1579,8 @@ const respondToHHMInvitation=async (req, res)=> {
       });
     }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Update invitation status
     invitation.status=status;
     invitation.responseMessage=responseMessage || '';
@@ -1541,6 +1589,7 @@ const respondToHHMInvitation=async (req, res)=> {
 
     // If accepted, add HHM to factory's associated HHMs
     if (status==='accepted') {
+<<<<<<< HEAD
       try {
         const factory=await User.findById(req.user._id);
         const hhm=await User.findById(invitation.hhmId);
@@ -1585,6 +1634,32 @@ const respondToHHMInvitation=async (req, res)=> {
         console.warn('⚠️  Association creation warning:', associationError.message);
         // Continue with the invitation acceptance even if association fails
       }
+=======
+      const factory=await User.findById(req.user._id);
+      const hhm=await User.findById(invitation.hhmId);
+
+      // Add to factory's associated HHMs
+      if ( !factory.associatedHHMs) {
+        factory.associatedHHMs=[];
+      }
+
+      if ( !factory.associatedHHMs.includes(invitation.hhmId)) {
+        factory.associatedHHMs.push(invitation.hhmId);
+        await factory.save();
+      }
+
+      // Add to HHM's associated factories
+      if ( !hhm.associatedFactories) {
+        hhm.associatedFactories=[];
+      }
+
+      if ( !hhm.associatedFactories.includes(req.user._id)) {
+        hhm.associatedFactories.push(req.user._id);
+        await hhm.save();
+      }
+
+      console.log('✅ Partnership established between Factory and HHM');
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }
 
     // Populate the updated invitation
@@ -1637,6 +1712,7 @@ const getDashboardStats=async (req, res)=> {
 
     const factoryId=req.user._id;
 
+<<<<<<< HEAD
     // Get count of associated HHMs from User model
     const factory = await User.findById(factoryId).populate('associatedHHMs');
     const activeHHMsCount = factory?.associatedHHMs?.length || 0;
@@ -1655,15 +1731,71 @@ const getDashboardStats=async (req, res)=> {
       productionVolume: productionVolume,
       totalOrders: totalOrders
     });
+=======
+    // Get count of associated/accepted HHMs
+    const activeHHMsCount=await Invitation.countDocuments( {
+        invitationType: 'factory-to-hhm',
+        factoryId: factoryId,
+        status: 'accepted'
+      }
+
+    );
+
+    // Get count of pending bills (unpaid)
+    const pendingBillsCount=await Bill.countDocuments( {
+        factoryId: factoryId,
+        status: 'unpaid'
+      }
+
+    );
+
+    // Calculate total revenue from all paid bills
+    const revenueResult=await Bill.aggregate([ {
+        $match: {
+          factoryId: factoryId,
+          status: 'paid'
+        }
+      }
+
+      ,
+        {
+        $group: {
+
+          _id: null,
+          totalRevenue: {
+            $sum: '$totalAmount'
+          }
+        }
+      }
+
+      ]);
+
+    const totalRevenue=revenueResult.length>0 ? revenueResult[0].totalRevenue : 0;
+
+    // Get count of active maintenance jobs
+    const activeJobsCount=await Schedule.countDocuments( {
+        factoryId: factoryId,
+        jobType: 'maintenance',
+        status: 'active'
+      }
+
+    );
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
     res.status(200).json( {
 
         success: true,
         data: {
           activeHHMs: activeHHMsCount,
+<<<<<<< HEAD
           totalRevenue: totalRevenue,
           productionVolume: productionVolume,
           totalOrders: totalOrders
+=======
+          pendingBills: pendingBillsCount,
+          totalRevenue: totalRevenue,
+          activeJobs: activeJobsCount
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         }
       }
 
@@ -1686,6 +1818,7 @@ const getDashboardStats=async (req, res)=> {
 
 ;
 
+<<<<<<< HEAD
 /**
  * @desc    Clear single notification (invitation) from database
  * @route   DELETE /api/factory/notifications/:id
@@ -1886,6 +2019,8 @@ const updateCrushingStatus = async (req, res) => {
   }
 };
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 module.exports= {
   createBill,
   getBills,
@@ -1904,11 +2039,15 @@ module.exports= {
   getAssociatedHHMs,
   getReceivedInvitations,
   respondToHHMInvitation,
+<<<<<<< HEAD
   getDashboardStats,
   clearSingleNotification,
   clearAllNotifications,
   getCrushingStatus,
   updateCrushingStatus
+=======
+  getDashboardStats
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 }
 
 ;

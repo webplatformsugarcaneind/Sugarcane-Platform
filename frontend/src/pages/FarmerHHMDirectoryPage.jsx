@@ -289,17 +289,39 @@ const FarmerHHMDirectoryPage = () => {
 
                 <div className="card-actions">
                   <button 
+<<<<<<< HEAD
+=======
+                    className="contact-btn"
+                    onClick={() => {
+                      if (hhm.email) {
+                        window.location.href = `mailto:${hhm.email}`;
+                      }
+                    }}
+                  >
+                    📧 Contact
+                  </button>
+                  <button 
+                    className="view-profile-btn"
+                    onClick={() => navigate(hhm._id)}
+                  >
+                    👁️ View Profile
+                  </button>
+                  <button 
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     className="contract-request-btn"
                     onClick={() => navigate(`/farmer/hhms/${hhm._id}/contract`)}
                   >
                     📄 Send Request
                   </button>
+<<<<<<< HEAD
                   <button 
                     className="view-profile-btn"
                     onClick={() => navigate(`/farmer/hhm-directory/${hhm._id}`)}
                   >
                     👁️ View Profile
                   </button>
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 </div>
               </div>
             ))}

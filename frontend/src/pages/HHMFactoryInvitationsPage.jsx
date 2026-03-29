@@ -149,7 +149,23 @@ const HHMFactoryInvitationsPage = () => {
             {/* Header */}
             <div className="page-header" style={{ background: 'linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%)' }}>
                 <div className="header-content">
+<<<<<<< HEAD
                     <h1 >🏭 Factory Partnership Invitations</h1>
+=======
+                    <h1>
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                            <rect x="3" y="8" width="18" height="13" rx="1" />
+                            <path d="M8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3" />
+                            <line x1="7" y1="12" x2="7" y2="12.01" />
+                            <line x1="11" y1="12" x2="11" y2="12.01" />
+                            <line x1="15" y1="12" x2="15" y2="12.01" />
+                            <line x1="7" y1="16" x2="7" y2="16.01" />
+                            <line x1="11" y1="16" x2="11" y2="16.01" />
+                            <line x1="15" y1="16" x2="15" y2="16.01" />
+                        </svg>
+                        Factory Partnership Invitations
+                    </h1>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <p>Manage invitations from factories seeking partnership with your services</p>
                 </div>
             </div>
@@ -157,7 +173,17 @@ const HHMFactoryInvitationsPage = () => {
             {/* Status Messages */}
             {error && (
                 <div className="alert alert-error">
+<<<<<<< HEAD
                     <span className="alert-icon">⚠️</span>
+=======
+                    <span className="alert-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <span>{error}</span>
                     <button onClick={() => setError(null)} className="alert-close">×</button>
                 </div>
@@ -165,7 +191,15 @@ const HHMFactoryInvitationsPage = () => {
 
             {success && (
                 <div className="alert alert-success">
+<<<<<<< HEAD
                     <span className="alert-icon">✅</span>
+=======
+                    <span className="alert-icon">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <span>{success}</span>
                     <button onClick={() => setSuccess(null)} className="alert-close">×</button>
                 </div>
@@ -183,19 +217,42 @@ const HHMFactoryInvitationsPage = () => {
                     className={`filter-btn ${statusFilter === 'pending' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('pending')}
                 >
+<<<<<<< HEAD
                     🕐 Pending ({statusCounts.pending})
+=======
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Pending ({statusCounts.pending})
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 </button>
                 <button
                     className={`filter-btn ${statusFilter === 'accepted' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('accepted')}
                 >
+<<<<<<< HEAD
                     ✅ Accepted ({statusCounts.accepted})
+=======
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Accepted ({statusCounts.accepted})
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 </button>
                 <button
                     className={`filter-btn ${statusFilter === 'declined' ? 'active' : ''}`}
                     onClick={() => setStatusFilter('declined')}
                 >
+<<<<<<< HEAD
                     ❌ Declined ({statusCounts.declined})
+=======
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                    Declined ({statusCounts.declined})
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 </button>
             </div>
 
@@ -203,7 +260,16 @@ const HHMFactoryInvitationsPage = () => {
             <div className="invitations-container">
                 {filteredInvitations.length === 0 ? (
                     <div className="empty-state">
+<<<<<<< HEAD
                         <div className="empty-icon">📭</div>
+=======
+                        <div className="empty-icon">
+                            <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" strokeWidth="2" fill="none">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
+                        </div>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         <h3>No {statusFilter !== 'all' ? statusFilter : ''} invitations</h3>
                         <p>
                             {statusFilter === 'pending'
@@ -217,11 +283,34 @@ const HHMFactoryInvitationsPage = () => {
                             <div key={invitation._id} className="invitation-card">
                                 <div className="card-header">
                                     <div className="factory-info">
+<<<<<<< HEAD
                                         <div className="factory-avatar">🏭</div>
                                         <div>
                                             <h3>{invitation.factoryId?.factoryName || invitation.factoryId?.name || 'Unknown Factory'}</h3>
                                             <p className="factory-location">
                                                 📍 {invitation.factoryId?.factoryLocation || invitation.factoryId?.location || 'Location not specified'}
+=======
+                                        <div className="factory-avatar">
+                                            <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" strokeWidth="2" fill="none">
+                                                <rect x="3" y="8" width="18" height="13" rx="1" />
+                                                <path d="M8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3" />
+                                                <line x1="7" y1="12" x2="7" y2="12.01" />
+                                                <line x1="11" y1="12" x2="11" y2="12.01" />
+                                                <line x1="15" y1="12" x2="15" y2="12.01" />
+                                                <line x1="7" y1="16" x2="7" y2="16.01" />
+                                                <line x1="11" y1="16" x2="11" y2="16.01" />
+                                                <line x1="15" y1="16" x2="15" y2="16.01" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3>{invitation.factoryId?.factoryName || invitation.factoryId?.name || 'Unknown Factory'}</h3>
+                                            <p className="factory-location">
+                                                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                                    <circle cx="12" cy="10" r="3" />
+                                                </svg>
+                                                {invitation.factoryId?.factoryLocation || invitation.factoryId?.location || 'Location not specified'}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                             </p>
                                         </div>
                                     </div>
@@ -233,14 +322,36 @@ const HHMFactoryInvitationsPage = () => {
                                 <div className="card-body">
                                     {invitation.personalMessage && (
                                         <div className="message-section">
+<<<<<<< HEAD
                                             <h4>💬 Message from Factory:</h4>
+=======
+                                            <h4>
+                                                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                                </svg>
+                                                Message from Factory:
+                                            </h4>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                             <p className="message-text">{invitation.personalMessage}</p>
                                         </div>
                                     )}
 
                                     {invitation.invitationReason && (
                                         <div className="reason-section">
+<<<<<<< HEAD
                                             <h4>📋 Invitation Reason:</h4>
+=======
+                                            <h4>
+                                                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                                    <polyline points="14 2 14 8 20 8" />
+                                                    <line x1="16" y1="13" x2="8" y2="13" />
+                                                    <line x1="16" y1="17" x2="8" y2="17" />
+                                                    <polyline points="10 9 9 9 8 9" />
+                                                </svg>
+                                                Invitation Reason:
+                                            </h4>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                             <p>{invitation.invitationReason}</p>
                                         </div>
                                     )}
@@ -272,17 +383,44 @@ const HHMFactoryInvitationsPage = () => {
                                     )}
 
                                     <div className="contact-info">
+<<<<<<< HEAD
                                         <h4>📞 Contact Information:</h4>
                                         <div className="contact-details">
                                             {invitation.factoryId?.email && (
                                                 <div className="contact-item">
                                                     <span>📧</span>
+=======
+                                        <h4>
+                                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                            </svg>
+                                            Contact Information:
+                                        </h4>
+                                        <div className="contact-details">
+                                            {invitation.factoryId?.email && (
+                                                <div className="contact-item">
+                                                    <span>
+                                                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                                                            <rect x="2" y="4" width="20" height="16" rx="2" />
+                                                            <path d="m2 7 10 6 10-6" />
+                                                        </svg>
+                                                    </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                                     <a href={`mailto:${invitation.factoryId.email}`}>{invitation.factoryId.email}</a>
                                                 </div>
                                             )}
                                             {invitation.factoryId?.phone && (
                                                 <div className="contact-item">
+<<<<<<< HEAD
                                                     <span>📱</span>
+=======
+                                                    <span>
+                                                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                                                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                                            <line x1="12" y1="18" x2="12.01" y2="18" />
+                                                        </svg>
+                                                    </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                                     <a href={`tel:${invitation.factoryId.phone}`}>{invitation.factoryId.phone}</a>
                                                 </div>
                                             )}
@@ -297,14 +435,29 @@ const HHMFactoryInvitationsPage = () => {
                                             onClick={() => handleRespondClick(invitation, 'accepted')}
                                             disabled={processingId === invitation._id}
                                         >
+<<<<<<< HEAD
                                             ✅ Accept Partnership
+=======
+                                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                <polyline points="20 6 9 17 4 12" />
+                                            </svg>
+                                            Accept Partnership
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                         </button>
                                         <button
                                             className="btn btn-decline"
                                             onClick={() => handleRespondClick(invitation, 'declined')}
                                             disabled={processingId === invitation._id}
                                         >
+<<<<<<< HEAD
                                             ❌ Decline
+=======
+                                            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                <line x1="18" y1="6" x2="6" y2="18" />
+                                                <line x1="6" y1="6" x2="18" y2="18" />
+                                            </svg>
+                                            Decline
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                         </button>
                                     </div>
                                 )}
@@ -320,7 +473,21 @@ const HHMFactoryInvitationsPage = () => {
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h2>
+<<<<<<< HEAD
                                 {selectedInvitation.responseAction === 'accepted' ? '✅ Accept' : '❌ Decline'} Invitation
+=======
+                                {selectedInvitation.responseAction === 'accepted' ? (
+                                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                                        <polyline points="20 6 9 17 4 12" />
+                                    </svg>
+                                ) : (
+                                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg>
+                                )}
+                                {selectedInvitation.responseAction === 'accepted' ? 'Accept' : 'Decline'} Invitation
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                             </h2>
                             <button className="modal-close" onClick={() => setShowModal(false)}>×</button>
                         </div>
@@ -349,7 +516,14 @@ const HHMFactoryInvitationsPage = () => {
                             {selectedInvitation.responseAction === 'accepted' && (
                                 <div className="confirmation-note">
                                     <p>
+<<<<<<< HEAD
                                         ✅ By accepting, you'll be added to this factory's associated HHMs list,
+=======
+                                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                            <polyline points="20 6 9 17 4 12" />
+                                        </svg>
+                                        By accepting, you'll be added to this factory's associated HHMs list,
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                         and they'll be added to your associated factories.
                                     </p>
                                 </div>

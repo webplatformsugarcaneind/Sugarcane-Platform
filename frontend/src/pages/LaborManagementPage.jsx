@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
 
 const LaborManagementPage = () => {
   const navigate = useNavigate();
+=======
+
+const LaborManagementPage = () => {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   const [activeTab, setActiveTab] = useState('create-job');
   const [loading] = useState(false);
   const [error, setError] = useState(null);
@@ -27,7 +32,11 @@ const LaborManagementPage = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   // Hire Labour tab state
   const [workers, setWorkers] = useState([]);
   const [filteredWorkers, setFilteredWorkers] = useState([]);
@@ -50,11 +59,14 @@ const LaborManagementPage = () => {
   const [labourSearchTerm, setLabourSearchTerm] = useState('');
   const [filteredMyLabours, setFilteredMyLabours] = useState([]);
 
+<<<<<<< HEAD
   // Manage Assignment modal state
   const [showManageModal, setShowManageModal] = useState(false);
   const [selectedLabour, setSelectedLabour] = useState(null);
   const [releasingWorker, setReleasingWorker] = useState(false);
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   // Fetch applications when Applications tab is selected
   useEffect(() => {
     if (activeTab === 'applications') {
@@ -95,16 +107,26 @@ const LaborManagementPage = () => {
     try {
       setLoadingApplications(true);
       setError(null);
+<<<<<<< HEAD
       
       const token = localStorage.getItem('token');
       
+=======
+
+      const token = localStorage.getItem('token');
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         setError('No authentication token found. Please login again.');
         return;
       }
 
       console.log('🔄 Fetching applications from backend...');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       const response = await axios.get('/api/hhm/applications', {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -113,10 +135,17 @@ const LaborManagementPage = () => {
       console.log('Received applications from API:', response.data);
 
       console.log('✅ Applications fetched successfully:', response.data);
+<<<<<<< HEAD
       
       // Extract the applications array from response
       const applicationsData = response.data.data || response.data;
       
+=======
+
+      // Extract the applications array from response
+      const applicationsData = response.data.data || response.data;
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       // Map the backend response to match the display format
       // Backend sends: app.worker.name, app.schedule.title
       // Frontend expects: app.workerId.name, app.scheduleId.title
@@ -156,10 +185,17 @@ const LaborManagementPage = () => {
 
       console.log('📊 Mapped applications:', mappedApplications.length, 'applications');
       setApplications(mappedApplications);
+<<<<<<< HEAD
       
     } catch (err) {
       console.error('❌ Error fetching applications:', err);
       
+=======
+
+    } catch (err) {
+      console.error('❌ Error fetching applications:', err);
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       // Set appropriate error message
       if (err.response?.status === 401) {
         setError('Authentication failed. Please login again.');
@@ -172,13 +208,18 @@ const LaborManagementPage = () => {
       } else {
         setError('An unexpected error occurred while loading applications.');
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       setApplications([]);
     } finally {
       setLoadingApplications(false);
     }
   };
 
+<<<<<<< HEAD
   // Handle viewing worker profile
   const handleViewProfile = (worker) => {
     console.log('📋 Viewing profile for labour:', worker);
@@ -188,12 +229,18 @@ const LaborManagementPage = () => {
     });
   };
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   // Fetch available workers
   const fetchWorkers = async () => {
     try {
       setLoadingWorkers(true);
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -204,11 +251,19 @@ const LaborManagementPage = () => {
       });
 
       console.log('✅ Backend response:', response.data);
+<<<<<<< HEAD
       
       // Map backend data to frontend format
       const backendWorkers = response.data.data || response.data || [];
       console.log('👥 Workers from backend:', backendWorkers.length, 'workers');
       
+=======
+
+      // Map backend data to frontend format
+      const backendWorkers = response.data.data || response.data || [];
+      console.log('👥 Workers from backend:', backendWorkers.length, 'workers');
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       const mappedWorkers = backendWorkers.map(worker => ({
         _id: worker.workerId || worker._id,
         name: worker.name,
@@ -227,7 +282,11 @@ const LaborManagementPage = () => {
         profileImage: worker.profileImage,
         isVerified: worker.isVerified
       }));
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       console.log('✅ Mapped workers:', mappedWorkers);
       setWorkers(mappedWorkers);
       setFilteredWorkers(mappedWorkers);
@@ -329,7 +388,11 @@ const LaborManagementPage = () => {
     // Apply skill filter
     if (selectedSkillFilter) {
       filtered = filtered.filter(worker =>
+<<<<<<< HEAD
         worker.skills?.some(skill => 
+=======
+        worker.skills?.some(skill =>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           skill.toLowerCase().includes(selectedSkillFilter.toLowerCase())
         )
       );
@@ -353,7 +416,11 @@ const LaborManagementPage = () => {
 
     // Apply status filter
     if (applicationStatusFilter && applicationStatusFilter !== 'all') {
+<<<<<<< HEAD
       filtered = filtered.filter(application => 
+=======
+      filtered = filtered.filter(application =>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         application.status === applicationStatusFilter
       );
     }
@@ -366,7 +433,11 @@ const LaborManagementPage = () => {
     try {
       setLoadingSchedules(true);
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -380,7 +451,11 @@ const LaborManagementPage = () => {
       console.log('✅ Schedules response:', response.data);
       const schedulesData = response.data.data || response.data || [];
       setMySchedules(schedulesData);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     } catch (err) {
       console.error('❌ Error fetching schedules:', err.response?.data || err.message);
       alert('Failed to load job schedules. Please try again.');
@@ -396,7 +471,11 @@ const LaborManagementPage = () => {
     setShowInviteModal(true);
     setSelectedScheduleId('');
     setInvitationMessage('');
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Fetch schedules when modal opens
     await fetchSchedules();
   };
@@ -425,7 +504,11 @@ const LaborManagementPage = () => {
     try {
       setSendingInvitation(true);
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -446,10 +529,17 @@ const LaborManagementPage = () => {
       });
 
       console.log('✅ Invitation sent:', response.data);
+<<<<<<< HEAD
       
       alert(`✅ Invitation sent successfully to ${selectedWorker.name}!`);
       handleCloseInviteModal();
       
+=======
+
+      alert(`✅ Invitation sent successfully to ${selectedWorker.name}!`);
+      handleCloseInviteModal();
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     } catch (err) {
       console.error('❌ Error sending invitation:', err.response?.data || err.message);
       const errorMessage = err.response?.data?.message || 'Failed to send invitation. Please try again.';
@@ -459,6 +549,7 @@ const LaborManagementPage = () => {
     }
   };
 
+<<<<<<< HEAD
   // Handle opening manage assignment modal
   const handleOpenManageModal = (labour) => {
     console.log('🔧 Opening manage modal for:', labour);
@@ -524,12 +615,18 @@ const LaborManagementPage = () => {
     }
   };
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   // Fetch approved labours (workers with approved applications)
   const fetchMyLabours = async () => {
     try {
       setLoadingMyLabours(true);
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         throw new Error('No authentication token found');
       }
@@ -540,10 +637,17 @@ const LaborManagementPage = () => {
       });
 
       console.log('✅ Backend response for my labours:', response.data);
+<<<<<<< HEAD
       
       const approvedApplications = response.data.data || response.data || [];
       console.log('👥 Approved labours from backend:', approvedApplications.length, 'workers');
       
+=======
+
+      const approvedApplications = response.data.data || response.data || [];
+      console.log('👥 Approved labours from backend:', approvedApplications.length, 'workers');
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       // Transform applications to labour data
       const laboursData = approvedApplications.map(app => ({
         _id: app.worker?.id || app._id,
@@ -566,7 +670,11 @@ const LaborManagementPage = () => {
         expectedWage: app.expectedWage,
         availability: app.availability
       }));
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       console.log('✅ Mapped labours:', laboursData);
       setMyLabours(laboursData);
       setFilteredMyLabours(laboursData);
@@ -600,7 +708,11 @@ const LaborManagementPage = () => {
   const handleApplicationAction = async (applicationId, action) => {
     try {
       const token = localStorage.getItem('token');
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         alert('⚠️ Authentication required. Please login again.');
         return;
@@ -612,7 +724,11 @@ const LaborManagementPage = () => {
 
       // Make API request to update application status
       const response = await axios.put(
+<<<<<<< HEAD
         `/api/hhm/applications/${applicationId}`, 
+=======
+        `/api/hhm/applications/${applicationId}`,
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         { status: action },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -657,10 +773,17 @@ const LaborManagementPage = () => {
       }
 
       // Show success message
+<<<<<<< HEAD
       const successMsg = action === 'approved' 
         ? '✅ Application approved successfully! The worker has been notified.'
         : '❌ Application rejected. The worker has been notified.';
       
+=======
+      const successMsg = action === 'approved'
+        ? '✅ Application approved successfully! The worker has been notified.'
+        : '❌ Application rejected. The worker has been notified.';
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       alert(successMsg);
 
       // If approved, refetch the "My Labours" data to update that tab
@@ -670,10 +793,17 @@ const LaborManagementPage = () => {
 
     } catch (err) {
       console.error('❌ Error updating application:', err);
+<<<<<<< HEAD
       
       // Show detailed error message
       let errorMsg = 'Failed to update application status. ';
       
+=======
+
+      // Show detailed error message
+      let errorMsg = 'Failed to update application status. ';
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (err.response?.status === 401) {
         errorMsg = '🔒 Authentication failed. Please login again.';
       } else if (err.response?.status === 403) {
@@ -687,7 +817,11 @@ const LaborManagementPage = () => {
       } else if (err.request) {
         errorMsg = '🌐 Unable to reach the server. Please check your internet connection.';
       }
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       alert(errorMsg);
     }
   };
@@ -695,11 +829,16 @@ const LaborManagementPage = () => {
   // Handle schedule form submission
   const handleScheduleSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Clear previous messages and errors
     setSuccessMessage('');
     setErrorMessage('');
     setFieldErrors({});
+<<<<<<< HEAD
     
     try {
       setSubmittingSchedule(true);
@@ -707,6 +846,15 @@ const LaborManagementPage = () => {
       // Get JWT token from localStorage
       const token = localStorage.getItem('token');
       
+=======
+
+    try {
+      setSubmittingSchedule(true);
+
+      // Get JWT token from localStorage
+      const token = localStorage.getItem('token');
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       if (!token) {
         setErrorMessage('Authentication required. Please login again.');
         return;
@@ -752,9 +900,15 @@ const LaborManagementPage = () => {
       // Validate dates
       if (!scheduleForm.startDate || !scheduleForm.endDate) {
         setErrorMessage('❌ Both Start Date and End Date are required.');
+<<<<<<< HEAD
         setFieldErrors({ 
           startDate: !scheduleForm.startDate, 
           endDate: !scheduleForm.endDate 
+=======
+        setFieldErrors({
+          startDate: !scheduleForm.startDate,
+          endDate: !scheduleForm.endDate
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         });
         return;
       }
@@ -800,6 +954,7 @@ const LaborManagementPage = () => {
         return;
       }
 
+<<<<<<< HEAD
       // Validate required skills
       if (!scheduleForm.requiredSkills || scheduleForm.requiredSkills.trim() === '') {
         setErrorMessage('❌ Required Skills cannot be empty. Please enter at least one skill (comma-separated).');
@@ -819,6 +974,8 @@ const LaborManagementPage = () => {
         return;
       }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       // Prepare schedule data
       const scheduleData = {
         title: scheduleForm.title.trim(),
@@ -828,7 +985,14 @@ const LaborManagementPage = () => {
         workingHours: scheduleForm.workingHours.trim(),
         wageOffered: parseFloat(scheduleForm.wageOffered),
         workerCount: parseInt(scheduleForm.workerCount),
+<<<<<<< HEAD
         requiredSkills: skillsArray,
+=======
+        requiredSkills: scheduleForm.requiredSkills
+          .split(',')
+          .map(skill => skill.trim())
+          .filter(skill => skill.length > 0),
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         startDate: new Date(scheduleForm.startDate).toISOString(),
         endDate: new Date(scheduleForm.endDate).toISOString(),
         status: 'open' // Set initial status
@@ -838,7 +1002,11 @@ const LaborManagementPage = () => {
 
       // Make API request to create schedule
       const response = await axios.post('/api/hhm/schedules', scheduleData, {
+<<<<<<< HEAD
         headers: { 
+=======
+        headers: {
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
@@ -867,16 +1035,27 @@ const LaborManagementPage = () => {
       setTimeout(() => {
         setSuccessMessage('');
       }, 5000);
+<<<<<<< HEAD
       
     } catch (err) {
       console.error('❌ Error creating schedule:', err);
       
+=======
+
+    } catch (err) {
+      console.error('❌ Error creating schedule:', err);
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       // Handle specific error cases
       if (err.response) {
         // Server responded with error
         const errorMsg = err.response.data?.message || 'Failed to create job schedule';
         const errorDetails = err.response.data?.error || '';
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         if (err.response.status === 401) {
           setErrorMessage('🔒 Authentication failed. Please login again.');
         } else if (err.response.status === 403) {
@@ -899,7 +1078,11 @@ const LaborManagementPage = () => {
       setTimeout(() => {
         setErrorMessage('');
       }, 7000);
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     } finally {
       setSubmittingSchedule(false);
     }
@@ -953,7 +1136,11 @@ const LaborManagementPage = () => {
         <div style={styles.errorMessage}>
           <h2>⚠️ Error Loading Data</h2>
           <p>{error}</p>
+<<<<<<< HEAD
           <button 
+=======
+          <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             style={styles.retryButton}
             onClick={() => window.location.reload()}
           >
@@ -996,7 +1183,11 @@ const LaborManagementPage = () => {
           }
         `}
       </style>
+<<<<<<< HEAD
       
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       {/* Header */}
       <div style={styles.header}>
         <h1 style={styles.title}>Labor Management</h1>
@@ -1050,7 +1241,11 @@ const LaborManagementPage = () => {
               <div style={styles.successAlert}>
                 <span style={styles.alertIcon}>✅</span>
                 <span>{successMessage}</span>
+<<<<<<< HEAD
                 <button 
+=======
+                <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                   style={styles.closeAlert}
                   onClick={() => setSuccessMessage('')}
                   aria-label="Close"
@@ -1065,7 +1260,11 @@ const LaborManagementPage = () => {
               <div style={styles.errorAlert}>
                 <span style={styles.alertIcon}>⚠️</span>
                 <span>{errorMessage}</span>
+<<<<<<< HEAD
                 <button 
+=======
+                <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                   style={styles.closeAlert}
                   onClick={() => setErrorMessage('')}
                   aria-label="Close"
@@ -1074,7 +1273,11 @@ const LaborManagementPage = () => {
                 </button>
               </div>
             )}
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             <form onSubmit={handleScheduleSubmit} style={styles.form}>
               <div style={styles.formGrid}>
                 <div style={styles.formGroup}>
@@ -1189,16 +1392,24 @@ const LaborManagementPage = () => {
               </div>
 
               <div style={styles.formGroup}>
+<<<<<<< HEAD
                 <label style={styles.label}>Required Skills *</label>
+=======
+                <label style={styles.label}>Required Skills</label>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 <input
                   type="text"
                   name="requiredSkills"
                   value={scheduleForm.requiredSkills}
                   onChange={handleInputChange}
+<<<<<<< HEAD
                   style={{
                     ...styles.input,
                     borderColor: fieldErrors.requiredSkills ? '#ef4444' : '#e5e7eb'
                   }}
+=======
+                  style={styles.input}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                   placeholder="e.g., harvesting, equipment operation (comma-separated)"
                 />
               </div>
@@ -1256,7 +1467,11 @@ const LaborManagementPage = () => {
                 Review and respond to job applications from workers
               </p>
             </div>
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             {loadingApplications ? (
               <div style={styles.loadingSection}>
                 <div style={styles.spinner}></div>
@@ -1266,7 +1481,11 @@ const LaborManagementPage = () => {
               <div style={styles.errorAlert}>
                 <span style={styles.alertIcon}>⚠️</span>
                 <span>{error}</span>
+<<<<<<< HEAD
                 <button 
+=======
+                <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                   style={styles.closeAlert}
                   onClick={() => {
                     setError(null);
@@ -1290,26 +1509,46 @@ const LaborManagementPage = () => {
               <div style={styles.applicationsList}>
                 {/* Filter buttons for application status */}
                 <div style={styles.filterButtonGroup}>
+<<<<<<< HEAD
                   <button 
                     style={applicationStatusFilter === 'all' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+=======
+                  <button
+                    style={applicationStatusFilter === 'all' ? { ...styles.filterBtn, ...styles.activeFilterBtn } : styles.filterBtn}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     onClick={() => setApplicationStatusFilter('all')}
                   >
                     All ({applications.length})
                   </button>
+<<<<<<< HEAD
                   <button 
                     style={applicationStatusFilter === 'pending' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+=======
+                  <button
+                    style={applicationStatusFilter === 'pending' ? { ...styles.filterBtn, ...styles.activeFilterBtn } : styles.filterBtn}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     onClick={() => setApplicationStatusFilter('pending')}
                   >
                     Pending ({applications.filter(app => app.status === 'pending').length})
                   </button>
+<<<<<<< HEAD
                   <button 
                     style={applicationStatusFilter === 'approved' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+=======
+                  <button
+                    style={applicationStatusFilter === 'approved' ? { ...styles.filterBtn, ...styles.activeFilterBtn } : styles.filterBtn}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     onClick={() => setApplicationStatusFilter('approved')}
                   >
                     Approved ({applications.filter(app => app.status === 'approved').length})
                   </button>
+<<<<<<< HEAD
                   <button 
                     style={applicationStatusFilter === 'rejected' ? {...styles.filterBtn, ...styles.activeFilterBtn} : styles.filterBtn}
+=======
+                  <button
+                    style={applicationStatusFilter === 'rejected' ? { ...styles.filterBtn, ...styles.activeFilterBtn } : styles.filterBtn}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     onClick={() => setApplicationStatusFilter('rejected')}
                   >
                     Rejected ({applications.filter(app => app.status === 'rejected').length})
@@ -1387,7 +1626,16 @@ const LaborManagementPage = () => {
 
                       {application.skills && application.skills.length > 0 && (
                         <div style={styles.skillsSection}>
+<<<<<<< HEAD
                           <strong>🛠️ Skills:</strong>
+=======
+                          <strong>
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                            </svg>
+                            Skills:
+                          </strong>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           <div style={styles.skillTagsContainer}>
                             {application.skills.map((skill, idx) => (
                               <span key={idx} style={styles.skillTag}>
@@ -1426,7 +1674,11 @@ const LaborManagementPage = () => {
                         >
                           ❌ Reject Application
                         </button>
+<<<<<<< HEAD
                         <button 
+=======
+                        <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           style={styles.contactButton}
                           onClick={() => window.location.href = `tel:${application.workerId ? application.workerId.phone : ''}`}
                         >
@@ -1440,7 +1692,11 @@ const LaborManagementPage = () => {
                         <div style={styles.approvedMessage}>
                           ✅ This application has been approved. The worker is now in your "My Labours" list.
                         </div>
+<<<<<<< HEAD
                         <button 
+=======
+                        <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           style={styles.contactButton}
                           onClick={() => window.location.href = `tel:${application.workerId ? application.workerId.phone : ''}`}
                         >
@@ -1577,8 +1833,13 @@ const LaborManagementPage = () => {
                       </div>
                       <div style={styles.availabilityBadge}>
                         <span style={
+<<<<<<< HEAD
                           worker.availability === 'Available' 
                             ? styles.availableBadge 
+=======
+                          worker.availability === 'Available'
+                            ? styles.availableBadge
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                             : styles.busyBadge
                         }>
                           {worker.availability === 'Available' ? '✅ Available' : '⏳ Busy'}
@@ -1645,10 +1906,14 @@ const LaborManagementPage = () => {
                       >
                         📤 Send Job Invitation
                       </button>
+<<<<<<< HEAD
                       <button 
                         style={styles.viewProfileButton}
                         onClick={() => handleViewProfile(worker)}
                       >
+=======
+                      <button style={styles.viewProfileButton}>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         👁️ View Full Profile
                       </button>
                     </div>
@@ -1711,8 +1976,13 @@ const LaborManagementPage = () => {
                   {labourSearchTerm
                     ? 'No workers match your search'
                     : myLabours.length === 0
+<<<<<<< HEAD
                     ? 'No hired workers yet'
                     : 'No workers found'}
+=======
+                      ? 'No hired workers yet'
+                      : 'No workers found'}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 </p>
                 <p style={styles.placeholderText}>
                   {labourSearchTerm
@@ -1773,8 +2043,13 @@ const LaborManagementPage = () => {
                         <div style={styles.workerDetailRow}>
                           <span style={styles.detailLabel}>📅 Experience:</span>
                           <span style={styles.detailValue}>
+<<<<<<< HEAD
                             {typeof labour.experience === 'number' 
                               ? `${labour.experience} years` 
+=======
+                            {typeof labour.experience === 'number'
+                              ? `${labour.experience} years`
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                               : labour.experience || 'N/A'}
                           </span>
                         </div>
@@ -1788,7 +2063,16 @@ const LaborManagementPage = () => {
 
                       {labour.skills && labour.skills.length > 0 && (
                         <div style={styles.labourSection}>
+<<<<<<< HEAD
                           <h4 style={styles.sectionTitle}>🛠️ Skills</h4>
+=======
+                          <h4 style={styles.sectionTitle}>
+                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                            </svg>
+                            Skills
+                          </h4>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           <div style={styles.skillTagsContainer}>
                             {labour.skills.map((skill, index) => (
                               <span key={`${labour._id}-skill-${index}`} style={styles.skillTag}>
@@ -1815,19 +2099,27 @@ const LaborManagementPage = () => {
                     </div>
 
                     <div style={styles.labourActions}>
+<<<<<<< HEAD
                       <button 
                         style={styles.viewProfileButton}
                         onClick={() => handleViewProfile(labour)}
                       >
+=======
+                      <button style={styles.viewProfileButton}>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         👁️ View Full Profile
                       </button>
                       <button style={styles.contactButton}>
                         📞 Contact Worker
                       </button>
+<<<<<<< HEAD
                       <button 
                         style={styles.manageButton}
                         onClick={() => handleOpenManageModal(labour)}
                       >
+=======
+                      <button style={styles.manageButton}>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         ⚙️ Manage Assignment
                       </button>
                     </div>
@@ -1883,7 +2175,11 @@ const LaborManagementPage = () => {
                 <label style={styles.modalLabel}>
                   Select Job Schedule <span style={styles.required}>*</span>
                 </label>
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 {loadingSchedules ? (
                   <div style={styles.modalLoading}>
                     <div style={styles.spinner}></div>
@@ -1977,6 +2273,7 @@ const LaborManagementPage = () => {
           </div>
         </div>
       )}
+<<<<<<< HEAD
 
       {/* Manage Assignment Modal */}
       {showManageModal && (
@@ -2081,6 +2378,8 @@ const LaborManagementPage = () => {
           </div>
         </div>
       )}
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     </div>
   );
 };
@@ -2146,7 +2445,11 @@ const styles = {
     color: '#636e72',
     margin: '0.5rem 0 0 0'
   },
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   // Form Styles
   form: {
     maxWidth: '800px'
@@ -3131,6 +3434,7 @@ const styles = {
     borderRadius: '50%',
     animation: 'spin 0.6s linear infinite',
     display: 'inline-block'
+<<<<<<< HEAD
   },
 
   // Manage Assignment Modal Styles
@@ -3209,6 +3513,8 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '0.5rem'
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   }
 };
 

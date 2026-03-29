@@ -4,9 +4,16 @@ import axios from 'axios';
 import './FactoryAssociatedHHMsPage.css';
 import NotificationToast from '../components/NotificationToast';
 import useNotifications from '../hooks/useNotifications';
+<<<<<<< HEAD
 
 // Set axios base URL
 axios.defaults.baseURL = 'http://localhost:5000';
+=======
+import { configureAxios } from '../config/api';
+
+// Set axios base URL
+configureAxios(axios);
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
 /**
  * FactoryAssociatedHHMsPage Component
@@ -66,7 +73,11 @@ const FactoryAssociatedHHMsPage = () => {
         try {
             setRemovingHHMId(selectedHHMToRemove.id);
             const token = localStorage.getItem('token');
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             if (!token) {
                 setError('No authentication token found. Please login again.');
                 return;
@@ -84,7 +95,11 @@ const FactoryAssociatedHHMsPage = () => {
 
             // Update the HHMs list by removing the deleted HHM
             setHhms(prevHhms => prevHhms.filter(hhm => hhm._id !== selectedHHMToRemove.id));
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             // Show simple one-line notification
             notify.hhmRemoved(selectedHHMToRemove.name, 'Factory');
 
@@ -138,11 +153,25 @@ const FactoryAssociatedHHMsPage = () => {
         return (
             <div className="associated-hhms-page">
                 <div className="error-state">
+<<<<<<< HEAD
                     <div className="error-icon">⚠️</div>
                     <h3>Error Loading Associated HHMs</h3>
                     <p>{error}</p>
                     <button className="btn btn-primary" onClick={fetchAssociatedHHMs}>
                         🔄 Retry
+=======
+                    <div className="error-icon">
+                        <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" strokeWidth="2" fill="none">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </div>
+                    <h3>Error Loading Associated HHMs</h3>
+                    <p>{error}</p>
+                    <button className="btn btn-primary" onClick={fetchAssociatedHHMs}>
+                        Retry
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     </button>
                 </div>
             </div>
@@ -154,7 +183,18 @@ const FactoryAssociatedHHMsPage = () => {
             {/* Header */}
             <div className="page-header">
                 <div className="header-content">
+<<<<<<< HEAD
                     <h1>🤝 Associated Harvest Managers</h1>
+=======
+                    <h1>
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
+                            <path d="M12 2v6m0 0 3-3m-3 3-3-3" />
+                            <path d="M3 13a9 9 0 0 0 9 9 9 9 0 0 0 9-9" />
+                            <path d="m16 16 2 2 4-4" />
+                        </svg>
+                        Associated Harvest Managers
+                    </h1>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     <p>Manage your partnerships with Harvest Managers</p>
                 </div>
                 <div className="header-stats">
@@ -168,7 +208,16 @@ const FactoryAssociatedHHMsPage = () => {
             {hhms.length > 0 && (
                 <div className="search-section">
                     <div className="search-box">
+<<<<<<< HEAD
                         <span className="search-icon">🔍</span>
+=======
+                        <span className="search-icon">
+                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="m21 21-4.35-4.35" />
+                            </svg>
+                        </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         <input
                             type="text"
                             placeholder="Search by name, location, or specialization..."
@@ -184,7 +233,16 @@ const FactoryAssociatedHHMsPage = () => {
             <div className="hhms-container">
                 {filteredHHMs.length === 0 ? (
                     <div className="empty-state">
+<<<<<<< HEAD
                         <div className="empty-icon">🌾</div>
+=======
+                        <div className="empty-icon">
+                            <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" strokeWidth="2" fill="none">
+                                <path d="M12 2v20M2 7h10M2 12h10M2 17h10" />
+                                <path d="M12 2l5 5-5 5m0 0l-5-5 5-5" />
+                            </svg>
+                        </div>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         <h3>
                             {searchTerm ? 'No Matching HHMs Found' : 'No Associated HHMs'}
                         </h3>
@@ -199,7 +257,16 @@ const FactoryAssociatedHHMsPage = () => {
                         {filteredHHMs.map((hhm) => (
                             <div key={hhm._id} className="hhm-card">
                                 <div className="card-header">
+<<<<<<< HEAD
                                     <div className="hhm-avatar">🌾</div>
+=======
+                                    <div className="hhm-avatar">
+                                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" strokeWidth="2" fill="none">
+                                            <path d="M12 2v20M2 7h10M2 12h10M2 17h10" />
+                                            <path d="M12 2l5 5-5 5m0 0l-5-5 5-5" />
+                                        </svg>
+                                    </div>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                     <div className="hhm-basic-info">
                                         <h3>{hhm.name || 'Unknown Name'}</h3>
                                         <p className="hhm-username">@{hhm.username || 'unknown'}</p>
@@ -225,21 +292,48 @@ const FactoryAssociatedHHMsPage = () => {
                                     <div className="hhm-details">
                                         {hhm.email && (
                                             <div className="detail-row">
+<<<<<<< HEAD
                                                 <span className="detail-icon">📧</span>
+=======
+                                                <span className="detail-icon">
+                                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                                                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                                                        <path d="m2 7 10 6 10-6" />
+                                                    </svg>
+                                                </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                                 <span className="detail-text">{hhm.email}</span>
                                             </div>
                                         )}
 
                                         {hhm.phone && (
                                             <div className="detail-row">
+<<<<<<< HEAD
                                                 <span className="detail-icon">📱</span>
+=======
+                                                <span className="detail-icon">
+                                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                                                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                                                        <line x1="12" y1="18" x2="12.01" y2="18" />
+                                                    </svg>
+                                                </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                                 <span className="detail-text">{hhm.phone}</span>
                                             </div>
                                         )}
 
                                         {hhm.specialization && (
                                             <div className="detail-row">
+<<<<<<< HEAD
                                                 <span className="detail-icon">🎯</span>
+=======
+                                                <span className="detail-icon">
+                                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
+                                                        <circle cx="12" cy="12" r="10" />
+                                                        <path d="M12 6v6l4 2" />
+                                                    </svg>
+                                                </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                                 <span className="detail-text">{hhm.specialization}</span>
                                             </div>
                                         )}
@@ -247,14 +341,28 @@ const FactoryAssociatedHHMsPage = () => {
                                 </div>
 
                                 <div className="card-footer">
+<<<<<<< HEAD
                                     <button 
+=======
+                                    <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                         className="action-btn secondary"
                                         onClick={() => handleViewProfile(hhm)}
                                         title="View HHM profile"
                                     >
+<<<<<<< HEAD
                                         👤 View Profile
                                     </button>
                                     <button 
+=======
+                                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                            <circle cx="12" cy="7" r="4" />
+                                        </svg>
+                                        View Profile
+                                    </button>
+                                    <button
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                         className="action-btn danger"
                                         onClick={() => handleRemoveHHM(hhm._id, hhm.name)}
                                         disabled={removingHHMId === hhm._id}
@@ -265,7 +373,21 @@ const FactoryAssociatedHHMsPage = () => {
                                             borderColor: '#dc3545'
                                         }}
                                     >
+<<<<<<< HEAD
                                         {removingHHMId === hhm._id ? '🔄 Removing...' : '🗑️ Remove'}
+=======
+                                        {removingHHMId === hhm._id ? 'Removing...' : (
+                                            <>
+                                                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                                    <polyline points="3 6 5 6 21 6" />
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                                    <line x1="10" y1="11" x2="10" y2="17" />
+                                                    <line x1="14" y1="11" x2="14" y2="17" />
+                                                </svg>
+                                                Remove
+                                            </>
+                                        )}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                     </button>
                                 </div>
                             </div>
@@ -275,7 +397,11 @@ const FactoryAssociatedHHMsPage = () => {
             </div>
 
             {/* Notifications */}
+<<<<<<< HEAD
             <NotificationToast 
+=======
+            <NotificationToast
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 notifications={notifications}
                 onDismiss={dismissNotification}
                 position="top-right"
@@ -307,8 +433,19 @@ const FactoryAssociatedHHMsPage = () => {
                             textAlign: 'center',
                             marginBottom: '1.5rem'
                         }}>
+<<<<<<< HEAD
                             <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>⚠️</div>
                             <h3 style={{ 
+=======
+                            <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>
+                                <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" strokeWidth="2" fill="none">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                    <line x1="12" y1="9" x2="12" y2="13" />
+                                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                                </svg>
+                            </div>
+                            <h3 style={{
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                                 margin: 0,
                                 color: '#2c3e50',
                                 fontSize: '1.5rem'
@@ -316,7 +453,11 @@ const FactoryAssociatedHHMsPage = () => {
                                 Remove HHM Partnership
                             </h3>
                         </div>
+<<<<<<< HEAD
                         
+=======
+
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                         <div className="modal-body" style={{
                             textAlign: 'center',
                             marginBottom: '2rem',
@@ -386,7 +527,21 @@ const FactoryAssociatedHHMsPage = () => {
                                     }
                                 }}
                             >
+<<<<<<< HEAD
                                 {removingHHMId === selectedHHMToRemove.id ? '🔄 Removing...' : '🗑️ Remove HHM'}
+=======
+                                {removingHHMId === selectedHHMToRemove.id ? 'Removing...' : (
+                                    <>
+                                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                                            <polyline points="3 6 5 6 21 6" />
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                            <line x1="10" y1="11" x2="10" y2="17" />
+                                            <line x1="14" y1="11" x2="14" y2="17" />
+                                        </svg>
+                                        Remove HHM
+                                    </>
+                                )}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                             </button>
                         </div>
                     </div>

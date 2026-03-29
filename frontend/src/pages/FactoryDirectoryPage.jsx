@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+<<<<<<< HEAD
 import { CRUSHING_STATUS, getCrushingStatusDisplay, DEFAULT_CRUSHING_STATUS } from '../constants/crushingStatus.js';
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 import './FactoryDirectoryPage.css';
 
 /**
@@ -195,7 +198,20 @@ const FactoryDirectoryPage = () => {
   return (
     <div className="factory-directory-page">
       <div className="page-header">
+<<<<<<< HEAD
         <h1>🏭 Factory Network Directory</h1>
+=======
+        <h1>
+          <svg style={{ display: 'inline-block', width: '36px', height: '36px', marginRight: '10px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="3" y="10" width="18" height="11" strokeWidth="2" />
+            <rect x="7" y="3" width="4" height="7" strokeWidth="2" />
+            <rect x="13" y="3" width="4" height="7" strokeWidth="2" />
+            <line x1="9" y1="5" x2="9" y2="6" strokeWidth="2" strokeLinecap="round" />
+            <line x1="15" y1="5" x2="15" y2="6" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          Factory Network Directory
+        </h1>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         <p className="page-subtitle">
           Connect and collaborate with fellow factories in the sugarcane processing network
         </p>
@@ -205,7 +221,16 @@ const FactoryDirectoryPage = () => {
       <div className="filter-section">
         <div className="search-controls">
           <div className="search-input-group">
+<<<<<<< HEAD
             <span className="search-icon">🔍</span>
+=======
+            <span className="search-icon">
+              <svg style={{ width: '20px', height: '20px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" strokeWidth="2" />
+                <path d="M21 21l-4.35-4.35" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             <input
               type="text"
               placeholder="Search for factories to connect and collaborate with..."
@@ -224,7 +249,11 @@ const FactoryDirectoryPage = () => {
               <option value="">All Locations</option>
               {uniqueLocations.map((location, index) => (
                 <option key={index} value={location}>
+<<<<<<< HEAD
                   📍 {location}
+=======
+                  {location}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                 </option>
               ))}
             </select>
@@ -235,9 +264,15 @@ const FactoryDirectoryPage = () => {
               className="filter-select"
             >
               <option value="">All Capacities</option>
+<<<<<<< HEAD
               <option value="small">🏭 Small Scale (&lt;1,000)</option>
               <option value="medium">🏭 Medium Scale (1,000-5,000)</option>
               <option value="large">🏭 Large Scale (5,000+)</option>
+=======
+              <option value="small">Small Scale (&lt;1,000)</option>
+              <option value="medium">Medium Scale (1,000-5,000)</option>
+              <option value="large">Large Scale (5,000+)</option>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             </select>
 
             <select
@@ -276,7 +311,17 @@ const FactoryDirectoryPage = () => {
           </div>
         ) : error ? (
           <div className="error-container">
+<<<<<<< HEAD
             <div className="error-icon">⚠️</div>
+=======
+            <div className="error-icon">
+              <svg style={{ width: '48px', height: '48px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" strokeWidth="2" />
+                <line x1="12" y1="9" x2="12" y2="13" strokeWidth="2" strokeLinecap="round" />
+                <line x1="12" y1="17" x2="12" y2="17" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             <h3>Error Loading Directory</h3>
             <p className="error-message">{error}</p>
             <button
@@ -288,7 +333,19 @@ const FactoryDirectoryPage = () => {
           </div>
         ) : filteredFactories.length === 0 ? (
           <div className="empty-state">
+<<<<<<< HEAD
             <div className="empty-icon">🏭</div>
+=======
+            <div className="empty-icon">
+              <svg style={{ width: '64px', height: '64px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <rect x="3" y="10" width="18" height="11" strokeWidth="2" />
+                <rect x="7" y="3" width="4" height="7" strokeWidth="2" />
+                <rect x="13" y="3" width="4" height="7" strokeWidth="2" />
+                <line x1="9" y1="5" x2="9" y2="6" strokeWidth="2" strokeLinecap="round" />
+                <line x1="15" y1="5" x2="15" y2="6" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
             <h3>No Network Connections Found</h3>
             <p>
               {searchTerm || selectedLocation || selectedCapacity
@@ -311,6 +368,7 @@ const FactoryDirectoryPage = () => {
               <div key={factory.id || factory._id} className="factory-card">
                 <div className="card-header">
                   <div className="factory-avatar">
+<<<<<<< HEAD
                     <span className="avatar-icon">🏭</span>
                   </div>
                   <div className="factory-basic-info">
@@ -324,6 +382,28 @@ const FactoryDirectoryPage = () => {
                     <div className={`crushing-status-badge-mini ${factory.crushingStatus === CRUSHING_STATUS.ON ? 'status-on' : 'status-off'}`}>
                       {getCrushingStatusDisplay(factory.crushingStatus || DEFAULT_CRUSHING_STATUS).icon} {factory.crushingStatus || DEFAULT_CRUSHING_STATUS}
                     </div>
+=======
+                    <span className="avatar-icon">
+                      <svg style={{ width: '28px', height: '28px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="3" y="10" width="18" height="11" strokeWidth="2" />
+                        <rect x="7" y="3" width="4" height="7" strokeWidth="2" />
+                        <rect x="13" y="3" width="4" height="7" strokeWidth="2" />
+                      </svg>
+                    </span>
+                  </div>
+                  <div className="factory-basic-info">
+                    <h3 className="factory-name">{factory.name || 'Unknown Factory'}</h3>
+                    <p className="factory-location">
+                      <svg style={{ display: 'inline-block', width: '16px', height: '16px', marginRight: '4px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z" strokeWidth="2" />
+                        <circle cx="12" cy="10" r="3" strokeWidth="2" />
+                      </svg>
+                      {factory.location || 'Location not specified'}
+                    </p>
+                  </div>
+                  <div className="capacity-badge" style={{ backgroundColor: getCapacityColor(factory.capacity) }}>
+                    {getCapacityLabel(factory.capacity)}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                   </div>
                 </div>
 
@@ -333,18 +413,22 @@ const FactoryDirectoryPage = () => {
                       <span className="stat-label">Processing Capacity:</span>
                       <span className="stat-value">{factory.capacity || 'N/A'}</span>
                     </div>
+<<<<<<< HEAD
                     <div className="stat-item">
                       <span className="stat-label">Crushing Status:</span>
                       <span className={`stat-value status-indicator ${factory.crushingStatus === CRUSHING_STATUS.ON ? 'status-active' : 'status-inactive'}`}>
                         {getCrushingStatusDisplay(factory.crushingStatus || DEFAULT_CRUSHING_STATUS).icon} {factory.crushingStatus === CRUSHING_STATUS.ON ? 'ACTIVE' : 'INACTIVE'}
                       </span>
                     </div>
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     {factory.establishedYear && (
                       <div className="stat-item">
                         <span className="stat-label">Established:</span>
                         <span className="stat-value">{factory.establishedYear}</span>
                       </div>
                     )}
+<<<<<<< HEAD
                     {factory.operatingSeason && (
                       <div className="stat-item">
                         <span className="stat-label">Operating Season:</span>
@@ -352,6 +436,21 @@ const FactoryDirectoryPage = () => {
                       </div>
                     )}
 
+=======
+                    {factory.operatingHours && (
+                      <div className="stat-item">
+                        <span className="stat-label">Operating Hours:</span>
+                        <span className="stat-value">
+                          {typeof factory.operatingHours === 'object'
+                            ? (factory.operatingHours.season
+                              ? `${factory.operatingHours.season}${factory.operatingHours.daily ? ' - ' + factory.operatingHours.daily : factory.operatingHours.monday ? ' - ' + factory.operatingHours.monday : ''}`
+                              : 'Contact for schedule'
+                            )
+                            : factory.operatingHours}
+                        </span>
+                      </div>
+                    )}
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                   </div>
 
                   {factory.description && (
@@ -361,21 +460,56 @@ const FactoryDirectoryPage = () => {
                   )}
 
                   <div className="collaboration-opportunities">
+<<<<<<< HEAD
                     <h4>🤝 Collaboration Opportunities:</h4>
                     <div className="opportunity-tags">
                       <span className="opportunity-tag">🔄 Resource Sharing</span>
                       <span className="opportunity-tag">⚙️ Technical Exchange</span>
                       <span className="opportunity-tag">📊 Best Practices</span>
                       <span className="opportunity-tag">🚚 Logistics Coordination</span>
+=======
+                    <h4>
+                      <svg style={{ display: 'inline-block', width: '18px', height: '18px', marginRight: '6px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M17 18a5 5 0 0 0-10 0" strokeWidth="2" />
+                        <path d="M12 18v-3" strokeWidth="2" />
+                        <circle cx="12" cy="9" r="4" strokeWidth="2" />
+                        <path d="M17 11l2-2m0 0l2 2m-2-2v6" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                      Collaboration Opportunities:
+                    </h4>
+                    <div className="opportunity-tags">
+                      <span className="opportunity-tag">Resource Sharing</span>
+                      <span className="opportunity-tag">Technical Exchange</span>
+                      <span className="opportunity-tag">Best Practices</span>
+                      <span className="opportunity-tag">Logistics Coordination</span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     </div>
                   </div>
 
                   <div className="contact-info">
+<<<<<<< HEAD
                     <h4>📞 Connect With Factory:</h4>
                     <div className="contact-details">
                       {factory.contactInfo?.email && (
                         <div className="contact-item">
                           <span className="contact-icon">📧</span>
+=======
+                    <h4>
+                      <svg style={{ display: 'inline-block', width: '18px', height: '18px', marginRight: '6px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" strokeWidth="2" />
+                      </svg>
+                      Connect With Factory:
+                    </h4>
+                    <div className="contact-details">
+                      {factory.contactInfo?.email && (
+                        <div className="contact-item">
+                          <span className="contact-icon">
+                            <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path d="M3 8l9-5 9 5v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" strokeWidth="2" />
+                              <path d="M3 8l9 5 9-5" strokeWidth="2" strokeLinejoin="round" />
+                            </svg>
+                          </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           <a href={`mailto:${factory.contactInfo.email}`} className="contact-link">
                             {factory.contactInfo.email}
                           </a>
@@ -383,7 +517,16 @@ const FactoryDirectoryPage = () => {
                       )}
                       {factory.contactInfo?.phone && (
                         <div className="contact-item">
+<<<<<<< HEAD
                           <span className="contact-icon">📱</span>
+=======
+                          <span className="contact-icon">
+                            <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <rect x="5" y="2" width="14" height="20" rx="2" strokeWidth="2" />
+                              <line x1="12" y1="18" x2="12" y2="18" strokeWidth="2" strokeLinecap="round" />
+                            </svg>
+                          </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           <a href={`tel:${factory.contactInfo.phone}`} className="contact-link">
                             {factory.contactInfo.phone}
                           </a>
@@ -391,7 +534,17 @@ const FactoryDirectoryPage = () => {
                       )}
                       {factory.contactInfo?.website && (
                         <div className="contact-item">
+<<<<<<< HEAD
                           <span className="contact-icon">🌐</span>
+=======
+                          <span className="contact-icon">
+                            <svg style={{ width: '16px', height: '16px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                              <line x1="2" y1="12" x2="22" y2="12" strokeWidth="2" />
+                              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" strokeWidth="2" />
+                            </svg>
+                          </span>
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                           <a
                             href={factory.contactInfo.website.startsWith('http') ? factory.contactInfo.website : `https://${factory.contactInfo.website}`}
                             target="_blank"
@@ -409,14 +562,31 @@ const FactoryDirectoryPage = () => {
                 <div className="card-footer">
                   <div className="action-buttons">
                     <button className="contact-btn primary">
+<<<<<<< HEAD
                       🌐 Connect & Collaborate
+=======
+                      <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      </svg>
+                      Connect & Collaborate
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     </button>
                     <button
                       className="contact-btn secondary"
                       onClick={() => handleViewProfile(factory.id || factory._id)}
                       title="View detailed factory profile"
                     >
+<<<<<<< HEAD
                       📋 View Full Profile
+=======
+                      <svg style={{ display: 'inline-block', width: '16px', height: '16px', marginRight: '4px', verticalAlign: 'middle' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="8" y="2" width="8" height="4" rx="1" strokeWidth="2" />
+                        <path d="M6 4h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" strokeWidth="2" />
+                      </svg>
+                      View Full Profile
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
                     </button>
                   </div>
                 </div>
@@ -668,6 +838,7 @@ const FactoryDirectoryPage = () => {
           white-space: nowrap;
         }
 
+<<<<<<< HEAD
         .badges-group {
           display: flex;
           flex-direction: column;
@@ -696,6 +867,8 @@ const FactoryDirectoryPage = () => {
           color: white;
         }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         .card-body {
           padding: 1.5rem;
         }
@@ -726,6 +899,7 @@ const FactoryDirectoryPage = () => {
           color: #2c3e50;
         }
 
+<<<<<<< HEAD
         .stat-value.status-indicator {
           display: inline-flex;
           align-items: center;
@@ -748,6 +922,8 @@ const FactoryDirectoryPage = () => {
           border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
+=======
+>>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         .factory-description {
           margin-bottom: 1.5rem;
           padding: 1rem;
