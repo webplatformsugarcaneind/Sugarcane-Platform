@@ -1,0 +1,295 @@
+/* NotificationTestPage.css */
+
+.notification-test-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+}
+
+.page-header p {
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+.test-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.test-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+}
+
+.test-section h2 {
+    color: #495057;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 0.5rem;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.test-btn {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.test-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* HHM Activity Buttons */
+.test-btn.hhm-request {
+    background: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+.test-btn.hhm-partnership {
+    background: #f3e5f5;
+    color: #7b1fa2;
+    border: 1px solid #e1bee7;
+}
+
+.test-btn.hhm-accepted {
+    background: #e8f5e8;
+    color: #388e3c;
+    border: 1px solid #c8e6c9;
+}
+
+.test-btn.hhm-rejected {
+    background: #ffebee;
+    color: #d32f2f;
+    border: 1px solid #ffcdd2;
+}
+
+.test-btn.hhm-invitation {
+    background: #f3e5f5;
+    color: #7b1fa2;
+    border: 1px solid #e1bee7;
+}
+
+.test-btn.hhm-removed {
+    background: #fff3e0;
+    color: #f57c00;
+    border: 1px solid #ffcc02;
+}
+
+/* Factory Billing Buttons */
+.test-btn.bill-generated {
+    background: #fff8e1;
+    color: #f57f17;
+    border: 1px solid #fff176;
+}
+
+.test-btn.bill-paid {
+    background: #e8f5e8;
+    color: #388e3c;
+    border: 1px solid #c8e6c9;
+}
+
+.test-btn.bill-overdue {
+    background: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffb74d;
+}
+
+.test-btn.payment-failed {
+    background: #ffebee;
+    color: #d32f2f;
+    border: 1px solid #ffcdd2;
+}
+
+/* System Notification Buttons */
+.test-btn.system-update {
+    background: #f1f8e9;
+    color: #558b2f;
+    border: 1px solid #c5e1a5;
+}
+
+.test-btn.error {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+.test-btn.success {
+    background: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.test-btn.info {
+    background: #e1f5fe;
+    color: #0277bd;
+    border: 1px solid #81d4fa;
+}
+
+/* Quick Messages */
+.test-btn.quick {
+    background: #fafafa;
+    color: #424242;
+    border: 1px solid #e0e0e0;
+}
+
+/* Dashboard Notification Buttons */
+.test-btn.dashboard-contract {
+    background: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.test-btn.dashboard-bill {
+    background: #fff8e1;
+    color: #f57f17;
+    border: 1px solid #fff176;
+}
+
+.test-btn.dashboard-general {
+    background: #f3e5f5;
+    color: #7b1fa2;
+    border: 1px solid #e1bee7;
+}
+
+.control-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.control-info {
+    text-align: center;
+    background: #e3f2fd;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #2196f3;
+}
+
+.control-info p {
+    margin: 0;
+    color: #1565c0;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.control-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-btn.clear {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.control-btn.clear:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.control-btn.clear:active {
+    transform: translateY(0);
+}
+
+.control-btn.random {
+    background: linear-gradient(135deg, #6f42c1, #5a32a3);
+    color: white;
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+}
+
+.control-btn.random:hover {
+    background: linear-gradient(135deg, #5a32a3, #4c2a85);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(111, 66, 193, 0.4);
+}
+
+.control-btn.random:active {
+    transform: translateY(0);
+}
+
+.notification-info {
+    text-align: center;
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.notification-info p {
+    margin: 0;
+    font-size: 1rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .notification-test-page {
+        padding: 1rem;
+    }
+    
+    .test-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .control-section {
+        align-items: center;
+    }
+    
+    .control-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .control-btn {
+        width: 200px;
+    }
+}

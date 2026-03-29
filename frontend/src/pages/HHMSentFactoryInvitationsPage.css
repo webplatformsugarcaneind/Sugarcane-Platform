@@ -1,0 +1,395 @@
+/* HHM Sent Factory Invitations Page Styles - Green Theme */
+
+.hhm-sent-invitations-page {
+    padding: 2.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    background: #ededed;
+    min-height: 100vh;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    background: linear-gradient(135deg, #245305 0%, #3a6b1f 100%);
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(45, 80, 22, 0.2);
+    animation: fadeInDown 0.6s ease;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+    color: rgb(0, 0, 0) !important;
+    text-shadow: 0 2px 10px rgba(242, 239, 239, 0.2);
+}
+
+.page-header .subtitle {
+    font-size: 1.2rem;
+    color: rgba(0, 0, 0, 0.95) !important;
+    font-weight: 300;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #2d5016;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(45, 80, 22, 0.2);
+    border-top-color: #2d5016;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.alert {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 500;
+}
+
+.alert-error {
+    background: #fee;
+    color: #c33;
+    border-left: 4px solid #c33;
+}
+
+.alert-success {
+    background: #efe;
+    color: #3c3;
+    border-left: 4px solid #3c3;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filter-tab {
+    padding: 0.85rem 2rem;
+    border: 2px solid #E8EDF5;
+    border-radius: 30px;
+    background: white;
+    color: #111827 !important;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filter-tab:hover {
+    background: #09a528;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.filter-tab.active {
+    background-color: #09a528;
+    color: rgb(23, 130, 2) !important;
+    border-color: #2d5016;
+    box-shadow: 0 4px 16px rgba(45, 80, 22, 0.3);
+    transform: translateY(-2px);
+}
+
+.invitations-container {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E8EDF5;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6B7280;
+}
+
+.empty-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: #111827;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.invitations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+    gap: 2rem;
+}
+
+.invitation-card {
+    background: white;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #E8EDF5;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-top-border {
+    height: 4px;
+    background: linear-gradient(90deg, #2d5016 0%, #3a6b1f 100%);
+}
+
+.invitation-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem 2rem 1.25rem 2rem;
+    border-bottom: 1px solid #E8EDF5;
+}
+
+.factory-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    flex: 1;
+}
+
+.factory-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+.factory-details {
+    flex: 1;
+}
+
+.factory-details h3 {
+    font-size: 1.4rem;
+    color: #111827;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.factory-location {
+    color: #6B7280;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-pending {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-accepted {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.badge-declined {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 0 2rem 2rem 2rem;
+}
+
+.info-section {
+    padding: 1rem;
+    background: #F8FAFC;
+    border-radius: 8px;
+    border-left: 3px solid #2d5016;
+    transition: all 0.3s ease;
+}
+
+.info-section:hover {
+    transform: translateX(3px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.info-section h4 {
+    font-size: 1rem;
+    color: #2d5016;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-section p {
+    color: #4B5563;
+    line-height: 1.6;
+    margin: 0.4rem 0;
+    font-size: 0.95rem;
+}
+
+.message-text,
+.reason-text {
+    font-style: italic;
+    color: #111827;
+    background: white;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border-left: 3px solid #2d5016;
+}
+
+.response-section {
+    background: #D1FAE5;
+    border-left: 3px solid #065F46;
+}
+
+.response-text {
+    font-weight: 600;
+    color: #065F46;
+}
+
+.timeline-section {
+    padding-top: 1rem;
+    border-top: 1px dashed #E8EDF5;
+    margin-top: 0.5rem;
+}
+
+.timeline-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+.timeline-label {
+    color: #6B7280;
+    font-weight: 600;
+}
+
+.timeline-value {
+    color: #111827;
+    font-weight: 500;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 5rem 2rem;
+    color: #6B7280;
+}
+
+.empty-icon {
+    font-size: 6rem;
+    margin-bottom: 1.5rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.empty-state h3 {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.empty-state p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 500px;
+    margin: 0 auto;
+    color: #6B7280;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hhm-sent-invitations-page {
+        padding: 1rem;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .invitations-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-tabs {
+        justify-content: center;
+    }
+
+    .card-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .status-badge {
+        align-self: flex-start;
+    }
+}
