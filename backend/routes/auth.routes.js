@@ -171,12 +171,12 @@ router.post('/register', async (req, res) => {
 // @access  Public
 router.post('/login', async (req, res) => {
   try {
-    console.log('🔐 Login attempt received:', { identifier: req.body.identifier, hasPassword: !!req.body.password });
+    console.log(' Login attempt received:', { identifier: req.body.identifier, hasPassword: !!req.body.password });
     const { identifier, password } = req.body;
 
     // Validation - Check required fields
     if (!identifier || !password) {
-      console.log('❌ Missing credentials');
+      console.log(' Missing credentials');
       return res.status(400).json({
         success: false,
         message: 'Please provide username/email/phone and password'
@@ -184,7 +184,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Find user by username, email, or phone
-    console.log('🔍 Searching for user with identifier:', identifier);
+    console.log(' Searching for user with identifier:', identifier);
     const user = await User.findOne({
       $or: [
         { username: identifier.toLowerCase() },
@@ -194,23 +194,18 @@ router.post('/login', async (req, res) => {
       isActive: true
     }).select('+password'); // Include password field for comparison
 
-    console.log('👤 User found:', user ? `${user.name} (${user.username})` : 'Not found');
+    console.log(' User found:', user ? `${user.name} (${user.username})` : 'Not found');
 
     if (!user) {
-      console.log('❌ User not found or inactive');
+      console.log(' User not found or inactive');
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
     }
 
-<<<<<<< HEAD
     // Compare password using the model's method
     const isPasswordValid = await user.comparePassword(password);
-=======
-    // Compare password using bcryptjs
-    const isPasswordValid = await bcrypt.compare(password, user.password);
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -221,9 +216,9 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT token
     const token = generateToken(user._id);
-    console.log('🎫 Generated token for user:', user.username);
-    console.log('🎫 Token preview:', token.substring(0, 50) + '...');
-    console.log('🎫 Token length:', token.length);
+    console.log(' Generated token for user:', user.username);
+    console.log(' Token preview:', token.substring(0, 50) + '...');
+    console.log(' Token length:', token.length);
 
     // Remove password from response
     const userResponse = {
@@ -239,7 +234,7 @@ router.post('/login', async (req, res) => {
 
     // Log farmer login success to console
     if (user.role === 'Farmer') {
-      console.log(`🌾 FARMER LOGGED IN SUCCESSFULLY: ${user.name} (${user.username}) - ${new Date().toLocaleString()}`);
+      console.log(` FARMER LOGGED IN SUCCESSFULLY: ${user.name} (${user.username}) - ${new Date().toLocaleString()}`);
     }
 
     res.status(200).json({
@@ -252,7 +247,7 @@ router.post('/login', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('💥 Login error:', error.message);
+    console.error(' Login error:', error.message);
     console.error('Full error stack:', error.stack);
     
     res.status(500).json({

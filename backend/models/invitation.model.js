@@ -118,16 +118,12 @@ const invitationSchema = new mongoose.Schema({
     type: Date,
     validate: {
       validator: function (date) {
-<<<<<<< HEAD
         // Only validate expiration date on creation or when expiresAt is being modified
         // This allows us to update invitation status even if it has expired
         if (this.isNew || this.isModified('expiresAt')) {
           return !date || date > new Date();
         }
         return true;
-=======
-        return !date || date > new Date();
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       },
       message: 'Expiration date must be in the future'
     }

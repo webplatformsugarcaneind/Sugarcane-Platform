@@ -2,11 +2,8 @@ const express = require('express');
 const User = require('../models/user.model');
 const mongoose = require('mongoose');
 
-<<<<<<< HEAD
-console.log('🚀 [USER.ROUTES] Loading user.routes.js file');
+console.log(' [USER.ROUTES] Loading user.routes.js file');
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 const router = express.Router();
 
 // @route   GET /api/users/profile/:userId
@@ -14,23 +11,19 @@ const router = express.Router();
 // @access  Public (accessible to all users, returns public data only)
 router.get('/profile/:userId', async (req, res) => {
   try {
-<<<<<<< HEAD
-    console.log('🔍 [USER.ROUTES] GET /profile/:userId endpoint hit!');
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
+    console.log(' [USER.ROUTES] GET /profile/:userId endpoint hit!');
     const userId = req.params.userId;
-    console.log('🔍 [DEBUG] Getting user profile with ID:', userId);
+    console.log(' [DEBUG] Getting user profile with ID:', userId);
 
     // Validate ObjectId format
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-      console.log('❌ [DEBUG] Invalid ObjectId format:', userId);
+      console.log(' [DEBUG] Invalid ObjectId format:', userId);
       return res.status(400).json({
         success: false,
         message: 'Invalid user ID format'
       });
     }
 
-<<<<<<< HEAD
     // Find user by ID and populate associations (HHMs for Factory, Factories for HHM)
     const user = await User.findById(userId)
       .select('-password -receivedOrders -sentOrders')
@@ -38,32 +31,20 @@ router.get('/profile/:userId', async (req, res) => {
       .populate('associatedFactories', 'name username email phone location factoryName factoryLocation capacity specialization')
       .lean();
 
-=======
-    // Find user by ID (exclude sensitive information)
-    const user = await User.findById(userId)
-      .select('-password -associatedFactories -associatedHHMs -receivedOrders -sentOrders')
-      .lean();
-
-    console.log('🔍 [DEBUG] User found:', user ? `YES (${user.role})` : 'NO');
-
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     if (!user) {
-      console.log('❌ [DEBUG] User not found for ID:', userId);
+      console.log(' [DEBUG] User not found for ID:', userId);
       return res.status(404).json({
         success: false,
         message: 'User not found'
       });
     }
 
-<<<<<<< HEAD
-    console.log('🔍 [DEBUG] User found:', `YES (${user.role})`);
-    console.log('🔍 [DEBUG] User associatedHHMs:', user?.associatedHHMs);
-    console.log('🔍 [DEBUG] AssociatedHHMs length:', user?.associatedHHMs?.length || 0);
-    console.log('🔍 [DEBUG] User associatedFactories:', user?.associatedFactories);
-    console.log('🔍 [DEBUG] AssociatedFactories length:', user?.associatedFactories?.length || 0);
+    console.log(' [DEBUG] User found:', `YES (${user.role})`);
+    console.log(' [DEBUG] User associatedHHMs:', user?.associatedHHMs);
+    console.log(' [DEBUG] AssociatedHHMs length:', user?.associatedHHMs?.length || 0);
+    console.log(' [DEBUG] User associatedFactories:', user?.associatedFactories);
+    console.log(' [DEBUG] AssociatedFactories length:', user?.associatedFactories?.length || 0);
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Format response data based on user role
     let formattedProfile = {
       _id: user._id,
@@ -83,11 +64,8 @@ router.get('/profile/:userId', async (req, res) => {
     // Add role-specific information based on user type
     switch (user.role) {
       case 'Factory':
-<<<<<<< HEAD
-        console.log('🔍 [DEBUG] Factory case - user.associatedHHMs:', user.associatedHHMs);
-        console.log('🔍 [DEBUG] Factory case - associatedHHMs length:', user.associatedHHMs?.length);
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
+        console.log(' [DEBUG] Factory case - user.associatedHHMs:', user.associatedHHMs);
+        console.log(' [DEBUG] Factory case - associatedHHMs length:', user.associatedHHMs?.length);
         formattedProfile = {
           ...formattedProfile,
           factoryName: user.factoryName || user.name + ' Factory',
@@ -96,10 +74,7 @@ router.get('/profile/:userId', async (req, res) => {
           capacity: user.capacity || 'Not specified',
           experience: user.experience || 'Not specified',
           specialization: user.specialization || 'Sugar Processing',
-<<<<<<< HEAD
           associatedHHMs: user.associatedHHMs || [],
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           contactInfo: {
             website: user.contactInfo?.website || '',
             fax: user.contactInfo?.fax || '',
@@ -108,11 +83,7 @@ router.get('/profile/:userId', async (req, res) => {
             email: user.email,
             phone: user.phone
           },
-<<<<<<< HEAD
           operatingSeason: user.operatingSeason,
-=======
-          operatingHours: user.operatingHours || {},
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           profileType: 'factory'
         };
         break;
@@ -132,11 +103,8 @@ router.get('/profile/:userId', async (req, res) => {
         break;
 
       case 'HHM':
-<<<<<<< HEAD
-        console.log('🔍 [DEBUG] HHM case - user.associatedFactories:', user.associatedFactories);
-        console.log('🔍 [DEBUG] HHM case - associatedFactories length:', user.associatedFactories?.length);
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
+        console.log(' [DEBUG] HHM case - user.associatedFactories:', user.associatedFactories);
+        console.log(' [DEBUG] HHM case - associatedFactories length:', user.associatedFactories?.length);
         formattedProfile = {
           ...formattedProfile,
           managementExperience: user.managementExperience || user.experience || 'Not specified',
@@ -144,10 +112,7 @@ router.get('/profile/:userId', async (req, res) => {
           managementOperations: user.managementOperations || 'Not specified',
           servicesOffered: user.servicesOffered || 'Agricultural coordination and worker management',
           description: user.servicesOffered || 'Experienced Hub Head Manager coordinating agricultural operations and partnerships.',
-<<<<<<< HEAD
           associatedFactories: user.associatedFactories || [],
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
           profileType: 'hhm'
         };
         break;
@@ -168,11 +133,8 @@ router.get('/profile/:userId', async (req, res) => {
         formattedProfile.profileType = 'basic';
     }
 
-    console.log('📤 [DEBUG] Sending profile response for role:', user.role);
-<<<<<<< HEAD
-    console.log('📤 [DEBUG] formattedProfile.associatedHHMs:', formattedProfile.associatedHHMs);
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
+    console.log(' [DEBUG] Sending profile response for role:', user.role);
+    console.log(' [DEBUG] formattedProfile.associatedHHMs:', formattedProfile.associatedHHMs);
 
     res.status(200).json({
       success: true,

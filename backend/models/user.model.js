@@ -80,15 +80,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-<<<<<<< HEAD
   crushingStatus: {
     type: String,
     enum: ['ON', 'OFF'],
     default: 'OFF',
     trim: true
   },
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   contactInfo: {
     website: { type: String, trim: true },
     fax: { type: String, trim: true },
@@ -96,26 +93,11 @@ const userSchema = new mongoose.Schema({
     landline: { type: String, trim: true }
   },
   operatingHours: {
-<<<<<<< HEAD
     season: { type: String, trim: true }
   },
   operatingSeason: {
     type: String,
     trim: true
-=======
-    season: { type: String, trim: true },
-    daily: { type: String, trim: true },
-    monday: { type: String, trim: true },
-    tuesday: { type: String, trim: true },
-    wednesday: { type: String, trim: true },
-    thursday: { type: String, trim: true },
-    friday: { type: String, trim: true },
-    saturday: { type: String, trim: true },
-    sunday: { type: String, trim: true },
-    shift1: { type: String, trim: true },
-    shift2: { type: String, trim: true },
-    maintenance: { type: String, trim: true }
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   },
 
   // Farmer-specific fields

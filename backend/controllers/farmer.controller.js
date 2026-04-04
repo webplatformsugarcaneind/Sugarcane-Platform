@@ -9,11 +9,11 @@ const User = require('../models/user.model');
  */
 const getProfile = async (req, res) => {
   try {
-    console.log('🔥 NEW FARMER CONTROLLER - getProfile called for farmer user:', req.user?._id);
-    console.log('🔥 User object keys:', Object.keys(req.user));
-    console.log('🔥 User location:', req.user.location);
-    console.log('🔥 User cropTypes:', req.user.cropTypes);
-    console.log('🔥 User irrigationType:', req.user.irrigationType);
+    console.log(' NEW FARMER CONTROLLER - getProfile called for farmer user:', req.user?._id);
+    console.log(' User object keys:', Object.keys(req.user));
+    console.log(' User location:', req.user.location);
+    console.log(' User cropTypes:', req.user.cropTypes);
+    console.log(' User irrigationType:', req.user.irrigationType);
 
     // The user is already attached to req.user by the protect middleware
     const farmer = req.user;
@@ -52,7 +52,7 @@ const getProfile = async (req, res) => {
       profile: profileData
     });
 
-    console.log('🔥 NEW FARMER CONTROLLER - Response sent:', {
+    console.log(' NEW FARMER CONTROLLER - Response sent:', {
       success: true,
       message: 'Farmer profile retrieved successfully',
       profileDataKeys: Object.keys(profileData)
@@ -75,7 +75,7 @@ const getProfile = async (req, res) => {
  */
 const updateProfile = async (req, res) => {
   try {
-    console.log('🔄 updateProfile called for farmer user:', req.user?._id);
+    console.log(' updateProfile called for farmer user:', req.user?._id);
 
     const farmerId = req.user._id;
     const updateData = req.body;
@@ -419,7 +419,6 @@ const getHHMs = async (req, res) => {
  */
 const getFactories = async (req, res) => {
   try {
-<<<<<<< HEAD
     // Find all active users with Factory role and populate associated HHMs
     const factories = await User.find({ 
       role: 'Factory', 
@@ -431,13 +430,6 @@ const getFactories = async (req, res) => {
       select: 'name username email phone location experience'
     })
     .sort({ factoryName: 1 });
-=======
-    // Find all active users with Factory role
-    const factories = await User.find({ 
-      role: 'Factory', 
-      isActive: true 
-    }).select('_id name factoryName factoryLocation factoryDescription capacity experience specialization contactInfo operatingHours phone email username createdAt').sort({ factoryName: 1 });
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
     // Format the response to match expected factory structure
     const formattedFactories = factories.map(factory => ({
@@ -453,18 +445,12 @@ const getFactories = async (req, res) => {
         email: factory.email,
         ...factory.contactInfo
       },
-<<<<<<< HEAD
       operatingSeason: factory.operatingSeason,
       crushingStatus: factory.crushingStatus || 'OFF',
       username: factory.username,
       createdAt: factory.createdAt,
       associatedHHMs: factory.associatedHHMs || [],
       hhmCount: (factory.associatedHHMs || []).length
-=======
-      operatingHours: factory.operatingHours || {},
-      username: factory.username,
-      createdAt: factory.createdAt
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }));
 
     res.status(200).json({
@@ -483,7 +469,6 @@ const getFactories = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 /**
  * @desc    Get specific factory details with HHM associations
  * @route   GET /api/farmer/factories/:factoryId
@@ -653,8 +638,6 @@ const removeHHMAssociation = async (req, res) => {
   }
 };
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 module.exports = {
   getProfile,
   updateProfile,
@@ -665,12 +648,8 @@ module.exports = {
   updateListing,
   deleteListing,
   getHHMs,
-<<<<<<< HEAD
   getFactories,
   getFactoryById,
   associateHHMs,
   removeHHMAssociation
-=======
-  getFactories
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 };

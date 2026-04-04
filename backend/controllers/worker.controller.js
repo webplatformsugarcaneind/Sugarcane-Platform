@@ -11,7 +11,7 @@ const User = require('../models/user.model');
  */
 const getJobFeed = async (req, res) => {
   try {
-    console.log('📋 Getting job feed for worker:', req.user._id);
+    console.log(' Getting job feed for worker:', req.user._id);
     
     const { 
       skills, 
@@ -95,7 +95,7 @@ const getJobFeed = async (req, res) => {
       return scheduleObj;
     });
 
-    console.log(`✅ Found ${schedules.length} job opportunities for worker`);
+    console.log(` Found ${schedules.length} job opportunities for worker`);
 
     res.status(200).json({
       success: true,
@@ -118,7 +118,7 @@ const getJobFeed = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error getting job feed:', error);
+    console.error(' Error getting job feed:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving job feed',
@@ -134,7 +134,7 @@ const getJobFeed = async (req, res) => {
  */
 const applyForJob = async (req, res) => {
   try {
-    console.log('📝 Worker applying for job:', req.user._id);
+    console.log(' Worker applying for job:', req.user._id);
     
     const {
       scheduleId,
@@ -191,26 +191,11 @@ const applyForJob = async (req, res) => {
       });
     }
 
-<<<<<<< HEAD
     // Check worker availability status - use req.user since worker data is stored in User model
     const worker = req.user;
     const workerAvailability = (worker.availability || 'Available').toLowerCase();
     
     if (workerAvailability !== 'available') {
-=======
-    // Get worker's profile for additional validation
-    const workerProfile = await Profile.findOne({ userId: req.user._id });
-    
-    if (!workerProfile) {
-      return res.status(400).json({
-        success: false,
-        message: 'Please complete your profile before applying for jobs'
-      });
-    }
-
-    // Check worker availability status
-    if (workerProfile.availabilityStatus !== 'available') {
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       return res.status(400).json({
         success: false,
         message: 'You must be available to apply for jobs. Update your availability status in your profile.'
@@ -221,11 +206,7 @@ const applyForJob = async (req, res) => {
     const application = await Application.create({
       workerId: req.user._id,
       scheduleId: scheduleId,
-<<<<<<< HEAD
       hhmId: schedule.hhmId._id || schedule.hhmId, // Handle both populated and unpopulated hhmId
-=======
-      hhmId: schedule.hhmId._id,
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       applicationMessage: applicationMessage || '',
       workerSkills: workerSkills,
       experience: experience || '',
@@ -240,7 +221,7 @@ const applyForJob = async (req, res) => {
       { path: 'hhmId', select: 'name email phone companyName' }
     ]);
 
-    console.log('✅ Application submitted successfully:', application._id);
+    console.log(' Application submitted successfully:', application._id);
 
     res.status(201).json({
       success: true,
@@ -249,7 +230,7 @@ const applyForJob = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error applying for job:', error);
+    console.error(' Error applying for job:', error);
     
     // Handle duplicate application error
     if (error.code === 11000) {
@@ -274,7 +255,7 @@ const applyForJob = async (req, res) => {
  */
 const getMyApplications = async (req, res) => {
   try {
-    console.log('📋 Getting applications for worker:', req.user._id);
+    console.log(' Getting applications for worker:', req.user._id);
     
     const { 
       status, 
@@ -302,7 +283,7 @@ const getMyApplications = async (req, res) => {
     // Get total count for pagination
     const total = await Application.countDocuments(query);
 
-    console.log(`✅ Found ${applications.length} applications for worker`);
+    console.log(` Found ${applications.length} applications for worker`);
 
     // Transform applications for better frontend consumption
     const enhancedApplications = applications.map(app => ({
@@ -358,7 +339,7 @@ const getMyApplications = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error getting worker applications:', error);
+    console.error(' Error getting worker applications:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving applications',
@@ -374,7 +355,7 @@ const getMyApplications = async (req, res) => {
  */
 const getMyInvitations = async (req, res) => {
   try {
-    console.log('📨 Getting invitations for worker:', req.user._id);
+    console.log(' Getting invitations for worker:', req.user._id);
     
     const { 
       status, 
@@ -402,7 +383,7 @@ const getMyInvitations = async (req, res) => {
     // Get total count for pagination
     const total = await Invitation.countDocuments(query);
 
-    console.log(`✅ Found ${invitations.length} invitations for worker`);
+    console.log(` Found ${invitations.length} invitations for worker`);
 
     // Transform invitations for better frontend consumption
     const enhancedInvitations = invitations.map(inv => ({
@@ -466,7 +447,7 @@ const getMyInvitations = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error getting worker invitations:', error);
+    console.error(' Error getting worker invitations:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving invitations',
@@ -482,7 +463,7 @@ const getMyInvitations = async (req, res) => {
  */
 const respondToInvitation = async (req, res) => {
   try {
-    console.log('💌 Worker responding to invitation:', req.params.id);
+    console.log(' Worker responding to invitation:', req.params.id);
     
     const { status, responseMessage } = req.body;
 
@@ -556,7 +537,7 @@ const respondToInvitation = async (req, res) => {
       });
 
       if (conflictingAcceptedInvitations > 0 || conflictingApprovedApplications > 0) {
-        console.log('⚠️ Potential scheduling conflict detected, but allowing acceptance');
+        console.log(' Potential scheduling conflict detected, but allowing acceptance');
       }
     }
 
@@ -573,7 +554,7 @@ const respondToInvitation = async (req, res) => {
       { path: 'hhmId', select: 'name email phone companyName' }
     ]);
 
-    console.log(`✅ Invitation ${status} successfully`);
+    console.log(` Invitation ${status} successfully`);
 
     res.status(200).json({
       success: true,
@@ -582,7 +563,7 @@ const respondToInvitation = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error responding to invitation:', error);
+    console.error(' Error responding to invitation:', error);
     res.status(500).json({
       success: false,
       message: 'Error responding to invitation',
@@ -598,7 +579,7 @@ const respondToInvitation = async (req, res) => {
  */
 const getWorkerDashboard = async (req, res) => {
   try {
-    console.log('📊 Getting dashboard for worker:', req.user._id);
+    console.log(' Getting dashboard for worker:', req.user._id);
 
     // Get application statistics
     const [pendingApps, approvedApps, rejectedApps] = await Promise.all([
@@ -660,7 +641,7 @@ const getWorkerDashboard = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error getting worker dashboard:', error);
+    console.error(' Error getting worker dashboard:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving dashboard statistics',
@@ -676,7 +657,7 @@ const getWorkerDashboard = async (req, res) => {
  */
 const getProfile = async (req, res) => {
   try {
-    console.log('🔥 NEW WORKER CONTROLLER - getProfile called for worker user:', req.user?._id);
+    console.log(' NEW WORKER CONTROLLER - getProfile called for worker user:', req.user?._id);
 
     // The user is already attached to req.user by the protect middleware
     const worker = req.user;
@@ -699,10 +680,7 @@ const getProfile = async (req, res) => {
       isActive: worker.isActive,
       createdAt: worker.createdAt,
       updatedAt: worker.updatedAt,
-<<<<<<< HEAD
       availability: worker.availability || 'Available', // ALWAYS include availability field
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     };
 
     // Helper function to check if a value is meaningful
@@ -727,7 +705,6 @@ const getProfile = async (req, res) => {
       profileData.farmSize = worker.farmSize;
     }
     
-<<<<<<< HEAD
     // Skills - ensure always returned as string for frontend form compatibility
     if (hasValue(worker.skills)) {
       // Force skills to always be a string to match frontend form input expectations
@@ -742,20 +719,6 @@ const getProfile = async (req, res) => {
     
     // availabilityStatus for UI display (lowercase version)
     profileData.availabilityStatus = (worker.availability || 'Available').toLowerCase();
-=======
-    // Skills - convert string to array and only add if not empty
-    if (hasValue(worker.skills)) {
-      const skillsArray = worker.skills.split(',').map(skill => skill.trim()).filter(skill => skill);
-      if (skillsArray.length > 0) {
-        profileData.skills = skillsArray;
-      }
-    }
-    
-    // Availability status mapping
-    if (hasValue(worker.availability)) {
-      profileData.availabilityStatus = worker.availability.toLowerCase();
-    }
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     
     // Work experience mapping
     if (hasValue(worker.workExperience)) {
@@ -772,7 +735,7 @@ const getProfile = async (req, res) => {
     if (hasValue(worker.wageRate)) {
       profileData.wageRate = worker.wageRate;
       // Extract numeric value for dailyWageRate field expected by frontend
-      const wageMatch = worker.wageRate.match(/₹(\d+)/);
+      const wageMatch = worker.wageRate.match(/(\d+)/);
       if (wageMatch) {
         profileData.dailyWageRate = parseInt(wageMatch[1]);
       }
@@ -804,19 +767,16 @@ const getProfile = async (req, res) => {
     // Profile completeness check
     profileData.profileComplete = !!(worker.skills && worker.availability);
 
-<<<<<<< HEAD
-    console.log('🔥 FINAL profileData.availability:', profileData.availability);
-    console.log('🔥 FINAL profileData keys:', Object.keys(profileData));
+    console.log(' FINAL profileData.availability:', profileData.availability);
+    console.log(' FINAL profileData keys:', Object.keys(profileData));
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     res.status(200).json({
       success: true,
       message: 'Worker profile retrieved successfully',
       profile: profileData
     });
 
-    console.log('🔥 NEW WORKER CONTROLLER - Response sent:', {
+    console.log(' NEW WORKER CONTROLLER - Response sent:', {
       success: true,
       message: 'Worker profile retrieved successfully',
       profileDataKeys: Object.keys(profileData)
@@ -839,36 +799,29 @@ const getProfile = async (req, res) => {
  */
 const updateProfile = async (req, res) => {
   try {
-    console.log('🔄 NEW WORKER CONTROLLER - updateProfile called for worker user:', req.user?._id);
+    console.log(' NEW WORKER CONTROLLER - updateProfile called for worker user:', req.user?._id);
 
     const workerId = req.user._id;
     const updateData = req.body;
 
-<<<<<<< HEAD
-    console.log('📝 Update data received:', JSON.stringify(updateData, null, 2));
-    console.log('📝 Availability in updateData:', updateData.availability);
+    console.log(' Update data received:', JSON.stringify(updateData, null, 2));
+    console.log(' Availability in updateData:', updateData.availability);
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Remove fields that shouldn't be updated via profile
     delete updateData.password;
     delete updateData.role;
     delete updateData._id;
     delete updateData.createdAt;
 
-<<<<<<< HEAD
     // Fix skills field: Convert array to comma-separated string if it's an array
     if (Array.isArray(updateData.skills)) {
       updateData.skills = updateData.skills.join(', ');
-      console.log('🔧 Converted skills array to string:', updateData.skills);
+      console.log(' Converted skills array to string:', updateData.skills);
     }
 
     // Update worker profile directly in User model
-    console.log('💾 Saving to database with availability:', updateData.availability);
+    console.log(' Saving to database with availability:', updateData.availability);
     
-=======
-    // Update worker profile directly in User model
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     const updatedWorker = await User.findByIdAndUpdate(
       workerId,
       updateData,
@@ -878,11 +831,8 @@ const updateProfile = async (req, res) => {
       }
     ).select('-password');
 
-<<<<<<< HEAD
-    console.log('✅ Database updated. New availability:', updatedWorker?.availability);
+    console.log(' Database updated. New availability:', updatedWorker?.availability);
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     if (!updatedWorker) {
       return res.status(404).json({
         success: false,
@@ -896,7 +846,7 @@ const updateProfile = async (req, res) => {
       profile: updatedWorker
     });
 
-    console.log('🔥 NEW WORKER CONTROLLER - Profile updated successfully');
+    console.log(' NEW WORKER CONTROLLER - Profile updated successfully');
 
   } catch (error) {
     console.error('Error in updateProfile:', error);
@@ -915,7 +865,7 @@ const updateProfile = async (req, res) => {
  */
 const updateAvailability = async (req, res) => {
   try {
-    console.log('🔄 Updating availability for worker:', req.user._id);
+    console.log(' Updating availability for worker:', req.user._id);
     
     const { availability } = req.body;
 
@@ -941,7 +891,7 @@ const updateAvailability = async (req, res) => {
       });
     }
 
-    console.log(`✅ Worker availability updated to: ${availability}`);
+    console.log(` Worker availability updated to: ${availability}`);
 
     res.status(200).json({
       success: true,
@@ -954,7 +904,7 @@ const updateAvailability = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error updating worker availability:', error);
+    console.error(' Error updating worker availability:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating availability status',
@@ -970,7 +920,7 @@ const updateAvailability = async (req, res) => {
  */
 const getHHMs = async (req, res) => {
   try {
-    console.log('📋 Getting HHMs directory for worker:', req.user._id);
+    console.log(' Getting HHMs directory for worker:', req.user._id);
     
     // Find all active users with HHM role
     const hhms = await User.find({ 
@@ -978,7 +928,7 @@ const getHHMs = async (req, res) => {
       isActive: true 
     }).select('_id name phone email username createdAt').sort({ name: 1 });
 
-    console.log(`✅ Found ${hhms.length} HHMs for worker directory`);
+    console.log(` Found ${hhms.length} HHMs for worker directory`);
 
     res.status(200).json({
       success: true,

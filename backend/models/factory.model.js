@@ -48,15 +48,12 @@ const factorySchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-<<<<<<< HEAD
   crushingStatus: {
     type: String,
     enum: ['ON', 'OFF'],
     default: 'OFF',
     trim: true
   },
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   capacity: {
     type: Number,
     min: [1, 'Factory capacity must be at least 1'],

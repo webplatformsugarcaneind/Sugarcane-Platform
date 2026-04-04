@@ -428,10 +428,6 @@
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
-<<<<<<< HEAD
-=======
-  -webkit-backdrop-filter: blur(4px);
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   backdrop-filter: blur(4px);
   animation: fadeIn 0.3s ease;
 }

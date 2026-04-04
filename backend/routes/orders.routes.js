@@ -19,7 +19,7 @@ router.use(protect);
  */
 router.post('/create', authorize('Farmer'), async (req, res) => {
   try {
-    console.log('📝 Creating buy order for farmer:', req.user._id);
+    console.log(' Creating buy order for farmer:', req.user._id);
     
     const {
       listingId,
@@ -129,7 +129,7 @@ router.post('/create', authorize('Farmer'), async (req, res) => {
       }
     });
 
-    console.log(`✅ Buy order created successfully: Order ${buyOrder.orderId} from ${req.user.name} to ${targetFarmer.name}`);
+    console.log(` Buy order created successfully: Order ${buyOrder.orderId} from ${req.user.name} to ${targetFarmer.name}`);
 
     // Here you might want to send an email notification to the target farmer
     // For now, we'll just return success response
@@ -157,7 +157,7 @@ router.post('/create', authorize('Farmer'), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error creating buy order:', error);
+    console.error(' Error creating buy order:', error);
     
     res.status(500).json({
       success: false,
@@ -174,7 +174,7 @@ router.post('/create', authorize('Farmer'), async (req, res) => {
  */
 router.get('/received', authorize('Farmer'), async (req, res) => {
   try {
-    console.log('📥 Fetching received orders for farmer:', req.user._id);
+    console.log(' Fetching received orders for farmer:', req.user._id);
     
     // Extract query parameters for filtering
     const {
@@ -231,7 +231,7 @@ router.get('/received', authorize('Farmer'), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error fetching received orders:', error);
+    console.error(' Error fetching received orders:', error);
     
     res.status(500).json({
       success: false,
@@ -248,7 +248,7 @@ router.get('/received', authorize('Farmer'), async (req, res) => {
  */
 router.get('/sent', authorize('Farmer'), async (req, res) => {
   try {
-    console.log('📤 Fetching sent orders for farmer:', req.user._id);
+    console.log(' Fetching sent orders for farmer:', req.user._id);
     
     // Extract query parameters for filtering
     const {
@@ -305,7 +305,7 @@ router.get('/sent', authorize('Farmer'), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error fetching sent orders:', error);
+    console.error(' Error fetching sent orders:', error);
     
     res.status(500).json({
       success: false,
@@ -323,7 +323,7 @@ router.get('/sent', authorize('Farmer'), async (req, res) => {
 router.get('/listing/:listingId', authorize('Farmer'), async (req, res) => {
   try {
     const { listingId } = req.params;
-    console.log('📋 Fetching orders for listing:', listingId);
+    console.log(' Fetching orders for listing:', listingId);
     
     // Validate listing ID format
     if (!mongoose.Types.ObjectId.isValid(listingId)) {
@@ -383,7 +383,7 @@ router.get('/listing/:listingId', authorize('Farmer'), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error fetching listing orders:', error);
+    console.error(' Error fetching listing orders:', error);
     
     res.status(500).json({
       success: false,
@@ -403,7 +403,7 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
     const { orderId } = req.params;
     const { status } = req.body;
     
-    console.log(`📝 Updating order status: ${orderId} to ${status}`);
+    console.log(` Updating order status: ${orderId} to ${status}`);
 
     // Validate status
     if (!status || !['accepted', 'rejected', 'completed', 'cancelled'].includes(status)) {
@@ -447,7 +447,7 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
     
     // If accepting the order, check quantity availability
     if (status === 'accepted') {
-      console.log(`🔍 Checking quantity availability for order ${orderId}`);
+      console.log(` Checking quantity availability for order ${orderId}`);
       
       // Find the corresponding listing
       const listingId = order.listingId;
@@ -458,36 +458,28 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
       if (farmer.listings && farmer.listings.length > 0) {
         listing = farmer.listings.find(l => l._id.toString() === listingId);
         if (listing) {
-<<<<<<< HEAD
           // Check multiple quantity fields (same priority as frontend)
           availableQuantity = listing.quantity_available?.value || listing.quantity_in_tons || 0;
-=======
-          availableQuantity = listing.quantity_in_tons;
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-          console.log(`📋 Found listing in User.listings: ${availableQuantity} tons available`);
+          console.log(` Found listing in User.listings: ${availableQuantity} tons available`);
         }
       }
       
       // If not found in embedded, check CropListing collection
       if (!listing) {
         try {
-          console.log(`🔍 Checking CropListing collection for listing ${listingId}...`);
+          console.log(` Checking CropListing collection for listing ${listingId}...`);
           const CropListingModel = require('../models/cropListing.model');
-          console.log(`🔍 CropListing re-required: ${typeof CropListingModel}`);
+          console.log(` CropListing re-required: ${typeof CropListingModel}`);
           listing = await CropListingModel.findById(listingId);
           if (listing) {
-<<<<<<< HEAD
             // Check multiple quantity fields (same priority as frontend)
             availableQuantity = listing.quantity_available?.value || listing.quantity_in_tons || 0;
-=======
-            availableQuantity = listing.quantity_in_tons;
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-            console.log(`📋 Found listing in CropListing collection: ${availableQuantity} tons available`);
+            console.log(` Found listing in CropListing collection: ${availableQuantity} tons available`);
           } else {
-            console.log(`⚠️  Listing ${listingId} not found in CropListing collection`);
+            console.log(`  Listing ${listingId} not found in CropListing collection`);
           }
         } catch (cropListingError) {
-          console.error(`❌ Error accessing CropListing collection:`, cropListingError);
+          console.error(` Error accessing CropListing collection:`, cropListingError);
           // Continue without CropListing - rely on embedded listings only
         }
       }
@@ -500,7 +492,7 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
       }
       
       const requestedQuantity = order.orderDetails.quantityWanted;
-      console.log(`📊 Requested: ${requestedQuantity} tons, Available: ${availableQuantity} tons`);
+      console.log(` Requested: ${requestedQuantity} tons, Available: ${availableQuantity} tons`);
       
       // Check if we have enough quantity
       if (availableQuantity <= 0) {
@@ -517,7 +509,7 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
       if (requestedQuantity > availableQuantity) {
         finalQuantity = availableQuantity;
         isPartialFulfillment = true;
-        console.log(`⚠️  Partial fulfillment: Can only provide ${finalQuantity} tons instead of ${requestedQuantity} tons`);
+        console.log(`  Partial fulfillment: Can only provide ${finalQuantity} tons instead of ${requestedQuantity} tons`);
       }
       
       // Update the order with final quantity
@@ -528,7 +520,7 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
       
       // Update listing quantity
       const newQuantity = availableQuantity - finalQuantity;
-      console.log(`📦 Updating listing quantity: ${availableQuantity} - ${finalQuantity} = ${newQuantity} tons`);
+      console.log(` Updating listing quantity: ${availableQuantity} - ${finalQuantity} = ${newQuantity} tons`);
       
       // Update embedded listing in User.listings if it exists
       if (farmer.listings && farmer.listings.length > 0) {
@@ -537,37 +529,33 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
           if (newQuantity <= 0) {
             // Remove listing if quantity becomes 0
             farmer.listings.splice(listingIndex, 1);
-            console.log(`🗑️  Listing removed from User.listings (quantity depleted)`);
+            console.log(`  Listing removed from User.listings (quantity depleted)`);
           } else {
             farmer.listings[listingIndex].quantity_in_tons = newQuantity;
-<<<<<<< HEAD
             // Also update quantity_available if it exists
             if (farmer.listings[listingIndex].quantity_available) {
               farmer.listings[listingIndex].quantity_available.value = newQuantity;
             }
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-            console.log(`📝 Updated User.listings quantity to ${newQuantity} tons`);
+            console.log(` Updated User.listings quantity to ${newQuantity} tons`);
           }
         } else {
-          console.log(`⚠️  Listing ${listingId} not found in User.listings - will update CropListing only`);
+          console.log(`  Listing ${listingId} not found in User.listings - will update CropListing only`);
         }
       } else {
-        console.log(`⚠️  Farmer has no embedded listings - will update CropListing only`);
+        console.log(`  Farmer has no embedded listings - will update CropListing only`);
       }
       
       // ALSO update CropListing collection if the listing exists there
       try {
-        console.log(`🔍 Checking for listing in CropListing collection...`);
+        console.log(` Checking for listing in CropListing collection...`);
         const CropListingModel = require('../models/cropListing.model');
-        console.log(`🔍 CropListing re-required: ${typeof CropListingModel}`);
+        console.log(` CropListing re-required: ${typeof CropListingModel}`);
         const cropListing = await CropListingModel.findById(listingId);
         if (cropListing) {
           if (newQuantity <= 0) {
             await CropListingModel.findByIdAndDelete(listingId);
-            console.log(`🗑️  Listing removed from CropListing collection (quantity depleted)`);
+            console.log(`  Listing removed from CropListing collection (quantity depleted)`);
           } else {
-<<<<<<< HEAD
             // Update both quantity fields to keep them synchronized
             const updateFields = { 
               quantity_in_tons: newQuantity 
@@ -579,21 +567,15 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
             }
             
             await CropListingModel.findByIdAndUpdate(listingId, updateFields);
-            console.log(`✅ Updated CropListing quantity to ${newQuantity} tons (both fields synchronized)`);
-=======
-            await CropListingModel.findByIdAndUpdate(listingId, { 
-              quantity_in_tons: newQuantity 
-            });
-            console.log(`✅ Updated CropListing quantity to ${newQuantity} tons`);
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
+            console.log(` Updated CropListing quantity to ${newQuantity} tons (both fields synchronized)`);
           }
         } else {
-          console.log(`ℹ️  Listing ${listingId} not found in CropListing collection`);
+          console.log(`  Listing ${listingId} not found in CropListing collection`);
         }
       } catch (cropListingError) {
-        console.error(`❌ Error updating CropListing collection:`, cropListingError);
+        console.error(` Error updating CropListing collection:`, cropListingError);
         // Continue with order processing - embedded listing update succeeded
-        console.log(`⚠️  Continuing with order processing despite CropListing error`);
+        console.log(`  Continuing with order processing despite CropListing error`);
       }
     }
 
@@ -602,33 +584,33 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
     farmer.receivedOrders[orderIndex].updatedAt = new Date();
 
     // Save the updated farmer document
-    console.log(`💾 About to save farmer document...`);
+    console.log(` About to save farmer document...`);
     
     try {
       await farmer.save();
-      console.log(`✅ Farmer document saved successfully`);
+      console.log(` Farmer document saved successfully`);
     } catch (farmerSaveError) {
-      console.error(`❌ Error saving farmer document:`, farmerSaveError);
-      console.error(`❌ Error details:`, JSON.stringify(farmerSaveError, null, 2));
+      console.error(` Error saving farmer document:`, farmerSaveError);
+      console.error(` Error details:`, JSON.stringify(farmerSaveError, null, 2));
       throw new Error(`Failed to save farmer document: ${farmerSaveError.message}`);
     }
 
     // Also update the corresponding order in the buyer's sentOrders array
     const buyerId = farmer.receivedOrders[orderIndex].buyerId;
-    console.log(`🔍 Looking for buyer with ID: ${buyerId}`);
+    console.log(` Looking for buyer with ID: ${buyerId}`);
     
     if (!buyerId) {
-      console.log('⚠️  No buyerId found in order');
+      console.log('  No buyerId found in order');
     } else if (!mongoose.Types.ObjectId.isValid(buyerId)) {
-      console.log('⚠️  Invalid buyerId format:', buyerId);
+      console.log('  Invalid buyerId format:', buyerId);
     } else {
       try {
         const buyer = await User.findById(buyerId);
         
         if (!buyer) {
-          console.log(`⚠️  Buyer not found with ID: ${buyerId}`);
+          console.log(`  Buyer not found with ID: ${buyerId}`);
         } else {
-          console.log(`✅ Found buyer: ${buyer.name} (${buyer.username})`);
+          console.log(` Found buyer: ${buyer.name} (${buyer.username})`);
           
           if (buyer.sentOrders && Array.isArray(buyer.sentOrders)) {
             const buyerOrderIndex = buyer.sentOrders.findIndex(order => 
@@ -646,24 +628,24 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
               buyer.sentOrders[buyerOrderIndex].status = status;
               buyer.sentOrders[buyerOrderIndex].updatedAt = new Date();
               
-              console.log(`💾 Saving buyer's updated sentOrders...`);
+              console.log(` Saving buyer's updated sentOrders...`);
               await buyer.save();
-              console.log(`✅ Updated buyer's sentOrders for order ${orderId}`);
+              console.log(` Updated buyer's sentOrders for order ${orderId}`);
             } else {
-              console.log(`⚠️  Order ${orderId} not found in buyer's sentOrders`);
+              console.log(`  Order ${orderId} not found in buyer's sentOrders`);
             }
           } else {
-            console.log('⚠️  Buyer has no sentOrders array or it is not an array');
+            console.log('  Buyer has no sentOrders array or it is not an array');
           }
         }
       } catch (buyerError) {
-        console.error(`❌ Error updating buyer's sentOrders:`, buyerError);
+        console.error(` Error updating buyer's sentOrders:`, buyerError);
         // Don't throw - continue with farmer update
-        console.log(`⚠️  Continuing with farmer update despite buyer update error`);
+        console.log(`  Continuing with farmer update despite buyer update error`);
       }
     }
 
-    console.log(`✅ Order ${orderId} status updated to ${status}`);
+    console.log(` Order ${orderId} status updated to ${status}`);
 
     // Prepare response message
     let message = `Order ${status} successfully`;
@@ -673,7 +655,6 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
       updatedAt: farmer.receivedOrders[orderIndex].updatedAt
     };
 
-<<<<<<< HEAD
     // Add quantity management information for accepted orders
     if (status === 'accepted') {
       const order = farmer.receivedOrders[orderIndex];
@@ -692,15 +673,6 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
           newTotalAmount: order.orderDetails.totalAmount
         };
       }
-=======
-    if (status === 'accepted' && farmer.receivedOrders[orderIndex].isPartialFulfillment) {
-      message = `Order accepted with partial fulfillment`;
-      responseData.partialFulfillment = {
-        originalQuantity: farmer.receivedOrders[orderIndex].originalQuantityRequested,
-        fulfilledQuantity: farmer.receivedOrders[orderIndex].orderDetails.quantityWanted,
-        newTotalAmount: farmer.receivedOrders[orderIndex].orderDetails.totalAmount
-      };
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }
 
     res.json({
@@ -710,9 +682,9 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error updating order status:', error);
-    console.error('❌ Error stack:', error.stack);
-    console.error('❌ Error details:', {
+    console.error(' Error updating order status:', error);
+    console.error(' Error stack:', error.stack);
+    console.error(' Error details:', {
       name: error.name,
       message: error.message,
       stack: error.stack
@@ -730,7 +702,6 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 /**
  * @route   GET /api/orders/my-orders
  * @desc    Get all orders for the logged-in farmer (both sent and received)
@@ -738,7 +709,7 @@ router.put('/:orderId/status', authorize('Farmer'), async (req, res) => {
  */
 router.get('/my-orders', authorize('Farmer'), async (req, res) => {
   try {
-    console.log('📋 Fetching orders for farmer:', req.user._id);
+    console.log(' Fetching orders for farmer:', req.user._id);
     
     const farmerId = req.user._id;
     
@@ -812,7 +783,7 @@ router.get('/my-orders', authorize('Farmer'), async (req, res) => {
     // Sort by creation date (most recent first)
     const sortedOrders = allOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     
-    console.log(`✅ Retrieved ${sortedOrders.length} orders for farmer: ${req.user.name}`);
+    console.log(` Retrieved ${sortedOrders.length} orders for farmer: ${req.user.name}`);
     console.log(`   - Sent orders: ${user.sentOrders?.length || 0}`);
     console.log(`   - Received orders: ${user.receivedOrders?.length || 0}`);
     
@@ -829,7 +800,7 @@ router.get('/my-orders', authorize('Farmer'), async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error fetching orders:', error);
+    console.error(' Error fetching orders:', error);
     
     res.status(500).json({
       success: false,
@@ -839,6 +810,4 @@ router.get('/my-orders', authorize('Farmer'), async (req, res) => {
   }
 });
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 module.exports = router;

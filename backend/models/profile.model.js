@@ -121,7 +121,6 @@ const profileSchema = new mongoose.Schema({
     },
     default: 'available'
   },
-<<<<<<< HEAD
   // Track which HHM currently employs this worker (for exclusivity)
   currentEmployer: {
     type: mongoose.Schema.Types.ObjectId,
@@ -134,8 +133,6 @@ const profileSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   lastUpdated: {
     type: Date,
     default: Date.now
@@ -151,11 +148,8 @@ profileSchema.index({ cropSpecialties: 1 });
 profileSchema.index({ isVerified: 1 });
 profileSchema.index({ skills: 1 });
 profileSchema.index({ availabilityStatus: 1 });
-<<<<<<< HEAD
 profileSchema.index({ currentEmployer: 1 });
 profileSchema.index({ employmentStartDate: 1 });
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
 // Virtual for full profile image URL
 profileSchema.virtual('profileImageUrl').get(function() {
@@ -255,7 +249,6 @@ profileSchema.methods.updateAvailabilityStatus = function(status) {
   throw new Error('Invalid availability status. Must be either available or unavailable');
 };
 
-<<<<<<< HEAD
 // Instance method to hire worker (set exclusive employment)
 profileSchema.methods.hireByHHM = function(hhmId) {
   this.currentEmployer = hhmId;
@@ -284,8 +277,6 @@ profileSchema.virtual('isEmployed').get(function() {
   return this.currentEmployer !== null;
 });
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 // Instance method to update notification preferences
 profileSchema.methods.updateNotificationPreferences = function(preferences) {
   // Initialize preferences if undefined

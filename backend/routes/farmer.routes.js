@@ -16,14 +16,10 @@ const {
   updateListing,
   deleteListing,
   getHHMs,
-<<<<<<< HEAD
   getFactories,
   getFactoryById,
   associateHHMs,
   removeHHMAssociation
-=======
-  getFactories
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 } = require('../controllers/farmer.controller');
 
 // Apply protection and authorization to all routes in this file
@@ -38,8 +34,8 @@ router.use(authorize('Farmer'));
  * @access  Private (Farmer only)
  */
 router.get('/profile', (req, res, next) => {
-  console.log('🚀 FARMER ROUTES - Profile GET request received');
-  console.log('🚀 User:', req.user?._id);
+  console.log(' FARMER ROUTES - Profile GET request received');
+  console.log(' User:', req.user?._id);
   return getProfile(req, res, next);
 });
 
@@ -49,7 +45,7 @@ router.get('/profile', (req, res, next) => {
  * @access  Private (Farmer only)
  */
 router.get('/test-profile', (req, res) => {
-  console.log('🧪 TEST ENDPOINT - Farmer test profile called');
+  console.log(' TEST ENDPOINT - Farmer test profile called');
   res.json({
     success: true,
     message: 'Test endpoint working - this is from the NEW farmer controller',
@@ -64,7 +60,7 @@ router.get('/test-profile', (req, res) => {
  * @access  Private (Farmer only)
  */
 router.put('/profile', (req, res, next) => {
-  console.log('🚀 FARMER ROUTES - Profile PUT request received');
+  console.log(' FARMER ROUTES - Profile PUT request received');
   return updateProfile(req, res, next);
 });
 
@@ -209,7 +205,6 @@ router.get('/hhms/:id', async (req, res) => {
  */
 router.get('/factories', getFactories);
 
-<<<<<<< HEAD
 /**
  * @route   GET /api/farmer/factories/:factoryId
  * @desc    Get specific factory details with HHM associations
@@ -231,6 +226,4 @@ router.post('/factories/:factoryId/associate-hhms', associateHHMs);
  */
 router.delete('/factories/:factoryId/remove-hhm/:hhmId', removeHHMAssociation);
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 module.exports = router;

@@ -12,16 +12,12 @@ const cropListingSchema = new mongoose.Schema({
     enum: ['active', 'sold', 'expired'],
     default: 'active'
   },
-<<<<<<< HEAD
   // Product Information
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   title: {
     type: String,
     required: true,
     trim: true
   },
-<<<<<<< HEAD
   sugarcane_variety: {
     type: String,
     trim: true,
@@ -121,24 +117,14 @@ const cropListingSchema = new mongoose.Schema({
   // Legacy fields for backward compatibility
   crop_variety: {
     type: String,
-=======
-  crop_variety: {
-    type: String,
-    required: true,
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     trim: true
   },
   quantity_in_tons: {
     type: Number,
-<<<<<<< HEAD
-=======
-    required: true,
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     min: 0
   },
   expected_price_per_ton: {
     type: Number,
-<<<<<<< HEAD
     min: 0
   },
   harvest_availability_date: {
@@ -146,26 +132,10 @@ const cropListingSchema = new mongoose.Schema({
   },
   location: {
     type: String,
-=======
-    required: true,
-    min: 0
-  },
-  harvest_availability_date: {
-    type: Date,
-    required: true
-  },
-  location: {
-    type: String,
-    required: true,
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     trim: true
   },
   description: {
     type: String,
-<<<<<<< HEAD
-=======
-    required: false,
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     trim: true
   }
 }, {
@@ -175,7 +145,6 @@ const cropListingSchema = new mongoose.Schema({
 // Add indexes for better query performance
 cropListingSchema.index({ farmer_id: 1 });
 cropListingSchema.index({ status: 1 });
-<<<<<<< HEAD
 cropListingSchema.index({ sugarcane_variety: 1 });
 cropListingSchema.index({ 'seed_quality.disease_free_status': 1 });
 cropListingSchema.index({ seed_type: 1 });
@@ -193,11 +162,11 @@ cropListingSchema.index({ location: 1 });
 // Virtual for formatted price
 cropListingSchema.virtual('formattedPrice').get(function() {
   if (this.price_details && this.price_details.price_per_unit) {
-    return `₹${this.price_details.price_per_unit.toLocaleString()}/${this.quantity_available?.unit || 'unit'}`;
+    return `?${this.price_details.price_per_unit.toLocaleString()}/${this.quantity_available?.unit || 'unit'}`;
   }
   // Fallback to legacy format
   if (this.expected_price_per_ton) {
-    return `₹${this.expected_price_per_ton.toLocaleString()}/ton`;
+    return `?${this.expected_price_per_ton.toLocaleString()}/ton`;
   }
   return 'Price not specified';
 });
@@ -212,27 +181,11 @@ cropListingSchema.virtual('totalValue').get(function() {
     return this.quantity_in_tons * this.expected_price_per_ton;
   }
   return 0;
-=======
-cropListingSchema.index({ crop_variety: 1 });
-cropListingSchema.index({ harvest_availability_date: 1 });
-cropListingSchema.index({ createdAt: -1 });
-cropListingSchema.index({ location: 1 });
-
-// Virtual for formatted price
-cropListingSchema.virtual('formattedPricePerTon').get(function() {
-  return `₹${this.expected_price_per_ton.toLocaleString()}/ton`;
-});
-
-// Virtual for total expected value
-cropListingSchema.virtual('totalExpectedValue').get(function() {
-  return this.quantity_in_tons * this.expected_price_per_ton;
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 });
 
 // Virtual for formatted total value
 cropListingSchema.virtual('formattedTotalValue').get(function() {
-<<<<<<< HEAD
-  return `₹${this.totalValue.toLocaleString()}`;
+  return `?${this.totalValue.toLocaleString()}`;
 });
 
 // Virtual for availability status
@@ -291,7 +244,7 @@ cropListingSchema.virtual('qualityScore').get(function() {
 // Legacy virtuals for backward compatibility
 cropListingSchema.virtual('formattedPricePerTon').get(function() {
   if (this.expected_price_per_ton) {
-    return `₹${this.expected_price_per_ton.toLocaleString()}/ton`;
+    return `?${this.expected_price_per_ton.toLocaleString()}/ton`;
   }
   return this.formattedPrice;
 });
@@ -314,21 +267,6 @@ cropListingSchema.virtual('daysUntilHarvest').get(function() {
   return 0;
 });
 
-=======
-  return `₹${this.totalExpectedValue.toLocaleString()}`;
-});
-
-// Virtual for days until harvest
-cropListingSchema.virtual('daysUntilHarvest').get(function() {
-  const now = new Date();
-  const harvestDate = new Date(this.harvest_availability_date);
-  const diffTime = harvestDate - now;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
-});
-
-// Virtual for listing age
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 cropListingSchema.virtual('listingAge').get(function() {
   const now = new Date();
   const diffTime = Math.abs(now - this.createdAt);
@@ -359,7 +297,6 @@ cropListingSchema.statics.findActive = function() {
   return this.find({ status: 'active' }).populate('farmer_id', 'name email phone');
 };
 
-<<<<<<< HEAD
 // Static method to find active listings by sugarcane variety
 cropListingSchema.statics.findActiveBySugarcaneVariety = function(variety) {
   return this.find({ 
@@ -440,12 +377,6 @@ cropListingSchema.statics.findByAvailabilityRange = function(startDate, endDate)
         harvest_availability_date: { $gte: startDate, $lte: endDate }
       }
     ],
-=======
-// Static method to find active listings by crop variety
-cropListingSchema.statics.findActiveByCropVariety = function(cropVariety) {
-  return this.find({ 
-    crop_variety: new RegExp(cropVariety, 'i'), 
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     status: 'active' 
   }).populate('farmer_id', 'name email phone');
 };
@@ -455,7 +386,6 @@ cropListingSchema.statics.findByFarmer = function(farmerId) {
   return this.find({ farmer_id: farmerId }).populate('farmer_id', 'name email phone');
 };
 
-<<<<<<< HEAD
 // Legacy static methods for backward compatibility
 cropListingSchema.statics.findActiveByCropVariety = function(cropVariety) {
   return this.find({ 
@@ -463,17 +393,10 @@ cropListingSchema.statics.findActiveByCropVariety = function(cropVariety) {
       { crop_variety: new RegExp(cropVariety, 'i') },
       { sugarcane_variety: new RegExp(cropVariety, 'i') }
     ],
-=======
-// Static method to find listings by location
-cropListingSchema.statics.findByLocation = function(location) {
-  return this.find({ 
-    location: new RegExp(location, 'i'), 
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     status: 'active' 
   }).populate('farmer_id', 'name email phone');
 };
 
-<<<<<<< HEAD
 cropListingSchema.statics.findByLocation = function(location) {
   return this.findByDeliveryLocation(location);
 };
@@ -490,31 +413,10 @@ cropListingSchema.pre('save', function(next) {
   }
   
   // Legacy support: format crop_variety properly
-=======
-// Static method to find listings by price range
-cropListingSchema.statics.findByPriceRange = function(minPrice, maxPrice) {
-  return this.find({ 
-    expected_price_per_ton: { $gte: minPrice, $lte: maxPrice },
-    status: 'active' 
-  }).populate('farmer_id', 'name email phone');
-};
-
-// Static method to find listings available within date range
-cropListingSchema.statics.findByHarvestDateRange = function(startDate, endDate) {
-  return this.find({ 
-    harvest_availability_date: { $gte: startDate, $lte: endDate },
-    status: 'active' 
-  }).populate('farmer_id', 'name email phone');
-};
-
-// Pre-save middleware to ensure crop_variety is properly formatted
-cropListingSchema.pre('save', function(next) {
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   if (this.crop_variety) {
     this.crop_variety = this.crop_variety.charAt(0).toUpperCase() + this.crop_variety.slice(1).toLowerCase();
   }
   
-<<<<<<< HEAD
   // Sync legacy fields with new structure if new fields are provided
   if (this.sugarcane_variety && !this.crop_variety) {
     this.crop_variety = this.sugarcane_variety;
@@ -572,31 +474,11 @@ cropListingSchema.pre('save', function(next) {
   // Validate crop age
   if (this.crop_age && (this.crop_age < 1 || this.crop_age > 24)) {
     return next(new Error('Crop age must be between 1 and 24 months'));
-=======
-  // Auto-expire listings if harvest date has passed and status is still active
-  if (this.status === 'active' && this.harvest_availability_date < new Date()) {
-    this.status = 'expired';
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   }
   
   next();
 });
 
-<<<<<<< HEAD
-=======
-// Pre-find middleware to automatically exclude expired listings for active queries
-cropListingSchema.pre(/^find/, function() {
-  // Auto-expire listings where harvest date has passed
-  const now = new Date();
-  this.where({ 
-    $or: [
-      { status: { $ne: 'active' } },
-      { harvest_availability_date: { $gte: now } }
-    ]
-  });
-});
-
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 const CropListing = mongoose.model('CropListing', cropListingSchema);
 
 module.exports = CropListing;

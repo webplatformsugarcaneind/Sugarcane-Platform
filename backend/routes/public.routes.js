@@ -58,21 +58,14 @@ router.get('/factories', async (req, res) => {
       hhmCount: 0,
       isActive: true,
       capacity: user.capacity || 'Not specified',
-<<<<<<< HEAD
       crushingStatus: user.crushingStatus || 'OFF',
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       contactInfo: {
         phone: user.phone,
         email: user.email,
         website: user.contactInfo?.website || '',
         ...user.contactInfo
       },
-<<<<<<< HEAD
       operatingSeason: user.operatingSeason,
-=======
-      operatingHours: user.operatingHours || {},
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       experience: user.experience || 'Not specified',
       specialization: user.specialization || 'Sugar Processing',
       createdAt: user.createdAt,
@@ -112,11 +105,11 @@ router.get('/factories', async (req, res) => {
 router.get('/factories/:id', async (req, res) => {
   try {
     const factoryId = req.params.id;
-    console.log('🔍 [DEBUG] Getting factory with ID:', factoryId);
+    console.log(' [DEBUG] Getting factory with ID:', factoryId);
 
     // Validate ObjectId format
     if (!mongoose.Types.ObjectId.isValid(factoryId)) {
-      console.log('❌ [DEBUG] Invalid ObjectId format:', factoryId);
+      console.log(' [DEBUG] Invalid ObjectId format:', factoryId);
       return res.status(400).json({
         success: false,
         message: 'Invalid factory ID format'
@@ -129,10 +122,10 @@ router.get('/factories/:id', async (req, res) => {
       role: 'Factory' 
     }).lean();
 
-    console.log('🔍 [DEBUG] Factory user found:', factoryUser ? 'YES' : 'NO');
+    console.log(' [DEBUG] Factory user found:', factoryUser ? 'YES' : 'NO');
 
     if (!factoryUser) {
-      console.log('❌ [DEBUG] Factory not found for ID:', factoryId);
+      console.log(' [DEBUG] Factory not found for ID:', factoryId);
       return res.status(404).json({
         success: false,
         message: 'Factory not found'
@@ -140,19 +133,19 @@ router.get('/factories/:id', async (req, res) => {
     }
 
     // Find associated HHMs for this factory using the associatedHHMs field
-    console.log('🔍 [DEBUG] Factory associatedHHMs field:', factoryUser.associatedHHMs);
-    console.log('🔍 [DEBUG] associatedHHMs length:', factoryUser.associatedHHMs ? factoryUser.associatedHHMs.length : 'undefined');
+    console.log(' [DEBUG] Factory associatedHHMs field:', factoryUser.associatedHHMs);
+    console.log(' [DEBUG] associatedHHMs length:', factoryUser.associatedHHMs ? factoryUser.associatedHHMs.length : 'undefined');
     
     let associatedHHMs = [];
     if (factoryUser.associatedHHMs && factoryUser.associatedHHMs.length > 0) {
-      console.log('✅ [DEBUG] Found associatedHHMs, fetching details...');
+      console.log(' [DEBUG] Found associatedHHMs, fetching details...');
       associatedHHMs = await User.find({ 
         _id: { $in: factoryUser.associatedHHMs },
         role: 'HHM'
       }).select('name username email phone role isActive createdAt').lean();
-      console.log('✅ [DEBUG] Associated HHMs found:', associatedHHMs.length);
+      console.log(' [DEBUG] Associated HHMs found:', associatedHHMs.length);
     } else {
-      console.log('❌ [DEBUG] No associatedHHMs found or empty array');
+      console.log(' [DEBUG] No associatedHHMs found or empty array');
     }
 
     // Format response data to match expected factory structure
@@ -168,29 +161,22 @@ router.get('/factories/:id', async (req, res) => {
       hhmCount: associatedHHMs ? associatedHHMs.length : 0,
       isActive: true,
       capacity: factoryUser.capacity || 'Not specified',
-<<<<<<< HEAD
       crushingStatus: factoryUser.crushingStatus || 'OFF',
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       contactInfo: {
         phone: factoryUser.phone,
         email: factoryUser.email,
         website: factoryUser.contactInfo?.website || '',
         ...factoryUser.contactInfo
       },
-<<<<<<< HEAD
       operatingSeason: factoryUser.operatingSeason,
-=======
-      operatingHours: factoryUser.operatingHours || {},
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       experience: factoryUser.experience || 'Not specified',
       specialization: factoryUser.specialization || 'Sugar Processing',
       createdAt: factoryUser.createdAt,
       updatedAt: factoryUser.updatedAt
     };
 
-    console.log('📤 [DEBUG] Sending response - HHM count:', formattedFactory.hhmCount);
-    console.log('📤 [DEBUG] Sending response - Associated HHMs length:', formattedFactory.associatedHHMs.length);
+    console.log(' [DEBUG] Sending response - HHM count:', formattedFactory.hhmCount);
+    console.log(' [DEBUG] Sending response - Associated HHMs length:', formattedFactory.associatedHHMs.length);
 
     res.status(200).json({
       success: true,
@@ -402,11 +388,11 @@ module.exports = router;
 router.get('/farmers/:id', async (req, res) => {
   try {
     const farmerId = req.params.id;
-    console.log('🔍 [DEBUG] Getting public farmer profile with ID:', farmerId);
+    console.log(' [DEBUG] Getting public farmer profile with ID:', farmerId);
 
     // Validate ObjectId format
     if (!mongoose.Types.ObjectId.isValid(farmerId)) {
-      console.log('❌ [DEBUG] Invalid ObjectId format:', farmerId);
+      console.log(' [DEBUG] Invalid ObjectId format:', farmerId);
       return res.status(400).json({
         success: false,
         message: 'Invalid farmer ID format'
@@ -419,10 +405,10 @@ router.get('/farmers/:id', async (req, res) => {
       role: 'Farmer' 
     }).select('-password').lean(); // Exclude password field
 
-    console.log('🔍 [DEBUG] Farmer user found:', farmerUser ? 'YES' : 'NO');
+    console.log(' [DEBUG] Farmer user found:', farmerUser ? 'YES' : 'NO');
 
     if (!farmerUser) {
-      console.log('❌ [DEBUG] Farmer not found for ID:', farmerId);
+      console.log(' [DEBUG] Farmer not found for ID:', farmerId);
       return res.status(404).json({
         success: false,
         message: 'Farmer not found'
@@ -445,7 +431,7 @@ router.get('/farmers/:id', async (req, res) => {
       totalSales: farmerUser.totalSales || 0
     };
 
-    console.log('📤 [DEBUG] Sending farmer profile response');
+    console.log(' [DEBUG] Sending farmer profile response');
 
     res.status(200).json({
       success: true,

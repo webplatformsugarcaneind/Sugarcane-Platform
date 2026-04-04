@@ -11,7 +11,7 @@ const Invitation = require('../models/invitation.model');
  */
 const createSchedule = async (req, res) => {
   try {
-    console.log('📅 Creating new schedule for HHM:', req.user._id);
+    console.log(' Creating new schedule for HHM:', req.user._id);
 
     const {
       requiredSkills,
@@ -68,7 +68,7 @@ const createSchedule = async (req, res) => {
 
     await schedule.populate('hhmId', 'name email phone');
 
-    console.log('✅ Schedule created successfully:', schedule._id);
+    console.log(' Schedule created successfully:', schedule._id);
 
     res.status(201).json({
       success: true,
@@ -77,7 +77,7 @@ const createSchedule = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error creating schedule:', error);
+    console.error(' Error creating schedule:', error);
     res.status(500).json({
       success: false,
       message: 'Error creating schedule',
@@ -93,7 +93,7 @@ const createSchedule = async (req, res) => {
  */
 const getMySchedules = async (req, res) => {
   try {
-    console.log('📋 Getting schedules for HHM:', req.user._id);
+    console.log(' Getting schedules for HHM:', req.user._id);
 
     const { status, page = 1, limit = 10 } = req.query;
 
@@ -116,7 +116,7 @@ const getMySchedules = async (req, res) => {
     // Get total count for pagination
     const total = await Schedule.countDocuments(query);
 
-    console.log(`✅ Found ${schedules.length} schedules for HHM`);
+    console.log(` Found ${schedules.length} schedules for HHM`);
 
     res.status(200).json({
       success: true,
@@ -130,7 +130,7 @@ const getMySchedules = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error getting schedules:', error);
+    console.error(' Error getting schedules:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving schedules',
@@ -146,7 +146,7 @@ const getMySchedules = async (req, res) => {
  */
 const getScheduleById = async (req, res) => {
   try {
-    console.log('🔍 Getting schedule:', req.params.id);
+    console.log(' Getting schedule:', req.params.id);
 
     const schedule = await Schedule.findOne({
       _id: req.params.id,
@@ -160,7 +160,7 @@ const getScheduleById = async (req, res) => {
       });
     }
 
-    console.log('✅ Schedule found:', schedule._id);
+    console.log(' Schedule found:', schedule._id);
 
     res.status(200).json({
       success: true,
@@ -168,7 +168,7 @@ const getScheduleById = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error getting schedule:', error);
+    console.error(' Error getting schedule:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving schedule',
@@ -184,7 +184,7 @@ const getScheduleById = async (req, res) => {
  */
 const updateSchedule = async (req, res) => {
   try {
-    console.log('✏️ Updating schedule:', req.params.id);
+    console.log(' Updating schedule:', req.params.id);
 
     const {
       requiredSkills,
@@ -266,7 +266,7 @@ const updateSchedule = async (req, res) => {
       { new: true, runValidators: true }
     ).populate('hhmId', 'name email phone');
 
-    console.log('✅ Schedule updated successfully:', updatedSchedule._id);
+    console.log(' Schedule updated successfully:', updatedSchedule._id);
 
     res.status(200).json({
       success: true,
@@ -275,7 +275,7 @@ const updateSchedule = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error updating schedule:', error);
+    console.error(' Error updating schedule:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating schedule',
@@ -291,7 +291,7 @@ const updateSchedule = async (req, res) => {
  */
 const deleteSchedule = async (req, res) => {
   try {
-    console.log('🗑️ Deleting schedule:', req.params.id);
+    console.log(' Deleting schedule:', req.params.id);
 
     const schedule = await Schedule.findOne({
       _id: req.params.id,
@@ -328,7 +328,7 @@ const deleteSchedule = async (req, res) => {
     const Invitation = require('../models/invitation.model');
     await Invitation.deleteMany({ scheduleId: req.params.id });
 
-    console.log('✅ Schedule deleted successfully');
+    console.log(' Schedule deleted successfully');
 
     res.status(200).json({
       success: true,
@@ -336,7 +336,7 @@ const deleteSchedule = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error deleting schedule:', error);
+    console.error(' Error deleting schedule:', error);
     res.status(500).json({
       success: false,
       message: 'Error deleting schedule',
@@ -352,7 +352,7 @@ const deleteSchedule = async (req, res) => {
  */
 const getWorkers = async (req, res) => {
   try {
-    console.log('👥 Getting workers directory for HHM:', req.user._id);
+    console.log(' Getting workers directory for HHM:', req.user._id);
 
     const {
       skills,
@@ -370,9 +370,8 @@ const getWorkers = async (req, res) => {
     const workers = await User.find(userQuery).select('_id');
     const workerIds = workers.map(worker => worker._id);
 
-    console.log('👤 Found', workers.length, 'users with Worker role');
+    console.log(' Found', workers.length, 'users with Worker role');
 
-<<<<<<< HEAD
     // Build profile query with exclusivity logic
     const profileQuery = {
       userId: { $in: workerIds },
@@ -383,29 +382,21 @@ const getWorkers = async (req, res) => {
         { currentEmployer: null },
         { currentEmployer: req.user._id }
       ]
-=======
-    // Build profile query
-    const profileQuery = {
-      userId: { $in: workerIds }
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     };
 
     // Add availabilityStatus filter - default to 'available' if not specified
     if (availabilityStatus) {
       profileQuery.availabilityStatus = availabilityStatus;
-      console.log('🔍 Filtering by availabilityStatus:', availabilityStatus);
+      console.log(' Filtering by availabilityStatus:', availabilityStatus);
     } else {
       // Default to showing only available workers
       profileQuery.availabilityStatus = 'available';
-      console.log('🔍 Default filter: showing only available workers');
+      console.log(' Default filter: showing only available workers');
     }
 
-<<<<<<< HEAD
-    console.log('🏢 Applying worker exclusivity for HHM:', req.user._id);
-    console.log('📋 Profile query with exclusivity:', JSON.stringify(profileQuery, null, 2));
+    console.log(' Applying worker exclusivity for HHM:', req.user._id);
+    console.log(' Profile query with exclusivity:', JSON.stringify(profileQuery, null, 2));
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Add skills filter if provided
     if (skills) {
       const skillsArray = Array.isArray(skills) ? skills : skills.split(',');
@@ -435,8 +426,8 @@ const getWorkers = async (req, res) => {
     // Get total count for pagination
     const total = await Profile.countDocuments(profileQuery);
 
-    console.log(`✅ Found ${workerProfiles.length} worker profiles out of ${total} total matching criteria`);
-    console.log('📋 Profile query:', JSON.stringify(profileQuery));
+    console.log(` Found ${workerProfiles.length} worker profiles out of ${total} total matching criteria`);
+    console.log(' Profile query:', JSON.stringify(profileQuery));
 
     // Transform data to include relevant worker information with full profile data
     const workersData = workerProfiles.map(profile => ({
@@ -452,13 +443,10 @@ const getWorkers = async (req, res) => {
       profileImage: profile.profileImageUrl,
       joinedDate: profile.userId.createdAt,
       isVerified: profile.isVerified,
-<<<<<<< HEAD
       // Employment status information
       isEmployedByMe: profile.isEmployedBy ? profile.isEmployedBy(req.user._id) : false,
       employmentStartDate: profile.employmentStartDate,
       isCurrentEmployee: profile.currentEmployer ? profile.currentEmployer.toString() === req.user._id.toString() : false,
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       // Additional profile information that might be useful for hiring decisions
       profileId: profile._id,
       rating: profile.rating || 0,
@@ -483,7 +471,7 @@ const getWorkers = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error getting workers:', error);
+    console.error(' Error getting workers:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving workers directory',
@@ -499,7 +487,7 @@ const getWorkers = async (req, res) => {
  */
 const createInvitation = async (req, res) => {
   try {
-    console.log('📨 Creating invitation from HHM:', req.user._id);
+    console.log(' Creating invitation from HHM:', req.user._id);
 
     const { scheduleId, workerId, personalMessage, offeredWage, priority } = req.body;
 
@@ -611,7 +599,7 @@ const createInvitation = async (req, res) => {
       .populate('scheduleId', 'title startDate endDate wageOffered location requiredSkills')
       .populate('hhmId', 'name email phone companyName');
 
-    console.log('✅ Invitation created successfully:', invitation._id);
+    console.log(' Invitation created successfully:', invitation._id);
 
     res.status(201).json({
       success: true,
@@ -642,7 +630,7 @@ const createInvitation = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error creating invitation:', error);
+    console.error(' Error creating invitation:', error);
 
     // Handle duplicate key error (unique constraint violation)
     if (error.code === 11000) {
@@ -667,7 +655,7 @@ const createInvitation = async (req, res) => {
  */
 const getApplications = async (req, res) => {
   try {
-    console.log('📋 Getting applications for HHM:', req.user._id);
+    console.log(' Getting applications for HHM:', req.user._id);
 
     const {
       status,
@@ -704,7 +692,7 @@ const getApplications = async (req, res) => {
     // Get total count for pagination
     const total = await Application.countDocuments(query);
 
-    console.log(`✅ Found ${applications.length} applications for HHM`);
+    console.log(` Found ${applications.length} applications for HHM`);
 
     // Enhance application data with worker profile information
     const enhancedApplications = await Promise.all(
@@ -769,7 +757,7 @@ const getApplications = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error getting applications:', error);
+    console.error(' Error getting applications:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving applications',
@@ -785,8 +773,8 @@ const getApplications = async (req, res) => {
  */
 const updateApplicationStatus = async (req, res) => {
   try {
-    console.log('✏️ Updating application status:', req.params.id);
-    console.log('📝 Request by HHM:', req.user._id);
+    console.log(' Updating application status:', req.params.id);
+    console.log(' Request by HHM:', req.user._id);
 
     const { status, reviewNotes } = req.body;
 
@@ -813,7 +801,7 @@ const updateApplicationStatus = async (req, res) => {
     // CRITICAL SECURITY CHECK: Verify HHM owns this application's schedule
     // Compare the application's hhmId with the logged-in user's ID
     if (application.hhmId.toString() !== req.user._id.toString()) {
-      console.log('⚠️ Unauthorized access attempt:');
+      console.log(' Unauthorized access attempt:');
       console.log('   Application hhmId:', application.hhmId.toString());
       console.log('   Request user ID:', req.user._id.toString());
       return res.status(403).json({
@@ -822,7 +810,7 @@ const updateApplicationStatus = async (req, res) => {
       });
     }
 
-    console.log('✅ Security check passed - HHM owns this application');
+    console.log(' Security check passed - HHM owns this application');
 
     // Check if application is already reviewed
     if (application.status !== 'pending') {
@@ -853,22 +841,21 @@ const updateApplicationStatus = async (req, res) => {
         });
       }
 
-      console.log(`✅ Schedule has space: ${acceptedCount + 1}/${schedule.workerCount} workers`);
+      console.log(` Schedule has space: ${acceptedCount + 1}/${schedule.workerCount} workers`);
     }
 
     // Update application status using instance methods
     if (status === 'approved') {
       await application.approve(reviewNotes);
 
-<<<<<<< HEAD
       // Mark worker as hired by this HHM (exclusive employment)
       try {
         const workerProfile = await Profile.findOne({ userId: application.workerId._id });
         if (workerProfile) {
           await workerProfile.hireByHHM(req.user._id);
-          console.log(`✅ Worker ${application.workerId.name} is now exclusively hired by HHM ${req.user._id}`);
+          console.log(` Worker ${application.workerId.name} is now exclusively hired by HHM ${req.user._id}`);
         } else {
-          console.log(`⚠️ Worker ${application.workerId.name} has no profile - creating basic profile for employment tracking`);
+          console.log(` Worker ${application.workerId.name} has no profile - creating basic profile for employment tracking`);
           await Profile.create({
             userId: application.workerId._id,
             currentEmployer: req.user._id,
@@ -877,21 +864,8 @@ const updateApplicationStatus = async (req, res) => {
           });
         }
       } catch (employmentError) {
-        console.error('❌ Error updating worker employment status:', employmentError);
+        console.error(' Error updating worker employment status:', employmentError);
         // Continue with the response even if employment status update fails
-=======
-      // Mark worker as unavailable when application is approved
-      try {
-        await User.findByIdAndUpdate(
-          application.workerId._id,
-          { availability: 'busy' },
-          { new: true }
-        );
-        console.log(`✅ Worker ${application.workerId.name} marked as unavailable`);
-      } catch (availabilityError) {
-        console.error('❌ Error updating worker availability:', availabilityError);
-        // Continue with the response even if availability update fails
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       }
     } else {
       await application.reject(reviewNotes);
@@ -904,7 +878,7 @@ const updateApplicationStatus = async (req, res) => {
       { path: 'hhmId', select: 'name email phone' }
     ]);
 
-    console.log(`✅ Application ${status} successfully for worker: ${application.workerId.name}`);
+    console.log(` Application ${status} successfully for worker: ${application.workerId.name}`);
 
     res.status(200).json({
       success: true,
@@ -913,7 +887,7 @@ const updateApplicationStatus = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error updating application status:', error);
+    console.error(' Error updating application status:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating application status',
@@ -929,7 +903,7 @@ const updateApplicationStatus = async (req, res) => {
  */
 const updateWorkerAvailability = async (req, res) => {
   try {
-    console.log('🔄 HHM updating worker availability:', req.params.workerId);
+    console.log(' HHM updating worker availability:', req.params.workerId);
 
     const { availability } = req.body;
     const workerId = req.params.workerId;
@@ -962,7 +936,7 @@ const updateWorkerAvailability = async (req, res) => {
       { new: true, runValidators: true }
     ).select('name email availability');
 
-    console.log(`✅ Worker ${updatedWorker.name} availability updated to: ${availability} by HHM: ${req.user._id}`);
+    console.log(` Worker ${updatedWorker.name} availability updated to: ${availability} by HHM: ${req.user._id}`);
 
     res.status(200).json({
       success: true,
@@ -975,7 +949,7 @@ const updateWorkerAvailability = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error updating worker availability:', error);
+    console.error(' Error updating worker availability:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating worker availability status',
@@ -991,7 +965,7 @@ const updateWorkerAvailability = async (req, res) => {
  */
 const getProfile = async (req, res) => {
   try {
-    console.log('👤 getProfile called for HHM user:', req.user?._id);
+    console.log(' getProfile called for HHM user:', req.user?._id);
 
     // The user is already attached to req.user by the protect middleware
     const hhm = req.user;
@@ -1045,7 +1019,7 @@ const getProfile = async (req, res) => {
  */
 const updateProfile = async (req, res) => {
   try {
-    console.log('🔄 updateProfile called for HHM user:', req.user?._id);
+    console.log(' updateProfile called for HHM user:', req.user?._id);
 
     const hhmId = req.user._id;
     const updateData = req.body;
@@ -1096,7 +1070,7 @@ const updateProfile = async (req, res) => {
  */
 const getFactoryInvitations = async (req, res) => {
   try {
-    console.log('📋 Getting factory invitations for HHM:', req.user._id);
+    console.log(' Getting factory invitations for HHM:', req.user._id);
 
     const { status, page = 1, limit = 20 } = req.query;
 
@@ -1147,7 +1121,7 @@ const getFactoryInvitations = async (req, res) => {
       counts[item._id] = item.count;
     });
 
-    console.log(`✅ Found ${invitations.length} factory invitations`);
+    console.log(` Found ${invitations.length} factory invitations`);
 
     res.status(200).json({
       success: true,
@@ -1162,7 +1136,7 @@ const getFactoryInvitations = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error getting factory invitations:', error);
+    console.error(' Error getting factory invitations:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving factory invitations',
@@ -1178,7 +1152,7 @@ const getFactoryInvitations = async (req, res) => {
  */
 const respondToFactoryInvitation = async (req, res) => {
   try {
-    console.log('✍️ HHM responding to factory invitation:', req.params.id);
+    console.log(' HHM responding to factory invitation:', req.params.id);
 
     const { status, responseMessage } = req.body;
 
@@ -1212,7 +1186,6 @@ const respondToFactoryInvitation = async (req, res) => {
       });
     }
 
-<<<<<<< HEAD
     // Check if invitation has expired
     if (invitation.expiresAt && new Date(invitation.expiresAt) < new Date()) {
       return res.status(400).json({
@@ -1221,8 +1194,6 @@ const respondToFactoryInvitation = async (req, res) => {
       });
     }
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Update invitation status
     invitation.status = status;
     invitation.respondedAt = new Date();
@@ -1233,7 +1204,6 @@ const respondToFactoryInvitation = async (req, res) => {
 
     // If accepted, create bidirectional association
     if (status === 'accepted') {
-<<<<<<< HEAD
       try {
         // Add factory to HHM's associatedFactories
         const hhm = await User.findById(req.user._id);
@@ -1241,9 +1211,9 @@ const respondToFactoryInvitation = async (req, res) => {
         // Check if association already exists before adding
         if (!hhm.associatedFactories || !hhm.associatedFactories.includes(invitation.factoryId)) {
           await hhm.addFactory(invitation.factoryId);
-          console.log('✅ Added factory to HHM\'s associated factories');
+          console.log(' Added factory to HHM\'s associated factories');
         } else {
-          console.log('ℹ️  Factory already associated with HHM');
+          console.log('  Factory already associated with HHM');
         }
 
         // Add HHM to factory's associatedHHMs
@@ -1252,37 +1222,24 @@ const respondToFactoryInvitation = async (req, res) => {
           // Check if association already exists before adding
           if (!factory.associatedHHMs || !factory.associatedHHMs.includes(req.user._id)) {
             await factory.addHHM(req.user._id);
-            console.log('✅ Added HHM to factory\'s associated HHMs');
+            console.log(' Added HHM to factory\'s associated HHMs');
           } else {
-            console.log('ℹ️  HHM already associated with factory');
+            console.log('  HHM already associated with factory');
           }
         }
 
-        console.log('✅ Association created between factory and HHM');
+        console.log(' Association created between factory and HHM');
       } catch (associationError) {
         // Log the error but don't fail the invitation acceptance
-        console.warn('⚠️  Association creation warning:', associationError.message);
+        console.warn('  Association creation warning:', associationError.message);
         // Continue with the invitation acceptance even if association fails
       }
-=======
-      // Add factory to HHM's associatedFactories
-      const hhm = await User.findById(req.user._id);
-      await hhm.addFactory(invitation.factoryId);
-
-      // Add HHM to factory's associatedHHMs
-      const factory = await User.findById(invitation.factoryId);
-      if (factory) {
-        await factory.addHHM(req.user._id);
-      }
-
-      console.log('✅ Association created between factory and HHM');
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }
 
     // Populate invitation details
     await invitation.populate('factoryId', 'name email phone factoryName factoryLocation');
 
-    console.log(`✅ Invitation ${status} successfully`);
+    console.log(` Invitation ${status} successfully`);
 
     res.status(200).json({
       success: true,
@@ -1291,7 +1248,7 @@ const respondToFactoryInvitation = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error responding to factory invitation:', error);
+    console.error(' Error responding to factory invitation:', error);
     res.status(500).json({
       success: false,
       message: 'Error responding to invitation',
@@ -1307,14 +1264,10 @@ const respondToFactoryInvitation = async (req, res) => {
  */
 const getAssociatedFactories = async (req, res) => {
   try {
-    console.log('📋 Getting associated factories for HHM:', req.user._id);
+    console.log(' Getting associated factories for HHM:', req.user._id);
 
     const hhm = await User.findById(req.user._id)
-<<<<<<< HEAD
       .populate('associatedFactories', 'name email phone factoryName factoryLocation capacity contactInfo operatingSeason crushingStatus experience createdAt');
-=======
-      .populate('associatedFactories', 'name email phone factoryName factoryLocation capacity contactInfo experience createdAt');
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
     if (!hhm) {
       return res.status(404).json({
@@ -1325,7 +1278,7 @@ const getAssociatedFactories = async (req, res) => {
 
     const factories = hhm.associatedFactories || [];
 
-    console.log(`✅ Found ${factories.length} associated factories`);
+    console.log(` Found ${factories.length} associated factories`);
 
     res.status(200).json({
       success: true,
@@ -1334,7 +1287,7 @@ const getAssociatedFactories = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error getting associated factories:', error);
+    console.error(' Error getting associated factories:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving associated factories',
@@ -1350,7 +1303,7 @@ const getAssociatedFactories = async (req, res) => {
  */
 const disconnectFromFactory = async (req, res) => {
   try {
-    console.log('🔓 HHM disconnecting from factory:', req.params.factoryId);
+    console.log(' HHM disconnecting from factory:', req.params.factoryId);
 
     const hhm = await User.findById(req.user._id);
 
@@ -1381,7 +1334,7 @@ const disconnectFromFactory = async (req, res) => {
       await factory.save();
     }
 
-    console.log('✅ Factory association removed successfully');
+    console.log(' Factory association removed successfully');
 
     res.status(200).json({
       success: true,
@@ -1389,7 +1342,7 @@ const disconnectFromFactory = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error disconnecting from factory:', error);
+    console.error(' Error disconnecting from factory:', error);
     res.status(500).json({
       success: false,
       message: 'Error disconnecting from factory',
@@ -1405,7 +1358,7 @@ const disconnectFromFactory = async (req, res) => {
  */
 const getMyPerformance = async (req, res) => {
   try {
-    console.log('📊 Getting performance metrics for HHM:', req.user._id);
+    console.log(' Getting performance metrics for HHM:', req.user._id);
 
     // Get total schedules created
     const totalSchedules = await Schedule.countDocuments({ hhmId: req.user._id });
@@ -1482,7 +1435,7 @@ const getMyPerformance = async (req, res) => {
       calculatedAt: new Date()
     };
 
-    console.log('✅ Performance metrics calculated successfully');
+    console.log(' Performance metrics calculated successfully');
 
     res.status(200).json({
       success: true,
@@ -1490,7 +1443,7 @@ const getMyPerformance = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error getting performance metrics:', error);
+    console.error(' Error getting performance metrics:', error);
     res.status(500).json({
       success: false,
       message: 'Error retrieving performance metrics',
@@ -1506,18 +1459,18 @@ const getMyPerformance = async (req, res) => {
  */
 const inviteFactory = async (req, res) => {
   try {
-    console.log('📨 HHM inviting Factory:', req.user._id);
-    console.log('🔍 Request body received:', req.body);
+    console.log(' HHM inviting Factory:', req.user._id);
+    console.log(' Request body received:', req.body);
 
     const { factoryId, personalMessage, invitationReason } = req.body;
     
-    console.log('🔍 Extracted factoryId:', factoryId);
-    console.log('🔍 Type of factoryId:', typeof factoryId);
-    console.log('🔍 factoryId exists:', !!factoryId);
+    console.log(' Extracted factoryId:', factoryId);
+    console.log(' Type of factoryId:', typeof factoryId);
+    console.log(' factoryId exists:', !!factoryId);
 
     // Validate required fields
     if (!factoryId) {
-      console.log('❌ Factory ID validation failed');
+      console.log(' Factory ID validation failed');
       return res.status(400).json({
         success: false,
         message: 'Factory ID is required'
@@ -1577,7 +1530,7 @@ const inviteFactory = async (req, res) => {
       .populate('factoryId', 'name email phone factoryName factoryLocation')
       .populate('hhmId', 'name email phone experience specialization');
 
-    console.log('✅ HHM invitation created successfully:', invitation._id);
+    console.log(' HHM invitation created successfully:', invitation._id);
 
     res.status(201).json({
       success: true,
@@ -1586,7 +1539,7 @@ const inviteFactory = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error creating HHM invitation:', error);
+    console.error(' Error creating HHM invitation:', error);
 
     // Handle duplicate key error
     if (error.code === 11000) {
@@ -1611,7 +1564,7 @@ const inviteFactory = async (req, res) => {
  */
 const inviteMultipleFactories = async (req, res) => {
   try {
-    console.log('📨 HHM sending bulk factory invitations:', req.user._id);
+    console.log(' HHM sending bulk factory invitations:', req.user._id);
 
     const { factoryIds, personalMessage, invitationReason } = req.body;
 
@@ -1700,7 +1653,7 @@ const inviteMultipleFactories = async (req, res) => {
         });
 
       } catch (error) {
-        console.error(`❌ Error inviting Factory ${factoryId}:`, error.message);
+        console.error(` Error inviting Factory ${factoryId}:`, error.message);
         results.failed.push({
           factoryId,
           reason: error.message
@@ -1708,7 +1661,7 @@ const inviteMultipleFactories = async (req, res) => {
       }
     }
 
-    console.log(`✅ Bulk invitation complete. Success: ${results.successful.length}, Failed: ${results.failed.length}, Skipped: ${results.skipped.length}`);
+    console.log(` Bulk invitation complete. Success: ${results.successful.length}, Failed: ${results.failed.length}, Skipped: ${results.skipped.length}`);
 
     res.status(200).json({
       success: true,
@@ -1717,7 +1670,7 @@ const inviteMultipleFactories = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error in bulk invitation:', error);
+    console.error(' Error in bulk invitation:', error);
     res.status(500).json({
       success: false,
       message: 'Error sending bulk invitations',
@@ -1733,7 +1686,7 @@ const inviteMultipleFactories = async (req, res) => {
  */
 const getMyFactoryInvitations = async (req, res) => {
   try {
-    console.log('📋 Getting HHM factory invitations:', req.user._id);
+    console.log(' Getting HHM factory invitations:', req.user._id);
 
     const { status, page = 1, limit = 20 } = req.query;
 
@@ -1760,7 +1713,7 @@ const getMyFactoryInvitations = async (req, res) => {
     // Get total count for pagination
     const totalInvitations = await Invitation.countDocuments(query);
 
-    console.log(`✅ Found ${invitations.length} HHM factory invitations`);
+    console.log(` Found ${invitations.length} HHM factory invitations`);
 
     res.status(200).json({
       success: true,
@@ -1772,7 +1725,7 @@ const getMyFactoryInvitations = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error fetching HHM factory invitations:', error);
+    console.error(' Error fetching HHM factory invitations:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching invitations',
@@ -1781,7 +1734,6 @@ const getMyFactoryInvitations = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 /**
  * @desc    Release a worker (end exclusive employment)
  * @route   POST /api/hhm/release-worker
@@ -1789,7 +1741,7 @@ const getMyFactoryInvitations = async (req, res) => {
  */
 const releaseWorker = async (req, res) => {
   try {
-    console.log('🔓 Releasing worker for HHM:', req.user._id);
+    console.log(' Releasing worker for HHM:', req.user._id);
 
     const { workerId } = req.body;
 
@@ -1824,7 +1776,7 @@ const releaseWorker = async (req, res) => {
     // Get worker details for response
     const worker = await User.findById(workerId).select('name email');
 
-    console.log(`✅ Worker ${worker.name} has been released and is now available for other HHMs`);
+    console.log(` Worker ${worker.name} has been released and is now available for other HHMs`);
 
     res.status(200).json({
       success: true,
@@ -1838,7 +1790,7 @@ const releaseWorker = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error releasing worker:', error);
+    console.error(' Error releasing worker:', error);
     res.status(500).json({
       success: false,
       message: 'Error releasing worker',
@@ -1847,8 +1799,6 @@ const releaseWorker = async (req, res) => {
   }
 };
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 module.exports = {
   // Schedule management
   createSchedule,
@@ -1869,10 +1819,7 @@ module.exports = {
 
   // Worker availability management
   updateWorkerAvailability,
-<<<<<<< HEAD
   releaseWorker,
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
   // Profile management
   getProfile,

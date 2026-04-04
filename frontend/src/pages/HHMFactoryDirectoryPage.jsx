@@ -1,1524 +1,1292 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
-
-/**
- * HHMFactoryDirectoryPage Component
- * 
- * Page for HHM users to view and search through Factories.
- * Includes search functionality, filtering, and displays factory data in a card format.
- * Customized for HHM user perspective with emphasis on partnership and collaboration.
- */
-const HHMFactoryDirectoryPage = () => {
-  const navigate = useNavigate();
-
-  const [factories, setFactories] = useState([]);
-  const [filteredFactories, setFilteredFactories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('');
-  const [selectedCapacity, setSelectedCapacity] = useState('');
-  const [sortBy, setSortBy] = useState('name');
-
-  // Invitation modal states
-  const [showInviteModal, setShowInviteModal] = useState(false);
-  const [selectedFactory, setSelectedFactory] = useState(null);
-  const [invitationMessage, setInvitationMessage] = useState('');
-  const [sendingInvitation, setSendingInvitation] = useState(false);
-  const [invitationSuccess, setInvitationSuccess] = useState(null);
-
-  useEffect(() => {
-    fetchFactories();
-  }, []);
-
-  const filterAndSortFactories = useCallback(() => {
-    // Ensure factories is always an array
-    if (!Array.isArray(factories)) {
-      console.warn('Factories is not an array:', factories);
-      setFilteredFactories([]);
-      return;
-    }
-
-    let filtered = [...factories];
-
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(factory =>
-        factory.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        factory.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        factory.contactInfo?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        factory.contactInfo?.phone?.includes(searchTerm) ||
-        factory.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Apply location filter
-    if (selectedLocation) {
-      filtered = filtered.filter(factory =>
-        factory.location?.toLowerCase().includes(selectedLocation.toLowerCase())
-      );
-    }
-
-    // Apply capacity filter
-    if (selectedCapacity) {
-      filtered = filtered.filter(factory => {
-        // Extract numeric value from capacity string (e.g., "2800 TCD" -> 2800)
-        const capacityStr = factory.capacity || '';
-        const factoryCapacity = parseInt(capacityStr.match(/\d+/)?.[0] || '0');
-        switch (selectedCapacity) {
-          case 'small':
-            return factoryCapacity < 1000;
-          case 'medium':
-            return factoryCapacity >= 1000 && factoryCapacity < 5000;
-          case 'large':
-            return factoryCapacity >= 5000;
-          default:
-            return true;
-        }
-      });
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return (a.name || '').localeCompare(b.name || '');
-        case 'location':
-          return (a.location || '').localeCompare(b.location || '');
-        case 'capacity':
-          // Extract numeric value from capacity string for sorting
-          const aCapacity = parseInt((a.capacity || '').match(/\d+/)?.[0] || '0');
-          const bCapacity = parseInt((b.capacity || '').match(/\d+/)?.[0] || '0');
-          return bCapacity - aCapacity;
-        case 'established':
-          return new Date(b.establishedYear || 0) - new Date(a.establishedYear || 0);
-        default:
-          return 0;
-      }
-    });
-
-    setFilteredFactories(filtered);
-  }, [factories, searchTerm, selectedLocation, selectedCapacity, sortBy]);
-
-  useEffect(() => {
-    filterAndSortFactories();
-  }, [factories, searchTerm, selectedLocation, selectedCapacity, sortBy, filterAndSortFactories]);
-
-  const fetchFactories = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Get JWT token from localStorage
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        setError('No authentication token found. Please login again.');
-        return;
-      }
-
-      // Use public API endpoint since HHM users need to see factory directory
-      const response = await axios.get('/api/public/factories', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      console.log('HHM Full API response:', response.data);
-
-      // The API returns: { success: true, data: { factories: [...] } }
-      const factoryData = response.data.data?.factories || response.data.factories || response.data || [];
-      console.log('HHM Factory data received:', factoryData);
-      console.log('Is array?', Array.isArray(factoryData));
-
-      // Ensure we always set an array
-      if (Array.isArray(factoryData)) {
-        setFactories(factoryData);
-      } else {
-        console.warn('Factory data is not an array:', factoryData);
-        setFactories([]);
-      }
-    } catch (err) {
-      console.error('Error fetching factories:', err);
-      setError(
-        err.response?.data?.message ||
-        'Failed to fetch factory directory. Please try again.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleInitiatePartnership = async (e, factory) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Debug: Log the factory object
-    console.log('🔍 Factory object:', factory);
-    console.log('🔍 Factory ID (_id):', factory._id);
-    console.log('🔍 Factory ID (id):', factory.id);
-    console.log('🔍 Factory userId:', factory.userId);
-
-    // Try to get the correct factory ID
-    const factoryId = factory._id || factory.id || factory.userId;
-
-    if (!factoryId) {
-      alert('❌ Cannot send invitation: Factory ID not found');
-      console.error('Factory object missing ID:', factory);
-      return;
-    }
-
-    console.log('🔍 Using Factory ID:', factoryId);
-
-    // Open modal instead of confirm dialog
-    setSelectedFactory(factory);
-    setInvitationMessage('');
-    setInvitationSuccess(null);
-    setShowInviteModal(true);
-  };
-
-  const handleSendInvitation = async () => {
-    if (!selectedFactory) return;
-
-    const factoryId = selectedFactory._id || selectedFactory.id || selectedFactory.userId;
-
-    setSendingInvitation(true);
-    setInvitationSuccess(null);
-
-    try {
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        setInvitationSuccess({
-          type: 'error',
-          message: '❌ Please login to send invitations'
-        });
-        setTimeout(() => navigate('/login'), 2000);
-        return;
-      }
-
-      console.log('📤 Sending invitation to factory ID:', factoryId);
-
-      const response = await axios.post(
-        '/api/hhm/invite-factory',
-        {
-          factoryId: factoryId,
-          personalMessage: invitationMessage || `I would like to establish a partnership with ${selectedFactory.name}`,
-          invitationReason: 'Seeking collaboration opportunities for worker placement and operations'
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      console.log('✅ Response:', response.data);
-
-      if (response.data.success) {
-        setInvitationSuccess({
-          type: 'success',
-          message: `✅ Partnership invitation sent to ${selectedFactory.name} successfully!`
-        });
-        // Close modal after 2 seconds
-        setTimeout(() => {
-          setShowInviteModal(false);
-          setSelectedFactory(null);
-          setInvitationMessage('');
-        }, 2000);
-      }
-    } catch (err) {
-      console.error('❌ Full error object:', err);
-      console.error('❌ Error response:', err.response);
-      console.error('❌ Error response data:', err.response?.data);
-
-      // Handle specific error messages
-      setInvitationSuccess({
-        type: 'error',
-        message: err.response?.data?.message || 'Failed to send invitation. Please try again.'
-      });
-    } finally {
-      setSendingInvitation(false);
-    }
-  };
-
-  const closeInviteModal = () => {
-    setShowInviteModal(false);
-    setSelectedFactory(null);
-    setInvitationMessage('');
-    setInvitationSuccess(null);
-  };
-
-  const handleLocationChange = (e) => {
-    setSelectedLocation(e.target.value);
-  };
-
-  const handleCapacityChange = (e) => {
-    setSelectedCapacity(e.target.value);
-  };
-
-  const handleSortChange = (e) => {
-    setSortBy(e.target.value);
-  };
-
-  const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedLocation('');
-    setSelectedCapacity('');
-    setSortBy('name');
-  };
-
-  const handleFactoryClick = (factoryId) => {
-    console.log('🔗 Navigating to factory:', factoryId);
-    navigate(`/hhm/factories/${factoryId}`);
-  };
-
-  // Get unique locations for filter dropdown
-  const uniqueLocations = [...new Set(
-    (Array.isArray(factories) ? factories : [])
-      .map(factory => factory.location)
-      .filter(location => location)
-  )];
-
-  const formatNumber = (num) => {
-    if (!num) return 'N/A';
-    return num.toLocaleString();
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const getCapacityColor = (capacity) => {
-    if (!capacity) return '#666';
-    const numericCapacity = parseInt(capacity.match(/\d+/)?.[0] || '0');
-    if (numericCapacity < 1000) return '#ff9800';
-    if (numericCapacity < 5000) return '#2196f3';
-    return '#4caf50';
-  };
-
-  const getCapacityLabel = (capacity) => {
-    if (!capacity) return 'Unknown';
-    const numericCapacity = parseInt(capacity.match(/\d+/)?.[0] || '0');
-    if (numericCapacity < 1000) return 'Small Scale';
-    if (numericCapacity < 5000) return 'Medium Scale';
-    return 'Large Scale';
-  };
-
-  return (
-    <div className="factory-directory-page">
-      <div className="page-header">
-<<<<<<< HEAD
-        <h1>🏭 Factory Partnership Directory</h1>
-=======
-        <h1>
-          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
-            <rect x="3" y="8" width="18" height="13" rx="1" />
-            <path d="M8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3" />
-            <line x1="7" y1="12" x2="7" y2="12.01" />
-            <line x1="11" y1="12" x2="11" y2="12.01" />
-            <line x1="15" y1="12" x2="15" y2="12.01" />
-            <line x1="7" y1="16" x2="7" y2="16.01" />
-            <line x1="11" y1="16" x2="11" y2="16.01" />
-            <line x1="15" y1="16" x2="15" y2="16.01" />
-          </svg>
-          Factory Partnership Directory
-        </h1>
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-        <p className="page-subtitle">
-          Connect with processing facilities for strategic partnerships and worker placement opportunities
-        </p>
-      </div>
-
-      {/* Search and Filter Section */}
-      <div className="filter-section">
-        <div className="search-controls">
-          <div className="search-input-group">
-<<<<<<< HEAD
-            <span className="search-icon">🔍</span>
-=======
-            <span className="search-icon">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-              </svg>
-            </span>
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-            <input
-              type="text"
-              placeholder="Search factories for partnership opportunities..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="search-input"
-            />
-          </div>
-
-          <div className="filter-controls">
-            <select
-              value={selectedLocation}
-              onChange={handleLocationChange}
-              className="filter-select"
-            >
-              <option value="">All Locations</option>
-              {uniqueLocations.map((location, index) => (
-                <option key={index} value={location}>
-<<<<<<< HEAD
-                  📍 {location}
-=======
-                  {location}
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedCapacity}
-              onChange={handleCapacityChange}
-              className="filter-select"
-            >
-              <option value="">All Capacities</option>
-<<<<<<< HEAD
-              <option value="small">🏭 Small Scale (&lt;1,000)</option>
-              <option value="medium">🏭 Medium Scale (1,000-5,000)</option>
-              <option value="large">🏭 Large Scale (5,000+)</option>
-=======
-              <option value="small">Small Scale (&lt;1,000)</option>
-              <option value="medium">Medium Scale (1,000-5,000)</option>
-              <option value="large">Large Scale (5,000+)</option>
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-            </select>
-
-            <select
-              value={sortBy}
-              onChange={handleSortChange}
-              className="sort-select"
-            >
-              <option value="name">Sort by Name</option>
-              <option value="location">Sort by Location</option>
-              <option value="capacity">Sort by Capacity</option>
-              <option value="established">Sort by Established Year</option>
-            </select>
-
-            <button
-              onClick={clearFilters}
-              className="clear-filters-btn"
-            >
-              Clear Filters
-            </button>
-          </div>
-        </div>
-
-        <div className="results-info">
-          <span className="results-count">
-            {filteredFactories.length} partnership opportunities found
-          </span>
-        </div>
-      </div>
-
-      {/* Content Section */}
-      <div className="content-section">
-        {loading ? (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading factory partnership directory...</p>
-          </div>
-        ) : error ? (
-          <div className="error-container">
-<<<<<<< HEAD
-            <div className="error-icon">⚠️</div>
-=======
-            <div className="error-icon">
-              <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" strokeWidth="2" fill="none">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                <line x1="12" y1="9" x2="12" y2="13" />
-                <line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
-            </div>
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-            <h3>Error Loading Directory</h3>
-            <p className="error-message">{error}</p>
-            <button
-              onClick={fetchFactories}
-              className="retry-button"
-            >
-              Try Again
-            </button>
-          </div>
-        ) : filteredFactories.length === 0 ? (
-          <div className="empty-state">
-<<<<<<< HEAD
-            <div className="empty-icon">🏭</div>
-=======
-            <div className="empty-icon">
-              <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" strokeWidth="2" fill="none">
-                <rect x="3" y="8" width="18" height="13" rx="1" />
-                <path d="M8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3" />
-                <line x1="7" y1="12" x2="7" y2="12.01" />
-                <line x1="11" y1="12" x2="11" y2="12.01" />
-                <line x1="15" y1="12" x2="15" y2="12.01" />
-                <line x1="7" y1="16" x2="7" y2="16.01" />
-                <line x1="11" y1="16" x2="11" y2="16.01" />
-                <line x1="15" y1="16" x2="15" y2="16.01" />
-              </svg>
-            </div>
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-            <h3>No Partnership Opportunities Found</h3>
-            <p>
-              {searchTerm || selectedLocation || selectedCapacity
-                ? 'Try adjusting your search or filter criteria.'
-                : 'No factories are currently available for partnerships.'
-              }
-            </p>
-            {(searchTerm || selectedLocation || selectedCapacity) && (
-              <button
-                onClick={clearFilters}
-                className="clear-filters-btn"
-              >
-                Clear All Filters
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="factory-grid">
-            {filteredFactories.map((factory) => (
-              <Link
-                key={factory._id}
-                to={`/hhm/factories/${factory._id || factory.id}`}
-                className="factory-card-link"
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <div className="factory-card">
-                  <div className="card-header">
-                    <div className="factory-avatar">
-<<<<<<< HEAD
-                      <span className="avatar-icon">🏭</span>
-                    </div>
-                    <div className="factory-basic-info">
-                      <h3 className="factory-name">{factory.name || 'Unknown Factory'}</h3>
-                      <p className="factory-location">📍 {factory.location || 'Location not specified'}</p>
-=======
-                      <span className="avatar-icon">
-                        <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" strokeWidth="2" fill="none">
-                          <rect x="3" y="8" width="18" height="13" rx="1" />
-                          <path d="M8 8V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3" />
-                          <line x1="7" y1="12" x2="7" y2="12.01" />
-                          <line x1="11" y1="12" x2="11" y2="12.01" />
-                          <line x1="15" y1="12" x2="15" y2="12.01" />
-                          <line x1="7" y1="16" x2="7" y2="16.01" />
-                          <line x1="11" y1="16" x2="11" y2="16.01" />
-                          <line x1="15" y1="16" x2="15" y2="16.01" />
-                        </svg>
-                      </span>
-                    </div>
-                    <div className="factory-basic-info">
-                      <h3 className="factory-name">{factory.name || 'Unknown Factory'}</h3>
-                      <p className="factory-location">
-                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                          <circle cx="12" cy="10" r="3" />
-                        </svg>
-                        {factory.location || 'Location not specified'}
-                      </p>
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-                    </div>
-                    <div className="capacity-badge" style={{ backgroundColor: getCapacityColor(factory.capacity) }}>
-                      {getCapacityLabel(factory.capacity)}
-                    </div>
-                  </div>
-
-                  <div className="card-body">
-                    <div className="factory-stats">
-                      <div className="stat-item">
-                        <span className="stat-label">Processing Capacity:</span>
-                        <span className="stat-value">{factory.capacity || 'N/A'}</span>
-                      </div>
-                      {factory.establishedYear && (
-                        <div className="stat-item">
-                          <span className="stat-label">Established:</span>
-                          <span className="stat-value">{factory.establishedYear}</span>
-                        </div>
-                      )}
-<<<<<<< HEAD
-                      {factory.operatingSeason && (
-                        <div className="stat-item">
-                          <span className="stat-label">Operating Season:</span>
-                          <span className="stat-value">📅 {factory.operatingSeason}</span>
-=======
-                      {factory.operatingHours && (
-                        <div className="stat-item">
-                          <span className="stat-label">Operating Hours:</span>
-                          <span className="stat-value">
-                            {typeof factory.operatingHours === 'object'
-                              ? (factory.operatingHours.season
-                                ? `${factory.operatingHours.season}${factory.operatingHours.daily ? ' - ' + factory.operatingHours.daily : factory.operatingHours.monday ? ' - ' + factory.operatingHours.monday : ''}`
-                                : 'Contact for schedule'
-                              )
-                              : factory.operatingHours}
-                          </span>
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-                        </div>
-                      )}
-                    </div>
-
-                    {factory.description && (
-                      <div className="factory-description">
-                        <p>{factory.description}</p>
-                      </div>
-                    )}
-
-                    <div className="partnership-opportunities">
-<<<<<<< HEAD
-                      <h4>🤝 Partnership Opportunities:</h4>
-                      <div className="opportunity-tags">
-                        <span className="opportunity-tag">👥 Worker Placement</span>
-                        <span className="opportunity-tag">⚙️ Maintenance Support</span>
-                        <span className="opportunity-tag">📊 Operations Coordination</span>
-=======
-                      <h4>
-                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
-                          <path d="M12 2v6m0 0 3-3m-3 3-3-3" />
-                          <path d="M3 13a9 9 0 0 0 9 9 9 9 0 0 0 9-9" />
-                          <path d="m16 16 2 2 4-4" />
-                        </svg>
-                        Partnership Opportunities:
-                      </h4>
-                      <div className="opportunity-tags">
-                        <span className="opportunity-tag">Worker Placement</span>
-                        <span className="opportunity-tag">Maintenance Support</span>
-                        <span className="opportunity-tag">Operations Coordination</span>
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-                      </div>
-                    </div>
-
-                    <div className="contact-info">
-<<<<<<< HEAD
-                      <h4>📞 Contact Information:</h4>
-=======
-                      <h4>
-                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
-                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                        </svg>
-                        Contact Information:
-                      </h4>
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-                      <div className="contact-details">
-                        {factory.contactInfo?.email && (
-                          <div className="contact-item">
-                            <span className="contact-icon">📧</span>
-                            <a
-                              href={`mailto:${factory.contactInfo.email}`}
-                              className="contact-link"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {factory.contactInfo.email}
-                            </a>
-                          </div>
-                        )}
-                        {factory.contactInfo?.phone && (
-                          <div className="contact-item">
-                            <span className="contact-icon">📱</span>
-                            <a
-                              href={`tel:${factory.contactInfo.phone}`}
-                              className="contact-link"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {factory.contactInfo.phone}
-                            </a>
-                          </div>
-                        )}
-                        {factory.contactInfo?.website && (
-                          <div className="contact-item">
-<<<<<<< HEAD
-                            <span className="contact-icon">🌐</span>
-=======
-                            <span className="contact-icon">
-                              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
-                                <circle cx="12" cy="12" r="10" />
-                                <line x1="2" y1="12" x2="22" y2="12" />
-                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                              </svg>
-                            </span>
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-                            <a
-                              href={factory.contactInfo.website.startsWith('http') ? factory.contactInfo.website : `https://${factory.contactInfo.website}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="contact-link"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              Visit Website
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="card-footer">
-                    <div className="action-buttons">
-                      <button
-                        className="contact-btn primary"
-                        onClick={(e) => handleInitiatePartnership(e, factory)}
-                      >
-<<<<<<< HEAD
-                        🤝 Initiate Partnership
-=======
-                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
-                          <path d="M12 2v6m0 0 3-3m-3 3-3-3" />
-                          <path d="M3 13a9 9 0 0 0 9 9 9 9 0 0 0 9-9" />
-                          <path d="m16 16 2 2 4-4" />
-                        </svg>
-                        Initiate Partnership
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-                      </button>
-                      <button
-                        className="contact-btn secondary"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleFactoryClick(factory._id || factory.id);
-                        }}
-                      >
-<<<<<<< HEAD
-                        📋 View Details
-=======
-                        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }}>
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                          <polyline points="14 2 14 8 20 8" />
-                          <line x1="16" y1="13" x2="8" y2="13" />
-                          <line x1="16" y1="17" x2="8" y2="17" />
-                          <polyline points="10 9 9 9 8 9" />
-                        </svg>
-                        View Details
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Invitation Modal */}
-<<<<<<< HEAD
-      {showInviteModal && selectedFactory && (
-        <div className="modal-overlay" onClick={closeInviteModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>📨 Send Invitation to {selectedFactory.name}</h2>
-              <button className="modal-close" onClick={closeInviteModal}>×</button>
-            </div>
-
-            <div className="modal-body">
-              {invitationSuccess ? (
-                <div className={`alert ${invitationSuccess.type === 'success' ? 'alert-success' : 'alert-error'}`}>
-                  {invitationSuccess.message}
-                </div>
-              ) : (
-                <>
-                  <div className="factory-preview">
-                    <div className="factory-preview-avatar">🏭</div>
-                    <div className="factory-preview-info">
-                      <h3>{selectedFactory.name}</h3>
-                      <p>📍 {selectedFactory.location || 'Location not specified'}</p>
-                      <p>📧 {selectedFactory.email}</p>
-                    </div>
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="invitation-message">Message (Optional)</label>
-                    <textarea
-                      id="invitation-message"
-                      value={invitationMessage}
-                      onChange={(e) => setInvitationMessage(e.target.value)}
-                      placeholder="Add a personal message to your invitation..."
-                      rows="4"
-                      className="invitation-textarea"
-                    />
-                    <small className="form-hint">
-                      Explain why you'd like to partner with this Factory
-                    </small>
-                  </div>
-                </>
-              )}
-            </div>
-
-            {!invitationSuccess && (
-              <div className="modal-footer">
-                <button
-                  className="btn btn-secondary"
-                  onClick={closeInviteModal}
-                  disabled={sendingInvitation}
-                >
-                  CANCEL
-                </button>
-                <button
-                  className="btn btn-primary"
-                  onClick={handleSendInvitation}
-                  disabled={sendingInvitation}
-                >
-                  {sendingInvitation ? 'Sending...' : '📨 SEND INVITATION'}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-=======
-      {
-        showInviteModal && selectedFactory && (
-          <div className="modal-overlay" onClick={closeInviteModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h2>
-                  <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '8px' }}>
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                    <polyline points="22,6 12,13 2,6" />
-                    <path d="M12 13l-8 5" />
-                  </svg>
-                  Send Invitation to {selectedFactory.name}
-                </h2>
-                <button className="modal-close" onClick={closeInviteModal}>×</button>
-              </div>
-
-              <div className="modal-body">
-                {invitationSuccess ? (
-                  <div className={`alert ${invitationSuccess.type === 'success' ? 'alert-success' : 'alert-error'}`}>
-                    {invitationSuccess.message}
-                  </div>
-                ) : (
-                  <>
-                    <div className="factory-preview">
-                      <div className="factory-preview-avatar">🏭</div>
-                      <div className="factory-preview-info">
-                        <h3>{selectedFactory.name}</h3>
-                        <p>📍 {selectedFactory.location || 'Location not specified'}</p>
-                        <p>📧 {selectedFactory.email}</p>
-                      </div>
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="invitation-message">Message (Optional)</label>
-                      <textarea
-                        id="invitation-message"
-                        value={invitationMessage}
-                        onChange={(e) => setInvitationMessage(e.target.value)}
-                        placeholder="Add a personal message to your invitation..."
-                        rows="4"
-                        className="invitation-textarea"
-                      />
-                      <small className="form-hint">
-                        Explain why you'd like to partner with this Factory
-                      </small>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {!invitationSuccess && (
-                <div className="modal-footer">
-                  <button
-                    className="btn btn-secondary"
-                    onClick={closeInviteModal}
-                    disabled={sendingInvitation}
-                  >
-                    CANCEL
-                  </button>
-                  <button
-                    className="btn btn-primary"
-                    onClick={handleSendInvitation}
-                    disabled={sendingInvitation}
-                  >
-                    {sendingInvitation ? 'Sending...' : '📨 SEND INVITATION'}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        )
-      }
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-
-      <style jsx>{`
-        .factory-directory-page {
-          padding: 2rem;
-          max-width: 1400px;
-          margin: 0 auto;
-          background: #f8f9fa;
-          min-height: 100vh;
-        }
-
-        .page-header {
-          text-align: center;
-          margin-bottom: 2rem;
-          background: white;
-          color: #2c5f2d;
-          padding: 2rem;
-          border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .page-header h1 {
-          margin: 0 0 0.5rem 0;
-          font-size: 2.5rem;
-          font-weight: 600;
-          color: #2c5f2d;
-        }
-
-        .page-subtitle {
-          margin: 0;
-          font-size: 1.1rem;
-          color: #666;
-        }
-
-        .filter-section {
-          background: white;
-          padding: 1.5rem;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-          margin-bottom: 2rem;
-        }
-
-        .search-controls {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .search-input-group {
-          position: relative;
-          flex: 1;
-        }
-
-        .search-icon {
-          position: absolute;
-          left: 1rem;
-          top: 50%;
-          transform: translateY(-50%);
-          font-size: 1.2rem;
-          color: #666;
-        }
-
-        .search-input {
-          width: 100%;
-          padding: 1rem 1rem 1rem 3rem;
-          border: 2px solid #e1e5e9;
-          border-radius: 8px;
-          font-size: 1rem;
-          transition: all 0.2s;
-          box-sizing: border-box;
-        }
-
-        .search-input:focus {
-          outline: none;
-          border-color: #2c5f2d;
-          box-shadow: 0 0 0 3px rgba(44, 95, 45, 0.1);
-        }
-
-        .filter-controls {
-          display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
-        }
-
-        .filter-select, .sort-select {
-          padding: 0.75rem;
-          border: 2px solid #e1e5e9;
-          border-radius: 8px;
-          background: white;
-          font-size: 0.9rem;
-          min-width: 150px;
-          transition: border-color 0.2s;
-        }
-
-        .filter-select:focus, .sort-select:focus {
-          outline: none;
-          border-color: #2c5f2d;
-        }
-
-        .clear-filters-btn {
-          padding: 0.75rem 1.5rem;
-          background-color: #ff6b6b;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 0.9rem;
-        }
-
-        .results-info {
-          margin-top: 1rem;
-          padding-top: 1rem;
-          border-top: 1px solid #e1e5e9;
-        }
-
-        .results-count {
-          color: #2c5f2d;
-          font-weight: 500;
-        }
-
-        .content-section {
-          margin-top: 2rem;
-        }
-
-        .loading-container, .error-container, .empty-state {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 4rem 2rem;
-          text-align: center;
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .loading-spinner {
-          width: 40px;
-          height: 40px;
-          border: 4px solid #e0e0e0;
-          border-top: 4px solid #2c5f2d;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        .error-icon, .empty-icon {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-        }
-
-        .error-message {
-          color: #666;
-          margin-bottom: 1.5rem;
-        }
-
-        .retry-button {
-          padding: 0.75rem 1.5rem;
-          background: #4a7c59;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 1rem;
-        }
-
-        .factory-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-          gap: 2rem;
-        }
-
-        .factory-card-link {
-          display: block;
-          text-decoration: none;
-          color: inherit;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .factory-card-link:hover {
-          transform: translateY(-5px);
-        }
-
-        .factory-card-link:hover .factory-card {
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .factory-card {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-          overflow: hidden;
-          border: 1px solid #e1e5e9;
-          transition: box-shadow 0.3s ease;
-        }
-
-        .card-header {
-          display: flex;
-          align-items: flex-start;
-          gap: 1rem;
-          padding: 1.5rem;
-          background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
-          border-bottom: 1px solid #e1e5e9;
-        }
-
-        .factory-avatar {
-          background: linear-gradient(135deg, #2c5f2d, #4a7c59);
-          color: white;
-          width: 50px;
-          height: 50px;
-          border-radius: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.5rem;
-          flex-shrink: 0;
-        }
-
-        .factory-basic-info {
-          flex: 1;
-        }
-
-        .factory-name {
-          margin: 0 0 0.5rem 0;
-          font-size: 1.3rem;
-          font-weight: 600;
-          color: #2c3e50;
-        }
-
-        .factory-location {
-          margin: 0;
-          color: #666;
-          font-size: 0.9rem;
-        }
-
-        .capacity-badge {
-          padding: 0.5rem 1rem;
-          border-radius: 20px;
-          color: white;
-          font-size: 0.8rem;
-          font-weight: 500;
-          white-space: nowrap;
-        }
-
-        .card-body {
-          padding: 1.5rem;
-        }
-
-        .factory-stats {
-          margin-bottom: 1.5rem;
-        }
-
-        .stat-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0.5rem 0;
-          border-bottom: 1px solid #f0f2f5;
-        }
-
-        .stat-item:last-child {
-          border-bottom: none;
-        }
-
-        .stat-label {
-          color: #666;
-          font-size: 0.9rem;
-        }
-
-        .stat-value {
-          font-weight: 500;
-          color: #2c3e50;
-        }
-
-        .factory-description {
-          margin-bottom: 1.5rem;
-          padding: 1rem;
-          background: #f8f9ff;
-          border-left: 4px solid #667eea;
-          border-radius: 0 8px 8px 0;
-        }
-
-        .factory-description p {
-          margin: 0;
-          color: #555;
-          line-height: 1.5;
-        }
-
-        .partnership-opportunities {
-          margin-bottom: 1.5rem;
-        }
-
-        .partnership-opportunities h4 {
-          margin: 0 0 1rem 0;
-          color: #2c3e50;
-          font-size: 1rem;
-        }
-
-        .opportunity-tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-        }
-
-        .opportunity-tag {
-          background: linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%);
-          color: white;
-          padding: 0.4rem 0.8rem;
-          border-radius: 15px;
-          font-size: 0.8rem;
-          font-weight: 500;
-        }
-
-        .contact-info h4 {
-          margin: 0 0 1rem 0;
-          color: #2c3e50;
-          font-size: 1rem;
-        }
-
-        .contact-details {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .contact-item {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .contact-icon {
-          font-size: 1rem;
-        }
-
-        .contact-link {
-          color: #4a7c59;
-          text-decoration: none;
-          font-size: 0.9rem;
-        }
-
-        .card-footer {
-          padding: 1rem 1.5rem;
-          background: #f0f8f0;
-          border-top: 1px solid #e1e5e9;
-        }
-
-        .action-buttons {
-          display: flex;
-          gap: 1rem;
-        }
-
-        .contact-btn {
-          flex: 1;
-          padding: 0.75rem 1rem;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-size: 0.9rem;
-          font-weight: 500;
-          transition: all 0.2s;
-        }
-
-        .contact-btn.primary {
-          background: linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%);
-          color: white;
-        }
-
-        .contact-btn.secondary {
-          background: white;
-          color: #4a7c59;
-          border: 2px solid #4a7c59;
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.6);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 1000;
-          animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        .modal-content {
-          background: white;
-          border-radius: 16px;
-          width: 90%;
-          max-width: 550px;
-          max-height: 90vh;
-          overflow-y: auto;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-          animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-          from {
-            transform: translateY(50px);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-
-        .modal-header {
-          padding: 1.5rem 2rem;
-          border-bottom: 2px solid #f0f0f0;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-          border-radius: 16px 16px 0 0;
-        }
-
-        .modal-header h2 {
-          margin: 0;
-          color: #2c5f2d;
-          font-size: 1.5rem;
-          font-weight: 700;
-        }
-
-        .modal-close {
-          background: none;
-          border: none;
-          font-size: 2rem;
-          color: #666;
-          cursor: pointer;
-          padding: 0;
-          width: 36px;
-          height: 36px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          transition: all 0.2s;
-        }
-
-        .modal-close:hover {
-          background: rgba(0, 0, 0, 0.1);
-          color: #333;
-        }
-
-        .modal-body {
-          padding: 2rem;
-        }
-
-        .factory-preview {
-          display: flex;
-          gap: 1.5rem;
-          padding: 1.5rem;
-          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-          border-radius: 12px;
-          margin-bottom: 1.5rem;
-          border-left: 4px solid #4a7c59;
-        }
-
-        .factory-preview-avatar {
-          font-size: 3rem;
-          width: 80px;
-          height: 80px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .factory-preview-info {
-          flex: 1;
-        }
-
-        .factory-preview-info h3 {
-          margin: 0 0 0.5rem 0;
-          color: #2c5f2d;
-          font-size: 1.3rem;
-          font-weight: 700;
-        }
-
-        .factory-preview-info p {
-          margin: 0.25rem 0;
-          color: #555;
-          font-size: 0.95rem;
-        }
-
-        .form-group {
-          margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-          display: block;
-          margin-bottom: 0.5rem;
-          color: #333;
-          font-weight: 600;
-          font-size: 1rem;
-        }
-
-        .invitation-textarea {
-          width: 100%;
-          padding: 1rem;
-          border: 2px solid #e0e0e0;
-          border-radius: 10px;
-          font-size: 1rem;
-          font-family: inherit;
-          resize: vertical;
-          transition: border-color 0.3s;
-        }
-
-        .invitation-textarea:focus {
-          outline: none;
-          border-color: #4a7c59;
-          box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
-        }
-
-        .form-hint {
-          display: block;
-          margin-top: 0.5rem;
-          color: #666;
-          font-size: 0.85rem;
-          font-style: italic;
-        }
-
-        .alert {
-          padding: 1.25rem;
-          border-radius: 10px;
-          margin-bottom: 1rem;
-          font-weight: 500;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .alert-success {
-          background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-          color: #155724;
-          border-left: 4px solid #28a745;
-        }
-
-        .alert-error {
-          background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-          color: #721c24;
-          border-left: 4px solid #dc3545;
-        }
-
-        .modal-footer {
-          padding: 1.5rem 2rem;
-          border-top: 2px solid #f0f0f0;
-          display: flex;
-          gap: 1rem;
-          justify-content: flex-end;
-          background: #f8f9fa;
-          border-radius: 0 0 16px 16px;
-        }
-
-        .btn {
-          padding: 0.85rem 2rem;
-          border: none;
-          border-radius: 8px;
-          font-size: 1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .btn-primary {
-          background: linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%);
-          color: white;
-          box-shadow: 0 4px 12px rgba(44, 95, 45, 0.3);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(44, 95, 45, 0.4);
-        }
-
-        .btn-secondary {
-          background: white;
-          color: #666;
-          border: 2px solid #ddd;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-          background: #f8f9fa;
-          border-color: #999;
-        }
-
-        @media (max-width: 768px) {
-          .factory-directory-page {
-            padding: 1rem;
-          }
-
-          .page-header h1 {
-            font-size: 2rem;
-          }
-
-          .filter-controls {
-            flex-direction: column;
-          }
-
-          .filter-select, .sort-select {
-            min-width: auto;
-          }
-
-          .factory-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .action-buttons {
-            flex-direction: column;
-          }
-
-          .modal-content {
-            width: 95%;
-            max-height: 95vh;
-          }
-
-          .modal-header, .modal-body, .modal-footer {
-            padding: 1.25rem;
-          }
-
-          .factory-preview {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-          }
-
-          .modal-footer {
-            flex-direction: column;
-          }
-
-          .btn {
-            width: 100%;
-          }
-        }
-      `}</style>
-<<<<<<< HEAD
-    </div>
-=======
-    </div >
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
-  );
-};
-
-export default HHMFactoryDirectoryPage;
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
+
+/**
+ * HHMFactoryDirectoryPage Component
+ * 
+ * Page for HHM users to view and search through Factories.
+ * Includes search functionality, filtering, and displays factory data in a card format.
+ * Customized for HHM user perspective with emphasis on partnership and collaboration.
+ */
+const HHMFactoryDirectoryPage = () => {
+  const navigate = useNavigate();
+
+  const [factories, setFactories] = useState([]);
+  const [filteredFactories, setFilteredFactories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('');
+  const [selectedCapacity, setSelectedCapacity] = useState('');
+  const [sortBy, setSortBy] = useState('name');
+
+  // Invitation modal states
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [selectedFactory, setSelectedFactory] = useState(null);
+  const [invitationMessage, setInvitationMessage] = useState('');
+  const [sendingInvitation, setSendingInvitation] = useState(false);
+  const [invitationSuccess, setInvitationSuccess] = useState(null);
+
+  useEffect(() => {
+    fetchFactories();
+  }, []);
+
+  const filterAndSortFactories = useCallback(() => {
+    // Ensure factories is always an array
+    if (!Array.isArray(factories)) {
+      console.warn('Factories is not an array:', factories);
+      setFilteredFactories([]);
+      return;
+    }
+
+    let filtered = [...factories];
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(factory =>
+        factory.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.contactInfo?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        factory.contactInfo?.phone?.includes(searchTerm) ||
+        factory.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply location filter
+    if (selectedLocation) {
+      filtered = filtered.filter(factory =>
+        factory.location?.toLowerCase().includes(selectedLocation.toLowerCase())
+      );
+    }
+
+    // Apply capacity filter
+    if (selectedCapacity) {
+      filtered = filtered.filter(factory => {
+        // Extract numeric value from capacity string (e.g., "2800 TCD" -> 2800)
+        const capacityStr = factory.capacity || '';
+        const factoryCapacity = parseInt(capacityStr.match(/\d+/)?.[0] || '0');
+        switch (selectedCapacity) {
+          case 'small':
+            return factoryCapacity < 1000;
+          case 'medium':
+            return factoryCapacity >= 1000 && factoryCapacity < 5000;
+          case 'large':
+            return factoryCapacity >= 5000;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return (a.name || '').localeCompare(b.name || '');
+        case 'location':
+          return (a.location || '').localeCompare(b.location || '');
+        case 'capacity':
+          // Extract numeric value from capacity string for sorting
+          const aCapacity = parseInt((a.capacity || '').match(/\d+/)?.[0] || '0');
+          const bCapacity = parseInt((b.capacity || '').match(/\d+/)?.[0] || '0');
+          return bCapacity - aCapacity;
+        case 'established':
+          return new Date(b.establishedYear || 0) - new Date(a.establishedYear || 0);
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredFactories(filtered);
+  }, [factories, searchTerm, selectedLocation, selectedCapacity, sortBy]);
+
+  useEffect(() => {
+    filterAndSortFactories();
+  }, [factories, searchTerm, selectedLocation, selectedCapacity, sortBy, filterAndSortFactories]);
+
+  const fetchFactories = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Get JWT token from localStorage
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        setError('No authentication token found. Please login again.');
+        return;
+      }
+
+      // Use public API endpoint since HHM users need to see factory directory
+      const response = await axios.get('/api/public/factories', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('HHM Full API response:', response.data);
+
+      // The API returns: { success: true, data: { factories: [...] } }
+      const factoryData = response.data.data?.factories || response.data.factories || response.data || [];
+      console.log('HHM Factory data received:', factoryData);
+      console.log('Is array?', Array.isArray(factoryData));
+
+      // Ensure we always set an array
+      if (Array.isArray(factoryData)) {
+        setFactories(factoryData);
+      } else {
+        console.warn('Factory data is not an array:', factoryData);
+        setFactories([]);
+      }
+    } catch (err) {
+      console.error('Error fetching factories:', err);
+      setError(
+        err.response?.data?.message ||
+        'Failed to fetch factory directory. Please try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleInitiatePartnership = async (e, factory) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Debug: Log the factory object
+    console.log('🔍 Factory object:', factory);
+    console.log('🔍 Factory ID (_id):', factory._id);
+    console.log('🔍 Factory ID (id):', factory.id);
+    console.log('🔍 Factory userId:', factory.userId);
+
+    // Try to get the correct factory ID
+    const factoryId = factory._id || factory.id || factory.userId;
+
+    if (!factoryId) {
+      alert('❌ Cannot send invitation: Factory ID not found');
+      console.error('Factory object missing ID:', factory);
+      return;
+    }
+
+    console.log('🔍 Using Factory ID:', factoryId);
+
+    // Open modal instead of confirm dialog
+    setSelectedFactory(factory);
+    setInvitationMessage('');
+    setInvitationSuccess(null);
+    setShowInviteModal(true);
+  };
+
+  const handleSendInvitation = async () => {
+    if (!selectedFactory) return;
+
+    const factoryId = selectedFactory._id || selectedFactory.id || selectedFactory.userId;
+
+    setSendingInvitation(true);
+    setInvitationSuccess(null);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        setInvitationSuccess({
+          type: 'error',
+          message: '❌ Please login to send invitations'
+        });
+        setTimeout(() => navigate('/login'), 2000);
+        return;
+      }
+
+      console.log('📤 Sending invitation to factory ID:', factoryId);
+
+      const response = await axios.post(
+        '/api/hhm/invite-factory',
+        {
+          factoryId: factoryId,
+          personalMessage: invitationMessage || `I would like to establish a partnership with ${selectedFactory.name}`,
+          invitationReason: 'Seeking collaboration opportunities for worker placement and operations'
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('✅ Response:', response.data);
+
+      if (response.data.success) {
+        setInvitationSuccess({
+          type: 'success',
+          message: `✅ Partnership invitation sent to ${selectedFactory.name} successfully!`
+        });
+        // Close modal after 2 seconds
+        setTimeout(() => {
+          setShowInviteModal(false);
+          setSelectedFactory(null);
+          setInvitationMessage('');
+        }, 2000);
+      }
+    } catch (err) {
+      console.error('❌ Full error object:', err);
+      console.error('❌ Error response:', err.response);
+      console.error('❌ Error response data:', err.response?.data);
+
+      // Handle specific error messages
+      setInvitationSuccess({
+        type: 'error',
+        message: err.response?.data?.message || 'Failed to send invitation. Please try again.'
+      });
+    } finally {
+      setSendingInvitation(false);
+    }
+  };
+
+  const closeInviteModal = () => {
+    setShowInviteModal(false);
+    setSelectedFactory(null);
+    setInvitationMessage('');
+    setInvitationSuccess(null);
+  };
+
+  const handleLocationChange = (e) => {
+    setSelectedLocation(e.target.value);
+  };
+
+  const handleCapacityChange = (e) => {
+    setSelectedCapacity(e.target.value);
+  };
+
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedLocation('');
+    setSelectedCapacity('');
+    setSortBy('name');
+  };
+
+  const handleFactoryClick = (factoryId) => {
+    console.log('🔗 Navigating to factory:', factoryId);
+    navigate(`/hhm/factories/${factoryId}`);
+  };
+
+  // Get unique locations for filter dropdown
+  const uniqueLocations = [...new Set(
+    (Array.isArray(factories) ? factories : [])
+      .map(factory => factory.location)
+      .filter(location => location)
+  )];
+
+  const formatNumber = (num) => {
+    if (!num) return 'N/A';
+    return num.toLocaleString();
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const getCapacityColor = (capacity) => {
+    if (!capacity) return '#666';
+    const numericCapacity = parseInt(capacity.match(/\d+/)?.[0] || '0');
+    if (numericCapacity < 1000) return '#ff9800';
+    if (numericCapacity < 5000) return '#2196f3';
+    return '#4caf50';
+  };
+
+  const getCapacityLabel = (capacity) => {
+    if (!capacity) return 'Unknown';
+    const numericCapacity = parseInt(capacity.match(/\d+/)?.[0] || '0');
+    if (numericCapacity < 1000) return 'Small Scale';
+    if (numericCapacity < 5000) return 'Medium Scale';
+    return 'Large Scale';
+  };
+
+  return (
+    <div className="factory-directory-page">
+      <div className="page-header">
+        <h1>🏭 Factory Partnership Directory</h1>
+        <p className="page-subtitle">
+          Connect with processing facilities for strategic partnerships and worker placement opportunities
+        </p>
+      </div>
+
+      {/* Search and Filter Section */}
+      <div className="filter-section">
+        <div className="search-controls">
+          <div className="search-input-group">
+            <span className="search-icon">🔍</span>
+            <input
+              type="text"
+              placeholder="Search factories for partnership opportunities..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="search-input"
+            />
+          </div>
+
+          <div className="filter-controls">
+            <select
+              value={selectedLocation}
+              onChange={handleLocationChange}
+              className="filter-select"
+            >
+              <option value="">All Locations</option>
+              {uniqueLocations.map((location, index) => (
+                <option key={index} value={location}>
+                  📍 {location}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={selectedCapacity}
+              onChange={handleCapacityChange}
+              className="filter-select"
+            >
+              <option value="">All Capacities</option>
+              <option value="small">🏭 Small Scale (&lt;1,000)</option>
+              <option value="medium">🏭 Medium Scale (1,000-5,000)</option>
+              <option value="large">🏭 Large Scale (5,000+)</option>
+            </select>
+
+            <select
+              value={sortBy}
+              onChange={handleSortChange}
+              className="sort-select"
+            >
+              <option value="name">Sort by Name</option>
+              <option value="location">Sort by Location</option>
+              <option value="capacity">Sort by Capacity</option>
+              <option value="established">Sort by Established Year</option>
+            </select>
+
+            <button
+              onClick={clearFilters}
+              className="clear-filters-btn"
+            >
+              Clear Filters
+            </button>
+          </div>
+        </div>
+
+        <div className="results-info">
+          <span className="results-count">
+            {filteredFactories.length} partnership opportunities found
+          </span>
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="content-section">
+        {loading ? (
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>Loading factory partnership directory...</p>
+          </div>
+        ) : error ? (
+          <div className="error-container">
+            <div className="error-icon">⚠️</div>
+            <h3>Error Loading Directory</h3>
+            <p className="error-message">{error}</p>
+            <button
+              onClick={fetchFactories}
+              className="retry-button"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : filteredFactories.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">🏭</div>
+            <h3>No Partnership Opportunities Found</h3>
+            <p>
+              {searchTerm || selectedLocation || selectedCapacity
+                ? 'Try adjusting your search or filter criteria.'
+                : 'No factories are currently available for partnerships.'
+              }
+            </p>
+            {(searchTerm || selectedLocation || selectedCapacity) && (
+              <button
+                onClick={clearFilters}
+                className="clear-filters-btn"
+              >
+                Clear All Filters
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="factory-grid">
+            {filteredFactories.map((factory) => (
+              <Link
+                key={factory._id}
+                to={`/hhm/factories/${factory._id || factory.id}`}
+                className="factory-card-link"
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <div className="factory-card">
+                  <div className="card-header">
+                    <div className="factory-avatar">
+                      <span className="avatar-icon">🏭</span>
+                    </div>
+                    <div className="factory-basic-info">
+                      <h3 className="factory-name">{factory.name || 'Unknown Factory'}</h3>
+                      <p className="factory-location">📍 {factory.location || 'Location not specified'}</p>
+                    </div>
+                    <div className="capacity-badge" style={{ backgroundColor: getCapacityColor(factory.capacity) }}>
+                      {getCapacityLabel(factory.capacity)}
+                    </div>
+                  </div>
+
+                  <div className="card-body">
+                    <div className="factory-stats">
+                      <div className="stat-item">
+                        <span className="stat-label">Processing Capacity:</span>
+                        <span className="stat-value">{factory.capacity || 'N/A'}</span>
+                      </div>
+                      {factory.establishedYear && (
+                        <div className="stat-item">
+                          <span className="stat-label">Established:</span>
+                          <span className="stat-value">{factory.establishedYear}</span>
+                        </div>
+                      )}
+                      {factory.operatingSeason && (
+                        <div className="stat-item">
+                          <span className="stat-label">Operating Season:</span>
+                          <span className="stat-value">📅 {factory.operatingSeason}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {factory.description && (
+                      <div className="factory-description">
+                        <p>{factory.description}</p>
+                      </div>
+                    )}
+
+                    <div className="partnership-opportunities">
+                      <h4>🤝 Partnership Opportunities:</h4>
+                      <div className="opportunity-tags">
+                        <span className="opportunity-tag">👥 Worker Placement</span>
+                        <span className="opportunity-tag">⚙️ Maintenance Support</span>
+                        <span className="opportunity-tag">📊 Operations Coordination</span>
+                      </div>
+                    </div>
+
+                    <div className="contact-info">
+                      <h4>📞 Contact Information:</h4>
+                      <div className="contact-details">
+                        {factory.contactInfo?.email && (
+                          <div className="contact-item">
+                            <span className="contact-icon">📧</span>
+                            <a
+                              href={`mailto:${factory.contactInfo.email}`}
+                              className="contact-link"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {factory.contactInfo.email}
+                            </a>
+                          </div>
+                        )}
+                        {factory.contactInfo?.phone && (
+                          <div className="contact-item">
+                            <span className="contact-icon">📱</span>
+                            <a
+                              href={`tel:${factory.contactInfo.phone}`}
+                              className="contact-link"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {factory.contactInfo.phone}
+                            </a>
+                          </div>
+                        )}
+                        {factory.contactInfo?.website && (
+                          <div className="contact-item">
+                            <span className="contact-icon">🌐</span>
+                            <a
+                              href={factory.contactInfo.website.startsWith('http') ? factory.contactInfo.website : `https://${factory.contactInfo.website}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="contact-link"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Visit Website
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="card-footer">
+                    <div className="action-buttons">
+                      <button
+                        className="contact-btn primary"
+                        onClick={(e) => handleInitiatePartnership(e, factory)}
+                      >
+                        🤝 Initiate Partnership
+                      </button>
+                      <button
+                        className="contact-btn secondary"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleFactoryClick(factory._id || factory.id);
+                        }}
+                      >
+                        📋 View Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Invitation Modal */}
+      {showInviteModal && selectedFactory && (
+        <div className="modal-overlay" onClick={closeInviteModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>📨 Send Invitation to {selectedFactory.name}</h2>
+              <button className="modal-close" onClick={closeInviteModal}>×</button>
+            </div>
+
+            <div className="modal-body">
+              {invitationSuccess ? (
+                <div className={`alert ${invitationSuccess.type === 'success' ? 'alert-success' : 'alert-error'}`}>
+                  {invitationSuccess.message}
+                </div>
+              ) : (
+                <>
+                  <div className="factory-preview">
+                    <div className="factory-preview-avatar">🏭</div>
+                    <div className="factory-preview-info">
+                      <h3>{selectedFactory.name}</h3>
+                      <p>📍 {selectedFactory.location || 'Location not specified'}</p>
+                      <p>📧 {selectedFactory.email}</p>
+                    </div>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="invitation-message">Message (Optional)</label>
+                    <textarea
+                      id="invitation-message"
+                      value={invitationMessage}
+                      onChange={(e) => setInvitationMessage(e.target.value)}
+                      placeholder="Add a personal message to your invitation..."
+                      rows="4"
+                      className="invitation-textarea"
+                    />
+                    <small className="form-hint">
+                      Explain why you'd like to partner with this Factory
+                    </small>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {!invitationSuccess && (
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={closeInviteModal}
+                  disabled={sendingInvitation}
+                >
+                  CANCEL
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleSendInvitation}
+                  disabled={sendingInvitation}
+                >
+                  {sendingInvitation ? 'Sending...' : '📨 SEND INVITATION'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        .factory-directory-page {
+          padding: 2rem;
+          max-width: 1400px;
+          margin: 0 auto;
+          background: #f8f9fa;
+          min-height: 100vh;
+        }
+
+        .page-header {
+          text-align: center;
+          margin-bottom: 2rem;
+          background: white;
+          color: #2c5f2d;
+          padding: 2rem;
+          border-radius: 12px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-header h1 {
+          margin: 0 0 0.5rem 0;
+          font-size: 2.5rem;
+          font-weight: 600;
+          color: #2c5f2d;
+        }
+
+        .page-subtitle {
+          margin: 0;
+          font-size: 1.1rem;
+          color: #666;
+        }
+
+        .filter-section {
+          background: white;
+          padding: 1.5rem;
+          border-radius: 12px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          margin-bottom: 2rem;
+        }
+
+        .search-controls {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .search-input-group {
+          position: relative;
+          flex: 1;
+        }
+
+        .search-icon {
+          position: absolute;
+          left: 1rem;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 1.2rem;
+          color: #666;
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 1rem 1rem 1rem 3rem;
+          border: 2px solid #e1e5e9;
+          border-radius: 8px;
+          font-size: 1rem;
+          transition: all 0.2s;
+          box-sizing: border-box;
+        }
+
+        .search-input:focus {
+          outline: none;
+          border-color: #2c5f2d;
+          box-shadow: 0 0 0 3px rgba(44, 95, 45, 0.1);
+        }
+
+        .filter-controls {
+          display: flex;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+
+        .filter-select, .sort-select {
+          padding: 0.75rem;
+          border: 2px solid #e1e5e9;
+          border-radius: 8px;
+          background: white;
+          font-size: 0.9rem;
+          min-width: 150px;
+          transition: border-color 0.2s;
+        }
+
+        .filter-select:focus, .sort-select:focus {
+          outline: none;
+          border-color: #2c5f2d;
+        }
+
+        .clear-filters-btn {
+          padding: 0.75rem 1.5rem;
+          background-color: #ff6b6b;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 0.9rem;
+        }
+
+        .results-info {
+          margin-top: 1rem;
+          padding-top: 1rem;
+          border-top: 1px solid #e1e5e9;
+        }
+
+        .results-count {
+          color: #2c5f2d;
+          font-weight: 500;
+        }
+
+        .content-section {
+          margin-top: 2rem;
+        }
+
+        .loading-container, .error-container, .empty-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 4rem 2rem;
+          text-align: center;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .loading-spinner {
+          width: 40px;
+          height: 40px;
+          border: 4px solid #e0e0e0;
+          border-top: 4px solid #2c5f2d;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        .error-icon, .empty-icon {
+          font-size: 3rem;
+          margin-bottom: 1rem;
+        }
+
+        .error-message {
+          color: #666;
+          margin-bottom: 1.5rem;
+        }
+
+        .retry-button {
+          padding: 0.75rem 1.5rem;
+          background: #4a7c59;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 1rem;
+        }
+
+        .factory-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+          gap: 2rem;
+        }
+
+        .factory-card-link {
+          display: block;
+          text-decoration: none;
+          color: inherit;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .factory-card-link:hover {
+          transform: translateY(-5px);
+        }
+
+        .factory-card-link:hover .factory-card {
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .factory-card {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+          border: 1px solid #e1e5e9;
+          transition: box-shadow 0.3s ease;
+        }
+
+        .card-header {
+          display: flex;
+          align-items: flex-start;
+          gap: 1rem;
+          padding: 1.5rem;
+          background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
+          border-bottom: 1px solid #e1e5e9;
+        }
+
+        .factory-avatar {
+          background: linear-gradient(135deg, #2c5f2d, #4a7c59);
+          color: white;
+          width: 50px;
+          height: 50px;
+          border-radius: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          flex-shrink: 0;
+        }
+
+        .factory-basic-info {
+          flex: 1;
+        }
+
+        .factory-name {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: #2c3e50;
+        }
+
+        .factory-location {
+          margin: 0;
+          color: #666;
+          font-size: 0.9rem;
+        }
+
+        .capacity-badge {
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          color: white;
+          font-size: 0.8rem;
+          font-weight: 500;
+          white-space: nowrap;
+        }
+
+        .card-body {
+          padding: 1.5rem;
+        }
+
+        .factory-stats {
+          margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid #f0f2f5;
+        }
+
+        .stat-item:last-child {
+          border-bottom: none;
+        }
+
+        .stat-label {
+          color: #666;
+          font-size: 0.9rem;
+        }
+
+        .stat-value {
+          font-weight: 500;
+          color: #2c3e50;
+        }
+
+        .factory-description {
+          margin-bottom: 1.5rem;
+          padding: 1rem;
+          background: #f8f9ff;
+          border-left: 4px solid #667eea;
+          border-radius: 0 8px 8px 0;
+        }
+
+        .factory-description p {
+          margin: 0;
+          color: #555;
+          line-height: 1.5;
+        }
+
+        .partnership-opportunities {
+          margin-bottom: 1.5rem;
+        }
+
+        .partnership-opportunities h4 {
+          margin: 0 0 1rem 0;
+          color: #2c3e50;
+          font-size: 1rem;
+        }
+
+        .opportunity-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+
+        .opportunity-tag {
+          background: linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%);
+          color: white;
+          padding: 0.4rem 0.8rem;
+          border-radius: 15px;
+          font-size: 0.8rem;
+          font-weight: 500;
+        }
+
+        .contact-info h4 {
+          margin: 0 0 1rem 0;
+          color: #2c3e50;
+          font-size: 1rem;
+        }
+
+        .contact-details {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .contact-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .contact-icon {
+          font-size: 1rem;
+        }
+
+        .contact-link {
+          color: #4a7c59;
+          text-decoration: none;
+          font-size: 0.9rem;
+        }
+
+        .card-footer {
+          padding: 1rem 1.5rem;
+          background: #f0f8f0;
+          border-top: 1px solid #e1e5e9;
+        }
+
+        .action-buttons {
+          display: flex;
+          gap: 1rem;
+        }
+
+        .contact-btn {
+          flex: 1;
+          padding: 0.75rem 1rem;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          font-weight: 500;
+          transition: all 0.2s;
+        }
+
+        .contact-btn.primary {
+          background: linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%);
+          color: white;
+        }
+
+        .contact-btn.secondary {
+          background: white;
+          color: #4a7c59;
+          border: 2px solid #4a7c59;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.6);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+          animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .modal-content {
+          background: white;
+          border-radius: 16px;
+          width: 90%;
+          max-width: 550px;
+          max-height: 90vh;
+          overflow-y: auto;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+          from {
+            transform: translateY(50px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+
+        .modal-header {
+          padding: 1.5rem 2rem;
+          border-bottom: 2px solid #f0f0f0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h2 {
+          margin: 0;
+          color: #2c5f2d;
+          font-size: 1.5rem;
+          font-weight: 700;
+        }
+
+        .modal-close {
+          background: none;
+          border: none;
+          font-size: 2rem;
+          color: #666;
+          cursor: pointer;
+          padding: 0;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+          background: rgba(0, 0, 0, 0.1);
+          color: #333;
+        }
+
+        .modal-body {
+          padding: 2rem;
+        }
+
+        .factory-preview {
+          display: flex;
+          gap: 1.5rem;
+          padding: 1.5rem;
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          border-radius: 12px;
+          margin-bottom: 1.5rem;
+          border-left: 4px solid #4a7c59;
+        }
+
+        .factory-preview-avatar {
+          font-size: 3rem;
+          width: 80px;
+          height: 80px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .factory-preview-info {
+          flex: 1;
+        }
+
+        .factory-preview-info h3 {
+          margin: 0 0 0.5rem 0;
+          color: #2c5f2d;
+          font-size: 1.3rem;
+          font-weight: 700;
+        }
+
+        .factory-preview-info p {
+          margin: 0.25rem 0;
+          color: #555;
+          font-size: 0.95rem;
+        }
+
+        .form-group {
+          margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          color: #333;
+          font-weight: 600;
+          font-size: 1rem;
+        }
+
+        .invitation-textarea {
+          width: 100%;
+          padding: 1rem;
+          border: 2px solid #e0e0e0;
+          border-radius: 10px;
+          font-size: 1rem;
+          font-family: inherit;
+          resize: vertical;
+          transition: border-color 0.3s;
+        }
+
+        .invitation-textarea:focus {
+          outline: none;
+          border-color: #4a7c59;
+          box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+        }
+
+        .form-hint {
+          display: block;
+          margin-top: 0.5rem;
+          color: #666;
+          font-size: 0.85rem;
+          font-style: italic;
+        }
+
+        .alert {
+          padding: 1.25rem;
+          border-radius: 10px;
+          margin-bottom: 1rem;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .alert-success {
+          background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+          color: #155724;
+          border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+          background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+          color: #721c24;
+          border-left: 4px solid #dc3545;
+        }
+
+        .modal-footer {
+          padding: 1.5rem 2rem;
+          border-top: 2px solid #f0f0f0;
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+          background: #f8f9fa;
+          border-radius: 0 0 16px 16px;
+        }
+
+        .btn {
+          padding: 0.85rem 2rem;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .btn-primary {
+          background: linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%);
+          color: white;
+          box-shadow: 0 4px 12px rgba(44, 95, 45, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(44, 95, 45, 0.4);
+        }
+
+        .btn-secondary {
+          background: white;
+          color: #666;
+          border: 2px solid #ddd;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+          background: #f8f9fa;
+          border-color: #999;
+        }
+
+        @media (max-width: 768px) {
+          .factory-directory-page {
+            padding: 1rem;
+          }
+
+          .page-header h1 {
+            font-size: 2rem;
+          }
+
+          .filter-controls {
+            flex-direction: column;
+          }
+
+          .filter-select, .sort-select {
+            min-width: auto;
+          }
+
+          .factory-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .action-buttons {
+            flex-direction: column;
+          }
+
+          .modal-content {
+            width: 95%;
+            max-height: 95vh;
+          }
+
+          .modal-header, .modal-body, .modal-footer {
+            padding: 1.25rem;
+          }
+
+          .factory-preview {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+          }
+
+          .modal-footer {
+            flex-direction: column;
+          }
+
+          .btn {
+            width: 100%;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default HHMFactoryDirectoryPage;

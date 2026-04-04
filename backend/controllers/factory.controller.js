@@ -3,10 +3,7 @@ const Schedule=require('../models/schedule.model');
 const Application=require('../models/application.model');
 const User=require('../models/user.model');
 const Invitation=require('../models/invitation.model');
-<<<<<<< HEAD
 const mongoose=require('mongoose');
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
 /**
  * @desc    Create a new bill record for a farmer
@@ -15,7 +12,7 @@ const mongoose=require('mongoose');
  */
 const createBill=async (req, res)=> {
   try {
-    console.log('💰 createBill called by factory:', req.user?._id);
+    console.log(' createBill called by factory:', req.user?._id);
 
     const {
       farmerId,
@@ -70,7 +67,7 @@ const createBill=async (req, res)=> {
     // Populate the farmer details
     await bill.populate('farmerId', 'name email phone');
 
-    console.log('✅ Bill created successfully:', bill._id);
+    console.log(' Bill created successfully:', bill._id);
 
     res.status(201).json( {
         success: true,
@@ -83,7 +80,7 @@ const createBill=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error creating bill:', error);
+    console.error(' Error creating bill:', error);
 
     res.status(500).json( {
         success: false,
@@ -104,7 +101,7 @@ const createBill=async (req, res)=> {
  */
 const getBills=async (req, res)=> {
   try {
-    console.log('📋 getBills called by factory:', req.user?._id);
+    console.log(' getBills called by factory:', req.user?._id);
 
     const {
       status,
@@ -139,7 +136,7 @@ const getBills=async (req, res)=> {
     const totalBills=await Bill.countDocuments(query);
     const totalPages=Math.ceil(totalBills / parseInt(limit));
 
-    console.log(`✅ Retrieved $ {
+    console.log(` Retrieved $ {
         bills.length
       }
 
@@ -163,7 +160,7 @@ const getBills=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error fetching bills:', error);
+    console.error(' Error fetching bills:', error);
 
     res.status(500).json( {
         success: false,
@@ -184,7 +181,7 @@ const getBills=async (req, res)=> {
  */
 const createMaintenanceJob=async (req, res)=> {
   try {
-    console.log('🔧 createMaintenanceJob called by factory:', req.user?._id);
+    console.log(' createMaintenanceJob called by factory:', req.user?._id);
 
     const {
       requiredSkills,
@@ -226,7 +223,7 @@ const createMaintenanceJob=async (req, res)=> {
 
     );
 
-    console.log('✅ Maintenance job created successfully:', maintenanceJob._id);
+    console.log(' Maintenance job created successfully:', maintenanceJob._id);
 
     res.status(201).json( {
         success: true,
@@ -239,7 +236,7 @@ const createMaintenanceJob=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error creating maintenance job:', error);
+    console.error(' Error creating maintenance job:', error);
 
     res.status(500).json( {
         success: false,
@@ -260,7 +257,7 @@ const createMaintenanceJob=async (req, res)=> {
  */
 const getMaintenanceApplications=async (req, res)=> {
   try {
-    console.log('📋 getMaintenanceApplications called by factory:', req.user?._id);
+    console.log(' getMaintenanceApplications called by factory:', req.user?._id);
 
     const {
       status,
@@ -324,7 +321,7 @@ const getMaintenanceApplications=async (req, res)=> {
     const totalApplications=await Application.countDocuments(query);
     const totalPages=Math.ceil(totalApplications / parseInt(limit));
 
-    console.log(`✅ Retrieved $ {
+    console.log(` Retrieved $ {
         applications.length
       }
 
@@ -348,7 +345,7 @@ const getMaintenanceApplications=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error fetching maintenance applications:', error);
+    console.error(' Error fetching maintenance applications:', error);
 
     res.status(500).json( {
         success: false,
@@ -369,7 +366,7 @@ const getMaintenanceApplications=async (req, res)=> {
  */
 const updateMaintenanceApplication=async (req, res)=> {
   try {
-    console.log('🔄 updateMaintenanceApplication called by factory:', req.user?._id);
+    console.log(' updateMaintenanceApplication called by factory:', req.user?._id);
 
     const {
       id
@@ -451,7 +448,7 @@ const updateMaintenanceApplication=async (req, res)=> {
     // Populate the worker details for response
     await application.populate('workerId', 'name email phone');
 
-    console.log(`✅ Application $ {
+    console.log(` Application $ {
         status
       }
 
@@ -473,7 +470,7 @@ const updateMaintenanceApplication=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error updating maintenance application:', error);
+    console.error(' Error updating maintenance application:', error);
 
     res.status(500).json( {
         success: false,
@@ -494,7 +491,7 @@ const updateMaintenanceApplication=async (req, res)=> {
  */
 const getProfile=async (req, res)=> {
   try {
-    console.log('👤 getProfile called for factory user:', req.user?._id);
+    console.log(' getProfile called for factory user:', req.user?._id);
 
     // The user is already attached to req.user by the protect middleware
     const factory=req.user;
@@ -508,15 +505,14 @@ const getProfile=async (req, res)=> {
       );
     }
 
-<<<<<<< HEAD
     // Convert mongoose document to plain object with all virtuals and getters
     const factoryData = factory.toObject ? factory.toObject({ getters: true, virtuals: true }) : factory;
 
     // Extract crushingStatus with explicit fallback
     const crushingStatus = factory.crushingStatus || factoryData.crushingStatus || 'OFF';
     
-    console.log('🔍 Crushing status extracted:', crushingStatus);
-    console.log('🔍 Factory data keys:', Object.keys(factoryData));
+    console.log(' Crushing status extracted:', crushingStatus);
+    console.log(' Factory data keys:', Object.keys(factoryData));
 
     // Format profile data specific to factory users
     const profileData = {
@@ -540,54 +536,13 @@ const getProfile=async (req, res)=> {
       updatedAt: factoryData.updatedAt
     };
 
-    console.log('🔍 Profile data crushingStatus:', profileData.crushingStatus);
+    console.log(' Profile data crushingStatus:', profileData.crushingStatus);
 
     res.status(200).json({
       success: true,
       message: 'Factory profile retrieved successfully',
       profile: profileData
     });
-=======
-    // Debug: Log the full user object
-    console.log('🔍 Full user object:', JSON.stringify(factory, null, 2));
-    console.log('🏭 Factory name from user:', factory.factoryName);
-
-    // Format profile data specific to factory users
-    const profileData= {
-
-      _id: factory._id,
-      name: factory.name,
-      username: factory.username,
-      email: factory.email,
-      phone: factory.phone,
-      role: factory.role,
-      factoryName: factory.factoryName,
-      factoryLocation: factory.factoryLocation,
-      factoryDescription: factory.factoryDescription,
-      capacity: factory.capacity,
-      experience: factory.experience,
-      specialization: factory.specialization,
-      contactInfo: factory.contactInfo || {}
-
-      ,
-      operatingHours: factory.operatingHours || {}
-
-      ,
-      isActive: factory.isActive,
-      createdAt: factory.createdAt,
-      updatedAt: factory.updatedAt
-    }
-
-    ;
-
-    res.status(200).json( {
-        success: true,
-        message: 'Factory profile retrieved successfully',
-        profile: profileData
-      }
-
-    );
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
   }
 
@@ -613,7 +568,7 @@ const getProfile=async (req, res)=> {
  */
 const updateProfile=async (req, res)=> {
   try {
-    console.log('🔄 updateProfile called for factory user:', req.user?._id);
+    console.log(' updateProfile called for factory user:', req.user?._id);
 
     const factoryId=req.user._id;
     const updateData=req.body;
@@ -675,7 +630,7 @@ const updateProfile=async (req, res)=> {
  */
 const getHHMs=async (req, res)=> {
   try {
-    console.log('📋 Getting HHMs directory for factory:', req.user._id);
+    console.log(' Getting HHMs directory for factory:', req.user._id);
 
     // Find all active users with HHM role
     const hhms = await User.find({
@@ -685,7 +640,7 @@ const getHHMs=async (req, res)=> {
         name: 1
     });
 
-    console.log(`✅ Found $ {
+    console.log(` Found $ {
         hhms.length
       }
 
@@ -724,7 +679,7 @@ const getHHMs=async (req, res)=> {
  */
 const getHHMById=async (req, res)=> {
   try {
-    console.log('👤 Factory requesting HHM profile:', req.params.id);
+    console.log(' Factory requesting HHM profile:', req.params.id);
 
     const {
       id
@@ -750,7 +705,7 @@ const getHHMById=async (req, res)=> {
       );
     }
 
-    console.log('✅ HHM profile retrieved:', hhm.name);
+    console.log(' HHM profile retrieved:', hhm.name);
 
     res.status(200).json( {
         success: true,
@@ -784,7 +739,7 @@ const getHHMById=async (req, res)=> {
  */
 const inviteHHM=async (req, res)=> {
   try {
-    console.log('📨 Factory inviting HHM:', req.user._id);
+    console.log(' Factory inviting HHM:', req.user._id);
 
     const {
       hhmId,
@@ -892,7 +847,7 @@ const inviteHHM=async (req, res)=> {
     // Populate the created invitation with full details
     const populatedInvitation=await Invitation.findById(invitation._id).populate('hhmId', 'name email phone experience specialization').populate('factoryId', 'name email phone factoryName factoryLocation');
 
-    console.log('✅ Factory invitation created successfully:', invitation._id);
+    console.log(' Factory invitation created successfully:', invitation._id);
 
     res.status(201).json( {
         success: true,
@@ -905,7 +860,7 @@ const inviteHHM=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error creating factory invitation:', error);
+    console.error(' Error creating factory invitation:', error);
 
     // Handle duplicate key error from database constraints
     if (error.code === 11000) {
@@ -954,7 +909,7 @@ const inviteHHM=async (req, res)=> {
  */
 const inviteMultipleHHMs=async (req, res)=> {
   try {
-    console.log('📨 Factory sending bulk invitations:', req.user._id);
+    console.log(' Factory sending bulk invitations:', req.user._id);
 
     const {
       hhmIds,
@@ -1073,7 +1028,7 @@ const inviteMultipleHHMs=async (req, res)=> {
       }
 
       catch (error) {
-        console.error(`❌ Error inviting HHM $ {
+        console.error(` Error inviting HHM $ {
             hhmId
           }
 
@@ -1088,7 +1043,7 @@ const inviteMultipleHHMs=async (req, res)=> {
       }
     }
 
-    console.log(`✅ Bulk invitation complete. Success: $ {
+    console.log(` Bulk invitation complete. Success: $ {
         results.successful.length
       }
 
@@ -1118,7 +1073,7 @@ const inviteMultipleHHMs=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error in bulk invitation:', error);
+    console.error(' Error in bulk invitation:', error);
 
     res.status(500).json( {
         success: false,
@@ -1139,7 +1094,7 @@ const inviteMultipleHHMs=async (req, res)=> {
  */
 const getMyInvitations=async (req, res)=> {
   try {
-    console.log('📋 Getting factory invitations:', req.user._id);
+    console.log(' Getting factory invitations:', req.user._id);
 
     const {
       status,
@@ -1209,7 +1164,7 @@ const getMyInvitations=async (req, res)=> {
 
     );
 
-    console.log(`✅ Found $ {
+    console.log(` Found $ {
         invitations.length
       }
 
@@ -1235,7 +1190,7 @@ const getMyInvitations=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error getting invitations:', error);
+    console.error(' Error getting invitations:', error);
 
     res.status(500).json( {
         success: false,
@@ -1256,7 +1211,7 @@ const getMyInvitations=async (req, res)=> {
  */
 const cancelInvitation=async (req, res)=> {
   try {
-    console.log('🗑️ Processing invitation deletion:', req.params.id);
+    console.log(' Processing invitation deletion:', req.params.id);
 
     const invitation=await Invitation.findOne( {
         _id: req.params.id,
@@ -1280,10 +1235,10 @@ const cancelInvitation=async (req, res)=> {
     let message;
     if (invitation.status === 'pending') {
       message = 'Invitation cancelled successfully';
-      console.log('✅ Pending invitation cancelled successfully');
+      console.log(' Pending invitation cancelled successfully');
     } else {
       message = `${invitation.status.charAt(0).toUpperCase() + invitation.status.slice(1)} invitation removed successfully`;
-      console.log(`✅ ${invitation.status} invitation removed successfully`);
+      console.log(` ${invitation.status} invitation removed successfully`);
     }
 
     res.status(200).json( {
@@ -1296,7 +1251,7 @@ const cancelInvitation=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error cancelling invitation:', error);
+    console.error(' Error cancelling invitation:', error);
 
     res.status(500).json( {
         success: false,
@@ -1317,7 +1272,7 @@ const cancelInvitation=async (req, res)=> {
  */
 const removeAssociatedHHM=async (req, res)=> {
   try {
-    console.log('🔓 Removing HHM association:', req.params.hhmId);
+    console.log(' Removing HHM association:', req.params.hhmId);
 
     const factory=await User.findById(req.user._id);
 
@@ -1352,7 +1307,7 @@ const removeAssociatedHHM=async (req, res)=> {
       await hhm.save();
     }
 
-    console.log('✅ HHM association removed successfully');
+    console.log(' HHM association removed successfully');
 
     res.status(200).json( {
         success: true,
@@ -1364,7 +1319,7 @@ const removeAssociatedHHM=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error removing HHM association:', error);
+    console.error(' Error removing HHM association:', error);
 
     res.status(500).json( {
         success: false,
@@ -1385,7 +1340,7 @@ const removeAssociatedHHM=async (req, res)=> {
  */
 const getAssociatedHHMs=async (req, res)=> {
   try {
-    console.log('📋 Getting associated HHMs for factory:', req.user._id);
+    console.log(' Getting associated HHMs for factory:', req.user._id);
 
     // Get factory user with populated associatedHHMs
     const factory=await User.findById(req.user._id).populate( {
@@ -1404,7 +1359,7 @@ const getAssociatedHHMs=async (req, res)=> {
       );
     }
 
-    console.log(`✅ Found $ {
+    console.log(` Found $ {
         factory.associatedHHMs.length
       }
 
@@ -1442,7 +1397,7 @@ const getAssociatedHHMs=async (req, res)=> {
  */
 const getReceivedInvitations=async (req, res)=> {
   try {
-    console.log('📨 Getting factory received invitations:', req.user._id);
+    console.log(' Getting factory received invitations:', req.user._id);
 
     const {
       status,
@@ -1477,7 +1432,7 @@ const getReceivedInvitations=async (req, res)=> {
     // Get total count for pagination
     const totalInvitations=await Invitation.countDocuments(query);
 
-    console.log(`✅ Found $ {
+    console.log(` Found $ {
         invitations.length
       }
 
@@ -1497,7 +1452,7 @@ const getReceivedInvitations=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error fetching received invitations:', error);
+    console.error(' Error fetching received invitations:', error);
 
     res.status(500).json( {
         success: false,
@@ -1518,7 +1473,7 @@ const getReceivedInvitations=async (req, res)=> {
  */
 const respondToHHMInvitation=async (req, res)=> {
   try {
-    console.log('📝 Factory responding to HHM invitation:', req.params.id);
+    console.log(' Factory responding to HHM invitation:', req.params.id);
 
     const {
       status,
@@ -1570,7 +1525,6 @@ const respondToHHMInvitation=async (req, res)=> {
       );
     }
 
-<<<<<<< HEAD
     // Check if invitation has expired
     if (invitation.expiresAt && new Date(invitation.expiresAt) < new Date()) {
       return res.status(400).json({
@@ -1579,8 +1533,6 @@ const respondToHHMInvitation=async (req, res)=> {
       });
     }
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     // Update invitation status
     invitation.status=status;
     invitation.responseMessage=responseMessage || '';
@@ -1589,13 +1541,12 @@ const respondToHHMInvitation=async (req, res)=> {
 
     // If accepted, add HHM to factory's associated HHMs
     if (status==='accepted') {
-<<<<<<< HEAD
       try {
         const factory=await User.findById(req.user._id);
         const hhm=await User.findById(invitation.hhmId);
 
         if (!factory) {
-          console.warn('⚠️  Factory user not found');
+          console.warn('  Factory user not found');
         } else {
           // Add to factory's associated HHMs
           if ( !factory.associatedHHMs) {
@@ -1605,14 +1556,14 @@ const respondToHHMInvitation=async (req, res)=> {
           if ( !factory.associatedHHMs.includes(invitation.hhmId)) {
             factory.associatedHHMs.push(invitation.hhmId);
             await factory.save();
-            console.log('✅ Added HHM to factory\'s associated HHMs');
+            console.log(' Added HHM to factory\'s associated HHMs');
           } else {
-            console.log('ℹ️  HHM already associated with factory');
+            console.log('  HHM already associated with factory');
           }
         }
 
         if (!hhm) {
-          console.warn('⚠️  HHM user not found');
+          console.warn('  HHM user not found');
         } else {
           // Add to HHM's associated factories
           if ( !hhm.associatedFactories) {
@@ -1622,50 +1573,24 @@ const respondToHHMInvitation=async (req, res)=> {
           if ( !hhm.associatedFactories.includes(req.user._id)) {
             hhm.associatedFactories.push(req.user._id);
             await hhm.save();
-            console.log('✅ Added factory to HHM\'s associated factories');
+            console.log(' Added factory to HHM\'s associated factories');
           } else {
-            console.log('ℹ️  Factory already associated with HHM');
+            console.log('  Factory already associated with HHM');
           }
         }
 
-        console.log('✅ Partnership established between Factory and HHM');
+        console.log(' Partnership established between Factory and HHM');
       } catch (associationError) {
         // Log the error but don't fail the invitation acceptance
-        console.warn('⚠️  Association creation warning:', associationError.message);
+        console.warn('  Association creation warning:', associationError.message);
         // Continue with the invitation acceptance even if association fails
       }
-=======
-      const factory=await User.findById(req.user._id);
-      const hhm=await User.findById(invitation.hhmId);
-
-      // Add to factory's associated HHMs
-      if ( !factory.associatedHHMs) {
-        factory.associatedHHMs=[];
-      }
-
-      if ( !factory.associatedHHMs.includes(invitation.hhmId)) {
-        factory.associatedHHMs.push(invitation.hhmId);
-        await factory.save();
-      }
-
-      // Add to HHM's associated factories
-      if ( !hhm.associatedFactories) {
-        hhm.associatedFactories=[];
-      }
-
-      if ( !hhm.associatedFactories.includes(req.user._id)) {
-        hhm.associatedFactories.push(req.user._id);
-        await hhm.save();
-      }
-
-      console.log('✅ Partnership established between Factory and HHM');
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     }
 
     // Populate the updated invitation
     const populatedInvitation=await Invitation.findById(invitation._id).populate('hhmId', 'name email phone experience specialization');
 
-    console.log(`✅ Invitation $ {
+    console.log(` Invitation $ {
         status
       }
 
@@ -1687,7 +1612,7 @@ const respondToHHMInvitation=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error responding to invitation:', error);
+    console.error(' Error responding to invitation:', error);
 
     res.status(500).json( {
         success: false,
@@ -1708,15 +1633,14 @@ const respondToHHMInvitation=async (req, res)=> {
  */
 const getDashboardStats=async (req, res)=> {
   try {
-    console.log('📊 getDashboardStats called by factory:', req.user?._id);
+    console.log(' getDashboardStats called by factory:', req.user?._id);
 
     const factoryId=req.user._id;
 
-<<<<<<< HEAD
     // Get count of associated HHMs from User model
     const factory = await User.findById(factoryId).populate('associatedHHMs');
     const activeHHMsCount = factory?.associatedHHMs?.length || 0;
-    console.log('👥 Active HHMs found:', activeHHMsCount);
+    console.log(' Active HHMs found:', activeHHMsCount);
 
     // TODO: Add proper factory revenue calculation (from sugar sales, not sugarcane purchases)
     const totalRevenue = 0; // Will implement proper revenue tracking later
@@ -1725,77 +1649,21 @@ const getDashboardStats=async (req, res)=> {
     const productionVolume = 0; // Will implement production tracking later
     const totalOrders = 0; // Will implement order tracking later
 
-    console.log('📊 Dashboard Stats:', {
+    console.log(' Dashboard Stats:', {
       activeHHMs: activeHHMsCount,
       totalRevenue: totalRevenue,
       productionVolume: productionVolume,
       totalOrders: totalOrders
     });
-=======
-    // Get count of associated/accepted HHMs
-    const activeHHMsCount=await Invitation.countDocuments( {
-        invitationType: 'factory-to-hhm',
-        factoryId: factoryId,
-        status: 'accepted'
-      }
-
-    );
-
-    // Get count of pending bills (unpaid)
-    const pendingBillsCount=await Bill.countDocuments( {
-        factoryId: factoryId,
-        status: 'unpaid'
-      }
-
-    );
-
-    // Calculate total revenue from all paid bills
-    const revenueResult=await Bill.aggregate([ {
-        $match: {
-          factoryId: factoryId,
-          status: 'paid'
-        }
-      }
-
-      ,
-        {
-        $group: {
-
-          _id: null,
-          totalRevenue: {
-            $sum: '$totalAmount'
-          }
-        }
-      }
-
-      ]);
-
-    const totalRevenue=revenueResult.length>0 ? revenueResult[0].totalRevenue : 0;
-
-    // Get count of active maintenance jobs
-    const activeJobsCount=await Schedule.countDocuments( {
-        factoryId: factoryId,
-        jobType: 'maintenance',
-        status: 'active'
-      }
-
-    );
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 
     res.status(200).json( {
 
         success: true,
         data: {
           activeHHMs: activeHHMsCount,
-<<<<<<< HEAD
           totalRevenue: totalRevenue,
           productionVolume: productionVolume,
           totalOrders: totalOrders
-=======
-          pendingBills: pendingBillsCount,
-          totalRevenue: totalRevenue,
-          activeJobs: activeJobsCount
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
         }
       }
 
@@ -1804,7 +1672,7 @@ const getDashboardStats=async (req, res)=> {
   }
 
   catch (error) {
-    console.error('❌ Error getting dashboard stats:', error);
+    console.error(' Error getting dashboard stats:', error);
 
     res.status(500).json( {
         success: false,
@@ -1818,7 +1686,6 @@ const getDashboardStats=async (req, res)=> {
 
 ;
 
-<<<<<<< HEAD
 /**
  * @desc    Clear single notification (invitation) from database
  * @route   DELETE /api/factory/notifications/:id
@@ -1826,7 +1693,7 @@ const getDashboardStats=async (req, res)=> {
  */
 const clearSingleNotification = async (req, res) => {
   try {
-    console.log('🗑️ Clearing single notification:', req.params.id);
+    console.log(' Clearing single notification:', req.params.id);
 
     const invitationId = req.params.id;
 
@@ -1844,7 +1711,7 @@ const clearSingleNotification = async (req, res) => {
       });
     }
 
-    console.log(`✅ Notification cleared: ${invitation.hhmId} -> ${req.user._id}`);
+    console.log(` Notification cleared: ${invitation.hhmId} -> ${req.user._id}`);
 
     res.status(200).json({
       success: true,
@@ -1856,7 +1723,7 @@ const clearSingleNotification = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error clearing notification:', error);
+    console.error(' Error clearing notification:', error);
     res.status(500).json({
       success: false,
       message: 'Error clearing notification',
@@ -1872,7 +1739,7 @@ const clearSingleNotification = async (req, res) => {
  */
 const clearAllNotifications = async (req, res) => {
   try {
-    console.log('🗑️ Clearing all notifications for factory:', req.user._id);
+    console.log(' Clearing all notifications for factory:', req.user._id);
 
     const { status } = req.query;
 
@@ -1904,7 +1771,7 @@ const clearAllNotifications = async (req, res) => {
     // Delete all matching invitations
     const result = await Invitation.deleteMany(query);
 
-    console.log(`✅ Cleared ${result.deletedCount} notifications for factory ${req.user._id}`);
+    console.log(` Cleared ${result.deletedCount} notifications for factory ${req.user._id}`);
 
     res.status(200).json({
       success: true,
@@ -1917,7 +1784,7 @@ const clearAllNotifications = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error clearing all notifications:', error);
+    console.error(' Error clearing all notifications:', error);
     res.status(500).json({
       success: false,
       message: 'Error clearing notifications',
@@ -1933,7 +1800,7 @@ const clearAllNotifications = async (req, res) => {
  */
 const getCrushingStatus = async (req, res) => {
   try {
-    console.log('🏭 getCrushingStatus called for factory user:', req.user?._id);
+    console.log(' getCrushingStatus called for factory user:', req.user?._id);
 
     const factoryId = req.user._id;
 
@@ -1972,7 +1839,7 @@ const getCrushingStatus = async (req, res) => {
  */
 const updateCrushingStatus = async (req, res) => {
   try {
-    console.log('🔄 updateCrushingStatus called for factory user:', req.user?._id);
+    console.log(' updateCrushingStatus called for factory user:', req.user?._id);
 
     const factoryId = req.user._id;
     const { crushingStatus } = req.body;
@@ -2019,8 +1886,6 @@ const updateCrushingStatus = async (req, res) => {
   }
 };
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 module.exports= {
   createBill,
   getBills,
@@ -2039,15 +1904,11 @@ module.exports= {
   getAssociatedHHMs,
   getReceivedInvitations,
   respondToHHMInvitation,
-<<<<<<< HEAD
   getDashboardStats,
   clearSingleNotification,
   clearAllNotifications,
   getCrushingStatus,
   updateCrushingStatus
-=======
-  getDashboardStats
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 }
 
 ;

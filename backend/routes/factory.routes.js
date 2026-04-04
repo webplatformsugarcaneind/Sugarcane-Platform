@@ -23,15 +23,11 @@ const {
   getAssociatedHHMs,
   getReceivedInvitations,
   respondToHHMInvitation,
-<<<<<<< HEAD
   getDashboardStats,
   clearSingleNotification,
   clearAllNotifications,
   getCrushingStatus,
   updateCrushingStatus
-=======
-  getDashboardStats
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 } = require('../controllers/factory.controller');
 
 // Apply protection and authorization to all routes in this file
@@ -207,7 +203,6 @@ router.delete('/invitations/:id', cancelInvitation);
  */
 router.delete('/associated-hhms/:hhmId', removeAssociatedHHM);
 
-<<<<<<< HEAD
 /**
  * @route   DELETE /api/factory/notifications/:id
  * @desc    Clear single notification (invitation) from database
@@ -243,6 +238,4 @@ router.get('/crushing-status', getCrushingStatus);
  */
 router.put('/crushing-status', updateCrushingStatus);
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 module.exports = router;

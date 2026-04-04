@@ -50,7 +50,6 @@
   gap: 0.5rem;
 }
 
-<<<<<<< HEAD
 /* Action Buttons */
 .filter-controls {
   display: flex;
@@ -119,8 +118,6 @@
   background: linear-gradient(135deg, #c0392b, #a93226);
 }
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 .my-listings-toggle {
   background: linear-gradient(135deg, #4caf50, #45a049);
   color: white;
@@ -733,7 +730,6 @@
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
   }
-<<<<<<< HEAD
 }
 
 /* Enhanced Listing Card Styles for Sugarcane Fields */
@@ -998,6 +994,4 @@
     font-size: 0.75rem;
     padding: 0.2rem 0.4rem;
   }
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 }

@@ -13,28 +13,8 @@ connectDB();
 const app = express();
 
 // Middleware
-<<<<<<< HEAD
 app.use(cors({
   origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
-=======
-// CORS Configuration for production and development
-const allowedOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
-  : ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'];
-
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.warn(`⚠️  CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -42,26 +22,20 @@ app.use(cors({
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
-<<<<<<< HEAD
 // Serve static files from uploads directory
 app.use('/uploads', express.static('uploads'));
-console.log('📁 Static files serving from /uploads');
+console.log(' Static files serving from /uploads');
 
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 // Add request logging to debug issues
 app.use((req, res, next) => {
-  console.log(`📥 ${req.method} ${req.path} - ${new Date().toISOString()}`);
+  console.log(` ${req.method} ${req.path} - ${new Date().toISOString()}`);
   next();
 });
 
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/public', require('./routes/public.routes'));
-<<<<<<< HEAD
 app.use('/api/test-raw', require('./routes/test-raw.routes')); // TEST ROUTE
-=======
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
 app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/farmer', require('./routes/farmer.routes'));
 app.use('/api/hhm', require('./routes/hhm.routes'));
@@ -72,13 +46,13 @@ app.use('/api/farmer-contracts', require('./routes/farmerContract.routes'));
 
 // Load analytics routes with debug logging
 try {
-  console.log('🔍 Loading analytics routes...');
+  console.log(' Loading analytics routes...');
   const analyticsRoutes = require('./routes/analytics-stable.routes');
-  console.log('✅ Analytics routes loaded successfully');
+  console.log(' Analytics routes loaded successfully');
   app.use('/api/analytics', analyticsRoutes);
-  console.log('✅ Analytics routes registered at /api/analytics');
+  console.log(' Analytics routes registered at /api/analytics');
 } catch (error) {
-  console.error('❌ Error loading analytics routes:', error);
+  console.error(' Error loading analytics routes:', error);
 }
 
 app.use('/api/orders', require('./routes/orders.routes'));
@@ -90,11 +64,7 @@ app.use('/api/listings', require('./routes/listings.routes'));
 
 // Basic API info route
 app.get('/', (req, res) => {
-<<<<<<< HEAD
   res.json({ 
-=======
-  res.json({
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     message: 'Sugarcane Platform API is running!',
     version: '1.0.0',
     status: 'active',
@@ -116,13 +86,8 @@ app.get('/', (req, res) => {
 
 // Health check route
 app.get('/api/health', (req, res) => {
-<<<<<<< HEAD
   res.json({ 
     status: 'OK', 
-=======
-  res.json({
-    status: 'OK',
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     timestamp: new Date().toISOString(),
     database: 'Connected',
     uptime: process.uptime(),
@@ -132,18 +97,11 @@ app.get('/api/health', (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('❌ Error occurred:', err.stack);
-<<<<<<< HEAD
+  console.error(' Error occurred:', err.stack);
   
   // Prevent server crash by always sending a response
   if (!res.headersSent) {
     res.status(500).json({ 
-=======
-
-  // Prevent server crash by always sending a response
-  if (!res.headersSent) {
-    res.status(500).json({
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
       success: false,
       message: 'Internal server error',
       error: process.env.NODE_ENV === 'production' ? 'Something went wrong!' : err.message,
@@ -154,22 +112,18 @@ app.use((err, req, res, next) => {
 
 // Add process error handlers to prevent crashes
 process.on('uncaughtException', (err) => {
-  console.error('❌ Uncaught Exception:', err);
+  console.error(' Uncaught Exception:', err);
   // Don't exit, just log the error
 });
 
 process.on('unhandledRejection', (err) => {
-  console.error('❌ Unhandled Promise Rejection:', err);
+  console.error(' Unhandled Promise Rejection:', err);
   // Don't exit, just log the error
 });
 
 // 404 handler - catch all unmatched routes
 app.use((req, res) => {
-<<<<<<< HEAD
   res.status(404).json({ 
-=======
-  res.status(404).json({
->>>>>>> f33822103c24c8f86614c293836c5bd8a4d347a3
     success: false,
     message: 'Route not found',
     path: req.originalUrl,
@@ -193,18 +147,18 @@ app.use((req, res) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-  console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📊 API Base URL: http://localhost:${PORT}`);
-  console.log(`🔐 Auth Endpoints: http://localhost:${PORT}/api/auth`);
-  console.log(`🌍 Public Endpoints: http://localhost:${PORT}/api/public`);
-  console.log(`🌾 Farmer Endpoints: http://localhost:${PORT}/api/farmer`);
-  console.log(`👨‍💼 HHM Endpoints: http://localhost:${PORT}/api/hhm`);
-  console.log(`👷 Worker Endpoints: http://localhost:${PORT}/api/worker`);
-  console.log(`🏭 Factory Endpoints: http://localhost:${PORT}/api/factory`);
-  console.log(`📋 Contract Endpoints: http://localhost:${PORT}/api/contracts`);
-  console.log(`📊 Analytics Endpoints: http://localhost:${PORT}/api/analytics`);
-  console.log(`❤️  Health Check: http://localhost:${PORT}/api/health`);
+  console.log(` Server is running on port ${PORT}`);
+  console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(` API Base URL: http://localhost:${PORT}`);
+  console.log(` Auth Endpoints: http://localhost:${PORT}/api/auth`);
+  console.log(` Public Endpoints: http://localhost:${PORT}/api/public`);
+  console.log(` Farmer Endpoints: http://localhost:${PORT}/api/farmer`);
+  console.log(` HHM Endpoints: http://localhost:${PORT}/api/hhm`);
+  console.log(` Worker Endpoints: http://localhost:${PORT}/api/worker`);
+  console.log(` Factory Endpoints: http://localhost:${PORT}/api/factory`);
+  console.log(` Contract Endpoints: http://localhost:${PORT}/api/contracts`);
+  console.log(` Analytics Endpoints: http://localhost:${PORT}/api/analytics`);
+  console.log(`  Health Check: http://localhost:${PORT}/api/health`);
 });
 
 // Graceful shutdown handling
