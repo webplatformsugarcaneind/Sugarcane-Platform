@@ -32,7 +32,7 @@ const SimpleTest = () => {
             color: 'white',
             border: 'none',
             borderRadius: '5px',
-            cursor: 'pointer'
+            
           }}
         >
           Test Button

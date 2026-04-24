@@ -325,7 +325,6 @@ const LaborManagementPage = () => {
             color: activeTab === 'create-job' ? 'white' : '#2c3e50',
             border: 'none',
             borderRadius: '5px',
-            cursor: 'pointer',
             fontSize: '1rem',
             fontWeight: activeTab === 'create-job' ? 'bold' : 'normal',
             borderBottom: activeTab === 'create-job' ? '3px solid #2980b9' : 'none'
@@ -341,7 +340,6 @@ const LaborManagementPage = () => {
             color: activeTab === 'applications' ? 'white' : '#2c3e50',
             border: 'none',
             borderRadius: '5px',
-            cursor: 'pointer',
             fontSize: '1rem',
             fontWeight: activeTab === 'applications' ? 'bold' : 'normal',
             borderBottom: activeTab === 'applications' ? '3px solid #2980b9' : 'none'
@@ -357,7 +355,6 @@ const LaborManagementPage = () => {
             color: activeTab === 'hire-labour' ? 'white' : '#2c3e50',
             border: 'none',
             borderRadius: '5px',
-            cursor: 'pointer',
             fontSize: '1rem',
             fontWeight: activeTab === 'hire-labour' ? 'bold' : 'normal',
             borderBottom: activeTab === 'hire-labour' ? '3px solid #2980b9' : 'none'
@@ -441,7 +438,7 @@ const LaborManagementPage = () => {
                               color: 'white',
                               border: 'none',
                               borderRadius: '4px',
-                              cursor: 'pointer'
+                              
                             }}
                           >
                             ✅ Approve
@@ -454,7 +451,7 @@ const LaborManagementPage = () => {
                               color: 'white',
                               border: 'none',
                               borderRadius: '4px',
-                              cursor: 'pointer'
+                              
                             }}
                           >
                             ❌ Reject
@@ -513,7 +510,7 @@ const LaborManagementPage = () => {
                         color: 'white',
                         border: 'none',
                         borderRadius: '4px',
-                        cursor: 'pointer'
+                        
                       }}
                     >
                       📤 Send Invitation

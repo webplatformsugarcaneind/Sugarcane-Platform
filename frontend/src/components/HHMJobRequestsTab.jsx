@@ -210,7 +210,7 @@ const HHMJobRequestsTab = () => {
             border: none;
             border-radius: 8px;
             font-weight: 600;
-            cursor: pointer;
+            
             transition: all 0.2s ease;
           }
 
@@ -637,7 +637,7 @@ const HHMJobRequestsTab = () => {
           border: none;
           border-radius: 8px;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
           display: inline-flex;
           align-items: center;
@@ -646,7 +646,7 @@ const HHMJobRequestsTab = () => {
 
         .btn:disabled {
           opacity: 0.6;
-          cursor: not-allowed;
+          
         }
 
         .btn-success {

@@ -600,7 +600,7 @@ const FarmerFactoryDirectoryPage = () => {
           border-radius: 8px;
           font-size: 0.9rem;
           background: white;
-          cursor: pointer;
+          
           transition: border-color 0.2s;
         }
 
@@ -617,7 +617,7 @@ const FarmerFactoryDirectoryPage = () => {
           padding: 0.875rem 1rem;
           border-radius: 8px;
           font-size: 0.9rem;
-          cursor: pointer;
+          
           transition: all 0.2s;
         }
 
@@ -695,7 +695,7 @@ const FarmerFactoryDirectoryPage = () => {
           padding: 0.875rem 1.5rem;
           border-radius: 8px;
           font-size: 1rem;
-          cursor: pointer;
+          
           transition: background 0.2s;
         }
 
@@ -1044,7 +1044,7 @@ const FarmerFactoryDirectoryPage = () => {
           border-radius: 6px;
           font-size: 0.85rem;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
           width: 100%;
         }
@@ -1067,7 +1067,7 @@ const FarmerFactoryDirectoryPage = () => {
           border-radius: 4px;
           font-size: 0.75rem;
           color: #666;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
           display: flex;
           align-items: center;
@@ -1100,7 +1100,7 @@ const FarmerFactoryDirectoryPage = () => {
           border: none;
           border-radius: 8px;
           font-size: 0.9rem;
-          cursor: pointer;
+          
           transition: all 0.2s;
         }
 

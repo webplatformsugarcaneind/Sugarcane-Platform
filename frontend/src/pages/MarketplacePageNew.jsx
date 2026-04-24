@@ -424,7 +424,6 @@ const MarketplacePage = () => {
                   color: 'inherit',
                   padding: '0.2rem 0.5rem',
                   borderRadius: '3px',
-                  cursor: 'pointer',
                   fontSize: '0.8rem'
                 }}
               >
@@ -833,7 +832,6 @@ const MarketplacePage = () => {
                 border: 'none',
                 borderRadius: '5px',
                 fontSize: '1rem',
-                cursor: 'pointer',
                 marginTop: '1rem'
               }}
             >
@@ -1153,7 +1151,7 @@ const MarketplacePage = () => {
           border-radius: 12px;
           font-size: 1rem;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.3s ease;
           box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
           white-space: nowrap;
@@ -1212,7 +1210,7 @@ const MarketplacePage = () => {
           border: none;
           padding: 0.75rem 1rem;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 0.9rem;
         }
 
@@ -1279,7 +1277,7 @@ const MarketplacePage = () => {
           border: none;
           padding: 1rem 2rem;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 1rem;
         }
 
@@ -1306,7 +1304,7 @@ const MarketplacePage = () => {
           padding: 1rem 2rem;
           border-radius: 8px;
           font-size: 1rem;
-          cursor: pointer;
+          
           margin-top: 1.5rem;
         }
 
@@ -1483,7 +1481,7 @@ const MarketplacePage = () => {
           border-radius: 8px;
           font-size: 0.9rem;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
           white-space: nowrap;
         }
@@ -1501,7 +1499,7 @@ const MarketplacePage = () => {
           border-radius: 8px;
           font-size: 0.9rem;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
           white-space: nowrap;
           margin-left: 0.5rem;
@@ -1562,7 +1560,7 @@ const MarketplacePage = () => {
           background: none;
           border: none;
           font-size: 1.5rem;
-          cursor: pointer;
+          
           color: #666;
           padding: 0.5rem;
           border-radius: 8px;
@@ -1574,7 +1572,7 @@ const MarketplacePage = () => {
         }
 
         .close-btn:disabled {
-          cursor: not-allowed;
+          
           opacity: 0.5;
         }
 

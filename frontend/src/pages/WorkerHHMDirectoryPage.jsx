@@ -413,7 +413,7 @@ const WorkerHHMDirectoryPage = () => {
           color: white;
           border: none;
           border-radius: 6px;
-          cursor: pointer;
+          
           font-size: 0.9rem;
         }
 
@@ -540,7 +540,7 @@ const WorkerHHMDirectoryPage = () => {
           border-radius: 8px;
           font-size: 0.9rem;
           font-weight: 500;
-          cursor: pointer;
+          
           text-decoration: none;
           display: flex;
           align-items: center;
@@ -568,7 +568,7 @@ const WorkerHHMDirectoryPage = () => {
 
         .contact-button.primary:disabled {
           background-color: #bdc3c7;
-          cursor: not-allowed;
+          
         }
 
         .contact-button.secondary {
@@ -630,7 +630,7 @@ const WorkerHHMDirectoryPage = () => {
           color: white;
           border: none;
           border-radius: 6px;
-          cursor: pointer;
+          
           font-size: 1rem;
           margin-top: 1rem;
         }
@@ -665,7 +665,7 @@ const WorkerHHMDirectoryPage = () => {
           color: white;
           border: none;
           border-radius: 6px;
-          cursor: pointer;
+          
         }
 
         /* Responsive Design */

@@ -986,7 +986,7 @@ const LaborManagementPage = () => {
           
           button:disabled {
             opacity: 0.6;
-            cursor: not-allowed;
+            
           }
           
           input:focus, select:focus, textarea:focus {
@@ -2119,7 +2119,6 @@ const styles = {
     border: 'none',
     backgroundColor: 'transparent',
     fontSize: '1rem',
-    cursor: 'pointer',
     borderBottom: '3px solid transparent',
     transition: 'all 0.3s ease',
     whiteSpace: 'nowrap'
@@ -2211,7 +2210,6 @@ const styles = {
     border: 'none',
     padding: '1rem 2rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '1rem',
     fontWeight: 'bold'
   },
@@ -2221,7 +2219,6 @@ const styles = {
     border: 'none',
     padding: '1rem 2rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '1rem'
   },
 
@@ -2245,7 +2242,6 @@ const styles = {
     backgroundColor: 'white',
     border: '2px solid #e1e5e9',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem',
     fontWeight: '500',
     transition: 'all 0.2s',
@@ -2382,7 +2378,6 @@ const styles = {
     border: 'none',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: 'bold',
     transition: 'background-color 0.2s'
@@ -2393,7 +2388,6 @@ const styles = {
     border: 'none',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: 'bold',
     transition: 'background-color 0.2s'
@@ -2404,7 +2398,6 @@ const styles = {
     border: 'none',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     transition: 'background-color 0.2s'
   },
@@ -2432,7 +2425,6 @@ const styles = {
     border: '1px solid #ddd',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem'
   },
 
@@ -2462,7 +2454,6 @@ const styles = {
     border: 'none',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem',
     fontWeight: 'bold'
   },
@@ -2520,7 +2511,6 @@ const styles = {
     border: 'none',
     padding: '1rem 2rem',
     borderRadius: '5px',
-    cursor: 'pointer',
     fontSize: '1rem',
     marginTop: '1rem'
   },
@@ -2561,7 +2551,6 @@ const styles = {
     backgroundColor: 'transparent',
     border: 'none',
     fontSize: '1.5rem',
-    cursor: 'pointer',
     color: 'inherit',
     padding: '0',
     width: '24px',
@@ -2608,7 +2597,6 @@ const styles = {
     transform: 'translateY(-50%)',
     backgroundColor: 'transparent',
     border: 'none',
-    cursor: 'pointer',
     fontSize: '1.2rem',
     color: '#999',
     padding: '0.25rem',
@@ -2632,7 +2620,6 @@ const styles = {
     borderRadius: '8px',
     fontSize: '1rem',
     backgroundColor: 'white',
-    cursor: 'pointer',
     minWidth: '200px',
     transition: 'border-color 0.2s'
   },
@@ -2642,7 +2629,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: '500',
     transition: 'background-color 0.2s'
@@ -2781,7 +2767,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: 'bold',
     transition: 'background-color 0.2s'
@@ -2793,7 +2778,6 @@ const styles = {
     color: '#3498db',
     border: '2px solid #3498db',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: '500',
     transition: 'all 0.2s'
@@ -2901,7 +2885,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: '500',
     transition: 'background-color 0.2s'
@@ -2949,7 +2932,6 @@ const styles = {
     background: 'none',
     border: 'none',
     fontSize: '1.5rem',
-    cursor: 'pointer',
     color: '#636e72',
     padding: '0.25rem 0.5rem',
     borderRadius: '4px',
@@ -3016,7 +2998,6 @@ const styles = {
     fontSize: '0.95rem',
     color: '#2d3436',
     backgroundColor: 'white',
-    cursor: 'pointer',
     transition: 'border-color 0.2s',
     outline: 'none'
   },
@@ -3104,7 +3085,6 @@ const styles = {
     color: '#636e72',
     border: '2px solid #dfe6e9',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: '500',
     transition: 'all 0.2s'
@@ -3115,7 +3095,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: 'bold',
     transition: 'background-color 0.2s',
@@ -3202,7 +3181,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: 'bold',
     transition: 'background-color 0.2s',

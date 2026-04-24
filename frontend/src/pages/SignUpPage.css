@@ -76,7 +76,7 @@
   border-radius: 8px;
   font-size: 1.1rem;
   font-weight: 600;
-  cursor: pointer;
+  
   transition: all 0.3s ease;
   margin-top: 10px;
 }
@@ -88,7 +88,7 @@
 
 .signup-btn:disabled {
   background: #ccc;
-  cursor: not-allowed;
+  
   transform: none;
 }
 

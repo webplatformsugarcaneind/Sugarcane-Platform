@@ -660,7 +660,6 @@ const FactoryHHMDirectoryPage = () => {
                             border: 'none',
                             padding: '8px 16px',
                             borderRadius: '4px',
-                            cursor: 'pointer',
                             fontSize: '14px'
                           }}
                         >
@@ -675,7 +674,6 @@ const FactoryHHMDirectoryPage = () => {
                             border: 'none',
                             padding: '8px 16px',
                             borderRadius: '4px',
-                            cursor: 'pointer',
                             fontSize: '14px'
                           }}
                         >
@@ -808,7 +806,7 @@ const FactoryHHMDirectoryPage = () => {
           color: #666;
           font-size: 1rem;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
@@ -954,7 +952,7 @@ const FactoryHHMDirectoryPage = () => {
           color: #495057;
           border: 2px solid #e1e5e9;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 0.9rem;
           transition: all 0.2s;
         }
@@ -1021,7 +1019,7 @@ const FactoryHHMDirectoryPage = () => {
           color: white;
           border: none;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 1rem;
           transition: background 0.2s;
         }
@@ -1139,7 +1137,7 @@ const FactoryHHMDirectoryPage = () => {
           border-radius: 8px;
           font-size: 0.9rem;
           font-weight: 500;
-          cursor: pointer;
+          
           text-decoration: none;
           display: flex;
           align-items: center;
@@ -1202,7 +1200,7 @@ const FactoryHHMDirectoryPage = () => {
           border: none;
           font-size: 2rem;
           color: #666;
-          cursor: pointer;
+          
           padding: 0;
           width: 32px;
           height: 32px;
@@ -1320,13 +1318,13 @@ const FactoryHHMDirectoryPage = () => {
           border-radius: 8px;
           font-size: 0.95rem;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.2s;
         }
 
         .btn:disabled {
           opacity: 0.6;
-          cursor: not-allowed;
+          
         }
 
         .btn-primary {

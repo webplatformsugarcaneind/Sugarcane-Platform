@@ -195,7 +195,7 @@ const HHMSpecificFactoryPage = () => {
 
   const getCapacityColor = (capacity) => {
     if (!capacity) return '#666';
-    const numericCapacity = parseInt(capacity.toString().match(/\d+/)?.[0] || '0');
+    const numericCapacity = Number(capacity);
     if (numericCapacity < 1000) return '#ff9800';
     if (numericCapacity < 5000) return '#2196f3';
     return '#4caf50';
@@ -203,7 +203,7 @@ const HHMSpecificFactoryPage = () => {
 
   const getCapacityLabel = (capacity) => {
     if (!capacity) return 'Unknown Scale';
-    const numericCapacity = parseInt(capacity.toString().match(/\d+/)?.[0] || '0');
+    const numericCapacity = Number(capacity);
     if (numericCapacity < 1000) return 'Small Scale';
     if (numericCapacity < 5000) return 'Medium Scale';
     return 'Large Scale';
@@ -668,7 +668,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: '500',
     transition: 'background-color 0.2s'
@@ -777,7 +776,6 @@ const styles = {
     border: 'none',
     backgroundColor: 'transparent',
     fontSize: '1rem',
-    cursor: 'pointer',
     borderBottom: '3px solid transparent',
     transition: 'all 0.3s ease',
     whiteSpace: 'nowrap',
@@ -1089,7 +1087,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '1rem',
     fontWeight: '600',
     transition: 'background-color 0.2s'
@@ -1100,7 +1097,6 @@ const styles = {
     color: '#2c5f2d',
     border: '2px solid #2c5f2d',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '1rem',
     fontWeight: '600',
     transition: 'all 0.2s'
@@ -1111,7 +1107,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '1rem',
     fontWeight: '600',
     transition: 'background-color 0.2s',
@@ -1166,7 +1161,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '1rem',
     fontWeight: '600',
     transition: 'background-color 0.2s'

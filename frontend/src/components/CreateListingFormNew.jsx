@@ -866,7 +866,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
         .form-input:disabled,
         .form-textarea:disabled {
           background-color: #f5f5f5;
-          cursor: not-allowed;
+          
         }
 
         .form-input::placeholder,
@@ -891,7 +891,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
         .checkbox-label {
           display: flex;
           align-items: center;
-          cursor: pointer;
+          
           gap: 0.5rem;
           font-size: 0.95rem;
           color: #2c5530;
@@ -948,7 +948,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
           background: #f44336;
           color: white;
           border: none;
-          cursor: pointer;
+          
           font-weight: bold;
           display: flex;
           align-items: center;
@@ -1005,7 +1005,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
           border-radius: 8px;
           font-size: 1.1rem;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
@@ -1021,7 +1021,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
 
         .submit-button:disabled {
           background: #ccc;
-          cursor: not-allowed;
+          
           transform: none;
           box-shadow: none;
         }

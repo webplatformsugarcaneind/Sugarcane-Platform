@@ -6,6 +6,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -48,6 +49,13 @@ const Navbar = () => {
     
     console.log('🔍 ==> NAVBAR: Auth state check completed');
   };
+
+  // Scroll effect
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Check for authentication token and user role on component mount and location changes
   useEffect(() => {
@@ -109,7 +117,7 @@ const Navbar = () => {
   });
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
       <div className="navbar-container">
         {/* Logo Section */}
         <div className="navbar-logo">
@@ -118,8 +126,8 @@ const Navbar = () => {
             className="logo-link"
             onClick={closeMenu}
           >
-            <span className="logo-icon">🌾</span>
-            <span className="logo-text">Sugarcane Platform</span>
+            <span className="logo-icon">✦</span>
+            <span className="logo-text">CaneSetu</span>
           </NavLink>
         </div>
 

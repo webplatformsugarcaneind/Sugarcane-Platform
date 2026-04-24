@@ -59,7 +59,7 @@
     background: none;
     border: none;
     font-size: 1.5rem;
-    cursor: pointer;
+    
     opacity: 0.6;
     transition: opacity 0.2s;
 }
@@ -81,7 +81,7 @@
     border: 2px solid #dee2e6;
     background: white;
     border-radius: 8px;
-    cursor: pointer;
+    
     font-size: 1rem;
     font-weight: 500;
     transition: all 0.2s;
@@ -369,7 +369,7 @@
     border-radius: 8px;
     font-size: 1rem;
     font-weight: 600;
-    cursor: pointer;
+    
     transition: all 0.2s;
     display: flex;
     align-items: center;
@@ -379,7 +379,7 @@
 
 .btn:disabled {
     opacity: 0.6;
-    cursor: not-allowed;
+    
 }
 
 .btn-accept {
@@ -479,7 +479,7 @@
     background: none;
     border: none;
     font-size: 2rem;
-    cursor: pointer;
+    
     color: #7f8c8d;
     transition: color 0.2s;
     padding: 0;

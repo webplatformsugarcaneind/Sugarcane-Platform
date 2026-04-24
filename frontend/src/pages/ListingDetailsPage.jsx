@@ -1376,7 +1376,7 @@ const ListingDetailsPage = () => {
           border: none;
           padding: 0.75rem 1rem;
           border-radius: 6px;
-          cursor: pointer;
+          
           transition: background 0.2s;
         }
 
@@ -1621,7 +1621,7 @@ const ListingDetailsPage = () => {
           border-radius: 12px;
           font-weight: 700;
           font-size: 1.2rem;
-          cursor: pointer;
+          
           transition: all 0.3s;
           box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
         }
@@ -1640,7 +1640,7 @@ const ListingDetailsPage = () => {
           border-radius: 12px;
           font-weight: 700;
           font-size: 1.2rem;
-          cursor: pointer;
+          
           transition: all 0.3s;
           box-shadow: 0 4px 20px rgba(255, 152, 0, 0.3);
         }
@@ -1658,7 +1658,7 @@ const ListingDetailsPage = () => {
           padding: 0.75rem 1.5rem;
           border-radius: 8px;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.2s;
           flex: 1;
         }
@@ -1676,7 +1676,7 @@ const ListingDetailsPage = () => {
           padding: 0.75rem 1.5rem;
           border-radius: 8px;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.2s;
           flex: 1;
         }
@@ -1699,7 +1699,7 @@ const ListingDetailsPage = () => {
           padding: 0.75rem 1.5rem;
           border-radius: 8px;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.2s;
           flex: 1;
         }
@@ -1750,7 +1750,7 @@ const ListingDetailsPage = () => {
           background: none;
           border: none;
           font-size: 1.5rem;
-          cursor: pointer;
+          
           color: #666;
           padding: 0.5rem;
         }
@@ -1844,7 +1844,7 @@ const ListingDetailsPage = () => {
           border: none;
           padding: 1rem 2rem;
           border-radius: 8px;
-          cursor: pointer;
+          
           transition: background 0.2s;
         }
 
@@ -1859,7 +1859,7 @@ const ListingDetailsPage = () => {
           padding: 1rem 2rem;
           border-radius: 8px;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.2s;
           flex: 1;
         }
@@ -2198,7 +2198,7 @@ const ListingDetailsPage = () => {
           border: none;
           border-radius: 8px;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
           flex: 1;
           font-size: 0.9rem;
@@ -2233,7 +2233,7 @@ const ListingDetailsPage = () => {
           padding: 0.75rem 1.5rem;
           border-radius: 8px;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
           flex: 1;
         }
@@ -2266,7 +2266,7 @@ const ListingDetailsPage = () => {
           border-radius: 8px;
           font-size: 1rem;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
           text-decoration: none;
           display: inline-block;

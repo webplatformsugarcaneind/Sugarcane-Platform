@@ -235,7 +235,7 @@ const AssociateHHMPage = () => {
           border: none;
           color: #007bff;
           font-size: 1rem;
-          cursor: pointer;
+          
           margin-bottom: 1rem;
         }
 
@@ -299,7 +299,7 @@ const AssociateHHMPage = () => {
         }
 
         .hhm-card.available {
-          cursor: pointer;
+          
           transition: all 0.2s ease;
         }
 
@@ -349,7 +349,7 @@ const AssociateHHMPage = () => {
           border: none;
           padding: 0.5rem 1rem;
           border-radius: 4px;
-          cursor: pointer;
+          
         }
 
         .remove-btn:hover {
@@ -370,7 +370,7 @@ const AssociateHHMPage = () => {
           border-radius: 6px;
           font-size: 1rem;
           font-weight: bold;
-          cursor: pointer;
+          
           margin-top: 1rem;
         }
 

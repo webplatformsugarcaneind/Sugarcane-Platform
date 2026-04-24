@@ -57,7 +57,7 @@ const FactoryDirectoryPage = () => {
       filtered = filtered.filter(factory => {
         // Extract numeric value from capacity string (e.g., "2800 TCD" -> 2800)
         const capacityStr = factory.capacity || '';
-        const factoryCapacity = parseInt(capacityStr.match(/\d+/)?.[0] || '0');
+        const factoryCapacity = Number(capacityStr);
         switch (selectedCapacity) {
           case 'small':
             return factoryCapacity < 1000;
@@ -78,8 +78,8 @@ const FactoryDirectoryPage = () => {
           return (a.location || '').localeCompare(b.location || '');
         case 'capacity': {
           // Extract numeric value from capacity string for sorting
-          const aCapacity = parseInt((a.capacity || '').match(/\d+/)?.[0] || '0');
-          const bCapacity = parseInt((b.capacity || '').match(/\d+/)?.[0] || '0');
+          const aCapacity = Number(a.capacity);
+          const bCapacity = Number(b.capacity);
           return bCapacity - aCapacity;
         }
         case 'established':
@@ -178,7 +178,7 @@ const FactoryDirectoryPage = () => {
 
   const getCapacityColor = (capacity) => {
     if (!capacity) return '#666';
-    const numericCapacity = parseInt(capacity.match(/\d+/)?.[0] || '0');
+    const numericCapacity = Number(capacity);
     if (numericCapacity < 1000) return '#ff9800';
     if (numericCapacity < 5000) return '#2196f3';
     return '#4caf50';
@@ -186,7 +186,7 @@ const FactoryDirectoryPage = () => {
 
   const getCapacityLabel = (capacity) => {
     if (!capacity) return 'Unknown';
-    const numericCapacity = parseInt(capacity.match(/\d+/)?.[0] || '0');
+    const numericCapacity = Number(capacity);
     if (numericCapacity < 1000) return 'Small Scale';
     if (numericCapacity < 5000) return 'Medium Scale';
     return 'Large Scale';
@@ -529,7 +529,7 @@ const FactoryDirectoryPage = () => {
           color: white;
           border: none;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 0.9rem;
         }
 
@@ -590,7 +590,7 @@ const FactoryDirectoryPage = () => {
           color: white;
           border: none;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 1rem;
           transition: background 0.2s;
         }
@@ -837,7 +837,7 @@ const FactoryDirectoryPage = () => {
           padding: 0.75rem 1rem;
           border: none;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 0.9rem;
           font-weight: 500;
           transition: all 0.2s;

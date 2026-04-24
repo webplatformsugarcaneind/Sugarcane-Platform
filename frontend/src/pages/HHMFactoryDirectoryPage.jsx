@@ -65,7 +65,7 @@ const HHMFactoryDirectoryPage = () => {
       filtered = filtered.filter(factory => {
         // Extract numeric value from capacity string (e.g., "2800 TCD" -> 2800)
         const capacityStr = factory.capacity || '';
-        const factoryCapacity = parseInt(capacityStr.match(/\d+/)?.[0] || '0');
+        const factoryCapacity = Number(capacityStr);
         switch (selectedCapacity) {
           case 'small':
             return factoryCapacity < 1000;
@@ -88,8 +88,8 @@ const HHMFactoryDirectoryPage = () => {
           return (a.location || '').localeCompare(b.location || '');
         case 'capacity':
           // Extract numeric value from capacity string for sorting
-          const aCapacity = parseInt((a.capacity || '').match(/\d+/)?.[0] || '0');
-          const bCapacity = parseInt((b.capacity || '').match(/\d+/)?.[0] || '0');
+          const aCapacity = Number(a.capacity);
+          const bCapacity = Number(b.capacity);
           return bCapacity - aCapacity;
         case 'established':
           return new Date(b.establishedYear || 0) - new Date(a.establishedYear || 0);
@@ -303,7 +303,7 @@ const HHMFactoryDirectoryPage = () => {
 
   const getCapacityColor = (capacity) => {
     if (!capacity) return '#666';
-    const numericCapacity = parseInt(capacity.match(/\d+/)?.[0] || '0');
+    const numericCapacity = Number(capacity);
     if (numericCapacity < 1000) return '#ff9800';
     if (numericCapacity < 5000) return '#2196f3';
     return '#4caf50';
@@ -311,7 +311,7 @@ const HHMFactoryDirectoryPage = () => {
 
   const getCapacityLabel = (capacity) => {
     if (!capacity) return 'Unknown';
-    const numericCapacity = parseInt(capacity.match(/\d+/)?.[0] || '0');
+    const numericCapacity = Number(capacity);
     if (numericCapacity < 1000) return 'Small Scale';
     if (numericCapacity < 5000) return 'Medium Scale';
     return 'Large Scale';
@@ -727,7 +727,7 @@ const HHMFactoryDirectoryPage = () => {
           color: white;
           border: none;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 0.9rem;
         }
 
@@ -789,7 +789,7 @@ const HHMFactoryDirectoryPage = () => {
           color: white;
           border: none;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 1rem;
         }
 
@@ -984,7 +984,7 @@ const HHMFactoryDirectoryPage = () => {
           padding: 0.75rem 1rem;
           border: none;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 0.9rem;
           font-weight: 500;
           transition: all 0.2s;
@@ -1069,7 +1069,7 @@ const HHMFactoryDirectoryPage = () => {
           border: none;
           font-size: 2rem;
           color: #666;
-          cursor: pointer;
+          
           padding: 0;
           width: 36px;
           height: 36px;
@@ -1203,7 +1203,7 @@ const HHMFactoryDirectoryPage = () => {
           border-radius: 8px;
           font-size: 1rem;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.3s;
           text-transform: uppercase;
           letter-spacing: 0.5px;
@@ -1211,7 +1211,7 @@ const HHMFactoryDirectoryPage = () => {
 
         .btn:disabled {
           opacity: 0.6;
-          cursor: not-allowed;
+          
         }
 
         .btn-primary {

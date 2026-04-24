@@ -815,7 +815,6 @@ const ProfilePage = () => {
                   right: '12px',
                   background: 'none',
                   border: 'none',
-                  cursor: 'pointer',
                   color: '#7f8c8d'
                 }}
                 onClick={() => setLabourSearchTerm('')}
@@ -863,7 +862,7 @@ const ProfilePage = () => {
                   color: 'white',
                   border: 'none',
                   borderRadius: '4px',
-                  cursor: 'pointer'
+                  
                 }}
               >
                 Clear Search
@@ -961,7 +960,6 @@ const ProfilePage = () => {
                       color: 'white',
                       border: 'none',
                       borderRadius: '4px',
-                      cursor: 'pointer',
                       fontSize: '0.9rem'
                     }}
                   >
@@ -976,7 +974,6 @@ const ProfilePage = () => {
                       color: 'white',
                       border: 'none',
                       borderRadius: '4px',
-                      cursor: 'pointer',
                       fontSize: '0.9rem'
                     }}
                   >
@@ -991,7 +988,6 @@ const ProfilePage = () => {
                       color: 'white',
                       border: 'none',
                       borderRadius: '4px',
-                      cursor: 'pointer',
                       fontSize: '0.9rem'
                     }}
                   >

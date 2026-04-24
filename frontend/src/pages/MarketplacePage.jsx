@@ -837,7 +837,7 @@ const MarketplacePage = () => {
           border-radius: 12px;
           font-size: 1rem;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.3s ease;
           box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
           white-space: nowrap;
@@ -884,7 +884,7 @@ const MarketplacePage = () => {
           font-size: 1rem;
           min-width: 180px;
           background: white;
-          cursor: pointer;
+          
           transition: border-color 0.2s ease;
         }
 
@@ -915,7 +915,7 @@ const MarketplacePage = () => {
           border: none;
           padding: 1rem 1.5rem;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 1rem;
           font-weight: 500;
           white-space: nowrap;
@@ -934,7 +934,7 @@ const MarketplacePage = () => {
           border-radius: 8px;
           font-size: 0.9rem;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
           white-space: nowrap;
           min-width: 130px;
@@ -1113,7 +1113,7 @@ const MarketplacePage = () => {
           border: none;
           border-radius: 6px;
           font-size: 0.8rem;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
         }
 
@@ -1160,7 +1160,7 @@ const MarketplacePage = () => {
           padding: 0.75rem 1.5rem;
           border-radius: 8px;
           font-weight: 500;
-          cursor: pointer;
+          
           margin-top: 1rem;
           transition: all 0.2s ease;
         }
@@ -1227,7 +1227,7 @@ const MarketplacePage = () => {
           border: none;
           padding: 1rem 2rem;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 1rem;
         }
 
@@ -1254,7 +1254,7 @@ const MarketplacePage = () => {
           padding: 1rem 2rem;
           border-radius: 8px;
           font-size: 1rem;
-          cursor: pointer;
+          
           margin-top: 1.5rem;
         }
 
@@ -1431,7 +1431,7 @@ const MarketplacePage = () => {
           border-radius: 8px;
           font-size: 0.9rem;
           font-weight: 500;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
           white-space: nowrap;
           width: 100%;
@@ -1486,7 +1486,7 @@ const MarketplacePage = () => {
           background: none;
           border: none;
           font-size: 1.5rem;
-          cursor: pointer;
+          
           color: #666;
           padding: 0.5rem;
           border-radius: 8px;
@@ -1498,7 +1498,7 @@ const MarketplacePage = () => {
         }
 
         .close-btn:disabled {
-          cursor: not-allowed;
+          
           opacity: 0.5;
         }
 
@@ -1523,7 +1523,7 @@ const MarketplacePage = () => {
           padding: 0.75rem 1.5rem;
           border-radius: 8px;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.2s;
         }
 
@@ -1654,7 +1654,7 @@ const MarketplacePage = () => {
           padding: 0.5rem 1rem;
           border-radius: 6px;
           font-size: 0.9rem;
-          cursor: pointer;
+          
           transition: all 0.2s;
           flex: 1;
         }
@@ -1671,7 +1671,7 @@ const MarketplacePage = () => {
           padding: 0.5rem 1rem;
           border-radius: 6px;
           font-size: 0.9rem;
-          cursor: pointer;
+          
           transition: all 0.2s;
           flex: 1;
         }
@@ -1879,7 +1879,7 @@ const MarketplacePage = () => {
           padding: 0.5rem 1rem;
           border-radius: 6px;
           font-size: 0.9rem;
-          cursor: pointer;
+          
           transition: all 0.2s;
           flex: 1;
         }
@@ -1896,7 +1896,7 @@ const MarketplacePage = () => {
           padding: 0.5rem 1rem;
           border-radius: 6px;
           font-size: 0.9rem;
-          cursor: pointer;
+          
           transition: all 0.2s;
           flex: 1;
         }

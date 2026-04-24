@@ -554,7 +554,6 @@ const styles = {
     backgroundColor: 'transparent',
     border: 'none',
     padding: '1rem 2rem',
-    cursor: 'pointer',
     fontSize: '1rem',
     color: '#7f8c8d',
     borderBottom: '2px solid transparent',
@@ -695,7 +694,6 @@ const styles = {
     border: 'none',
     padding: '0.6rem 1.2rem',
     borderRadius: '5px',
-    cursor: 'pointer',
     fontSize: '0.9rem',
     fontWeight: 'bold'
   },
@@ -705,7 +703,6 @@ const styles = {
     border: 'none',
     padding: '0.6rem 1.2rem',
     borderRadius: '5px',
-    cursor: 'pointer',
     fontSize: '0.9rem',
     fontWeight: 'bold'
   },
@@ -715,7 +712,6 @@ const styles = {
     border: 'none',
     padding: '0.6rem 1.2rem',
     borderRadius: '5px',
-    cursor: 'pointer',
     fontSize: '0.9rem'
   },
   contactButton: {
@@ -724,7 +720,6 @@ const styles = {
     border: 'none',
     padding: '0.6rem 1.2rem',
     borderRadius: '5px',
-    cursor: 'pointer',
     fontSize: '0.9rem'
   },
   detailsButton: {
@@ -733,7 +728,6 @@ const styles = {
     border: '1px solid #2196f3',
     padding: '0.6rem 1.2rem',
     borderRadius: '5px',
-    cursor: 'pointer',
     fontSize: '0.9rem'
   },
   loadingSection: {

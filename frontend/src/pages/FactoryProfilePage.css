@@ -2,7 +2,11 @@
 
 .factory-profile-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fdf8 0%, #f0f4f0 100%);
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(126,200,67,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(126,200,67,0.05) 0%, transparent 50%),
+    #0b0f0b;
+  color: #f0f5ec;
   padding: 2rem;
 }
 
@@ -15,7 +19,7 @@
   font-weight: 500;
   padding: 0.65rem 1.25rem;
   margin-bottom: 2rem;
-  cursor: pointer;
+  
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -272,7 +276,7 @@
   border-radius: 12px;
   font-size: 1.05rem;
   font-weight: 700;
-  cursor: pointer;
+  
   transition: all 0.3s ease;
   box-shadow: 0 6px 20px rgba(44, 85, 48, 0.35);
   position: relative;
@@ -364,7 +368,7 @@
   align-items: center;
   gap: 0.85rem;
   transition: all 0.3s ease;
-  cursor: pointer;
+  
   border: 2px solid transparent;
   position: relative;
   overflow: hidden;
@@ -447,7 +451,7 @@
   border: none;
   border-radius: 8px;
   font-weight: 600;
-  cursor: pointer;
+  
   transition: all 0.3s;
 }
 

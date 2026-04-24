@@ -394,7 +394,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: '500',
     transition: 'background-color 0.2s',
@@ -571,7 +570,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem',
     fontWeight: '500'
   },
@@ -581,7 +579,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem',
     fontWeight: '500'
   },
@@ -591,7 +588,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '1rem',
     fontWeight: '600',
     transition: 'background-color 0.2s'
@@ -653,7 +649,6 @@ const styles = {
     color: 'white',
     border: 'none',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: '500'
   }

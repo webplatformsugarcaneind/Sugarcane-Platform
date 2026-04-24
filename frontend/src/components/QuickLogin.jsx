@@ -126,7 +126,6 @@ const QuickLogin = ({ onLoginSuccess }) => {
               border: 'none',
               borderRadius: '4px',
               fontSize: '1rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.6 : 1
             }}
           >

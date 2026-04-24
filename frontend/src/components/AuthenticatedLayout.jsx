@@ -10,8 +10,8 @@ import { Outlet } from 'react-router-dom';
  */
 const AuthenticatedLayout = () => {
   return (
-    <div className="authenticated-layout">
-      <main className="main-content">
+    <div className="authenticated-layout" style={{ background: '#0b0f0b', minHeight: '100%', width: '100%' }}>
+      <main className="main-content" style={{ background: '#0b0f0b' }}>
         <Outlet />
       </main>
     </div>

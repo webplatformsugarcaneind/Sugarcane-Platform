@@ -75,7 +75,7 @@
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
-  cursor: pointer;
+  
   font-size: 0.9rem;
   font-weight: 500;
   margin-left: auto;
@@ -106,7 +106,7 @@
   border: none;
   background: transparent;
   border-radius: 8px;
-  cursor: pointer;
+  
   transition: all 0.3s ease;
   font-weight: 600;
   color: #6c757d;
@@ -180,7 +180,7 @@
   border: 1px solid #dee2e6;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  cursor: pointer;
+  
   transition: all 0.3s ease;
   color: #6c757d;
   font-weight: 500;
@@ -391,7 +391,7 @@
   border-radius: 6px;
   font-weight: 600;
   font-size: 0.9rem;
-  cursor: pointer;
+  
   transition: all 0.3s ease;
   display: flex;
   align-items: center;

@@ -532,7 +532,7 @@ const FarmerJobRequestModal = ({
           padding: 0.75rem 1.5rem;
           border-radius: 8px;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
           border: none;
           font-size: 1rem;
@@ -545,7 +545,7 @@ const FarmerJobRequestModal = ({
 
         .btn:disabled {
           opacity: 0.6;
-          cursor: not-allowed;
+          
         }
 
         .btn-primary {

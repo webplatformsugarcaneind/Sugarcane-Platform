@@ -412,7 +412,7 @@ const HHMFarmerDirectoryPage = () => {
           border-radius: 8px;
           font-size: 0.9rem;
           background: white;
-          cursor: pointer;
+          
           transition: border-color 0.2s;
         }
 
@@ -429,7 +429,7 @@ const HHMFarmerDirectoryPage = () => {
           padding: 0.875rem 1rem;
           border-radius: 8px;
           font-size: 0.9rem;
-          cursor: pointer;
+          
           transition: all 0.2s;
         }
 
@@ -507,7 +507,7 @@ const HHMFarmerDirectoryPage = () => {
           padding: 0.875rem 1.5rem;
           border-radius: 8px;
           font-size: 1rem;
-          cursor: pointer;
+          
           transition: background 0.2s;
         }
 
@@ -715,7 +715,7 @@ const HHMFarmerDirectoryPage = () => {
           border: none;
           border-radius: 8px;
           font-size: 0.9rem;
-          cursor: pointer;
+          
           transition: all 0.2s;
         }
 

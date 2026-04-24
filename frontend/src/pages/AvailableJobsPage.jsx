@@ -456,7 +456,6 @@ const styles = {
     border: 'none',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem',
     fontWeight: 'bold'
   },
@@ -468,7 +467,7 @@ const styles = {
     borderRadius: '6px',
     fontSize: '0.9rem',
     fontWeight: 'bold',
-    cursor: 'not-allowed'
+    
   },
   detailsButton: {
     backgroundColor: 'transparent',
@@ -476,7 +475,6 @@ const styles = {
     border: '1px solid #3498db',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem'
   },
   noJobs: {

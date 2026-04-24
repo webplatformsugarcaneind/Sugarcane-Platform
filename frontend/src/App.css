@@ -1,14 +1,41 @@
 /* App.css - Main Layout Styles */
 
+/* ── DARK BASE ── Prevent ANY white from showing through */
+:root {
+  color-scheme: dark; /* Forces native scrollbars to be dark */
+}
+
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #0b0f0b !important;
+  min-height: 100vh !important;
+  width: 100vw !important;
+  overflow-x: hidden !important;
+}
+
+#root {
+  background: #0b0f0b !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 /* Global App Container */
 .App {
   width: 100%;
-  min-height: 100vh;
+  flex: 1;
   display: flex;
   flex-direction: column;
   margin: 0;
   padding: 0;
-  background-color: #f8f9fa;
+  background-color: #0b0f0b;
+}
+
+/* Pages that have the dark navbar need top padding so content isn't behind it */
+.App main > *:not(.home-page):not(.auth-page):not(.farmer-profile-page) {
+  padding-top: 64px;
 }
 
 /* Main Content Area */
@@ -16,8 +43,9 @@
   flex: 1;
   width: 100%;
   margin: 0;
-  background-color: white;
-  overflow: hidden;
+  background-color: #0b0f0b;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Page Container */
@@ -113,7 +141,6 @@
   background: linear-gradient(135deg, #1a4d1b 0%, #2c5f2d 100%);
   color: white;
   padding: 30px 0;
-  margin-top: auto;
 }
 
 .footer-container {
@@ -158,7 +185,7 @@
   align-items: center;
   justify-content: center;
   min-height: 70vh;
-  background-color: #f8f9fa;
+  background-color: #0b0f0b;
   padding: 20px;
 }
 
@@ -290,7 +317,6 @@
   background: linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%);
   color: white;
   padding: 20px 0;
-  margin-top: auto;
 }
 
 .footer-content {

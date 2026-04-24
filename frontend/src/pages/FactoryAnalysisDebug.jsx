@@ -100,7 +100,6 @@ const FactoryAnalysisDebug = () => {
             padding: '1rem 2rem',
             border: 'none',
             borderRadius: '4px',
-            cursor: 'pointer',
             marginRight: '1rem'
           }}
         >
@@ -115,7 +114,7 @@ const FactoryAnalysisDebug = () => {
             padding: '1rem 2rem',
             border: 'none',
             borderRadius: '4px',
-            cursor: 'pointer'
+            
           }}
         >
           🗑️ Clear Storage

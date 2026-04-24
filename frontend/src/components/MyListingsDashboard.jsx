@@ -622,7 +622,7 @@ const MyListingsDashboard = () => {
           padding: 1rem 1.5rem;
           border-radius: 8px;
           font-size: 1rem;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
         }
 
@@ -677,7 +677,7 @@ const MyListingsDashboard = () => {
           border: none;
           padding: 1rem 2rem;
           border-radius: 8px;
-          cursor: pointer;
+          
           font-size: 1rem;
         }
 
@@ -704,7 +704,7 @@ const MyListingsDashboard = () => {
           padding: 1rem 2rem;
           border-radius: 8px;
           font-size: 1rem;
-          cursor: pointer;
+          
           margin-top: 1.5rem;
         }
 
@@ -902,7 +902,7 @@ const MyListingsDashboard = () => {
           border: none;
           border-radius: 6px;
           font-size: 0.85rem;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
         }
 
@@ -929,7 +929,7 @@ const MyListingsDashboard = () => {
         .edit-btn:disabled,
         .delete-btn:disabled {
           opacity: 0.5;
-          cursor: not-allowed;
+          
           transform: none;
         }
 
@@ -965,7 +965,7 @@ const MyListingsDashboard = () => {
           border: none;
           border-radius: 6px;
           font-size: 0.85rem;
-          cursor: pointer;
+          
           transition: all 0.2s ease;
         }
 

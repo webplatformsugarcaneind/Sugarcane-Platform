@@ -90,7 +90,7 @@
   gap: 0.5rem;
   transition: all 0.3s ease;
   border: none;
-  cursor: pointer;
+  
   min-width: 180px;
 }
 
@@ -105,7 +105,7 @@
 
 .status-indicator:disabled {
   opacity: 0.6;
-  cursor: not-allowed;
+  
 }
 
 .status-indicator.status-on {
@@ -137,7 +137,7 @@
   height: 34px;
   border-radius: 34px;
   border: none;
-  cursor: pointer;
+  
   transition: all 0.3s ease;
   padding: 0;
   overflow: hidden;
@@ -160,7 +160,7 @@
 
 .toggle-button:disabled {
   opacity: 0.5;
-  cursor: not-allowed;
+  
 }
 
 .toggle-slider {
@@ -279,7 +279,7 @@
   border-radius: 16px;
   padding: 2rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
+  
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -567,7 +567,7 @@
 .modal-close {
   background: none;
   border: none;
-  cursor: pointer;
+  
   padding: 0.5rem;
   border-radius: 50%;
   transition: background-color 0.2s ease;

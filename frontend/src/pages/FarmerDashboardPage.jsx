@@ -196,7 +196,7 @@ const FarmerDashboardPage = () => {
           padding: 1rem 2rem;
           font-size: 1.1rem;
           font-weight: 600;
-          cursor: pointer;
+          
           color: #6c757d;
           border-bottom: 3px solid transparent;
           transition: all 0.3s ease;
@@ -268,7 +268,7 @@ const FarmerDashboardPage = () => {
           border: none;
           padding: 0.5rem 1rem;
           border-radius: 4px;
-          cursor: pointer;
+          
         }
 
         .empty-state {

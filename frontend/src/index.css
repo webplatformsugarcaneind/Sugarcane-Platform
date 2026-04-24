@@ -9,17 +9,17 @@
 html, body {
   width: 100%;
   height: 100%;
-  font-family: 'Inter', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family: 'Instrument Sans', 'Inter', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   line-height: 1.6;
-  color: #333;
-  background-color: #ffffff;
+  color: #f0f5ec;
+  background-color: #0b0f0b;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -38,7 +38,7 @@ a:hover {
 /* Global Button Styles */
 button {
   font-family: inherit;
-  cursor: pointer;
+  
   border: none;
   outline: none;
   transition: all 0.3s ease;

@@ -309,7 +309,6 @@ const styles = {
     padding: '1rem 2rem',
     fontSize: '1.1rem',
     fontWeight: '600',
-    cursor: 'pointer',
     color: '#6c757d',
     borderBottom: '3px solid transparent',
     transition: 'all 0.3s ease',
@@ -343,7 +342,7 @@ const styles = {
     alignItems: 'center',
     boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
     transition: 'transform 0.2s ease',
-    cursor: 'pointer'
+    
   },
   statIcon: {
     fontSize: '3rem',
@@ -440,7 +439,6 @@ const styles = {
     border: 'none',
     padding: '1rem 2rem',
     borderRadius: '5px',
-    cursor: 'pointer',
     fontSize: '1rem',
     marginTop: '1rem'
   },
@@ -458,7 +456,6 @@ const styles = {
     padding: '1.5rem',
     boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
     transition: 'all 0.3s ease',
-    cursor: 'pointer',
     position: 'relative',
     display: 'flex',
     flexDirection: 'column',
@@ -494,7 +491,6 @@ const styles = {
     color: '#667eea',
     padding: '0.6rem 1.2rem',
     borderRadius: '8px',
-    cursor: 'pointer',
     fontSize: '0.95rem',
     fontWeight: '500',
     transition: 'all 0.3s ease',

@@ -1,101 +1,93 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import axios from 'axios';
-import { Bar } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import './FactoryAnalysisPage.css';
 
 /**
  * FactoryAnalysisPage Component
- * 
- * Factory Profitability Analysis dashboard for farmers to analyze and compare factories
- * based on profitability scores calculated from contract performance data.
+ * CaneSetu Premium Dark Theme
  */
+
+const MOCK_FACTORIES = [
+  { id:1, name:'Premium Sugar Mills',      loc:'Maharashtra, India',     score:494.12, price:5000, delay:7.5,  fulfill:84.0,  contracts:25, completed:21, rating:'EXCELLENT', color:'var(--green)',   cssClass:'green-bar' },
+  { id:2, name:'Golden Cane Processing',   loc:'Uttar Pradesh, India',   score:287.97, price:4800, delay:12.0, fulfill:77.78, contracts:18, completed:14, rating:'EXCELLENT', color:'var(--amber)',   cssClass:'amber-bar' },
+  { id:3, name:'Sweet Valley Industries',  loc:'Karnataka, India',       score:142.86, price:4500, delay:20.0, fulfill:66.67, contracts:12, completed:8,  rating:'GOOD',      color:'var(--blue)',    cssClass:'blue-bar'  },
+  { id:4, name:'New Factory',              loc:'Gujarat, India',         score:0.00,   price:0,    delay:30.0, fulfill:0.0,   contracts:0,  completed:0,  rating:'POOR',      color:'var(--red)',     cssClass:'red-bar'   },
+  { id:5, name:'Nashik Agro Sugar Co.',    loc:'Nashik, Maharashtra',    score:380.44, price:4900, delay:9.0,  fulfill:80.0,  contracts:30, completed:24, rating:'EXCELLENT', color:'var(--green)',   cssClass:'green-bar' },
+  { id:6, name:'Kolhapur Cooperative',     loc:'Kolhapur, Maharashtra',  score:310.11, price:4750, delay:11.5, fulfill:78.5,  contracts:22, completed:17, rating:'EXCELLENT', color:'var(--amber)',   cssClass:'amber-bar' },
+  { id:7, name:'Solapur Mills Ltd.',       loc:'Solapur, Maharashtra',   score:220.38, price:4600, delay:16.0, fulfill:70.0,  contracts:15, completed:10, rating:'GOOD',      color:'var(--blue)',    cssClass:'blue-bar'  },
+  { id:8, name:'Pune Sugar Works',         loc:'Pune, Maharashtra',      score:190.55, price:4400, delay:18.5, fulfill:68.0,  contracts:10, completed:6,  rating:'GOOD',      color:'var(--blue)',    cssClass:'blue-bar'  },
+];
+
+const getScoreParams = (score) => {
+  if (score >= 400) return { rating: 'EXCELLENT', color: 'var(--green)', cssClass: 'green-bar' };
+  if (score >= 200) return { rating: 'GOOD', color: 'var(--amber)', cssClass: 'amber-bar' };
+  if (score >= 100) return { rating: 'AVERAGE', color: 'var(--blue)', cssClass: 'blue-bar' };
+  return { rating: 'POOR', color: 'var(--red)', cssClass: 'red-bar' };
+};
+
 const FactoryAnalysisPage = () => {
   const [factories, setFactories] = useState([]);
-  const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Compare State
+  const [selA, setSelA] = useState(null);
+  const [selB, setSelB] = useState(null);
+  const [dropAOpen, setDropAOpen] = useState(false);
+  const [dropBOpen, setDropBOpen] = useState(false);
+  const [searchA, setSearchA] = useState('');
+  const [searchB, setSearchB] = useState('');
 
   useEffect(() => {
     const fetchFactoryAnalysis = async () => {
       try {
         setLoading(true);
-        setError(null);
-
-        // Get JWT token from localStorage
         const token = localStorage.getItem('token');
-        
         if (!token) {
-          setError('No authentication token found. Please log in.');
+          console.warn("No token found. User might not be authenticated.");
+          setFactories([]);
+          setLoading(false);
           return;
         }
 
-        console.log('📊 Fetching factory profitability analysis...');
-
-        // Call the analytics API endpoint with better error handling
         const response = await axios.get('/api/analytics/factory-profitability', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          timeout: 10000 // 10 second timeout
+          timeout: 10000 
         });
 
-        console.log('✅ Factory analysis API response:', response.status, response.data);
+        if (response.data.success && response.data.data && response.data.data.length > 0) {
+          const apiFactories = response.data.data;
+          // Normalize
+          const normalized = apiFactories.map((f, i) => {
+            const score = f.profitabilityScore || 0;
+            const params = getScoreParams(score);
+            return {
+              id: f.factoryId || `api-${i}`,
+              name: f.factoryName || 'Unknown Factory',
+              loc: f.factoryLocation || 'Location unknown',
+              price: f.averagePricePerTon || 0,
+              delay: f.averagePaymentDelay || 0,
+              fulfill: (f.contractFulfillmentRate || 0) * 100,
+              contracts: f.totalContracts || 0,
+              completed: f.completedContracts || 0,
+              score: score,
+              rating: params.rating,
+              color: params.color,
+              cssClass: params.cssClass
+            };
+          }).sort((a, b) => b.score - a.score); // Default sort desc
 
-        if (response.data.success) {
-          console.log('✅ Factory analysis data received:', response.data);
-          setFactories(response.data.data || []);
-          setSummary(response.data.summary || {});
+          setFactories(normalized);
         } else {
-          setError(response.data.message || 'Failed to fetch factory analysis');
+          console.log("No real data found from API. Setting to empty.");
+          setFactories([]);
         }
-
       } catch (err) {
-        console.error('❌ Error fetching factory analysis:', err);
-        
-        if (err.code === 'ECONNABORTED') {
-          setError('Request timeout. Please check if the server is running and try again.');
-        } else if (err.response) {
-          // Server responded with error
-          const status = err.response.status;
-          const message = err.response.data?.message || err.response.statusText;
-          
-          if (status === 401) {
-            setError('Authentication failed. Please log in again.');
-            // Optionally redirect to login
-            // window.location.href = '/login';
-          } else if (status === 403) {
-            setError('Access denied. This feature is only available for Farmer users.');
-          } else if (status === 404) {
-            setError('Analytics service not found. Please contact support or try again later.');
-          } else {
-            setError(`Server error (${status}): ${message}`);
-          }
-        } else if (err.request) {
-          // Network error
-          setError('Unable to connect to server. Please check if the backend is running and try again.');
-        } else {
-          // Other error
-          setError(`Unexpected error: ${err.message}`);
-        }
+        console.error('Error fetching factory analysis:', err);
+        setFactories([]);
       } finally {
         setLoading(false);
       }
@@ -104,669 +96,465 @@ const FactoryAnalysisPage = () => {
     fetchFactoryAnalysis();
   }, []);
 
-  // Prepare chart data
-  const chartData = {
-    labels: factories.map(factory => factory.factoryName || 'Unknown Factory'),
-    datasets: [
-      {
-        label: 'Profitability Score',
-        data: factories.map(factory => factory.profitabilityScore || 0),
-        backgroundColor: [
-          'rgba(76, 175, 80, 0.8)',   // Green for top performers
-          'rgba(255, 193, 7, 0.8)',   // Amber
-          'rgba(33, 150, 243, 0.8)',  // Blue
-          'rgba(156, 39, 176, 0.8)',  // Purple
-          'rgba(255, 87, 34, 0.8)',   // Deep Orange
-          'rgba(96, 125, 139, 0.8)',  // Blue Grey
-          'rgba(139, 195, 74, 0.8)',  // Light Green
-          'rgba(255, 152, 0, 0.8)',   // Orange
-          'rgba(63, 81, 181, 0.8)',   // Indigo
-          'rgba(233, 30, 99, 0.8)',   // Pink
-        ],
-        borderColor: [
-          'rgba(76, 175, 80, 1)',
-          'rgba(255, 193, 7, 1)',
-          'rgba(33, 150, 243, 1)',
-          'rgba(156, 39, 176, 1)',
-          'rgba(255, 87, 34, 1)',
-          'rgba(96, 125, 139, 1)',
-          'rgba(139, 195, 74, 1)',
-          'rgba(255, 152, 0, 1)',
-          'rgba(63, 81, 181, 1)',
-          'rgba(233, 30, 99, 1)',
-        ],
-        borderWidth: 2,
-      },
-    ],
+  // Set initial selections when factories load
+  useEffect(() => {
+    if (factories.length >= 2 && !selA) {
+      setSelA(factories[0]);
+      setSelB(factories[1]);
+    } else if (factories.length === 1 && !selA) {
+      setSelA(factories[0]);
+      setSelB(factories[0]);
+    }
+  }, [factories, selA]);
+
+  // Handle global clicks to close dropdowns
+  useEffect(() => {
+    const handleGlobalClick = () => {
+      setDropAOpen(false);
+      setDropBOpen(false);
+    };
+    document.addEventListener('click', handleGlobalClick);
+    return () => document.removeEventListener('click', handleGlobalClick);
+  }, []);
+
+  // Compute stats
+  const top4ChartFactories = useMemo(() => {
+    return [...factories].sort((a, b) => b.score - a.score).slice(0, 4);
+  }, [factories]);
+
+  const maxChartScore = useMemo(() => {
+    const max = Math.max(...top4ChartFactories.map(f => f.score));
+    return max > 500 ? Math.ceil(max / 100) * 100 : 500;
+  }, [top4ChartFactories]);
+
+  const avgPrice = useMemo(() => {
+    if(!factories.length) return 0;
+    const maxP = Math.max(...factories.map(f => f.price));
+    return maxP;
+  }, [factories]);
+
+  const avgScore = useMemo(() => {
+    if(!factories.length) return 0;
+    const sum = factories.reduce((acc, f) => acc + f.score, 0);
+    return (sum / factories.length).toFixed(1);
+  }, [factories]);
+
+  const withContracts = useMemo(() => {
+    return factories.filter(f => f.contracts > 0).length;
+  }, [factories]);
+
+  const formatCurrency = (amount) => '₹' + amount.toLocaleString('en-IN');
+  
+  const ratingBadgeClass = (r) => {
+    if (r === 'EXCELLENT') return 'fap-rating-excellent';
+    if (r === 'GOOD' || r==='AVERAGE') return 'fap-rating-good';
+    return 'fap-rating-poor';
   };
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: '🏭 Factory Profitability Analysis',
-        font: {
-          size: 18,
-          weight: 'bold'
-        }
-      },
-      tooltip: {
-        callbacks: {
-          label: function(context) {
-            const factory = factories[context.dataIndex];
-            return [
-              `Profitability Score: ${context.parsed.y.toFixed(4)}`,
-              `Avg Price: ₹${factory.averagePricePerTon}/ton`,
-              `Payment Delay: ${factory.averagePaymentDelay} days`,
-              `Fulfillment Rate: ${(factory.contractFulfillmentRate * 100).toFixed(2)}%`
-            ];
-          }
-        }
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Profitability Score'
-        }
-      },
-      x: {
-        title: {
-          display: true,
-          text: 'Factory Names'
-        }
-      }
-    },
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount || 0);
-  };
-
-  const formatPercentage = (rate) => {
-    return `${((rate || 0) * 100).toFixed(2)}%`;
-  };
-
-  const getScoreColor = (score) => {
-    if (score >= 100) return '#4caf50'; // Green for excellent
-    if (score >= 50) return '#ff9800';  // Orange for good
-    if (score >= 10) return '#2196f3';  // Blue for average
-    return '#f44336';                   // Red for poor
-  };
-
-  const getScoreLabel = (score) => {
-    if (score >= 100) return 'Excellent';
-    if (score >= 50) return 'Good';
-    if (score >= 10) return 'Average';
-    return 'Poor';
+  const delayBadgeClass = (d) => {
+    if (d <= 10) return 'fap-delay-good';
+    if (d <= 18) return 'fap-delay-ok';
+    return 'fap-delay-bad';
   };
 
   if (loading) {
     return (
-      <div className="factory-analysis-page">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>🔄 Analyzing factory profitability data...</p>
+      <div className="fap-page-container">
+        <div className="fap-loading-container">
+          <div className="fap-loading-spinner"></div>
+          <p>🔄 Interfacing with CaneSetu Analytics Engine...</p>
         </div>
-        <style jsx>{`
-          .factory-analysis-page {
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-          }
-          .loading-container {
-            text-align: center;
-            padding: 4rem 2rem;
-          }
-          .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #4caf50;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-          }
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="factory-analysis-page">
-        <div className="error-container">
-          <h2>⚠️ Error Loading Analysis</h2>
-          <p className="error-message">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="retry-button"
-          >
-            🔄 Retry Analysis
-          </button>
-        </div>
-        <style jsx>{`
-          .factory-analysis-page {
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-          }
-          .error-container {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: #fff5f5;
-            border: 2px solid #fed7d7;
-            border-radius: 12px;
-            margin: 2rem auto;
-            max-width: 600px;
-          }
-          .error-container h2 {
-            color: #c53030;
-            margin-bottom: 1rem;
-          }
-          .error-message {
-            color: #c53030;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
-          }
-          .retry-button {
-            background: #4caf50;
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 600;
-          }
-          .retry-button:hover {
-            background: #45a049;
-          }
-        `}</style>
       </div>
     );
   }
 
   return (
-    <div className="factory-analysis-page">
-      {/* Header */}
-      <div className="page-header">
-        <h1>📊 Factory Profitability Analysis</h1>
-        <p className="page-subtitle">
-          Analyze and compare factories based on profitability scores calculated from contract performance
-        </p>
+    <div className="fap-page-container">
+
+      <div className="fap-page-content">
         
-        {/* Summary Statistics */}
-        {summary && (
-          <div className="summary-stats">
-            <div className="stat-item">
-              <span className="stat-label">🏭 Factories Analyzed</span>
-              <span className="stat-value">{summary.totalFactoriesAnalyzed || 0}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">📊 Average Score</span>
-              <span className="stat-value">{summary.averageScore || '0.00'}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">📈 With Contracts</span>
-              <span className="stat-value">{summary.factoriesWithContracts || 0}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">📅 Analysis Date</span>
-              <span className="stat-value">
-                {summary.analysisDate 
-                  ? new Date(summary.analysisDate).toLocaleDateString() 
-                  : 'Today'
-                }
-              </span>
+        {/* PAGE HERO */}
+        <div className="fap-page-hero">
+          <div>
+            <div className="fap-ph-eyebrow">Farmer Dashboard</div>
+            <h1 className="fap-page-title">Factory <em>Profitability</em><br/>Analysis</h1>
+            <p className="fap-page-sub">Compare factories on price, payment speed, and fulfillment — find the best partner for your cane this season.</p>
+          </div>
+          <div style={{textAlign: 'right', paddingTop: '16px'}}>
+            <div style={{fontSize:'.68rem',letterSpacing:'.1em',textTransform:'uppercase',color:'var(--muted-2)',marginBottom:'6px'}}>Analysis Date</div>
+            <div style={{fontFamily:"'Syne',sans-serif",fontSize:'1.1rem',fontWeight:'700',color:'var(--green)'}}>
+              {new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})}
             </div>
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Chart Section */}
-      {factories.length > 0 && (
-        <div className="chart-section">
-          <div className="chart-container">
-            <Bar data={chartData} options={chartOptions} />
+        {/* KPI ROW */}
+        <div className="fap-hero-kpi-row">
+          <div className="fap-kpi-card green">
+            <div className="fap-kpi-label">Factories Analysed</div>
+            <div className="fap-kpi-val green">{factories.length}</div>
+            <div className="fap-kpi-sub">In your region</div>
+          </div>
+          <div className="fap-kpi-card amber">
+            <div className="fap-kpi-label">Average Score</div>
+            <div className="fap-kpi-val amber">{avgScore}</div>
+            <div className="fap-kpi-sub">Profitability index</div>
+          </div>
+          <div className="fap-kpi-card blue">
+            <div className="fap-kpi-label">With Contracts</div>
+            <div className="fap-kpi-val blue">{withContracts}</div>
+            <div className="fap-kpi-sub">Active this season</div>
+          </div>
+          <div className="fap-kpi-card green">
+            <div className="fap-kpi-label">Best Avg. Price</div>
+            <div className="fap-kpi-val green">{formatCurrency(avgPrice)}</div>
+            <div className="fap-kpi-sub">Top Mill</div>
           </div>
         </div>
-      )}
 
-      {/* Data Table */}
-      {factories.length === 0 ? (
-        <div className="empty-state">
-          <h3>📭 No Factory Data Available</h3>
-          <p>No factory profitability data is currently available. This could be because:</p>
-          <ul>
-            <li>No factories have completed contracts yet</li>
-            <li>No contract data is available for analysis</li>
-            <li>All factories are new to the platform</li>
-          </ul>
-        </div>
-      ) : (
-        <div className="table-section">
-          <h2 className="section-title">🏆 Factory Rankings</h2>
-          <div className="table-container">
-            <table className="analysis-table">
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>Factory Name</th>
-                  <th>Avg. Price (₹/ton)</th>
-                  <th>Payment Delay (days)</th>
-                  <th>Fulfillment Rate</th>
-                  <th>Profitability Score</th>
-                  <th>Rating</th>
-                </tr>
-              </thead>
-              <tbody>
-                {factories.map((factory, index) => (
-                  <tr key={factory.factoryId || index} className="factory-row">
-                    <td className="rank-cell">
-                      <span className="rank-number">#{index + 1}</span>
-                      {index === 0 && (
-                        <span className="recommended-badge">
-                          ⭐ Recommended Factory
+        {/* CHART SECTION */}
+        <div className="fap-section-wrap">
+          <div className="fap-section-card">
+            <div className="fap-section-card-header">
+              <div className="fap-sch-left">
+                <div className="fap-sch-icon">📊</div>
+                <div>
+                  <div className="fap-sch-title">Profitability Score — Bar Chart</div>
+                  <div className="fap-sch-sub">Higher = better partner for your cane</div>
+                </div>
+              </div>
+              <div className="fap-chart-legend">
+                <div className="fap-cl-item"><div className="fap-cl-dot" style={{background:'var(--green)'}}></div><span className="fap-cl-lbl">Excellent (400+)</span></div>
+                <div className="fap-cl-item"><div className="fap-cl-dot" style={{background:'var(--amber)'}}></div><span className="fap-cl-lbl">Good (200–400)</span></div>
+                <div className="fap-cl-item"><div className="fap-cl-dot" style={{background:'var(--blue)'}}></div><span className="fap-cl-lbl">Average (100–200)</span></div>
+                <div className="fap-cl-item"><div className="fap-cl-dot" style={{background:'var(--red)'}}></div><span className="fap-cl-lbl">Poor (&lt;100)</span></div>
+              </div>
+            </div>
+            <div className="fap-chart-area">
+              <div className="fap-chart-canvas-wrap">
+                <div className="fap-chart-grid-lines">
+                  <div className="fap-cgl"></div><div className="fap-cgl"></div>
+                  <div className="fap-cgl"></div><div className="fap-cgl"></div>
+                  <div className="fap-cgl"></div>
+                </div>
+                <div className="fap-chart-y-labels">
+                  <span className="fap-cyl">{maxChartScore}</span>
+                  <span className="fap-cyl">{maxChartScore * 0.8}</span>
+                  <span className="fap-cyl">{maxChartScore * 0.6}</span>
+                  <span className="fap-cyl">{maxChartScore * 0.4}</span>
+                  <span className="fap-cyl">{maxChartScore * 0.2}</span>
+                  <span className="fap-cyl">0</span>
+                </div>
+                
+                <div className="fap-bars-wrap">
+                  {top4ChartFactories.map((f, i) => (
+                    <div className="fap-bar-col" key={f.id}>
+                      <div 
+                        className={`fap-bar-fill ${f.cssClass}`} 
+                        style={{ height: `calc(${f.score}/${maxChartScore}*100%)`, animationDelay: `${0.1 * (i+1)}s` }}
+ 
+
+                      >
+                        <span className="fap-bar-val" style={f.score === 0 ? {top:'-24px'} : {}}>
+                          {f.score.toFixed(1)}
                         </span>
-                      )}
-                    </td>
-                    <td className="factory-name">
+                      </div>
+                    </div>
+                  ))}
+                  {/* Fill empty slots if < 4 factories */}
+                  {Array.from({length: Math.max(0, 4 - top4ChartFactories.length)}).map((_, i) => (
+                     <div className="fap-bar-col" key={`empty-${i}`}></div>
+                  ))}
+                </div>
+
+                <div className="fap-chart-x-axis">
+                  {top4ChartFactories.map((f) => (
+                    <span key={f.id} className="fap-chart-x-label" title={f.name}>
+                      {f.name.substring(0, 15)}{f.name.length > 15 ? '...' : ''}
+                    </span>
+                  ))}
+                   {Array.from({length: Math.max(0, 4 - top4ChartFactories.length)}).map((_, i) => (
+                     <span className="fap-chart-x-label" key={`empty-x-${i}`}></span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RANKINGS TABLE */}
+        <div className="fap-section-wrap">
+          <div className="fap-section-card">
+            <div className="fap-section-card-header">
+              <div className="fap-sch-left">
+                <div className="fap-sch-icon">🏆</div>
+                <div>
+                  <div className="fap-sch-title">Factory Rankings</div>
+                  <div className="fap-sch-sub">Ranked by profitability score — current season</div>
+                </div>
+              </div>
+            </div>
+            <div className="fap-rankings-body">
+              <table className="fap-rank-table">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Factory</th>
+                    <th>Avg. Price (₹/ton)</th>
+                    <th>Payment Delay</th>
+                    <th>Fulfillment Rate</th>
+                    <th>Score</th>
+                    <th>Rating</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {factories.map((f, i) => (
+                    <tr 
+                      key={f.id} 
+                      className={`fap-rank-${i+1}`}
+ 
+
+                    >
+                      <td><span className="fap-rank-num">#{i+1}</span></td>
+                      <td>
+                        <div className="fap-fn-name">{f.name}</div>
+                        <div className="fap-fn-loc">📍 {f.loc}</div>
+                        <div className="fap-fn-contracts">{f.contracts} contracts · {f.completed} completed</div>
+                        {i === 0 && <div className="fap-recommended-pill">⭐ Recommended Factory</div>}
+                      </td>
+                      <td><span className={`fap-td-num ${f.score > 200 ? f.score > 350 ? 'green':'amber' : 'muted'}`}>{formatCurrency(f.price)}</span></td>
+                      <td><span className={`fap-delay-badge ${delayBadgeClass(f.delay)}`}>{f.delay.toFixed(1)} days</span></td>
+                      <td>
+                        <div className="fap-fulfillment-bar-wrap">
+                          <div className="fap-fulfillment-track">
+                            <div className="fap-fulfillment-fill" style={{width: `${f.fulfill}%`, background: f.color}}></div>
+                          </div>
+                          <span className="fap-fulfillment-pct" style={{color: f.color}}>{f.fulfill.toFixed(1)}%</span>
+                        </div>
+                      </td>
+                      <td><span className="fap-td-num" style={{color: f.color}}>{f.score.toFixed(2)}</span></td>
+                      <td><span className={`fap-rating-badge ${ratingBadgeClass(f.rating)}`}>{f.rating}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* COMPARE SECTION */}
+        <div className="fap-section-wrap">
+          <div className="fap-compare-section">
+            <div className="fap-compare-header">
+              <div className="fap-sch-left">
+                <div className="fap-sch-icon">⚖️</div>
+                <div>
+                  <div className="fap-sch-title">Head-to-Head Comparison</div>
+                  <div className="fap-sch-sub">Select any two factories from the database to compare side-by-side</div>
+                </div>
+              </div>
+              <div style={{fontSize:'.72rem',color:'var(--muted-2)',background:'rgba(126,200,67,.06)',border:'1px solid rgba(126,200,67,.15)',borderRadius:'100px',padding:'6px 14px'}}>
+                🏭 {factories.length} factories in database
+              </div>
+            </div>
+
+            {/* SELECTORS */}
+            <div className="fap-compare-selectors">
+              {/* FACTORY A */}
+              <div className="fap-factory-selector">
+                <div className="fap-fs-label">Factory A</div>
+                <div style={{position:'relative'}}>
+                  <button 
+                    className="fap-factory-select-btn selected" 
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setDropAOpen(!dropAOpen); setDropBOpen(false); }}
+ 
+
+                  >
+                    <div className="fap-fsb-inner">
+                      <div className="fap-fsb-avatar" style={{background:'rgba(126,200,67,.1)'}}>🏭</div>
+                      <div className="fap-fsb-info">
+                        <div className="fap-fsb-name">{selA?.name || 'Select Factory'}</div>
+                        <div className="fap-fsb-detail">{selA?.loc || '---'} · Score: {selA?.score?.toFixed(2)}</div>
+                      </div>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{color:'var(--muted-2)',flexShrink:0}}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                  </button>
+                  {dropAOpen && (
+                    <div className="fap-factory-dropdown" onClick={e => e.stopPropagation()}>
+                      <div className="fap-fd-search">
+                        <input 
+                          type="text" 
+                          placeholder="Search factories…" 
+                          onChange={(e) => setSearchA(e.target.value)}
+ 
+
+                        />
+                      </div>
                       <div>
-                        <strong>{factory.factoryName || 'Unknown Factory'}</strong>
-                        {factory.factoryLocation && (
-                          <div className="factory-location">📍 {factory.factoryLocation}</div>
-                        )}
-                        <div className="contract-count">
-                          📋 {factory.totalContracts} contracts 
-                          ({factory.completedContracts} completed)
+                        {factories.filter(f => f.name.toLowerCase().includes(searchA.toLowerCase())).map(f => (
+                          <div 
+                            key={f.id}
+                            className={`fap-fd-option ${selA?.id === f.id ? 'active-sel' : ''}`}
+                            onClick={() => { setSelA(f); setDropAOpen(false); setSearchA(''); }}
+ 
+
+                          >
+                            <div className="fap-fdo-avatar" style={{background: `${f.color}22`}}>🏭</div>
+                            <div>
+                              <div className="fap-fdo-name">{f.name}</div>
+                              <div className="fap-fdo-detail">{f.loc} · {f.contracts} contracts</div>
+                            </div>
+                            <div className="fap-fdo-score">{f.score.toFixed(1)}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="fap-vs-badge">VS</div>
+
+              {/* FACTORY B */}
+              <div className="fap-factory-selector">
+                <div className="fap-fs-label">Factory B</div>
+                <div style={{position:'relative'}}>
+                  <button 
+                    className="fap-factory-select-btn selected" 
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setDropBOpen(!dropBOpen); setDropAOpen(false); }}
+ 
+
+                  >
+                    <div className="fap-fsb-inner">
+                      <div className="fap-fsb-avatar" style={{background:'rgba(232,168,58,.1)'}}>🏭</div>
+                      <div className="fap-fsb-info">
+                        <div className="fap-fsb-name">{selB?.name || 'Select Factory'}</div>
+                        <div className="fap-fsb-detail">{selB?.loc || '---'} · Score: {selB?.score?.toFixed(2)}</div>
+                      </div>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{color:'var(--muted-2)',flexShrink:0}}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                  </button>
+                  {dropBOpen && (
+                    <div className="fap-factory-dropdown" onClick={e => e.stopPropagation()}>
+                      <div className="fap-fd-search">
+                        <input 
+                          type="text" 
+                          placeholder="Search factories…" 
+                          onChange={(e) => setSearchB(e.target.value)}
+ 
+
+                        />
+                      </div>
+                      <div>
+                        {factories.filter(f => f.name.toLowerCase().includes(searchB.toLowerCase())).map(f => (
+                          <div 
+                            key={f.id}
+                            className={`fap-fd-option ${selB?.id === f.id ? 'active-sel' : ''}`}
+                            onClick={() => { setSelB(f); setDropBOpen(false); setSearchB(''); }}
+ 
+
+                          >
+                            <div className="fap-fdo-avatar" style={{background: `${f.color}22`}}>🏭</div>
+                            <div>
+                              <div className="fap-fdo-name">{f.name}</div>
+                              <div className="fap-fdo-detail">{f.loc} · {f.contracts} contracts</div>
+                            </div>
+                            <div className="fap-fdo-score">{f.score.toFixed(1)}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* RESULTS GRID */}
+            <div className="fap-compare-results">
+              {selA && selB && (
+                <>
+                  <div className="fap-compare-grid">
+                    <div className="fap-cg-header">Metric</div>
+                    <div className="fap-cg-header" style={{paddingLeft:'20px',color:'var(--green)'}}>{selA.name}</div>
+                    <div className="fap-cg-header" style={{paddingLeft:'20px',color:'var(--amber)'}}>{selB.name}</div>
+
+                    {/* Metric Rows */}
+                    {[
+                      { l: '📍 Location', va: selA.loc, vb: selB.loc, wa: false, wb: false },
+                      { l: '💰 Avg. Price / Ton', va: formatCurrency(selA.price), vb: formatCurrency(selB.price), wa: selA.price > selB.price, wb: selB.price > selA.price },
+                      { l: '⏱ Payment Delay', va: selA.delay + ' days', vb: selB.delay + ' days', wa: selA.delay < selB.delay, wb: selB.delay < selA.delay },
+                      { l: '✅ Fulfillment Rate', va: selA.fulfill.toFixed(1) + '%', vb: selB.fulfill.toFixed(1) + '%', wa: selA.fulfill > selB.fulfill, wb: selB.fulfill > selA.fulfill },
+                      { l: '📋 Total Contracts', va: `${selA.contracts} (${selA.completed} done)`, vb: `${selB.contracts} (${selB.completed} done)`, wa: selA.contracts > selB.contracts, wb: selB.contracts > selA.contracts },
+                      { l: '📊 Score', va: selA.score.toFixed(2), vb: selB.score.toFixed(2), wa: selA.score > selB.score, wb: selB.score > selA.score },
+                    ].map((row, idx) => (
+                      <React.Fragment key={idx}>
+                        <div className="fap-cg-metric">{row.l}</div>
+                        <div className={`fap-cg-val ${row.wa ? 'winner' : ''}`}>
+                          <span className="fap-cg-num" style={{color: row.wa ? 'var(--green)' : 'var(--white)'}}>{row.va}</span>
+                          <span className="fap-winner-crown" style={{opacity: row.wa ? 1 : 0}}>👑</span>
+                        </div>
+                        <div className={`fap-cg-val ${row.wb ? 'winner' : ''}`}>
+                          <span className="fap-cg-num" style={{color: row.wb ? 'var(--amber)' : 'var(--white)'}}>{row.vb}</span>
+                          <span className="fap-winner-crown" style={{opacity: row.wb ? 1 : 0}}>👑</span>
+                        </div>
+                      </React.Fragment>
+                    ))}
+
+                    <div className="fap-cg-metric">🏅 Rating</div>
+                    <div className="fap-cg-val">
+                      <span className={`fap-rating-badge ${ratingBadgeClass(selA.rating)}`}>{selA.rating}</span>
+                    </div>
+                    <div className="fap-cg-val">
+                      <span className={`fap-rating-badge ${ratingBadgeClass(selB.rating)}`}>{selB.rating}</span>
+                    </div>
+                  </div>
+
+                  {/* Verdict */}
+                  {selA.score !== selB.score ? (
+                    <div className="fap-verdict-banner">
+                      <div className="fap-verdict-icon">🏆</div>
+                      <div className="fap-verdict-text">
+                        <div className="fap-vt-label">Our Recommendation</div>
+                        <div className="fap-vt-main">{(selA.score > selB.score ? selA.name : selB.name)} is the better choice</div>
+                        <div className="fap-vt-sub">
+                          Scores {Math.abs(selA.score - selB.score).toFixed(1)} points higher — 
+                          {(selA.score > selB.score ? selA : selB).loc} · 
+                          {(selA.score > selB.score ? selA : selB).fulfill.toFixed(0)}% fulfillment · 
+                          {formatCurrency((selA.score > selB.score ? selA : selB).price)}/ton · 
+                          Pays in {(selA.score > selB.score ? selA : selB).delay} days
                         </div>
                       </div>
-                    </td>
-                    <td className="price-cell">
-                      <span className="price-value">
-                        {formatCurrency(factory.averagePricePerTon)}
-                      </span>
-                    </td>
-                    <td className="delay-cell">
-                      <span className={`delay-value ${factory.averagePaymentDelay > 15 ? 'high-delay' : 'low-delay'}`}>
-                        {factory.averagePaymentDelay?.toFixed(1) || 'N/A'} days
-                      </span>
-                    </td>
-                    <td className="fulfillment-cell">
-                      <span className="fulfillment-value">
-                        {formatPercentage(factory.contractFulfillmentRate)}
-                      </span>
-                    </td>
-                    <td className="score-cell">
-                      <span 
-                        className="score-value"
-                        style={{ color: getScoreColor(factory.profitabilityScore) }}
-                      >
-                        {factory.profitabilityScore?.toFixed(4) || '0.0000'}
-                      </span>
-                    </td>
-                    <td className="rating-cell">
-                      <span 
-                        className="rating-label"
-                        style={{ 
-                          backgroundColor: getScoreColor(factory.profitabilityScore),
-                          color: 'white'
-                        }}
-                      >
-                        {getScoreLabel(factory.profitabilityScore)}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  ) : (
+                    <div className="fap-verdict-banner">
+                      <div className="fap-verdict-icon">🤝</div>
+                      <div className="fap-verdict-text">
+                        <div className="fap-vt-label">Verdict</div>
+                        <div className="fap-vt-main">Both factories are evenly matched</div>
+                        <div className="fap-vt-sub">Consider proximity to your farm and personal relationship with the factory agent.</div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
-      )}
 
-      {/* Formula Explanation */}
-      <div className="formula-section">
-        <h3>📐 Profitability Score Formula</h3>
-        <div className="formula-card">
-          <div className="formula-text">
-            <strong>Score = (Average Price per Ton × Contract Fulfillment Rate) ÷ (Average Payment Delay + 1)</strong>
-          </div>
-          <div className="formula-explanation">
-            <p><strong>Higher scores indicate more profitable partnerships:</strong></p>
-            <ul>
-              <li><strong>Price per Ton:</strong> Higher contract values increase profitability</li>
-              <li><strong>Fulfillment Rate:</strong> Reliability in completing contracts</li>
-              <li><strong>Payment Delay:</strong> Faster payments improve cash flow (lower delay is better)</li>
-            </ul>
+        {/* FORMULA */}
+        <div className="fap-formula-card">
+          <div className="fap-formula-icon">📐</div>
+          <div>
+            <div className="fap-formula-label">Profitability Score Formula</div>
+            <div className="fap-formula-eq">
+              Score = <span className="fap-eq-green">(Avg. Price/ton × Fulfillment Rate)</span> + <span className="fap-eq-amber">(Avg. Payment Delay + 1)</span>
+            </div>
           </div>
         </div>
+
       </div>
-
-      <style jsx>{`
-        .factory-analysis-page {
-          padding: 2rem;
-          max-width: 1400px;
-          margin: 0 auto;
-          background: #f8f9fa;
-          min-height: 100vh;
-        }
-
-        .page-header {
-          text-align: center;
-          margin-bottom: 3rem;
-          background: white;
-          padding: 2rem;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .page-header h1 {
-          color: #2c5530;
-          font-size: 2.5rem;
-          margin-bottom: 0.5rem;
-        }
-
-        .page-subtitle {
-          color: #666;
-          font-size: 1.2rem;
-          margin-bottom: 2rem;
-        }
-
-        .summary-stats {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1rem;
-          max-width: 800px;
-          margin: 0 auto;
-        }
-
-        .stat-item {
-          background: #f8f9fa;
-          padding: 1rem;
-          border-radius: 8px;
-          text-align: center;
-          border: 2px solid #e9ecef;
-        }
-
-        .stat-label {
-          display: block;
-          color: #666;
-          font-size: 0.9rem;
-          margin-bottom: 0.5rem;
-        }
-
-        .stat-value {
-          display: block;
-          color: #2c5530;
-          font-size: 1.5rem;
-          font-weight: bold;
-        }
-
-        .chart-section {
-          margin-bottom: 3rem;
-          background: white;
-          padding: 2rem;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .chart-container {
-          height: 400px;
-          position: relative;
-        }
-
-        .table-section {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-          overflow: hidden;
-          margin-bottom: 2rem;
-        }
-
-        .section-title {
-          color: #2c5530;
-          font-size: 1.5rem;
-          padding: 1.5rem 2rem 0;
-          margin-bottom: 1rem;
-        }
-
-        .table-container {
-          overflow-x: auto;
-        }
-
-        .analysis-table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-
-        .analysis-table th {
-          background: #2c5530;
-          color: white;
-          padding: 1rem;
-          text-align: left;
-          font-weight: 600;
-          border-bottom: 2px solid #4caf50;
-        }
-
-        .analysis-table td {
-          padding: 1rem;
-          border-bottom: 1px solid #e9ecef;
-        }
-
-        .factory-row:hover {
-          background: #f8f9fa;
-        }
-
-        .rank-cell {
-          text-align: center;
-          min-width: 120px;
-        }
-
-        .rank-number {
-          font-weight: bold;
-          color: #2c5530;
-          font-size: 1.1rem;
-        }
-
-        .recommended-badge {
-          display: block;
-          background: linear-gradient(135deg, #ffd700, #ffed4e);
-          color: #b8860b;
-          padding: 0.25rem 0.5rem;
-          border-radius: 12px;
-          font-size: 0.8rem;
-          font-weight: bold;
-          margin-top: 0.5rem;
-          box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
-        }
-
-        .factory-name {
-          min-width: 200px;
-        }
-
-        .factory-name strong {
-          color: #2c5530;
-        }
-
-        .factory-location {
-          color: #666;
-          font-size: 0.9rem;
-          margin-top: 0.25rem;
-        }
-
-        .contract-count {
-          color: #777;
-          font-size: 0.85rem;
-          margin-top: 0.25rem;
-        }
-
-        .price-cell {
-          text-align: right;
-          min-width: 120px;
-        }
-
-        .price-value {
-          color: #4caf50;
-          font-weight: bold;
-          font-size: 1.1rem;
-        }
-
-        .delay-cell {
-          text-align: center;
-          min-width: 100px;
-        }
-
-        .delay-value {
-          padding: 0.25rem 0.5rem;
-          border-radius: 4px;
-          font-weight: bold;
-        }
-
-        .low-delay {
-          background: #e8f5e8;
-          color: #2e7d32;
-        }
-
-        .high-delay {
-          background: #ffebee;
-          color: #c62828;
-        }
-
-        .fulfillment-cell {
-          text-align: center;
-          min-width: 100px;
-        }
-
-        .fulfillment-value {
-          color: #2c5530;
-          font-weight: bold;
-        }
-
-        .score-cell {
-          text-align: center;
-          min-width: 120px;
-        }
-
-        .score-value {
-          font-weight: bold;
-          font-size: 1.1rem;
-        }
-
-        .rating-cell {
-          text-align: center;
-          min-width: 100px;
-        }
-
-        .rating-label {
-          padding: 0.5rem 1rem;
-          border-radius: 20px;
-          font-weight: bold;
-          font-size: 0.9rem;
-          text-transform: uppercase;
-        }
-
-        .empty-state {
-          text-align: center;
-          padding: 4rem 2rem;
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-          margin-bottom: 2rem;
-        }
-
-        .empty-state h3 {
-          color: #666;
-          margin-bottom: 1rem;
-        }
-
-        .empty-state ul {
-          text-align: left;
-          max-width: 400px;
-          margin: 1rem auto;
-        }
-
-        .formula-section {
-          background: white;
-          padding: 2rem;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .formula-section h3 {
-          color: #2c5530;
-          margin-bottom: 1rem;
-        }
-
-        .formula-card {
-          background: #f8f9fa;
-          border: 2px solid #e9ecef;
-          border-radius: 8px;
-          padding: 1.5rem;
-        }
-
-        .formula-text {
-          background: #2c5530;
-          color: white;
-          padding: 1rem;
-          border-radius: 8px;
-          margin-bottom: 1rem;
-          text-align: center;
-          font-size: 1.1rem;
-        }
-
-        .formula-explanation ul {
-          margin: 0.5rem 0;
-          padding-left: 1.5rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-          .factory-analysis-page {
-            padding: 1rem;
-          }
-
-          .page-header h1 {
-            font-size: 2rem;
-          }
-
-          .summary-stats {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-          .chart-container {
-            height: 300px;
-          }
-
-          .analysis-table {
-            font-size: 0.9rem;
-          }
-
-          .analysis-table th,
-          .analysis-table td {
-            padding: 0.5rem;
-          }
-
-          .recommended-badge {
-            font-size: 0.7rem;
-          }
-        }
-      `}</style>
     </div>
   );
 };

@@ -357,7 +357,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
         .form-input:disabled,
         .form-textarea:disabled {
           background-color: #f5f5f5;
-          cursor: not-allowed;
+          
         }
 
         .form-input::placeholder,
@@ -405,7 +405,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
           border-radius: 8px;
           font-size: 1rem;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
@@ -421,7 +421,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
 
         .submit-button:disabled {
           background: #ccc;
-          cursor: not-allowed;
+          
           transform: none;
           box-shadow: none;
         }

@@ -389,7 +389,6 @@ const styles = {
     border: 'none',
     padding: '0.6rem 1rem',
     borderRadius: '5px',
-    cursor: 'pointer',
     fontSize: '0.9rem'
   },
   placeholder: {
@@ -541,7 +540,6 @@ const styles = {
     border: 'none',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem',
     fontWeight: 'bold',
     transition: 'background-color 0.3s ease'
@@ -554,7 +552,7 @@ const styles = {
     borderRadius: '6px',
     fontSize: '0.9rem',
     fontWeight: 'bold',
-    cursor: 'not-allowed'
+    
   },
   detailsButton: {
     backgroundColor: 'transparent',
@@ -562,7 +560,6 @@ const styles = {
     border: '1px solid #3498db',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem'
   }
 };

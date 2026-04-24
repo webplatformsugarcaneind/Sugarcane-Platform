@@ -157,7 +157,7 @@ const FarmerContractsTab = () => {
             border: none;
             border-radius: 8px;
             font-weight: 600;
-            cursor: pointer;
+            
             transition: all 0.2s ease;
           }
 

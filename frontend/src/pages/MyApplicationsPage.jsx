@@ -314,7 +314,6 @@ const styles = {
     border: '1px solid #ddd',
     backgroundColor: 'white',
     borderRadius: '20px',
-    cursor: 'pointer',
     fontSize: '0.9rem',
     transition: 'all 0.3s ease'
   },
@@ -324,7 +323,6 @@ const styles = {
     backgroundColor: '#3498db',
     color: 'white',
     borderRadius: '20px',
-    cursor: 'pointer',
     fontSize: '0.9rem',
     fontWeight: 'bold'
   },
@@ -431,7 +429,6 @@ const styles = {
     border: 'none',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem'
   },
   withdrawButton: {
@@ -440,7 +437,6 @@ const styles = {
     border: 'none',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem'
   },
   contactButton: {
@@ -449,7 +445,6 @@ const styles = {
     border: 'none',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem'
   },
   detailsButton: {
@@ -458,7 +453,6 @@ const styles = {
     border: '1px solid #ddd',
     padding: '0.8rem 1.5rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '0.9rem'
   },
   noApplications: {
@@ -472,7 +466,6 @@ const styles = {
     border: 'none',
     padding: '1rem 2rem',
     borderRadius: '6px',
-    cursor: 'pointer',
     fontSize: '1rem',
     marginTop: '1rem'
   },

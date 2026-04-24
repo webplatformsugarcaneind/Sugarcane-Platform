@@ -717,7 +717,7 @@ const EditListingPage = () => {
           border: none;
           padding: 0.5rem 1rem;
           border-radius: 6px;
-          cursor: pointer;
+          
           transition: background 0.2s;
         }
 
@@ -808,7 +808,7 @@ const EditListingPage = () => {
         .checkbox-label {
           display: flex;
           align-items: center;
-          cursor: pointer;
+          
           gap: 0.5rem;
           font-size: 0.95rem;
           color: #2c5530;
@@ -869,7 +869,7 @@ const EditListingPage = () => {
           background: #f44336;
           color: white;
           border: none;
-          cursor: pointer;
+          
           font-weight: bold;
           display: flex;
           align-items: center;
@@ -905,7 +905,7 @@ const EditListingPage = () => {
           border-radius: 8px;
           font-size: 1.1rem;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.3s ease;
         }
 
@@ -922,7 +922,7 @@ const EditListingPage = () => {
           border-radius: 8px;
           font-size: 1.1rem;
           font-weight: 600;
-          cursor: pointer;
+          
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
@@ -939,7 +939,7 @@ const EditListingPage = () => {
         .submit-button:disabled,
         .cancel-button:disabled {
           opacity: 0.6;
-          cursor: not-allowed;
+          
           transform: none;
         }
 

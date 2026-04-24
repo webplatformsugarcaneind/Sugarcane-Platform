@@ -344,7 +344,6 @@ const FactoryAssociatedHHMsPage = () => {
                                     background: 'white',
                                     color: '#6c757d',
                                     borderRadius: '8px',
-                                    cursor: 'pointer',
                                     fontSize: '0.95rem',
                                     fontWeight: '500'
                                 }}
@@ -368,7 +367,6 @@ const FactoryAssociatedHHMsPage = () => {
                                     background: '#dc3545',
                                     color: 'white',
                                     borderRadius: '8px',
-                                    cursor: 'pointer',
                                     fontSize: '0.95rem',
                                     fontWeight: '500',
                                     opacity: removingHHMId === selectedHHMToRemove.id ? 0.7 : 1

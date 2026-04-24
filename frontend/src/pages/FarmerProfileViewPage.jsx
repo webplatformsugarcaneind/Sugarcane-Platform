@@ -1,182 +1,149 @@
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import './FarmerProfileViewPage.css';
-
-/**
- * FarmerProfileViewPage Component
- * 
- * Displays detailed information about a specific farmer
- */
-const FarmerProfileViewPage = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    
-    // Get farmer data from navigation state or fallback
-    const farmerData = location.state?.farmerData || null;
-
-    const handleGoBack = () => {
-        navigate(-1); // Go back to previous page
-    };
-
-    if (!farmerData) {
-        return (
-            <div className="farmer-profile-page">
-                <div className="error-state">
-                    <div className="error-icon">⚠️</div>
-                    <h3>Farmer Profile Not Found</h3>
-                    <p>Unable to load farmer profile information.</p>
-                    <button className="btn btn-primary" onClick={handleGoBack}>
-                        ← Go Back
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="farmer-profile-page">
-            {/* Header Section */}
-            <div className="profile-header">
-                <button className="back-button" onClick={handleGoBack}>
-                    ← Back to Directory
-                </button>
-                
-                <div className="farmer-header">
-                    <div className="farmer-avatar">
-                        <div className="avatar-placeholder">
-                            🧑‍🌾
-                        </div>
-                    </div>
-                    
-                    <div className="farmer-info">
-                        <h1>{farmerData.name || 'Unknown Farmer'}</h1>
-                        <p className="farmer-subtitle">
-                            {farmerData.farmSize ? `${farmerData.farmSize} acres` : 'Farm Size Unknown'} • 
-                            {farmerData.location || 'Location Unknown'}
-                        </p>
-                        <p className="farmer-description">
-                            {farmerData.description || 'No description available'}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="profile-content">
-                {/* Contact Information */}
-                <div className="info-section">
-                    <h3>📞 Contact Information</h3>
-                    <div className="contact-grid">
-                        <div className="contact-item">
-                            <span className="contact-icon">📧</span>
-                            <div className="contact-details">
-                                <label>Email</label>
-                                <span>{farmerData.email || 'Not available'}</span>
-                            </div>
-                        </div>
-                        
-                        <div className="contact-item">
-                            <span className="contact-icon">📱</span>
-                            <div className="contact-details">
-                                <label>Phone</label>
-                                <span>{farmerData.phone || 'Not available'}</span>
-                            </div>
-                        </div>
-                        
-                        <div className="contact-item">
-                            <span className="contact-icon">📍</span>
-                            <div className="contact-details">
-                                <label>Location</label>
-                                <span>{farmerData.location || 'Not specified'}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Farm Details */}
-                <div className="info-section">
-                    <h3>🚜 Farm Details</h3>
-                    <div className="farm-grid">
-                        <div className="farm-detail">
-                            <div className="detail-header">
-                                <span className="detail-icon">🌾</span>
-                                <label>Farm Size</label>
-                            </div>
-                            <span className="detail-value">{farmerData.farmSize ? `${farmerData.farmSize} acres` : 'Not specified'}</span>
-                        </div>
-
-                        <div className="farm-detail">
-                            <div className="detail-header">
-                                <span className="detail-icon">🌱</span>
-                                <label>Crop Types</label>
-                            </div>
-                            <span className="detail-value">{farmerData.cropTypes || 'Sugarcane'}</span>
-                        </div>
-
-                        <div className="farm-detail">
-                            <div className="detail-header">
-                                <span className="detail-icon">📈</span>
-                                <label>Experience</label>
-                            </div>
-                            <span className="detail-value">{farmerData.experience || 'Not specified'}</span>
-                        </div>
-
-                        <div className="farm-detail">
-                            <div className="detail-header">
-                                <span className="detail-icon">🏆</span>
-                                <label>Certification</label>
-                            </div>
-                            <span className="detail-value">{farmerData.certification || 'Standard'}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Additional Information */}
-                <div className="info-section">
-                    <h3>ℹ️ Additional Information</h3>
-                    <div className="additional-info">
-                        <div className="info-item">
-                            <span className="info-icon">👤</span>
-                            <span>Username: {farmerData.username || 'Not available'}</span>
-                        </div>
-                        
-                        <div className="info-item">
-                            <span className="info-icon">📅</span>
-                            <span>Member since: {farmerData.createdAt ? new Date(farmerData.createdAt).toLocaleDateString() : 'Not available'}</span>
-                        </div>
-                        
-                        <div className="info-item">
-                            <span className="info-icon">🔄</span>
-                            <span>Last updated: {farmerData.updatedAt ? new Date(farmerData.updatedAt).toLocaleDateString() : 'Not available'}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="profile-actions">
-                <button className="btn btn-primary" onClick={() => {
-                    if (farmerData.email) {
-                        window.location.href = `mailto:${farmerData.email}`;
-                    }
-                }}>
-                    📧 Send Email
-                </button>
-                
-                {farmerData.phone && (
-                    <button className="btn btn-secondary" onClick={() => {
-                        window.location.href = `tel:${farmerData.phone}`;
-                    }}>
-                        📱 Call
-                    </button>
-                )}
-                
-                <button className="btn btn-outline" onClick={handleGoBack}>
-                    ← Back to Directory
-                </button>
-            </div>
-        </div>
-    );
-};
-
-export default FarmerProfileViewPage;
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import './FarmerProfile.css'; // Leverage unified Dark Mode CSS
+
+const FarmerProfileViewPage = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    
+    const farmerData = location.state?.farmerData || null;
+
+    // Cursor tracking
+
+    const handleGoBack = () => navigate(-1);
+
+    if (!farmerData) {
+        return (
+          <div className="farmer-profile-page" style={{ 
+            display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', 
+            background: 'radial-gradient(ellipse at 20% 0%, rgba(126,200,67,0.07) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(126,200,67,0.05) 0%, transparent 50%), #0b0f0b' 
+          }}>
+            <div style={{ color: '#ff6b6b', fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
+            <div style={{ color: '#f0f5ec', marginBottom: '2rem' }}>Farmer Profile Not Found</div>
+            <button className="fp-save-btn" onClick={handleGoBack}>← Go Back</button>
+          </div>
+        );
+    }
+
+    const initials = farmerData.name ? farmerData.name.substring(0, 2).toUpperCase() : 'F';
+
+    return (
+        <div className="farmer-profile-page" style={{ background: 'radial-gradient(ellipse at 20% 0%, rgba(126,200,67,0.07) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(126,200,67,0.05) 0%, transparent 50%), #0b0f0b' }}>
+            <div className="fp-noise" />
+            <div className="fp-bg-glow" />
+
+            <div className="fp-layout-shell">
+                <aside className="fp-sidebar" >
+                    <div className="fp-sidebar-profile">
+                        <div className="fp-avatar-wrap">
+                            <div className="fp-avatar">{initials}</div>
+                            <div className="fp-avatar-ring"></div>
+                        </div>
+                        <div className="fp-user-name">{farmerData.name || 'Unknown Farmer'}</div>
+                        <div className="fp-user-role">
+                            <span className="fp-role-dot"></span>
+                            Farmer
+                        </div>
+                    </div>
+
+                    <div className="fp-stats-grid">
+                        <div className="fp-stat-item">
+                            <div className="fp-stat-val">{farmerData.farmSize ? String(farmerData.farmSize).replace(/[^0-9]/g, '') : '-'}</div>
+                            <div className="fp-stat-lbl">Acres</div>
+                        </div>
+                        <div className="fp-stat-item">
+                            <div className="fp-stat-val">{farmerData.experience ? String(farmerData.experience).replace(/[^0-9]/g, '') : '-'}</div>
+                            <div className="fp-stat-lbl">Years Exp.</div>
+                        </div>
+                    </div>
+
+                    <div className="fp-submit-area" style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
+                        <button className="fp-save-btn" onClick={() => { if (farmerData.email) window.location.href = `mailto:${farmerData.email}`; }} style={{ width: '100%' }}>
+                            📧 Send Email
+                        </button>
+                        {farmerData.phone && (
+                            <button className="fp-save-btn" onClick={() => window.location.href = `tel:${farmerData.phone}`} style={{ width: '100%', background: 'transparent', border: '1px solid var(--green)', color: 'var(--green)' }}>
+                                📱 Call
+                            </button>
+                        )}
+                    </div>
+                </aside>
+
+                <main className="fp-main">
+                    <div className="fp-page-header">
+                        <div className="fp-header-left">
+                            <div className="fp-eyebrow">Farmer Profile</div>
+                            <h1 className="fp-title">{farmerData.name || 'Farmer'}'s <em className="fp-highlight">Profile</em></h1>
+                            <p className="fp-subtitle">@{farmerData.username || 'unknown'}</p>
+                        </div>
+                        <div className="fp-header-right">
+                            <button className="fp-save-btn" onClick={handleGoBack} style={{ background: 'rgba(255, 255, 255, 0.1)', color: 'white' }}>← Back to Directory</button>
+                        </div>
+                    </div>
+
+                    <section className="fp-card">
+                        <div className="fp-card-header">
+                            <div className="fp-card-icon">🚜</div>
+                            <div className="fp-card-txt">
+                                <h2 className="fp-card-title">Farm Details</h2>
+                                <div className="fp-card-sub">Agricultural information and expertise</div>
+                            </div>
+                        </div>
+                        <div className="fp-card-body">
+                            <div className="fp-form-grid">
+                                <div className="fp-field full-width">
+                                    <label>Description</label>
+                                    <textarea readOnly value={farmerData.description || 'No description available'} rows={3}></textarea>
+                                </div>
+                                <div className="fp-field">
+                                    <label>Farm Size</label>
+                                    <input type="text" readOnly value={farmerData.farmSize ? `${farmerData.farmSize} acres` : 'Not specified'} />
+                                </div>
+                                <div className="fp-field">
+                                    <label>Crop Types</label>
+                                    <input type="text" readOnly value={farmerData.cropTypes || 'Sugarcane'} />
+                                </div>
+                                <div className="fp-field">
+                                    <label>Experience</label>
+                                    <input type="text" readOnly value={farmerData.experience || 'Not specified'} />
+                                </div>
+                                <div className="fp-field">
+                                    <label>Certification</label>
+                                    <input type="text" readOnly value={farmerData.certification || 'Standard'} />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="fp-card">
+                        <div className="fp-card-header">
+                            <div className="fp-card-icon">📞</div>
+                            <div className="fp-card-txt">
+                                <h2 className="fp-card-title">Contact Information</h2>
+                                <div className="fp-card-sub">Get in touch directly</div>
+                            </div>
+                        </div>
+                        <div className="fp-card-body">
+                            <div className="fp-form-grid">
+                                <div className="fp-field">
+                                    <label>Email</label>
+                                    <input type="email" readOnly value={farmerData.email || 'Not available'} />
+                                </div>
+                                <div className="fp-field">
+                                    <label>Phone</label>
+                                    <input type="text" readOnly value={farmerData.phone || 'Not available'} />
+                                </div>
+                                <div className="fp-field full-width">
+                                    <label>Location</label>
+                                    <input type="text" readOnly value={farmerData.location || 'Not specified'} />
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    );
+};
+
+export default FarmerProfileViewPage;
