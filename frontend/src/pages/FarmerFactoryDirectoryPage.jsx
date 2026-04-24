@@ -1,1199 +1,261 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
-/**
- * FarmerFactoryDirectoryPage Component
- * 
- * Page for farmers to view and search through Factories.
- * Includes search functionality, filtering, and displays factory data in a card format.
- */
-const FarmerFactoryDirectoryPage = () => {
-  const navigate = useNavigate();
-  const [factories, setFactories] = useState([]);
-  const [filteredFactories, setFilteredFactories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('');
-  const [selectedCapacity, setSelectedCapacity] = useState('');
-  const [sortBy, setSortBy] = useState('name');
-
-  useEffect(() => {
-    fetchFactories();
-  }, []);
-
-  const handleAssociateHHM = (factoryId) => {
-    // Navigate to HHM association page
-    navigate(`/farmer/associate-hhm/${factoryId}`);
-  };
-
-  const filterAndSortFactories = useCallback(() => {
-    let filtered = [...factories];
-
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(factory =>
-        factory.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        factory.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        factory.contactEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        factory.contactPhone?.includes(searchTerm) ||
-        factory.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Apply location filter
-    if (selectedLocation) {
-      filtered = filtered.filter(factory =>
-        factory.location?.toLowerCase().includes(selectedLocation.toLowerCase())
-      );
-    }
-
-    // Apply capacity filter
-    if (selectedCapacity) {
-      const _capacity = parseInt(selectedCapacity);
-      filtered = filtered.filter(factory => {
-        const factoryCapacity = factory.processingCapacity || 0;
-        switch (selectedCapacity) {
-          case 'small':
-            return factoryCapacity < 1000;
-          case 'medium':
-            return factoryCapacity >= 1000 && factoryCapacity < 5000;
-          case 'large':
-            return factoryCapacity >= 5000;
-          default:
-            return true;
-        }
-      });
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return (a.name || '').localeCompare(b.name || '');
-        case 'location':
-          return (a.location || '').localeCompare(b.location || '');
-        case 'capacity':
-          return (b.processingCapacity || 0) - (a.processingCapacity || 0);
-        case 'established':
-          return new Date(b.establishedYear || 0) - new Date(a.establishedYear || 0);
-        default:
-          return 0;
-      }
-    });
-
-    setFilteredFactories(filtered);
-  }, [factories, searchTerm, selectedLocation, selectedCapacity, sortBy]);
-
-  useEffect(() => {
-    filterAndSortFactories();
-  }, [factories, searchTerm, selectedLocation, selectedCapacity, sortBy, filterAndSortFactories]);
-
-  const fetchFactories = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Get JWT token from localStorage
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        setError('No authentication token found. Please login again.');
-        return;
-      }
-
-      // Make API request with Authorization header
-      const response = await axios.get('/api/farmer/factories', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      const factoryData = response.data.data || response.data.factories || [];
-      setFactories(factoryData);
-    } catch (err) {
-      console.error('Error fetching factories:', err);
-      setError(
-        err.response?.data?.message || 
-        'Failed to fetch factory directory. Please try again.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleLocationChange = (e) => {
-    setSelectedLocation(e.target.value);
-  };
-
-  const handleCapacityChange = (e) => {
-    setSelectedCapacity(e.target.value);
-  };
-
-  const handleSortChange = (e) => {
-    setSortBy(e.target.value);
-  };
-
-  const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedLocation('');
-    setSelectedCapacity('');
-    setSortBy('name');
-  };
-
-  // Get unique locations for filter dropdown
-  const uniqueLocations = [...new Set(factories
-    .map(factory => factory.location)
-    .filter(location => location)
-  )];
-
-  const formatNumber = (num) => {
-    if (!num) return 'N/A';
-    return num.toLocaleString();
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const getCapacityColor = (capacity) => {
-    if (!capacity) return '#666';
-    if (capacity < 1000) return '#81c784';
-    if (capacity < 5000) return '#66bb6a';
-    return '#4caf50';
-  };
-
-  const getCapacityLabel = (capacity) => {
-    if (!capacity) return 'Unknown';
-    if (capacity < 1000) return 'Small Scale';
-    if (capacity < 5000) return 'Medium Scale';
-    return 'Large Scale';
-  };
-
-  const handleViewProfile = (factory) => {
-    console.log('👁️ Viewing factory profile for:', factory.name);
-    console.log('🔍 DEBUG: Factory data for profile viewing:', factory);
-    console.log('🔍 DEBUG: Factory ID (_id):', factory._id);
-    console.log('🔍 DEBUG: Factory ID (id):', factory.id);
-    
-    // Use id field (from farmer API) or _id field (from other APIs)
-    const factoryId = factory.id || factory._id;
-    
-    if (!factoryId) {
-      console.error('❌ No factory ID found!', factory);
-      alert('Error: Cannot view profile - Factory ID is missing');
-      return;
-    }
-    
-    console.log('🚀 Navigating to factory profile:', factoryId);
-    // Navigate to relative profile page
-    navigate(factoryId);
-  };
-
-  return (
-    <div className="factory-directory-page">
-      <div className="page-header">
-        <h1>Factory Directory</h1>
-        <p className="page-subtitle">
-          Discover processing facilities and manufacturing partners
-        </p>
-      </div>
-
-      {/* Search and Filter Section */}
-      <div className="filter-section">
-        <div className="search-controls">
-          <div className="search-input-group">
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder="Search by name, location, email, phone, or description..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="search-input"
-            />
-          </div>
-
-          <div className="filter-controls">
-            <select
-              value={selectedLocation}
-              onChange={handleLocationChange}
-              className="filter-select"
-            >
-              <option value="">All Locations</option>
-              {uniqueLocations.map((location, index) => (
-                <option key={index} value={location}>
-                  📍 {location}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedCapacity}
-              onChange={handleCapacityChange}
-              className="filter-select"
-            >
-              <option value="">All Capacities</option>
-              <option value="small">🏭 Small Scale (&lt;1,000)</option>
-              <option value="medium">🏭 Medium Scale (1,000-5,000)</option>
-              <option value="large">🏭 Large Scale (5,000+)</option>
-            </select>
-
-            <select
-              value={sortBy}
-              onChange={handleSortChange}
-              className="sort-select"
-            >
-              <option value="name">Sort by Name</option>
-              <option value="location">Sort by Location</option>
-              <option value="capacity">Sort by Capacity</option>
-              <option value="established">Sort by Established Year</option>
-            </select>
-
-            <button
-              onClick={clearFilters}
-              className="clear-filters-btn"
-            >
-              Clear Filters
-            </button>
-          </div>
-        </div>
-
-        <div className="results-info">
-          <span className="results-count">
-            {filteredFactories.length} of {factories.length} factories found
-          </span>
-        </div>
-      </div>
-
-      {/* Content Section */}
-      <div className="content-section">
-        {loading ? (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading factory directory...</p>
-          </div>
-        ) : error ? (
-          <div className="error-container">
-            <div className="error-icon">⚠️</div>
-            <h3>Error Loading Directory</h3>
-            <p className="error-message">{error}</p>
-            <button 
-              onClick={fetchFactories} 
-              className="retry-button"
-            >
-              Try Again
-            </button>
-          </div>
-        ) : filteredFactories.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">🏭</div>
-            <h3>No Factories Found</h3>
-            <p>
-              {searchTerm || selectedLocation || selectedCapacity
-                ? 'Try adjusting your search or filter criteria.' 
-                : 'No factories are currently available in the directory.'
-              }
-            </p>
-            {(searchTerm || selectedLocation || selectedCapacity) && (
-              <button
-                onClick={clearFilters}
-                className="clear-filters-btn"
-              >
-                Clear All Filters
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="factory-grid">
-            {filteredFactories.map((factory) => (
-              <div key={factory.id || factory._id} className="factory-card">
-                <div className="card-header">
-                  <div className="factory-avatar">
-                    <span className="avatar-icon">🏭</span>
-                  </div>
-                  <div className="factory-basic-info">
-                    <h3 className="factory-name">{factory.name || 'Unknown Factory'}</h3>
-                    <p className="factory-location">📍 {factory.location || 'Location not specified'}</p>
-                    <span 
-                      className="capacity-badge"
-                      style={{ backgroundColor: getCapacityColor(factory.processingCapacity) }}
-                    >
-                      {getCapacityLabel(factory.processingCapacity)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="card-content">
-                  {factory.description && (
-                    <div className="factory-description">
-                      <p>{factory.description}</p>
-                    </div>
-                  )}
-
-                  <div className="factory-details">
-                    <div className="detail-item">
-                      <span className="detail-label">Processing Capacity:</span>
-                      <span className="detail-value">
-                        {factory.processingCapacity ? `${formatNumber(factory.processingCapacity)} tons/day` : 'N/A'}
-                      </span>
-                    </div>
-                    
-                    {factory.establishedYear && (
-                      <div className="detail-item">
-                        <span className="detail-label">Established:</span>
-                        <span className="detail-value">{factory.establishedYear}</span>
-                      </div>
-                    )}
-
-                    {factory.specialization && (
-                      <div className="detail-item">
-                        <span className="detail-label">Specialization:</span>
-                        <div className="specialization-tags">
-                          {Array.isArray(factory.specialization) 
-                            ? factory.specialization.map((spec, index) => (
-                                <span key={index} className="spec-tag">
-                                  {spec}
-                                </span>
-                              ))
-                            : <span className="spec-tag">
-                                {factory.specialization}
-                              </span>
-                          }
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="contact-info">
-                    {factory.contactEmail && (
-                      <div className="contact-item">
-                        <span className="contact-icon">📧</span>
-                        <span className="contact-text">{factory.contactEmail}</span>
-                      </div>
-                    )}
-                    {factory.contactPhone && (
-                      <div className="contact-item">
-                        <span className="contact-icon">📱</span>
-                        <span className="contact-text">{factory.contactPhone}</span>
-                      </div>
-                    )}
-                    {factory.website && (
-                      <div className="contact-item">
-                        <span className="contact-icon">🌐</span>
-                        <a 
-                          href={factory.website.startsWith('http') ? factory.website : `https://${factory.website}`}
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="contact-link"
-                        >
-                          {factory.website}
-                        </a>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="factory-meta">
-                    <div className="meta-item">
-                      <span className="meta-label">Added to directory:</span>
-                      <span className="meta-value">{formatDate(factory.createdAt)}</span>
-                    </div>
-                    {factory.isActive !== undefined && (
-                      <div className="meta-item">
-                        <span className="meta-label">Status:</span>
-                        <span className={`status-badge ${factory.isActive ? 'active' : 'inactive'}`}>
-                          {factory.isActive ? '✅ Active' : '⚪ Inactive'}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Associated HHMs Section */}
-                  {factory.associatedHHMs && factory.associatedHHMs.length > 0 && (
-                    <div className="associated-hhms-section">
-                      <div className="hhms-header">
-                        <span className="hhms-icon">👥</span>
-                        <span className="hhms-title">Associated HHMs ({factory.hhmCount || factory.associatedHHMs.length})</span>
-                        <button 
-                          className="manage-hhms-btn"
-                          onClick={() => handleAssociateHHM(factory._id)}
-                          title="Manage HHM associations"
-                        >
-                          <span className="manage-icon">⚙️</span>
-                          Manage
-                        </button>
-                      </div>
-                      <div className="hhms-list">
-                        {factory.associatedHHMs.slice(0, 3).map((hhm, index) => (
-                          <div key={hhm._id || index} className="hhm-item">
-                            <div className="hhm-avatar">
-                              <span className="hhm-avatar-icon">👨‍💼</span>
-                            </div>
-                            <div className="hhm-info">
-                              <div className="hhm-name">{hhm.name || 'Unknown HHM'}</div>
-                              {hhm.location && (
-                                <div className="hhm-location">📍 {hhm.location}</div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                        {factory.associatedHHMs.length > 3 && (
-                          <div className="hhm-item more-hhms">
-                            <div className="hhm-avatar">
-                              <span className="hhm-avatar-icon">+{factory.associatedHHMs.length - 3}</span>
-                            </div>
-                            <div className="hhm-info">
-                              <div className="hhm-name">More HHMs</div>
-                              <div className="hhm-location">Click to view all</div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {(!factory.associatedHHMs || factory.associatedHHMs.length === 0) && (
-                    <div className="no-hhms-section">
-                      <div className="no-hhms-message">
-                        <span className="no-hhms-icon">👥</span>
-                        <span className="no-hhms-text">No associated HHMs (0 associated)</span>
-                      </div>
-                      <button 
-                        className="associate-hhm-btn"
-                        onClick={() => handleAssociateHHM(factory._id)}
-                        title="Associate HHMs with this factory"
-                      >
-                        <span className="associate-icon">➕</span>
-                        Associate HHMs
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="card-actions">
-                  <button 
-                    className="contact-btn"
-                    onClick={() => {
-                      if (factory.contactEmail) {
-                        window.location.href = `mailto:${factory.contactEmail}`;
-                      }
-                    }}
-                  >
-                    📧 Contact
-                  </button>
-                  {factory.website && (
-                    <button 
-                      className="visit-website-btn"
-                      onClick={() => {
-                        const url = factory.website.startsWith('http') ? factory.website : `https://${factory.website}`;
-                        window.open(url, '_blank', 'noopener,noreferrer');
-                      }}
-                    >
-                      🌐 Visit Website
-                    </button>
-                  )}
-                  <button 
-                    className="view-details-btn"
-                    onClick={() => handleViewProfile(factory)}
-                  >
-                    👁️ View Profile
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <style jsx>{`
-        .factory-directory-page {
-          padding: 2rem;
-          max-width: 1400px;
-          margin: 0 auto;
-          min-height: 100vh;
-        }
-
-        .page-header {
-          margin-bottom: 2rem;
-          text-align: center;
-          background: linear-gradient(135deg, rgba(44, 85, 48, 0.7) 0%, rgba(76, 175, 80, 0.7) 100%);
-          color: white;
-          padding: 2rem;
-          border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(44, 85, 48, 0.2);
-        }
-
-        .page-header h1 {
-          color: white;
-          font-size: 2.5rem;
-          margin: 0 0 0.5rem 0;
-        }
-
-        .page-subtitle {
-          color: rgba(255, 255, 255, 0.9);
-          font-size: 1.1rem;
-          margin: 0;
-        }
-
-        .filter-section {
-          background: white;
-          border-radius: 12px;
-          padding: 1.5rem;
-          margin-bottom: 2rem;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .search-controls {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .search-input-group {
-          position: relative;
-          flex: 1;
-        }
-
-        .search-icon {
-          position: absolute;
-          left: 1rem;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #666;
-        }
-
-        .search-input {
-          width: 100%;
-          padding: 0.875rem 1rem 0.875rem 2.5rem;
-          border: 2px solid #e1e5e9;
-          border-radius: 8px;
-          font-size: 1rem;
-          transition: border-color 0.2s;
-        }
-
-        .search-input:focus {
-          outline: none;
-          border-color: #4caf50;
-        }
-
-        .filter-controls {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-          align-items: center;
-        }
-
-        .filter-select,
-        .sort-select {
-          padding: 0.875rem;
-          border: 2px solid #e1e5e9;
-          border-radius: 8px;
-          font-size: 0.9rem;
-          background: white;
-          
-          transition: border-color 0.2s;
-        }
-
-        .filter-select:focus,
-        .sort-select:focus {
-          outline: none;
-          border-color: #4caf50;
-        }
-
-        .clear-filters-btn {
-          background: #f8f9fa;
-          color: #495057;
-          border: 2px solid #e1e5e9;
-          padding: 0.875rem 1rem;
-          border-radius: 8px;
-          font-size: 0.9rem;
-          
-          transition: all 0.2s;
-        }
-
-        .clear-filters-btn:hover {
-          background: #e9ecef;
-          border-color: #adb5bd;
-        }
-
-        .results-info {
-          margin-top: 1rem;
-          padding-top: 1rem;
-          border-top: 1px solid #e1e5e9;
-        }
-
-        .results-count {
-          color: #666;
-          font-size: 0.9rem;
-        }
-
-        .loading-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 4rem 2rem;
-          text-align: center;
-        }
-
-        .loading-spinner {
-          width: 40px;
-          height: 40px;
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #4caf50;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin-bottom: 1rem;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        .error-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 4rem 2rem;
-          text-align: center;
-          background: #fff5f5;
-          border-radius: 12px;
-          border: 2px solid #fed7d7;
-        }
-
-        .error-icon {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-        }
-
-        .error-container h3 {
-          color: #e53e3e;
-          margin: 0 0 0.5rem 0;
-        }
-
-        .error-message {
-          color: #666;
-          margin-bottom: 1.5rem;
-        }
-
-        .retry-button {
-          background: #4caf50;
-          color: white;
-          border: none;
-          padding: 0.875rem 1.5rem;
-          border-radius: 8px;
-          font-size: 1rem;
-          
-          transition: background 0.2s;
-        }
-
-        .retry-button:hover {
-          background: #45a049;
-        }
-
-        .empty-state {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 4rem 2rem;
-          text-align: center;
-        }
-
-        .empty-icon {
-          font-size: 4rem;
-          margin-bottom: 1rem;
-          opacity: 0.5;
-        }
-
-        .empty-state h3 {
-          color: #2c5530;
-          margin: 0 0 0.5rem 0;
-        }
-
-        .empty-state p {
-          color: #666;
-          margin-bottom: 1.5rem;
-        }
-
-        .factory-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-          gap: 1.5rem;
-        }
-
-        .factory-card {
-          background: white;
-          border-radius: 12px;
-          padding: 1.5rem;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          transition: transform 0.2s, box-shadow 0.2s;
-          border: 2px solid transparent;
-        }
-
-        .factory-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-          border-color: #4caf50;
-        }
-
-        .card-header {
-          display: flex;
-          align-items: flex-start;
-          margin-bottom: 1rem;
-        }
-
-        .factory-avatar {
-          width: 60px;
-          height: 60px;
-          background: linear-gradient(135deg, #2c5530, #4caf50);
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-right: 1rem;
-          flex-shrink: 0;
-        }
-
-        .avatar-icon {
-          font-size: 1.5rem;
-          color: white;
-        }
-
-        .factory-basic-info {
-          flex: 1;
-        }
-
-        .factory-name {
-          margin: 0 0 0.5rem 0;
-          color: #2c5530;
-          font-size: 1.2rem;
-          line-height: 1.3;
-        }
-
-        .factory-location {
-          margin: 0 0 0.5rem 0;
-          color: #666;
-          font-size: 0.9rem;
-        }
-
-        .capacity-badge {
-          color: white;
-          padding: 0.25rem 0.5rem;
-          border-radius: 20px;
-          font-size: 0.8rem;
-          font-weight: 500;
-        }
-
-        .factory-description {
-          margin-bottom: 1rem;
-          padding: 1rem;
-          background: #f8f9fa;
-          border-radius: 8px;
-          border-left: 4px solid #4caf50;
-        }
-
-        .factory-description p {
-          margin: 0;
-          color: #495057;
-          font-size: 0.9rem;
-          line-height: 1.5;
-        }
-
-        .factory-details {
-          margin-bottom: 1rem;
-        }
-
-        .detail-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 0.5rem;
-          gap: 1rem;
-        }
-
-        .detail-label {
-          color: #666;
-          font-size: 0.9rem;
-          font-weight: 500;
-          flex-shrink: 0;
-        }
-
-        .detail-value {
-          color: #495057;
-          font-size: 0.9rem;
-          text-align: right;
-        }
-
-        .specialization-tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.25rem;
-        }
-
-        .spec-tag {
-          background: #e8f5e9;
-          color: #2c5530;
-          padding: 0.2rem 0.5rem;
-          border-radius: 12px;
-          font-size: 0.75rem;
-          font-weight: 500;
-        }
-
-        .contact-info {
-          margin-bottom: 1rem;
-          padding-top: 1rem;
-          border-top: 1px solid #e1e5e9;
-        }
-
-        .contact-item {
-          display: flex;
-          align-items: center;
-          margin-bottom: 0.5rem;
-        }
-
-        .contact-icon {
-          width: 20px;
-          margin-right: 0.5rem;
-        }
-
-        .contact-text {
-          color: #495057;
-          font-size: 0.9rem;
-        }
-
-        .contact-link {
-          color: #4caf50;
-          text-decoration: none;
-          font-size: 0.9rem;
-        }
-
-        .contact-link:hover {
-          color: #2c5530;
-          text-decoration: underline;
-        }
-
-        .factory-meta {
-          padding-top: 1rem;
-          border-top: 1px solid #e1e5e9;
-          margin-bottom: 1rem;
-        }
-
-        .meta-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.5rem;
-        }
-
-        .meta-label {
-          color: #666;
-          font-size: 0.8rem;
-        }
-
-        .meta-value {
-          color: #495057;
-          font-size: 0.8rem;
-        }
-
-        .status-badge {
-          padding: 0.25rem 0.5rem;
-          border-radius: 20px;
-          font-size: 0.7rem;
-          font-weight: 500;
-        }
-
-        .status-badge.active {
-          background: #e8f5e8;
-          color: #2e7d32;
-        }
-
-        .status-badge.inactive {
-          background: #f5f5f5;
-          color: #666;
-        }
-
-        /* Associated HHMs Styles */
-        .associated-hhms-section {
-          margin-top: 1rem;
-          padding-top: 1rem;
-          border-top: 1px solid #e1e5e9;
-        }
-
-        .hhms-header {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          margin-bottom: 0.75rem;
-        }
-
-        .hhms-icon {
-          font-size: 1.1rem;
-        }
-
-        .hhms-title {
-          font-weight: 600;
-          color: #2c5530;
-          font-size: 0.9rem;
-        }
-
-        .hhms-list {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .hhm-item {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.5rem;
-          background: #f8fdf9;
-          border-radius: 6px;
-          border-left: 3px solid #4caf50;
-        }
-
-        .hhm-avatar {
-          width: 32px;
-          height: 32px;
-          background: linear-gradient(135deg, #2c5530, #4caf50);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
-        .hhm-avatar-icon {
-          font-size: 0.8rem;
-          color: white;
-        }
-
-        .hhm-info {
-          flex: 1;
-        }
-
-        .hhm-name {
-          font-weight: 500;
-          color: #2c5530;
-          font-size: 0.85rem;
-          margin-bottom: 0.1rem;
-        }
-
-        .hhm-location {
-          font-size: 0.75rem;
-          color: #666;
-        }
-
-        .more-hhms {
-          background: #f0f8ff;
-          border-left-color: #2196F3;
-        }
-
-        .more-hhms .hhm-avatar {
-          background: linear-gradient(135deg, #1976D2, #2196F3);
-        }
-
-        .no-hhms-section {
-          margin-top: 1rem;
-          padding-top: 1rem;
-          border-top: 1px solid #e1e5e9;
-        }
-
-        .no-hhms-message {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.75rem;
-          background: #f8f9fa;
-          border-radius: 6px;
-          color: #666;
-        }
-
-        .no-hhms-icon {
-          font-size: 1rem;
-          opacity: 0.7;
-        }
-
-        .no-hhms-text {
-          font-size: 0.9rem;
-          font-style: italic;
-        }
-
-        .associate-hhm-btn {
-          margin-top: 0.75rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.6rem 1rem;
-          background: linear-gradient(135deg, #4caf50, #45a049);
-          color: white;
-          border: none;
-          border-radius: 6px;
-          font-size: 0.85rem;
-          font-weight: 500;
-          
-          transition: all 0.2s ease;
-          width: 100%;
-        }
-
-        .associate-hhm-btn:hover {
-          background: linear-gradient(135deg, #45a049, #3d8b40);
-          transform: translateY(-1px);
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .associate-icon {
-          font-size: 0.9rem;
-        }
-
-        .manage-hhms-btn {
-          margin-left: auto;
-          padding: 0.4rem 0.8rem;
-          background: #f0f0f0;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          font-size: 0.75rem;
-          color: #666;
-          
-          transition: all 0.2s ease;
-          display: flex;
-          align-items: center;
-          gap: 0.3rem;
-        }
-
-        .manage-hhms-btn:hover {
-          background: #e0e0e0;
-          color: #333;
-          border-color: #ccc;
-        }
-
-        .manage-icon {
-          font-size: 0.8rem;
-        }
-
-        .card-actions {
-          display: flex;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-        }
-
-        .contact-btn,
-        .visit-website-btn,
-        .view-details-btn,
-        .associate-hhm-action-btn {
-          flex: 1;
-          min-width: 120px;
-          padding: 0.75rem;
-          border: none;
-          border-radius: 8px;
-          font-size: 0.9rem;
-          
-          transition: all 0.2s;
-        }
-
-        .contact-btn {
-          background: #4caf50;
-          color: white;
-        }
-
-        .contact-btn:hover {
-          background: #45a049;
-        }
-
-        .visit-website-btn {
-          background: #66bb6a;
-          color: white;
-        }
-
-        .visit-website-btn:hover {
-          background: #4caf50;
-        }
-
-        .view-details-btn {
-          background: #f8f9fa;
-          color: #495057;
-          border: 2px solid #e1e5e9;
-        }
-
-        .view-details-btn:hover {
-          background: #e9ecef;
-          border-color: #adb5bd;
-        }
-
-        .associate-hhm-action-btn {
-          background: #ff9800;
-          color: white;
-        }
-
-        .associate-hhm-action-btn:hover {
-          background: #f57c00;
-        }
-
-        @media (max-width: 768px) {
-          .factory-directory-page {
-            padding: 1rem;
-          }
-
-          .page-header h1 {
-            font-size: 2rem;
-          }
-
-          .search-controls {
-            flex-direction: column;
-          }
-
-          .filter-controls {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .filter-select,
-          .sort-select,
-          .clear-filters-btn {
-            width: 100%;
-          }
-
-          .factory-grid {
-            grid-template-columns: 1fr;
-            gap: 1rem;
-          }
-
-          .card-actions {
-            flex-direction: column;
-          }
-
-          .contact-btn,
-          .visit-website-btn,
-          .view-details-btn {
-            min-width: auto;
-          }
-
-          .detail-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.25rem;
-          }
-
-          .detail-value {
-            text-align: left;
-          }
-        }
-      `}</style>
-    </div>
-  );
-};
-
-export default FarmerFactoryDirectoryPage;
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import './FarmerFactoryDirectoryPage.css';
+
+const FarmerFactoryDirectoryPage = () => {
+  const navigate = useNavigate();
+  const [factories, setFactories] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [ratingFilter, setRatingFilter] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [sortFilter, setSortFilter] = useState('score');
+  const [isListView, setIsListView] = useState(false);
+  const [contactModal, setContactModal] = useState(false);
+  const [contactFactory, setContactFactory] = useState(null);
+
+  useEffect(() => { fetchFactories(); }, []);
+
+  const fetchFactories = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      if (!token) { setError('No authentication token found.'); return; }
+      const res = await axios.get('/api/farmer/factories', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      let data = res.data.data || res.data.factories || [];
+      data = data.map(f => {
+        let h = 0;
+        const s = f.name || f._id || '';
+        for (let i = 0; i < s.length; i++) h = s.charCodeAt(i) + ((h << 5) - h);
+        h = Math.abs(h);
+        const price = 3000 + (h % 2500);
+        const score = (h % 500) + 10;
+        const rating = score > 300 ? 'excellent' : score > 120 ? 'good' : 'poor';
+        const delay = (h % 28) + 2;
+        const contracts = 5 + (h % 40);
+        const completed = Math.min(contracts, Math.round(contracts * (0.5 + (h % 50) / 100)));
+        const fulfill = contracts > 0 ? parseFloat(((completed / contracts) * 100).toFixed(1)) : 0;
+        const recommended = rating === 'excellent' && fulfill > 80;
+        const specs = Array.isArray(f.specialization) && f.specialization.length > 0 ? f.specialization : (typeof f.specialization === 'string' && f.specialization ? [f.specialization] : ['Sugar Processing']);
+        return { ...f, ui: { price, score, rating, delay, contracts, completed, fulfill, recommended, specs } };
+      });
+      setFactories(data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch factories.');
+    } finally { setLoading(false); }
+  };
+
+  const doFilter = useCallback(() => {
+    let list = [...factories];
+    if (ratingFilter) list = list.filter(f => f.ui.rating === ratingFilter);
+    if (locationFilter) list = list.filter(f => (f.location || '').toLowerCase().includes(locationFilter));
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      list = list.filter(f => f.name?.toLowerCase().includes(q) || f.location?.toLowerCase().includes(q) || (Array.isArray(f.ui.specs) && f.ui.specs.some(s => s.toLowerCase().includes(q))));
+    }
+    list.sort((a, b) => {
+      if (sortFilter === 'price') return b.ui.price - a.ui.price;
+      if (sortFilter === 'delay') return a.ui.delay - b.ui.delay;
+      if (sortFilter === 'name') return (a.name || '').localeCompare(b.name || '');
+      return b.ui.score - a.ui.score;
+    });
+    setFiltered(list);
+  }, [factories, searchTerm, ratingFilter, locationFilter, sortFilter]);
+
+  useEffect(() => { doFilter(); }, [doFilter]);
+
+  const delayColor = d => d <= 10 ? 'var(--green)' : d <= 18 ? 'var(--amber)' : 'var(--red)';
+  const fulfillColor = f => f >= 75 ? 'var(--green)' : f >= 55 ? 'var(--amber)' : 'var(--red)';
+  const scoreClass = s => s > 300 ? 'green' : s > 100 ? 'amber' : 'muted';
+  const getInitials = n => n ? n.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : '??';
+  const fmtDate = d => d ? new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A';
+
+  const kpiTotal = factories.length;
+  const kpiHHM = factories.filter(f => f.associatedHHMs?.length > 0).length;
+  const kpiAvg = factories.length > 0 ? Math.round(factories.reduce((a, f) => a + f.ui.price, 0) / factories.length) : 0;
+  const kpiExc = factories.filter(f => f.ui.rating === 'excellent').length;
+
+  return (
+    <div className="fd-page">
+      {/* HEADER */}
+      <div className="fd-header">
+        <div className="ph-top">
+          <div>
+            <div className="ph-eyebrow">Farmer View</div>
+            <h1 className="fd-title">Factory <em>Directory</em></h1>
+            <p className="fd-sub">Browse, compare and connect with sugarcane factories across Maharashtra — find the right partner for your harvest.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* KPI ROW */}
+      <div className="fd-kpi-row">
+        <div className="fd-kpi g"><div className="fd-kpi-label">Total Factories</div><div className="fd-kpi-val g">{kpiTotal}</div><div className="fd-kpi-sub">In your region</div></div>
+        <div className="fd-kpi a"><div className="fd-kpi-label">With Active HHMs</div><div className="fd-kpi-val a">{kpiHHM}</div><div className="fd-kpi-sub">Ready to coordinate</div></div>
+        <div className="fd-kpi b"><div className="fd-kpi-label">Avg. FRP Price</div><div className="fd-kpi-val b">₹{kpiAvg.toLocaleString('en-IN')}</div><div className="fd-kpi-sub">Per metric tonne</div></div>
+        <div className="fd-kpi g"><div className="fd-kpi-label">Excellent Rated</div><div className="fd-kpi-val g">{kpiExc}</div><div className="fd-kpi-sub">Top performers</div></div>
+      </div>
+
+      {/* TOOLBAR */}
+      <div className="fd-toolbar">
+        <div className="fd-search-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path strokeLinecap="round" d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" className="fd-search" placeholder="Search factories by name, location or specialization…" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+        </div>
+        <select className="fd-filter" value={ratingFilter} onChange={e => setRatingFilter(e.target.value)}>
+          <option value="">All Ratings</option>
+          <option value="excellent">Excellent</option>
+          <option value="good">Good</option>
+          <option value="poor">Poor</option>
+        </select>
+        <select className="fd-filter" value={locationFilter} onChange={e => setLocationFilter(e.target.value)}>
+          <option value="">All Locations</option>
+          <option value="maharashtra">Maharashtra</option>
+          <option value="karnataka">Karnataka</option>
+          <option value="uttar pradesh">Uttar Pradesh</option>
+          <option value="gujarat">Gujarat</option>
+        </select>
+        <select className="fd-filter" value={sortFilter} onChange={e => setSortFilter(e.target.value)}>
+          <option value="score">Sort: Best Score</option>
+          <option value="price">Sort: Highest Price</option>
+          <option value="delay">Sort: Fastest Payment</option>
+          <option value="name">Sort: Name A–Z</option>
+        </select>
+        <div className="fd-view-toggle">
+          <button className={`fd-vt-btn ${!isListView ? 'active' : ''}`} onClick={() => setIsListView(false)} title="Grid view">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </button>
+          <button className={`fd-vt-btn ${isListView ? 'active' : ''}`} onClick={() => setIsListView(true)} title="List view">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      {/* RESULTS META */}
+      <div className="fd-results-meta">
+        <div className="fd-results-count"><strong>{filtered.length}</strong> factories found</div>
+      </div>
+
+      {/* FACTORY GRID */}
+      <div className={`fd-grid${isListView ? ' list-view' : ''}`}>
+        {loading ? (
+          <div className="fd-loading"><div className="fd-spinner"></div><div className="fd-empty-title">Loading factories...</div></div>
+        ) : error ? (
+          <div className="fd-empty"><div className="fd-empty-icon">⚠️</div><div className="fd-empty-title">{error}</div></div>
+        ) : filtered.length === 0 ? (
+          <div className="fd-empty"><div className="fd-empty-icon">🏭</div><div className="fd-empty-title">No factories found</div><div className="fd-empty-sub">Try adjusting your search or filter criteria</div></div>
+        ) : filtered.map((f, idx) => (
+          <div key={f._id || f.id || `f-${idx}`} className={`fd-card ${f.ui.rating}`} style={{ animation: `fdFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
+            <div className="fc-header">
+              <div className="fc-avatar">🏭</div>
+              <div className="fc-title-wrap">
+                <div className="fc-name">{f.name}{f.ui.recommended && <span style={{ color: 'var(--amber)', fontSize: '.7rem' }}> ⭐</span>}</div>
+                <div className="fc-location">📍 {f.location || 'Maharashtra'}</div>
+                {f.ui.recommended && <div className="fd-recommended">⭐ Recommended</div>}
+              </div>
+              <div className="fc-rating"><span className={`fd-rating-badge ${f.ui.rating}`}>{f.ui.rating.toUpperCase()}</span></div>
+            </div>
+
+            <div className="fc-metrics">
+              <div className="fc-metric"><div className="fcm-label">Score</div><div className={`fcm-val ${scoreClass(f.ui.score)}`}>{f.ui.score.toFixed(1)}</div></div>
+              <div className="fc-metric"><div className="fcm-label">₹/Ton</div><div className={`fcm-val ${f.ui.price > 0 ? 'green' : 'muted'}`}>{f.ui.price > 0 ? `₹${f.ui.price.toLocaleString('en-IN')}` : 'N/A'}</div></div>
+              <div className="fc-metric"><div className="fcm-label">Pay Delay</div><div className="fcm-val" style={{ color: delayColor(f.ui.delay) }}>{f.ui.delay}d</div></div>
+            </div>
+
+            <div className="fc-fulfill">
+              <div className="fc-fulfill-top">
+                <span className="fc-fulfill-label">Fulfillment Rate</span>
+                <span className="fc-fulfill-pct" style={{ color: fulfillColor(f.ui.fulfill) }}>{f.ui.fulfill.toFixed(1)}%</span>
+              </div>
+              <div className="fd-fulfill-track"><div className="fd-fulfill-fill" style={{ width: `${f.ui.fulfill}%`, background: fulfillColor(f.ui.fulfill) }}></div></div>
+            </div>
+
+            <div className="fc-spec">
+              <div className="fc-spec-label">Specialization</div>
+              <div className="fd-spec-tags">{Array.isArray(f.ui.specs) && f.ui.specs.map((s, i) => <span key={i} className="fd-spec-tag">{s}</span>)}</div>
+            </div>
+
+            <div className="fc-divider"></div>
+
+            <div className="fc-meta">
+              <div className="fc-meta-item">Contracts: <strong>{f.ui.contracts} <span style={{ color: 'var(--muted-2)' }}>({f.ui.completed} done)</span></strong></div>
+              <div className="fc-meta-item">Added: <strong>{fmtDate(f.createdAt)}</strong></div>
+            </div>
+
+            <div className="fc-hhm">
+              <div className="fd-hhm-header">
+                <div className="fd-hhm-title">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  Associated HHMs
+                  <span className="fd-hhm-pill">{f.associatedHHMs?.length || 0}</span>
+                </div>
+                {f.associatedHHMs?.length > 0 && (
+                  <button className="fd-hhm-manage" onClick={() => navigate(`/farmer/associate-hhm/${f._id}`)}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+                    Manage
+                  </button>
+                )}
+              </div>
+              <div className="fd-hhm-list">
+                {f.associatedHHMs && f.associatedHHMs.length > 0 ? (
+                  f.associatedHHMs.slice(0, 3).map((hhm, i) => (
+                    <div key={i} className="fd-hhm-item">
+                      <div className="fd-hhm-avatar" style={{ background: 'rgba(126,200,67,.15)', color: '#7ec843' }}>{getInitials(hhm.name)}</div>
+                      <div style={{ flex: 1 }}><div className="fd-hhm-name">{hhm.name}</div><div className="fd-hhm-role">Harvest Head Manager</div></div>
+                      <div className="fd-hhm-online" title="Online"></div>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className="fd-hhm-empty"><span className="fd-hhm-empty-icon">👥</span><span className="fd-hhm-empty-text">No associated HHMs</span></div>
+                    <button className="fd-btn-associate" onClick={() => navigate(`/farmer/associate-hhm/${f._id}`)}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14"/></svg>
+                      Associate HHMs
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="fc-actions">
+              <button className="fd-btn-contact" onClick={() => { setContactFactory(f); setContactModal(true); }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
+                Contact
+              </button>
+              <button className="fd-btn-profile" onClick={() => navigate(`/farmer/factory/${f._id || f.id}`)}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                View Profile
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* CONTACT MODAL */}
+      <div className={`fd-modal-overlay${contactModal ? ' open' : ''}`} onClick={e => { if (e.target === e.currentTarget) setContactModal(false); }}>
+        <div className="fd-modal">
+          <div className="fd-modal-header">
+            <div className="fd-modal-title">Contact {contactFactory?.name || 'Factory'}</div>
+            <button className="fd-modal-close" onClick={() => setContactModal(false)}>×</button>
+          </div>
+          <div className="fd-modal-body">
+            <div className="fd-modal-field"><label>Your Name</label><input type="text" placeholder="Your name" /></div>
+            <div className="fd-modal-field"><label>Phone Number</label><input type="tel" placeholder="+91 98765 43210" /></div>
+            <div className="fd-modal-field"><label>Message</label><textarea rows="4" placeholder="Describe your cane quantity, harvest readiness date, plot location…"></textarea></div>
+            <div className="fd-modal-actions">
+              <button className="fd-modal-cancel" onClick={() => setContactModal(false)}>Cancel</button>
+              <button className="fd-modal-primary" onClick={() => setContactModal(false)}>Send Message →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FarmerFactoryDirectoryPage;

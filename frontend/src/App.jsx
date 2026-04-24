@@ -18,7 +18,7 @@ import SignUpPage from './pages/SignUpPage.jsx';
 
 import FarmerDashboardPage from './pages/FarmerDashboardPage.jsx';
 
-import MarketplacePage from './pages/MarketplacePageNew.jsx';
+import MarketplacePage from './pages/MarketplacePage.jsx';
 
 import ProfilePage from './pages/ProfilePage.jsx';
 import FarmerProfile from './pages/FarmerProfile.jsx';
