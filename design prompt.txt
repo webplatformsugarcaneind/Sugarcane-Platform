@@ -1,0 +1,485 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║           CANESETU — COMPLETE UI SYSTEM & DESIGN PROMPT             ║
+║        Paste this as your FIRST message before any page work        ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 1 — PROJECT IDENTITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Project Name    : CaneSetu
+Meaning         : "Cane Bridge" in Marathi/Hindi — bridging farmers 
+                  to factories digitally
+Tagline         : "Bridging Cane to Commerce"
+Domain          : canesetu.in
+Company         : CaneSetu Technologies Pvt. Ltd.
+Copyright line  : © 2025 CaneSetu Technologies Pvt. Ltd. All rights reserved.
+Region          : Maharashtra Sugar Belt, India
+Language support: Marathi, Hindi, English
+
+What it does:
+CaneSetu is a full-stack sugarcane industry management platform. It digitises 
+the entire sugarcane value chain — from plot registration and harvest scheduling 
+to factory intake, FRP payment disbursement, and analytics. It serves four 
+distinct user roles, each with their own dashboard and toolset.
+
+User Roles:
+  🌾 Farmer   — registers plots, submits cane data, tracks harvest schedules,
+                 receives FRP payments, monitors market pricing
+  👥 HHM      — Harvest Head Manager: coordinates harvesting gangs, assigns 
+                 plots, tracks daily tonnage progress, reports to factories
+  ⚒️ Labour   — finds harvest work nearby, views daily wages, claims 
+                 government scheme benefits
+  🏭 Factory  — manages cane supply chain, schedules crusher intake, monitors 
+                 incoming tonnage, automates farmer payments, runs analytics
+
+Key Industry Metrics:
+  - FRP (Fair & Remunerative Price) in ₹ per ton
+  - Payment delay in days (target: under 48 hours)
+  - Contract fulfillment rate (%)
+  - Profitability score (composite index)
+  - Tonnage / MT (metric tonnes)
+  - Crushing rate and sugar recovery rate (%)
+  - Plot size in acres, cane variety, GPS coordinates
+
+Sample Data — Factories:
+  1. Premium Sugar Mills      — Maharashtra    — Score: 494.12 — EXCELLENT
+  2. Golden Cane Processing   — Uttar Pradesh  — Score: 287.97 — EXCELLENT
+  3. Sweet Valley Industries  — Karnataka      — Score: 142.86 — GOOD
+  4. Nashik Agro Sugar Co.    — Nashik, MH     — Score: 380.44 — EXCELLENT
+  5. Kolhapur Cooperative     — Kolhapur, MH   — Score: 310.11 — EXCELLENT
+  6. Solapur Mills Ltd.       — Solapur, MH    — Score: 220.38 — GOOD
+  7. Pune Sugar Works         — Pune, MH       — Score: 190.55 — GOOD
+  8. New Factory              — Gujarat        — Score: 0.00   — POOR
+
+Sample Data — Farmer:
+  Name: Ravi Patel | Location: Nashik, Maharashtra
+  Farm size: 25 acres | Experience: 12 years
+  Crops: Sugarcane, Rice, Wheat | Irrigation: Drip
+  Equipment: Tractor, Harvester, Irrigation pumps, Spraying equipment
+  Certifications: Organic Farming Certificate, GAP
+
+Districts covered: Nashik, Pune, Solapur, Kolhapur, Satara, Sangli
+Season reference: Kharif 2025 / Season 2025–26
+Platform stats: 12,000+ farmers | 340 factories | ₹2.4B processed | 99.2% uptime
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 2 — VISUAL AESTHETIC & DESIGN PHILOSOPHY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Theme          : Dark editorial — industrial-agricultural fusion
+Mood           : Authoritative, precise, modern, grounded in the soil
+Inspiration    : Bloomberg Terminal meets organic farming — dense data 
+                 presented with editorial elegance on a dark canvas
+Color story    : Deep forest-night backgrounds, sugarcane-green as the 
+                 hero accent, warm amber for warnings and secondary data, 
+                 cool blue for tertiary info, red only for danger/poor states
+
+Design rules:
+  - NEVER use white or light backgrounds anywhere
+  - NEVER use generic fonts (Inter, Roboto, Arial, system-ui)
+  - NEVER use purple gradients or generic SaaS aesthetics
+  - NEVER add a custom cursor — always keep browser default cursor
+  - ALWAYS use the exact CSS variables defined below — no hardcoded colors
+  - ALWAYS use Syne + Instrument Sans — no other font combinations
+  - ALWAYS produce a single self-contained HTML file (CSS + JS inline)
+  - ALWAYS ensure the page is fully functional and interactive
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 3 — DESIGN TOKENS (CSS VARIABLES)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Always declare these in :root {} at the top of every page:
+
+  /* Backgrounds */
+  --bg:         #0b0f0b;   /* deepest background — page root */
+  --bg-2:       #101510;   /* slightly lighter — sidebar, footer */
+  --surface:    #151d14;   /* cards, panels, modals */
+  --surface-2:  #1a2318;   /* hover state of surface elements */
+
+  /* Borders */
+  --border:     rgba(255, 255, 255, 0.07);   /* default subtle border */
+  --border-g:   rgba(140, 210, 80, 0.18);    /* green-tinted border for focus/hover */
+
+  /* Primary — Sugarcane Green */
+  --green:      #7ec843;
+  --green-dim:  #4f8227;
+  --green-glow: rgba(126, 200, 67, 0.22);
+
+  /* Secondary — Harvest Amber */
+  --amber:      #e8a83a;
+  --amber-dim:  rgba(232, 168, 58, 0.15);
+
+  /* Tertiary — Sky Blue */
+  --blue:       #5b8fff;
+
+  /* Danger — Alert Red */
+  --red:        #ff6b6b;
+
+  /* Text */
+  --white:      #f0f5ec;                     /* primary text — slightly warm white */
+  --muted:      rgba(240, 245, 236, 0.45);   /* secondary text */
+  --muted-2:    rgba(240, 245, 236, 0.22);   /* tertiary text — labels, hints */
+
+  /* Motion */
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 4 — TYPOGRAPHY SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Google Fonts import (always include both, always at top of <head>):
+  https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800
+  &family=Instrument+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap
+
+Font roles:
+  SYNE — display font for:
+    • Page titles, section headings
+    • KPI numbers and stat values
+    • Navigation brand name and links
+    • Button text (primary buttons)
+    • Table headers, badge text
+    • Any number that needs to look authoritative
+
+  INSTRUMENT SANS — body font for:
+    • Paragraphs, descriptions, body copy
+    • Form input text and placeholders
+    • Secondary labels and helper text
+    • Ghost button text
+    • Table body cells
+
+Type scale:
+  Page title      : Syne 800, clamp(2.2rem, 3.5vw, 3.2rem), 
+                    line-height 1.05, letter-spacing -0.025em
+  Section title   : Syne 700, 1.1rem, letter-spacing -0.01em
+  KPI number      : Syne 800, 1.6rem–2.4rem, line-height 1
+  Nav brand       : Syne 700, 1rem, letter-spacing 0.02em
+  Nav links       : Instrument Sans 400, 0.78rem, letter-spacing 0.05em, UPPERCASE
+  Body text       : Instrument Sans 300–400, 0.88–1rem, line-height 1.7
+  Labels          : Instrument Sans 500, 0.65–0.72rem, letter-spacing 0.1em, UPPERCASE
+  Hint text       : Instrument Sans 400, 0.7rem, color var(--muted-2)
+  Badge text      : Syne 700, 0.68–0.72rem, letter-spacing 0.08em
+  Button primary  : Syne 700, 0.84–0.92rem, letter-spacing 0.02em
+  Button ghost    : Instrument Sans 500, 0.8–0.84rem
+
+Italic style:
+  Use <em> inside headings with font-style:normal; color:var(--green) 
+  to highlight the key word of a title in green.
+  Example: "Factory <em>Profitability</em> Analysis"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 5 — LAYOUT SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Global shell:
+  • Fixed nav: height 66px, always visible, blurred background
+  • All page content starts at padding-top: 90px (clears the nav + breathing room)
+  • Max content width: 1200px, margin: 0 auto
+  • Side padding: 48px desktop, 24px mobile
+  • Bottom padding: 80px minimum
+
+Dashboard pages (logged-in, role-specific):
+  Layout: CSS Grid — grid-template-columns: 260px 1fr
+  Left column: sticky sidebar (height calc(100vh - 66px), top 66px, overflow-y auto)
+  Right column: main content area, padding 48px 56px 80px
+
+Auth pages (login, signup):
+  Layout: CSS Grid — grid-template-columns: 1fr 1fr
+  Left column: brand story panel — headline, tagline, platform stats grid
+  Right column: dark form card with border-radius 28px
+  Both columns vertically centered
+
+Landing / marketing pages:
+  Full-width sections with alternating layouts
+  Hero: grid-template-columns: 1fr 1fr with animated visual on right
+  Section max-width: 1200px centered
+
+Spacing scale:
+  Between major sections : 48px–80px
+  Card internal padding  : 28px–36px
+  Field gap in forms     : 20px
+  Gap between cards      : 24px
+  Gap between grid tiles : 2px (with background color as "border")
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 6 — NAVIGATION COMPONENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Structure:
+  <nav> — fixed, top 0, full width, z-index 200
+    • background: rgba(11,15,11, 0.75)
+    • backdrop-filter: blur(20px) saturate(1.4)
+    • border-bottom: 1px solid var(--border)
+    • height: 66px, padding: 0 48px
+    • display: flex, align-items: center, justify-content: space-between
+
+Brand logo (left):
+  • Green square: 28×28px, border-radius 8px, background var(--green)
+    box-shadow: 0 0 14px var(--green-glow)
+  • Inside the square: ✦ symbol, font-size 12px, color #0b0f0b
+  • Brand name: "CaneSetu" in Syne 700, 1rem, color var(--white)
+
+Nav links (center):
+  • Font: Instrument Sans 400, 0.78rem, UPPERCASE, letter-spacing 0.05em
+  • Default color: var(--muted)
+  • Hover: color var(--white), transition 0.2s
+  • Active page: 
+      color: var(--green)
+      background: rgba(126,200,67, 0.08)
+      border: 1px solid rgba(126,200,67, 0.15)
+      border-radius: 100px
+      padding: 6px 13px
+
+Right side:
+  • Logout / Sign up button (ghost style):
+      border: 1px solid var(--border)
+      color: var(--muted)
+      border-radius: 100px
+      padding: 8px 18px
+      hover: border-color rgba(255,100,100,0.4), color #ff9090
+  • Or "Get Started" CTA (primary green) on landing pages
+
+Scroll behavior:
+  • On scroll > 40px, reduce nav padding slightly (padding: 14px 48px → 
+    transition gives a "shrink" feel)
+  • Add nav.scrolled class via JS scroll listener
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 7 — BACKGROUND EFFECTS SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Noise texture (use on ALL pages, always):
+   body::after {
+     content: '';
+     position: fixed; inset: 0; z-index: 1000; pointer-events: none;
+     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
+       width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' 
+       baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect 
+       width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+     opacity: 0.6;
+   }
+
+2. Radial gradient mesh (use on hero sections and auth pages):
+   .hero-mesh {
+     position: absolute; inset: 0; z-index: 0; pointer-events: none;
+     background:
+       radial-gradient(ellipse 60% 70% at 65% 40%, rgba(126,200,67,0.09) 0%, transparent 60%),
+       radial-gradient(ellipse 40% 40% at 10% 80%, rgba(232,168,58,0.07) 0%, transparent 55%),
+       radial-gradient(ellipse 30% 30% at 80% 10%, rgba(126,200,67,0.05) 0%, transparent 50%);
+     animation: meshPulse 8s ease-in-out infinite alternate;
+   }
+   @keyframes meshPulse { from{opacity:.7} to{opacity:1} }
+
+3. Grid line overlay (use on hero sections):
+   .hero-grid {
+     position: absolute; inset: 0; z-index: 0; pointer-events: none;
+     background-image:
+       linear-gradient(var(--border) 1px, transparent 1px),
+       linear-gradient(90deg, var(--border) 1px, transparent 1px);
+     background-size: 80px 80px;
+     mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, 
+       black 20%, transparent 80%);
+   }
+
+4. Section glow (use behind CTA sections or feature highlights):
+   position: absolute; inset: 0; pointer-events: none;
+   background: radial-gradient(ellipse 60% 80% at 50% 50%, 
+     rgba(126,200,67,0.07), transparent 65%);
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 8 — ANIMATION SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Core keyframes (define all of these in every page):
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeSlideUp {        /* slightly larger travel for hero */
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes barGrow {            /* horizontal progress bars */
+    from { width: 0; }
+  }
+  @keyframes barRise {            /* vertical chart bars */
+    from { transform: scaleY(0); transform-origin: bottom; }
+    to   { transform: scaleY(1); transform-origin: bottom; }
+  }
+  @keyframes spin {               /* rotating ring decorations */
+    to { transform: rotate(360deg); }
+  }
+  @keyframes blink {              /* live status pip */
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+  @keyframes dropOpen {           /* dropdown menus */
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes meshPulse {          /* background gradient breathing */
+    from { opacity: 0.7; }
+    to   { opacity: 1; }
+  }
+  @keyframes scrollPulse {        /* scroll indicator bar */
+    0%, 100% { opacity: .3; transform: scaleY(1); }
+    50%       { opacity: 1;  transform: scaleY(.6); }
+  }
+
+Application rules:
+  • Page sections on load: class="reveal" with IntersectionObserver 
+    OR direct animation: fadeUp .7s var(--ease-out) both
+  • Stagger delays for sibling elements: 0s, .08s, .16s, .24s, .32s
+  • Chart bars: animation-delay staggered .1s per bar
+  • Sidebar: fadeSlideRight (.7s, slides from left)
+  • Form cards: fadeUp .7s .05s var(--ease-out) both
+  • Never animate more than necessary — 
+    one well-timed page load is better than constant motion
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 9 — COMPONENT LIBRARY (BUILD EVERY PAGE FROM THESE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+──────────────────────────────────────────
+9.1  EYEBROW TAG
+──────────────────────────────────────────
+Used above every major heading to establish context.
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.68–0.72rem; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--green); margin-bottom: 12–20px;
+  }
+  .eyebrow::before {
+    content: ''; width: 16–20px; height: 1px; background: var(--green);
+  }
+
+──────────────────────────────────────────
+9.2  LIVE STATUS BADGE (for "platform is live" indicators)
+──────────────────────────────────────────
+  • Green pill with blinking dot + uppercase label
+  • background: rgba(126,200,67,0.08)
+  • border: 1px solid rgba(126,200,67,0.22)
+  • border-radius: 100px; padding: 6px 14px 6px 8px
+  • Dot: 8×8px circle, background var(--green), animation: blink 2s infinite
+
+──────────────────────────────────────────
+9.3  KPI / STAT TILE GRID
+──────────────────────────────────────────
+Container: CSS Grid, 2px gap, border-radius 20px, overflow hidden
+Background of container: var(--border) (creates tile separator effect)
+Each tile:
+  • background: var(--surface); padding: 20–24px 24–28px
+  • Label: 0.68rem, UPPERCASE, var(--muted-2)
+  • Value: Syne 800, 1.6–2rem, colored (green/amber/blue/white)
+  • Sub-label: 0.72rem, var(--muted-2)
+  • On hover: background var(--surface-2)
+  • On hover: top 2px color bar via ::before scaleX(0→1) animation
+    Colors: green bar / amber bar / blue bar depending on context
+
+──────────────────────────────────────────
+9.4  SECTION CARD
+──────────────────────────────────────────
+Outer wrapper:
+  • background: var(--surface)
+  • border: 1px solid var(--border)
+  • border-radius: 24px; overflow: hidden
+  • On hover: border-color var(--border-g), transition .3s
+
+Card header:
+  • padding: 28px 36px
+  • border-bottom: 1px solid var(--border)
+  • display: flex; align-items: center; gap: 14px
+  • position: relative
+  • ::after pseudo: position absolute, bottom 0, left 36px,
+    width 36px, height 1px, background var(--green)
+  • Left side: icon tile + title stack
+  • Right side: optional legend, filter controls, or badge
+
+Icon tile:
+  • 44×44px, border-radius 12px
+  • background: rgba(126,200,67,0.08)
+  • border: 1px solid rgba(126,200,67,0.15)
+  • font-size: 20px emoji
+
+Title stack:
+  • Title: Syne 700, 1.1rem, var(--white)
+  • Subtitle: 0.72rem, var(--muted-2), margin-top 2px
+
+Card body:
+  • padding: 32px 36px
+
+──────────────────────────────────────────
+9.5  FORM INPUT FIELDS
+──────────────────────────────────────────
+Label:
+  • font-size: 0.7–0.72rem; font-weight: 500
+  • letter-spacing: 0.1em; text-transform: UPPERCASE
+  • color: var(--muted-2); margin-bottom: 8px
+
+Input / Select / Textarea:
+  • background: var(--bg)
+  • border: 1px solid var(--border)
+  • border-radius: 10px; padding: 13px 16px
+  • color: var(--white); font-family: Instrument Sans; font-size: 0.88–0.9rem
+  • outline: none; -webkit-appearance: none
+  • Placeholder: color var(--muted-2)
+  • Focus state:
+      border-color: rgba(126,200,67,0.4)
+      box-shadow: 0 0 0 3px rgba(126,200,67,0.07)
+      background: rgba(126,200,67,0.02)
+  • Transition: border-color .2s, box-shadow .2s, background .2s
+
+Two-column field grid:
+  • display: grid; grid-template-columns: 1fr 1fr; gap: 16–20px
+  • .full class spans both columns: grid-column: 1 / -1
+
+Password field:
+  • Wrapper with position relative
+  • Show/Hide toggle button: absolute right 14px, vertically centered
+    font-size 0.75rem, UPPERCASE, color var(--muted-2)
+    hover: color var(--green)
+  • Password strength bar (signup only):
+      4 segments, each 3px height, border-radius 4px
+      Filled colors: s0=#ff6b6b, s1=amber, s2=green-dim, s3=green
+      Animated via JS on input event
+
+──────────────────────────────────────────
+9.6  CHIP / TAG INPUT
+──────────────────────────────────────────
+Used for multi-value fields like crops, equipment, certifications.
+
+Container:
+  • background: var(--bg); border: 1px solid var(--border)
+  • border-radius: 10px; padding: 8px 12px
+  • display: flex; flex-wrap: wrap; gap: 6px; align-items: center
+  • min-height: 48px
+  • focus-within: border-color rgba(126,200,67,0.4) + box-shadow
+
+Chip:
+  • background: rgba(126,200,67,0.10)
+  • border: 1px solid rgba(126,200,67,0.20)
+  • border-radius: 100px; padding: 4px 10px
+  • font-size: 0.75rem; color: var(--green); font-weight: 500
+  • Remove button: × character, color var(--green-dim), hover → #ff9090
+
+Text input inside:
+  • No border, no background; color var(--white)
+  • min-width: 120px; flex: 1
+  • Placeholder: color var(--muted-2)
+  • Press Enter or , to create chip, trim whitespace
+
+──────────────────────────────────────────
+9.7  RADIO TILE GRID (replaces dropdowns for short option lists)
+──────────────────────────────────────────
+Use for: role selection, irrigation type, crop stage,

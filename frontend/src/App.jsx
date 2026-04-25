@@ -1,4 +1,5 @@
-import React, { Suspense, useState } from 'react';
+
+import React, { Suspense, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, NavLink } from 'react-router-dom';
 import './App.css';
 import './components/Navbar.css';
@@ -64,6 +65,7 @@ import MyApplicationsPage from './pages/MyApplicationsPage.jsx';
 import InvitesAndApplicationsPage from './pages/InvitesAndApplicationsPage.jsx';
 
 import FactoryDashboardPage from './pages/FactoryDashboardPage.jsx';
+import FactoryPostBillPage from './pages/FactoryPostBillPage.jsx';
 
 import FactoryHHMDirectoryPage from './pages/FactoryHHMDirectoryPage.jsx';
 
@@ -200,7 +202,7 @@ const ConditionalNavbar = () => {
 
   // Pages that render their own internal/immersive navigation
   const pagesWithInternalNav = ['/', '/signup'];
-  
+
   if (pagesWithInternalNav.includes(location.pathname)) {
     return null;
   }
@@ -227,7 +229,7 @@ const ConditionalFooter = () => {
   const location = useLocation();
   // Only hide on home, login, and signup — those pages have their own footers
   const hideFooterRoutes = ['/', '/login', '/signup'];
-  
+
   const shouldHide = hideFooterRoutes.includes(location.pathname);
 
   return shouldHide ? null : <Footer />;
@@ -395,12 +397,12 @@ function App() {
 
             }>
 
-                <Route path="profile" element={
-                  <SafeComponent name="FarmerProfile">
-                    <FarmerProfile />
-                  </SafeComponent>
-                } />
-<Route element={
+              <Route path="profile" element={
+                <SafeComponent name="FarmerProfile">
+                  <FarmerProfile />
+                </SafeComponent>
+              } />
+              <Route element={
 
                 <SafeComponent name="AuthenticatedLayout">
 
@@ -910,6 +912,16 @@ function App() {
                   <SafeComponent name="FactoryDashboardPage">
 
                     <FactoryDashboardPage />
+
+                  </SafeComponent>
+
+                } />
+
+                <Route path="post-bill" element={
+
+                  <SafeComponent name="FactoryPostBillPage">
+
+                    <FactoryPostBillPage />
 
                   </SafeComponent>
 
