@@ -1,463 +1,673 @@
-# Sugarcane Web Platform
+# Sugarcane Platform
 
-A comprehensive web platform connecting Farmers, Hub Head Managers (HHMs), Workers, and Factories in the sugarcane industry. This platform facilitates crop listings, job scheduling, worker applications, factory partnerships, and billing management.
+A full-stack web platform connecting Farmers, Hub Head Managers (HHMs), Workers, and Factories in the sugarcane ecosystem.
 
-## 📋 Table of Contents
+This repository contains:
 
+- React + Vite frontend
+- Express + MongoDB backend
+- Role-based workflows for listings, hiring, invitations, contracts, orders, billing, and analytics
+
+## Table of Contents
+
+- [Current Status](#current-status)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
-- [Installation & Setup](#installation--setup)
+- [Local Setup](#local-setup)
 - [Environment Variables](#environment-variables)
-- [Running the Application](#running-the-application)
-- [API Documentation](#api-documentation)
-- [Architecture](#architecture)
+- [Run the Application](#run-the-application)
+- [API Surface (Current)](#api-surface-current)
+- [Testing (Current)](#testing-current)
 - [Deployment](#deployment)
-- [Testing](#testing)
-- [Contributing](#contributing)
+- [Troubleshooting](#troubleshooting)
 - [License](#license)
-- [Support](#support)
 
-<a id="features"></a>
-## ✨ Features
+## Current Status
+
+Last updated: 2026-04-26
+
+This README reflects the current codebase in this repository (routes, scripts, and deployment files). Some older docs in `md/` may describe earlier states.
+
+## Features
 
 ### User Roles
 
-- **Farmer**: Create crop listings, browse HHMs and factories, view announcements
-- **HHM (Hub Head Manager)**: Create job schedules, manage worker applications, send invitations, partner with factories
-- **Worker**: Browse available jobs, apply for positions, receive invitations, manage profile
-- **Factory**: Manage bills, post maintenance jobs, partner with HHMs, view dashboard statistics
+- Farmer
+  - Manage profile
+  - Create and manage crop listings
+  - Browse HHMs and factories
+- HHM (Hub Head Manager)
+  - Manage profile and schedules
+  - Review worker applications
+  - Invite workers and factories
+- Worker
+  - Manage profile
+  - Browse jobs/schedules
+  - Apply to opportunities
+  - Respond to invitations
+- Factory
+  - Manage profile
+  - Handle bills and maintenance jobs
+  - Invite/associate HHMs
+  - View analytics
 
-### Core Functionality
+### Core Functional Areas
 
-- 🔐 **Authentication & Authorization**: JWT-based authentication with role-based access control
-- 📝 **Profile Management**: Complete profile system for all user types
-- 📋 **Job Scheduling**: HHM can create and manage job schedules with skill requirements
-- 💼 **Application System**: Workers can apply for jobs, HHMs can approve/reject applications
-- 🤝 **Invitation System**: Bidirectional invitations between HHMs and Factories, direct hire invitations from HHMs to Workers
-- 💰 **Billing System**: Factories can create and manage bills for farmers
-- 🏭 **Partnership Management**: Factory-HHM associations with invitation workflow
-- 📊 **Dashboard Analytics**: Role-specific dashboards with statistics and insights
+- JWT authentication and role-based access
+- User profile workflows
+- Crop listing and order workflows
+- HHM-worker hiring/invitation flow
+- Factory-HHM partnership flow
+- Contract APIs (standard + farmer contracts)
+- Factory analytics endpoints
 
-<a id="tech-stack"></a>
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Backend
-- **Runtime**: Node.js
-- **Framework**: Express.js 5.x
-- **Database**: MongoDB with Mongoose ODM
-- **Authentication**: JWT (JSON Web Tokens)
-- **Password Hashing**: bcryptjs
+
+- Node.js
+- Express 5 (`express@5.x`)
+- MongoDB + Mongoose
+- JWT (`jsonwebtoken`)
+- Password hashing (`bcryptjs`)
 
 ### Frontend
-- **Framework**: React 19.x
-- **Build Tool**: Vite 7.x
-- **Styling**: Tailwind CSS 4.x
-- **Routing**: React Router DOM 7.x
-- **HTTP Client**: Axios
 
-<a id="project-structure"></a>
-## 📁 Project Structure
+- React 19
+- Vite 7
+- Tailwind CSS 4
+- React Router DOM 7
+- Axios
 
-```
-sugarcane-web-platform/
-├── backend/
-│   ├── config/          # Configuration files (database, etc.)
-│   ├── controllers/     # Route controllers
-│   ├── middleware/      # Custom middleware (auth, etc.)
-│   ├── models/          # Mongoose models
-│   ├── routes/          # API route definitions
-│   ├── data/            # Seed data
-│   ├── server.js        # Express server entry point
-│   └── package.json     # Backend dependencies
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/  # Reusable React components
-│   │   ├── pages/       # Page components
-│   │   ├── App.jsx      # Main app component
-│   │   └── main.jsx     # React entry point
-│   ├── public/          # Static assets
-│   └── package.json     # Frontend dependencies
-│
-├── test/                # Test files
-├── md/                  # Documentation files
-└── README.md           # This file
+## Project Structure
+
+```text
+SugarCane/
+|- backend/
+|  |- config/
+|  |- controllers/
+|  |- middleware/
+|  |- models/
+|  |- routes/
+|  |- test_scripts/
+|  |- server.js
+|  |- package.json
+|  |- render.yaml
+|- frontend/
+|  |- public/
+|  |- src/
+|  |- package.json
+|  |- vite.config.js
+|  |- netlify.toml
+|- md/
+|- test/
+|- README.md
 ```
 
-<a id="prerequisites"></a>
-## 📦 Prerequisites
+## Prerequisites
 
-Before you begin, ensure you have the following installed:
+- Node.js 18+
+- npm 9+
+- MongoDB local installation or MongoDB Atlas
+- Git
 
-- **Node.js** (v18 or higher)
-- **npm** (v9 or higher) or **yarn**
-- **MongoDB** (v6 or higher) - Local installation or MongoDB Atlas account
-- **Git**
+## Local Setup
 
-<a id="installation--setup"></a>
-## 🚀 Installation & Setup
-
-### 1. Clone the Repository
+1. Install backend dependencies:
 
 ```bash
-git clone <repository-url>
-cd sugarcane-web-platform
-```
-
-### 2. Backend Setup
-
-```bash
-# Navigate to backend directory
 cd backend
-
-# Install dependencies
-npm install
-
-# Create .env file (copy from .env.example)
-cp .env.example .env
-
-# Edit .env file with your configuration
-# See Environment Variables section below
-```
-
-### 3. Frontend Setup
-
-```bash
-# Navigate to frontend directory (from project root)
-cd frontend
-
-# Install dependencies
 npm install
 ```
 
-### 4. Database Setup
-
-#### Option A: Local MongoDB
-
-1. Install MongoDB locally
-2. Start MongoDB service:
-   ```bash
-   # Windows
-   net start MongoDB
-   
-   # macOS/Linux
-   mongod --dbpath /path/to/data/db
-   ```
-
-#### Option B: MongoDB Atlas (Cloud)
-
-1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Create a new cluster
-3. Get your connection string
-4. Update `MONGO_URI` in backend `.env` file
-
-### 5. Seed Database (Optional)
+1. Install frontend dependencies:
 
 ```bash
-# From backend directory
-npm run data:import
+cd ../frontend
+npm install
 ```
 
-<a id="environment-variables"></a>
-## 🔧 Environment Variables
+1. Create backend environment file:
 
-### Backend (.env)
+```bash
+cd ../backend
+# create backend/.env manually
+```
 
-Create a `.env` file in the `backend/` directory:
+1. Configure environment variables (see next section).
+
+2. Start MongoDB (if using local MongoDB):
+
+```bash
+# Windows service
+net start MongoDB
+
+# OR manual startup
+mongod --dbpath "D:\\data\\db"
+```
+
+## Environment Variables
+
+Create `backend/.env`:
 
 ```env
-# Server Configuration
 PORT=5000
 NODE_ENV=development
-
-# Database
 MONGO_URI=mongodb://localhost:27017/sugarcane-platform
-# OR for MongoDB Atlas:
-# MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/sugarcane-platform?retryWrites=true&w=majority
-
-# JWT Configuration
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_SECRET=replace-with-a-strong-secret
 JWT_EXPIRE=30d
+
+# Optional for hosted use
+CORS_ORIGIN=http://localhost:5173
 ```
 
-### Frontend
+Notes:
 
-The frontend uses Vite's proxy configuration. Update `vite.config.js` if your backend runs on a different port:
+- There is no tracked `.env.example` in this repository right now.
+- `MONGO_URI` is required for normal backend data operations.
 
-```javascript
-server: {
-  proxy: {
-    '/api': {
-      target: 'http://localhost:5000', // Change if needed
-      changeOrigin: true,
-    }
-  }
-}
-```
+## Run the Application
 
-<a id="running-the-application"></a>
-## ▶️ Running the Application
+Use two terminals from the project root.
 
-### Development Mode
-
-#### Terminal 1 - Backend Server
+Terminal 1 (backend):
 
 ```bash
 cd backend
 npm run dev
 ```
 
-The backend server will start on `http://localhost:5000`
-
-#### Terminal 2 - Frontend Server
+Terminal 2 (frontend):
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-The frontend will start on `http://localhost:5173` (or another port if 5173 is busy)
+Default local URLs:
 
-### Production Mode
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:5000`
+- Health: `http://localhost:5000/api/health`
 
-#### Build Frontend
+### Production-style run (local)
 
 ```bash
 cd frontend
 npm run build
+
+cd ../backend
+npm start
 ```
 
-#### Start Backend
+## API Surface (Current)
+
+Current route groups registered in `backend/server.js`:
+
+- `GET /`
+- `GET /api/health`
+- `/api/auth`
+- `/api/public`
+- `/api/users`
+- `/api/farmer`
+- `/api/hhm`
+- `/api/worker`
+- `/api/factory`
+- `/api/contracts`
+- `/api/farmer-contracts`
+- `/api/analytics`
+- `/api/orders`
+- `/api/listings`
+
+Additional test/debug route groups are also mounted:
+
+- `/api/test-raw`
+- `/api/test-orders`
+- `/api/minimal-test`
+
+Important:
+
+- Swagger/OpenAPI docs are not currently configured in `backend/server.js`.
+- Older references to `/api-docs` are outdated for this repo state.
+
+## Testing (Current)
+
+Current testing is script-based/manual rather than a fully integrated test runner.
+
+Backend:
+
+- `npm test` currently points to a placeholder script.
+- Use targeted scripts from:
+  - `backend/test_scripts/`
+  - `test/`
+
+Examples:
 
 ```bash
 cd backend
-NODE_ENV=production npm start
+node test_scripts/test-auth-flow.js
+node test_scripts/test-endpoints.js
 ```
 
-<a id="api-documentation"></a>
-## 📚 API Documentation
+Frontend:
 
-### Interactive API Documentation (Swagger)
-
-Once the backend server is running, visit:
-- **Swagger UI**: `http://localhost:5000/api-docs`
-
-### API Endpoints Overview
-
-#### Authentication (`/api/auth`)
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login and get JWT token
-- `GET /api/auth/verify` - Verify JWT token
-
-#### Public (`/api/public`)
-- `GET /api/public/factories` - Get all factories
-- `GET /api/public/factories/:id` - Get factory by ID
-- `GET /api/public/roles-features` - Get role features
-
-#### Farmer (`/api/farmer`) - Protected
-- `GET /api/farmer/profile` - Get farmer profile
-- `PUT /api/farmer/profile` - Update farmer profile
-- `GET /api/farmer/announcements` - Get announcements
-- `POST /api/farmer/listings` - Create crop listing
-- `GET /api/farmer/listings` - Get all listings
-- `GET /api/farmer/hhms` - Get HHM directory
-- `GET /api/farmer/factories` - Get factory directory
-
-#### HHM (`/api/hhm`) - Protected
-- `GET /api/hhm/profile` - Get HHM profile
-- `POST /api/hhm/schedules` - Create job schedule
-- `GET /api/hhm/schedules` - Get all schedules
-- `GET /api/hhm/applications` - Get applications
-- `PUT /api/hhm/applications/:id` - Update application status
-- `POST /api/hhm/invitations` - Send invitation to worker
-- `GET /api/hhm/workers` - Browse workers
-- `GET /api/hhm/factory-invitations` - Get factory invitations
-- `POST /api/hhm/invite-factory` - Invite factory
-
-#### Worker (`/api/worker`) - Protected
-- `GET /api/worker/profile` - Get worker profile
-- `GET /api/worker/jobs` - Get job feed
-- `POST /api/worker/applications` - Apply for job
-- `GET /api/worker/applications` - Get my applications
-- `GET /api/worker/invitations` - Get invitations
-- `PUT /api/worker/invitations/:id` - Respond to invitation
-
-#### Factory (`/api/factory`) - Protected
-- `GET /api/factory/profile` - Get factory profile
-- `POST /api/factory/bills` - Create bill
-- `GET /api/factory/bills` - Get all bills
-- `POST /api/factory/maintenance-jobs` - Create maintenance job
-- `GET /api/factory/hhms` - Get HHM directory
-- `POST /api/factory/invite-hhm` - Invite HHM
-- `GET /api/factory/associated-hhms` - Get associated HHMs
-
-For detailed API documentation with request/response examples, see:
-- [API Documentation](./docs/API.md)
-- [Swagger UI](http://localhost:5000/api-docs) (when server is running)
-
-<a id="architecture"></a>
-## 🏗 Architecture
-
-### System Architecture
-
-```
-┌─────────────┐
-│   Client    │
-│  (Browser)  │
-└──────┬──────┘
-       │ HTTP/HTTPS
-       │
-┌──────▼─────────────────┐
-│   Frontend (React)     │
-│   - Vite Dev Server    │
-│   - React Router       │
-│   - Axios              │
-└──────┬─────────────────┘
-       │ API Calls
-       │
-┌──────▼─────────────────┐
-│   Backend (Express)    │
-│   - JWT Auth           │
-│   - Route Handlers     │
-│   - Controllers        │
-└──────┬─────────────────┘
-       │
-┌──────▼─────────────────┐
-│   MongoDB Database     │
-│   - Users              │
-│   - Profiles           │
-│   - Schedules          │
-│   - Applications        │
-│   - Invitations         │
-└────────────────────────┘
-```
-
-### Database Schema
-
-- **Users**: Authentication and basic user info
-- **Profiles**: Extended profile data for each role
-- **Schedules**: Job schedules created by HHMs
-- **Applications**: Worker applications for jobs
-- **Invitations**: Direct hire invitations and factory-HHM partnerships
-- **Bills**: Factory billing records
-- **CropListings**: Farmer crop listings
-- **Announcements**: System announcements
-
-For detailed architecture documentation, see [ARCHITECTURE.md](./docs/ARCHITECTURE.md)
-
-<a id="deployment"></a>
-## 🚢 Deployment
-
-### Backend Deployment
-
-#### Option 1: Heroku
-
-1. Install Heroku CLI
-2. Login: `heroku login`
-3. Create app: `heroku create your-app-name`
-4. Set environment variables:
-   ```bash
-   heroku config:set MONGO_URI=your-mongodb-uri
-   heroku config:set JWT_SECRET=your-jwt-secret
-   heroku config:set NODE_ENV=production
-   ```
-5. Deploy: `git push heroku main`
-
-#### Option 2: DigitalOcean / AWS / Azure
-
-1. Set up Node.js environment
-2. Clone repository
-3. Install dependencies: `npm install --production`
-4. Set environment variables
-5. Use PM2 or similar process manager:
-   ```bash
-   npm install -g pm2
-   pm2 start server.js --name sugarcane-api
-   ```
-
-### Frontend Deployment
-
-#### Option 1: Vercel
-
-1. Install Vercel CLI: `npm i -g vercel`
-2. From frontend directory: `vercel`
-3. Configure environment variables if needed
-
-#### Option 2: Netlify
-
-1. Build the project: `npm run build`
-2. Deploy `dist/` folder to Netlify
-3. Configure redirects for SPA routing
-
-#### Option 3: Static Hosting
-
-1. Build: `npm run build`
-2. Upload `dist/` folder to your hosting provider
-3. Configure API proxy if needed
-
-### Environment Variables for Production
-
-Ensure all production environment variables are set:
-- `NODE_ENV=production`
-- `MONGO_URI` (production database)
-- `JWT_SECRET` (strong, random secret)
-- `PORT` (if not using default)
-
-<a id="testing"></a>
-## 🧪 Testing
-
-### Running Tests
+- No `npm test` script is currently defined in `frontend/package.json`.
+- Use lint/build checks:
 
 ```bash
-# Backend tests
-cd backend
-npm test
-
-# Frontend tests (if configured)
 cd frontend
-npm test
+npm run lint
+npm run build
 ```
 
-### Manual Testing
+## Deployment
 
-Test files are located in the `test/` directory:
+### Backend (Render)
 
-```bash
-# Run specific test
-node test/integration/test-auth.js
+`backend/render.yaml` is included and configured for a Node web service with:
 
-# Run all integration tests
-node test/integration/*.js
-```
+- `buildCommand: npm install`
+- `startCommand: npm start`
+- `healthCheckPath: /api/health`
 
-<a id="contributing"></a>
-## 🤝 Contributing
+Expected env vars include:
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+- `NODE_ENV`
+- `PORT`
+- `MONGO_URI`
+- `JWT_SECRET`
+- `CORS_ORIGIN`
 
-### Code Style
+### Frontend (Netlify)
 
-- Use consistent indentation (2 spaces)
-- Follow existing code patterns
-- Add comments for complex logic
-- Update documentation for new features
+`frontend/netlify.toml` is included with:
 
-<a id="license"></a>
-## 📝 License
+- SPA redirect to `index.html`
+- Build command `npm run build`
+- Publish directory `dist`
 
-This project is licensed under the ISC License.
+## Troubleshooting
 
-<a id="support"></a>
-## 📞 Support
+- Backend starts but DB connection fails:
+  - Check `MONGO_URI`
+  - Ensure MongoDB is running
+  - Verify network/Atlas IP access
+- CORS issues in browser:
+  - Confirm frontend URL and backend CORS config in `backend/server.js`
+- `start-server.bat` and `start-frontend.bat`:
+  - These contain machine-specific absolute paths and may not work on other systems
+  - Prefer npm scripts (`npm run dev`, `npm start`)
 
-For issues, questions, or contributions, please open an issue on the repository.
+## License
 
+ISC
 
+## API Appendix
 
-**Built with ❤️ for the sugarcane industry**
+The following paths are taken from currently mounted route files and grouped by feature area.
+
+### Auth API
+
+Base: /api/auth
+
+- POST /register
+- POST /login
+- GET /verify
+
+### Public API
+
+Base: /api/public
+
+- GET /factories
+- GET /factories/:id
+- GET /roles-features
+- GET /roles-features/:roleName
+- GET /farmers/:id
+
+### User Utility API
+
+Base: /api/users
+
+- GET /profile/:userId
+- GET /search
+
+### Farmer API
+
+Base: /api/farmer
+
+- GET /profile
+- GET /test-profile
+- PUT /profile
+- GET /announcements
+- POST /listings
+- GET /listings
+- GET /listings/my
+- PUT /listings/:id
+- DELETE /listings/:id
+- GET /hhms
+- GET /hhms/:id
+- GET /factories
+- GET /factories/:factoryId
+- POST /factories/:factoryId/associate-hhms
+- DELETE /factories/:factoryId/remove-hhm/:hhmId
+
+### HHM API
+
+Base: /api/hhm
+
+- GET /profile
+- PUT /profile
+- POST /schedules
+- GET /schedules
+- GET /schedules/:id
+- PUT /schedules/:id
+- DELETE /schedules/:id
+- GET /workers
+- PUT /workers/:workerId/availability
+- POST /release-worker
+- POST /invitations
+- GET /applications
+- PUT /applications/:id
+- GET /dashboard
+- GET /schedules/:id/applications
+- GET /factory-invitations
+- PUT /factory-invitations/:id
+- POST /invite-factory
+- POST /invite-multiple-factories
+- GET /my-factory-invitations
+- GET /associated-factories
+- DELETE /associated-factories/:factoryId
+- GET /my-performance
+- GET /farmers
+- GET /farmer/:id
+
+### Worker API
+
+Base: /api/worker
+
+- GET /profile
+- PUT /profile
+- PUT /availability
+- GET /hhms
+- GET /jobs
+- POST /applications
+- GET /applications
+- GET /invitations
+- PUT /invitations/:id
+- GET /dashboard
+- GET /jobs/:id
+- DELETE /applications/:id
+- GET /jobs/recommendations
+
+### Factory API
+
+Base: /api/factory
+
+- GET /dashboard-stats
+- GET /profile
+- PUT /profile
+- POST /bills
+- GET /bills
+- POST /maintenance-jobs
+- GET /maintenance-applications
+- PUT /maintenance-applications/:id
+- GET /hhms
+- GET /hhms/:id
+- POST /invite-hhm
+- POST /invite-multiple-hhms
+- GET /invitations
+- GET /received-invitations
+- PUT /received-invitations/:id
+- GET /associated-hhms
+- DELETE /invitations/:id
+- DELETE /associated-hhms/:hhmId
+- DELETE /notifications/:id
+- DELETE /notifications
+- GET /crushing-status
+- PUT /crushing-status
+
+### Contract API
+
+Base: /api/contracts
+
+- POST /request
+- POST /invite
+- PUT /:contractId/accept-invite
+- PUT /:contractId/reject-invite
+- PUT /respond/:contractId
+- PUT /finalize/:contractId
+- GET /my-contracts
+- GET /:contractId
+- GET /stats
+- PUT /:contractId/extend
+- PUT /:contractId/cancel
+- PUT /:contractId/mark-delivered
+- PUT /:contractId/mark-paid
+- PUT /:contractId/mark-completed
+- GET /dashboard
+- GET /partner/:partnerId
+
+### Farmer Contract API
+
+Base: /api/farmer-contracts
+
+- POST /request
+- GET /my-contracts
+- PUT /respond/:contractId
+- PUT /:contractId/mark-delivered
+- PUT /:contractId/mark-paid
+- PUT /:contractId/mark-completed
+
+### Listings API
+
+Base: /api/listings
+
+- GET /marketplace
+- GET /test
+- POST /create-test
+- POST /create
+- PUT /:id
+- DELETE /:id
+- GET /my-listings
+- GET /:id
+
+### Orders API
+
+Base: /api/orders
+
+- POST /create
+- GET /received
+- GET /sent
+- GET /listing/:listingId
+- PUT /:orderId/status
+- GET /my-orders
+
+### Analytics API
+
+Base: /api/analytics
+
+The currently mounted file is analytics-stable.routes.js and includes:
+
+- GET /test
+- GET /factory-profitability
+
+Other analytics route files exist with additional endpoints, but they are not all mounted simultaneously in server.js.
+
+### Test and Debug APIs
+
+- Base /api/test-raw
+  - GET /raw/:userId
+- Base /api/test-orders
+  - GET /:orderId/test
+- Base /api/minimal-test
+  - PUT /:orderId/minimal-status
+
+## Script Reference
+
+### Backend scripts
+
+From backend/package.json:
+
+- npm start
+  - Starts production server using node server.js
+- npm run dev
+  - Starts dev server using nodemon server.js
+- npm test
+  - Placeholder script (currently exits with error)
+- npm run data:import
+  - Runs node seeder (note: seeder path should be verified before use)
+- npm run data:destroy
+  - Runs node seeder -d (script currently contains unusual whitespace and may need cleanup)
+
+### Frontend scripts
+
+From frontend/package.json:
+
+- npm run dev
+  - Starts Vite dev server
+- npm run build
+  - Builds production assets
+- npm run lint
+  - Runs ESLint
+- npm run preview
+  - Serves built assets locally
+
+## Frontend-Backend Integration Notes
+
+The frontend Vite config proxies /api to the backend:
+
+- proxy target: <http://localhost:5000>
+- changeOrigin: true
+- secure: false
+
+This allows frontend API calls to use relative paths like /api/auth/login during development.
+
+## CORS and Client Origins
+
+The backend currently allows these origins:
+
+- <http://localhost:5173>
+- <http://localhost:5174>
+- <http://localhost:3000>
+
+If your frontend runs on a different port or domain, update backend/server.js accordingly.
+
+## Data and Media Notes
+
+- The backend serves uploads as static files from /uploads.
+- Listing creation and update routes support multipart upload for farm_images.
+- Ensure write permissions for uploads directory in your deployment environment.
+
+## Logging and Error Handling Behavior
+
+- Request logging is enabled in backend/server.js.
+- Global error middleware returns JSON responses.
+- There are process-level handlers for uncaughtException and unhandledRejection.
+
+Important note:
+
+- The file currently contains duplicated process-level handlers with different shutdown behavior.
+- Consider consolidating them in a future cleanup to avoid conflicting runtime behavior.
+
+## Database Connectivity Behavior
+
+Database connection is initialized during server startup via config/db.js.
+
+If MongoDB connection fails:
+
+- The backend logs warnings.
+- The process may continue running depending on the failure path.
+- API routes requiring DB will fail until connectivity is restored.
+
+## Deployment Checklist
+
+Before production deployment:
+
+1. Set NODE_ENV=production.
+2. Provide secure JWT_SECRET.
+3. Set valid MONGO_URI for production cluster.
+4. Set CORS_ORIGIN for frontend domain(s).
+5. Confirm uploads directory handling and persistence strategy.
+6. Validate health endpoint /api/health.
+7. Run frontend build and smoke test critical workflows.
+
+## Render Deployment Notes
+
+Current backend/render.yaml uses:
+
+- type: web
+- env: node
+- buildCommand: npm install
+- startCommand: npm start
+- healthCheckPath: /api/health
+
+Configured env keys include:
+
+- NODE_ENV
+- PORT
+- MONGO_URI
+- JWT_SECRET
+- CORS_ORIGIN
+
+## Netlify Deployment Notes
+
+Current frontend/netlify.toml includes:
+
+- SPA rewrite from /* to /index.html
+- publish directory dist
+- build command npm run build
+- NODE_VERSION=18 in build environment
+
+## Suggested Verification Flow
+
+After setup, verify in this order:
+
+1. GET /api/health
+2. POST /api/auth/register
+3. POST /api/auth/login
+4. GET protected profile route with token
+5. Create and fetch listings
+6. Create and review orders
+7. Validate role-specific dashboard endpoints
+
+## Known Gaps and Reality Check
+
+- No integrated test runner workflow in package scripts yet.
+- README-level endpoint documentation can drift when route files change.
+- Some scripts and docs from earlier phases remain in repository and may be legacy.
+
+For high-confidence changes, always check mounted routes in backend/server.js first.
+
+## Roadmap-Friendly Improvements
+
+Potential improvements for future iterations:
+
+1. Add backend/.env.example with required keys.
+2. Add OpenAPI/Swagger generation and docs route.
+3. Standardize automated tests with a single runner.
+4. Split route docs into versioned API reference.
+5. Consolidate duplicate process error handlers in backend/server.js.
+6. Normalize seeder scripts and ensure deterministic test seed data.
+
+## Contributing
+
+Suggested contribution flow:
+
+1. Create a feature branch from main.
+2. Keep changes scoped by module (frontend/backend/docs).
+3. Update docs alongside behavioral/API changes.
+4. Run lint/build checks before opening PR.
+5. Include manual verification notes in the PR description.
+
+## Support
+
+If something is unclear or broken:
+
+1. Check backend server logs first.
+2. Verify MongoDB connectivity and credentials.
+3. Confirm frontend proxy and CORS origins.
+4. Re-test with a fresh JWT token.
+
+This README is intentionally detailed so new contributors can start quickly without reverse-engineering the route layer.
