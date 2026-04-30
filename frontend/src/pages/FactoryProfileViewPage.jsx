@@ -1,29 +1,70 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 import { CRUSHING_STATUS, getCrushingStatusDisplay, DEFAULT_CRUSHING_STATUS } from '../constants/crushingStatus.js';
 import './FarmerProfile.css'; // Leverage exact unified CSS
 
 const FactoryProfileViewPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const { id } = useParams();
     
     // Get factory data from navigation state or fallback
-    const factoryData = location.state?.factoryData || null;
+    const [factoryData, setFactoryData] = useState(location.state?.factoryData || null);
+    const [loading, setLoading] = useState(!factoryData);
+    const [error, setError] = useState(null);
 
-    // Cursor tracking
+    const fetchFactoryData = useCallback(async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('No authentication token found. Please login.');
+                return;
+            }
+            const res = await axios.get(`/api/farmer/factories/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = res.data.data || res.data.factory || res.data;
+            setFactoryData(data);
+        } catch (err) {
+            console.error('Error fetching factory data:', err);
+            setError(err.response?.data?.message || 'Failed to fetch factory details.');
+        } finally {
+            setLoading(false);
+        }
+    }, [id]);
+
+    useEffect(() => {
+        if (!factoryData && id) {
+            fetchFactoryData();
+        }
+    }, [factoryData, id, fetchFactoryData]);
 
     const handleGoBack = () => {
         navigate(-1);
     };
 
-    if (!factoryData) {
+    if (loading) {
+        return (
+          <div className="farmer-profile-page" style={{ 
+            display: 'flex', justifyContent: 'center', alignItems: 'center', 
+            background: 'radial-gradient(ellipse at 20% 0%, rgba(126,200,67,0.07) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(126,200,67,0.05) 0%, transparent 50%), #0b0f0b' 
+          }}>
+            <div className="fp-spinner" style={{ borderTopColor: 'var(--green)' }}></div>
+            <div style={{ color: '#f0f5ec', marginLeft: '1rem' }}>Loading Factory Details...</div>
+          </div>
+        );
+    }
+
+    if (error || !factoryData) {
         return (
           <div className="farmer-profile-page" style={{ 
             display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', 
             background: 'radial-gradient(ellipse at 20% 0%, rgba(126,200,67,0.07) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(126,200,67,0.05) 0%, transparent 50%), #0b0f0b' 
           }}>
             <div style={{ color: '#ff6b6b', fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
-            <div style={{ color: '#f0f5ec', marginBottom: '2rem' }}>Factory Profile Not Found</div>
+            <div style={{ color: '#f0f5ec', marginBottom: '2rem' }}>{error || 'Factory Profile Not Found'}</div>
             <button className="fp-save-btn" onClick={handleGoBack}>← Go Back</button>
           </div>
         );

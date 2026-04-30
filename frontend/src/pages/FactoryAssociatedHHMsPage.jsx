@@ -8,12 +8,6 @@ import useNotifications from '../hooks/useNotifications';
 // Set axios base URL
 axios.defaults.baseURL = 'http://localhost:5000';
 
-/**
- * FactoryAssociatedHHMsPage Component
- * 
- * Displays list of HHMs associated with the factory.
- * Allows viewing HHM details and managing associations.
- */
 const FactoryAssociatedHHMsPage = () => {
     const navigate = useNavigate();
     const { notifications, dismissNotification, notify } = useNotifications();
@@ -56,7 +50,6 @@ const FactoryAssociatedHHMsPage = () => {
         }
     };
 
-    // Remove HHM association
     const handleRemoveHHM = async (hhmId, hhmName) => {
         setSelectedHHMToRemove({ id: hhmId, name: hhmName });
         setShowRemoveModal(true);
@@ -72,24 +65,17 @@ const FactoryAssociatedHHMsPage = () => {
                 return;
             }
 
-            console.log(`🗑️ Removing HHM association: ${selectedHHMToRemove.name}`);
-
             const response = await axios.delete(`/api/factory/associated-hhms/${selectedHHMToRemove.id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
 
-            console.log('✅ HHM removed successfully:', response.data);
-
-            // Update the HHMs list by removing the deleted HHM
             setHhms(prevHhms => prevHhms.filter(hhm => hhm._id !== selectedHHMToRemove.id));
-            
-            // Show simple one-line notification
             notify.hhmRemoved(selectedHHMToRemove.name, 'Factory');
 
         } catch (err) {
-            console.error('❌ Error removing HHM:', err);
+            console.error('Error removing HHM:', err);
             setError(err.response?.data?.message || 'Failed to remove HHM association');
         } finally {
             setRemovingHHMId(null);
@@ -103,10 +89,7 @@ const FactoryAssociatedHHMsPage = () => {
         setSelectedHHMToRemove(null);
     };
 
-    // View HHM Profile
     const handleViewProfile = (hhm) => {
-        console.log('👤 Viewing profile for:', hhm.name);
-        // Navigate to relative profile page
         navigate(hhm._id);
     };
 
@@ -125,10 +108,10 @@ const FactoryAssociatedHHMsPage = () => {
 
     if (loading) {
         return (
-            <div className="fah-page">
-                <div className="fah-empty">
-                    <div className="fah-spinner"></div>
-                    <div className="fah-empty-title">Loading associated HHMs...</div>
+            <div className="hd-page">
+                <div className="hd-loading">
+                    <div className="hd-spinner"></div>
+                    <div className="hd-empty-title">Loading associated HHMs...</div>
                 </div>
             </div>
         );
@@ -136,12 +119,12 @@ const FactoryAssociatedHHMsPage = () => {
 
     if (error) {
         return (
-            <div className="fah-page">
-                <div className="fah-empty">
-                    <div className="fah-empty-icon">⚠️</div>
-                    <div className="fah-empty-title">Error Loading Associated HHMs</div>
-                    <div className="fah-empty-sub">{error}</div>
-                    <button className="fah-btn-primary" onClick={fetchAssociatedHHMs}>
+            <div className="hd-page">
+                <div className="hd-empty">
+                    <div className="hd-empty-icon">⚠️</div>
+                    <div className="hd-empty-title">Error Loading Associated HHMs</div>
+                    <div className="hd-empty-sub">{error}</div>
+                    <button className="hd-btn-request" onClick={fetchAssociatedHHMs}>
                         🔄 Retry
                     </button>
                 </div>
@@ -150,30 +133,32 @@ const FactoryAssociatedHHMsPage = () => {
     }
 
     return (
-        <div className="fah-page">
+        <div className="hd-page">
             {/* Header */}
-            <div className="fah-header">
-                <div className="fah-header-left">
-                    <div className="fah-eyebrow">Factory Partnerships</div>
-                    <h1 className="fah-title">Associated <em>Harvest Managers</em></h1>
-                    <p className="fah-sub">Manage your partnerships with Harvest Managers</p>
-                </div>
-                <div className="fah-stat-badge">
-                    {hhms.length} Active Partnerships
+            <div className="hd-header">
+                <div className="ph-top" style={{ alignItems: 'center' }}>
+                    <div className="fah-header-left">
+                        <div className="ph-eyebrow">Factory Partnerships</div>
+                        <h1 className="hd-title">Associated <em>Harvest Managers</em></h1>
+                        <p className="hd-sub">Manage your partnerships with Harvest Managers</p>
+                    </div>
+                    <div className="hc-role-badge" style={{ fontSize: '0.82rem', padding: '8px 18px' }}>
+                        {hhms.length} Active Partnerships
+                    </div>
                 </div>
             </div>
 
             {/* Search */}
             {hhms.length > 0 && (
-                <div className="fah-toolbar">
-                    <div className="fah-search-wrap">
-                        <span className="fah-search-icon">🔍</span>
+                <div className="hd-toolbar">
+                    <div className="hd-search-wrap">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted-2)' }}><circle cx="11" cy="11" r="8"/><path strokeLinecap="round" d="M21 21l-4.35-4.35"/></svg>
                         <input
                             type="text"
                             placeholder="Search by name, location, or specialization…"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="fah-search"
+                            className="hd-search"
                         />
                     </div>
                 </div>
@@ -182,80 +167,81 @@ const FactoryAssociatedHHMsPage = () => {
             {/* HHMs Grid */}
             <div>
                 {filteredHHMs.length === 0 ? (
-                    <div className="fah-empty">
-                        <div className="fah-empty-icon">🌾</div>
-                        <div className="fah-empty-title">
+                    <div className="hd-empty">
+                        <div className="hd-empty-icon">🌾</div>
+                        <div className="hd-empty-title">
                             {searchTerm ? 'No Matching HHMs Found' : 'No Associated HHMs'}
                         </div>
-                        <div className="fah-empty-sub">
+                        <div className="hd-empty-sub">
                             {searchTerm
                                 ? 'Try adjusting your search criteria.'
                                 : 'You haven\'t partnered with any Harvest Managers yet. Send invitations to start building partnerships!'}
                         </div>
                     </div>
                 ) : (
-                    <div className="fah-grid">
+                    <div className="hd-grid">
                         {filteredHHMs.map((hhm, idx) => (
-                            <div key={hhm._id} className="fah-card" style={{ animation: `fahFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
-                                <div className="fah-card-header">
-                                    <div className="fah-avatar">🌾</div>
-                                    <div className="fah-card-title">
-                                        <div className="fah-card-name">{hhm.name || 'Unknown Name'}</div>
-                                        <div className="fah-card-username">@{hhm.username || 'unknown'}</div>
+                            <div key={hhm._id} className="hd-card active" style={{ animation: `hdFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
+                                <div className="hc-header">
+                                    <div className="hc-avatar">👤</div>
+                                    <div className="hc-title-wrap">
+                                        <div className="hc-name">{hhm.name || 'Unknown Name'}</div>
+                                        <div className="hc-username">@{hhm.username || 'unknown'}</div>
+                                        <div className="hc-role-badge">Partner</div>
+                                    </div>
+                                    <div className="hc-status">
+                                        <span className="hd-status-badge active">
+                                            ACTIVE
+                                        </span>
                                     </div>
                                 </div>
 
-                                {/* Quick stats */}
-                                {(hhm.experience || hhm.location) && (
-                                    <div className="fah-stats">
-                                        {hhm.experience && (
-                                            <div className="fah-stat">
-                                                <span className="fah-stat-icon">⭐</span>
-                                                {hhm.experience} yrs
-                                            </div>
-                                        )}
-                                        {hhm.location && (
-                                            <div className="fah-stat">
-                                                <span className="fah-stat-icon">📍</span>
-                                                {hhm.location}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
                                 {/* Contact details */}
-                                <div className="fah-contact">
+                                <div className="hc-contact">
+                                    {hhm.location && (
+                                        <div className="hc-contact-item">
+                                            <span className="hc-contact-icon">📍</span>
+                                            <span className="hc-contact-text">{hhm.location}</span>
+                                        </div>
+                                    )}
                                     {hhm.email && (
-                                        <div className="fah-contact-item">
-                                            <span className="fah-contact-icon">📧</span>
-                                            <span className="fah-contact-text">{hhm.email}</span>
+                                        <div className="hc-contact-item">
+                                            <span className="hc-contact-icon">📧</span>
+                                            <span className="hc-contact-text">{hhm.email}</span>
                                         </div>
                                     )}
                                     {hhm.phone && (
-                                        <div className="fah-contact-item">
-                                            <span className="fah-contact-icon">📱</span>
-                                            <span className="fah-contact-text">{hhm.phone}</span>
+                                        <div className="hc-contact-item">
+                                            <span className="hc-contact-icon">📱</span>
+                                            <span className="hc-contact-text">{hhm.phone}</span>
                                         </div>
                                     )}
                                     {hhm.specialization && (
-                                        <div className="fah-contact-item">
-                                            <span className="fah-contact-icon">🎯</span>
-                                            <span className="fah-contact-text">{hhm.specialization}</span>
+                                        <div className="hc-contact-item">
+                                            <span className="hc-contact-icon">🎯</span>
+                                            <span className="hc-contact-text">{hhm.specialization}</span>
+                                        </div>
+                                    )}
+                                    {hhm.experience && (
+                                        <div className="hc-contact-item">
+                                            <span className="hc-contact-icon">⭐</span>
+                                            <span className="hc-contact-text">{hhm.experience} years exp.</span>
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="fah-divider"></div>
+                                <div className="hc-divider"></div>
 
-                                <div className="fah-actions">
+                                <div className="hc-actions">
                                     <button
-                                        className="fah-btn-secondary"
+                                        className="hd-btn-profile"
                                         onClick={() => handleViewProfile(hhm)}
                                     >
-                                        👤 View Profile
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        View Profile
                                     </button>
                                     <button
-                                        className="fah-btn-danger"
+                                        className="hd-btn-danger"
                                         onClick={() => handleRemoveHHM(hhm._id, hhm.name)}
                                         disabled={removingHHMId === hhm._id}
                                     >
@@ -277,22 +263,22 @@ const FactoryAssociatedHHMsPage = () => {
 
             {/* Remove Confirmation Modal */}
             {showRemoveModal && selectedHHMToRemove && (
-                <div className="fah-modal-overlay" onClick={cancelRemoveHHM}>
-                    <div className="fah-modal" onClick={(e) => e.stopPropagation()}>
-                        <div className="fah-modal-icon">⚠️</div>
-                        <div className="fah-modal-title">Remove HHM Partnership</div>
-                        <div className="fah-modal-body">
+                <div className="hd-modal-overlay" onClick={cancelRemoveHHM}>
+                    <div className="hd-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="hd-modal-icon">⚠️</div>
+                        <div className="hd-modal-title">Remove HHM Partnership</div>
+                        <div className="hd-modal-body">
                             Are you sure you want to remove <strong>{selectedHHMToRemove.name}</strong> from your associated HHMs?
                         </div>
-                        <div className="fah-modal-warn">
+                        <div className="hd-modal-warn">
                             This will end your partnership and they will no longer have access to your factory services.
                         </div>
-                        <div className="fah-modal-actions">
-                            <button className="fah-btn-secondary" onClick={cancelRemoveHHM}>
+                        <div className="hd-modal-actions">
+                            <button className="hd-btn-profile" onClick={cancelRemoveHHM}>
                                 Cancel
                             </button>
                             <button
-                                className="fah-btn-danger"
+                                className="hd-btn-danger"
                                 onClick={confirmRemoveHHM}
                                 disabled={removingHHMId === selectedHHMToRemove.id}
                             >

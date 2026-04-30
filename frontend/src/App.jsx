@@ -492,11 +492,11 @@ function App() {
 
                 } />
 
-                <Route path="factory/profile/:id" element={
+                <Route path="factory/:id" element={
 
-                  <SafeComponent name="FarmerProfileViewPage">
+                  <SafeComponent name="FactoryProfileViewPage">
 
-                    <FarmerProfileViewPage />
+                    <FactoryProfileViewPage />
 
                   </SafeComponent>
 
