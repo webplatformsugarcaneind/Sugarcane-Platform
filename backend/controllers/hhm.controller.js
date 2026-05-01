@@ -3,6 +3,7 @@ const Application = require('../models/application.model');
 const Profile = require('../models/profile.model');
 const User = require('../models/user.model');
 const Invitation = require('../models/invitation.model');
+const { createNotification } = require('../utils/notification.util');
 
 /**
  * @desc    Create a new job schedule
@@ -601,6 +602,18 @@ const createInvitation = async (req, res) => {
 
     console.log(' Invitation created successfully:', invitation._id);
 
+    // Notify Worker
+    await createNotification({
+      senderId: req.user._id,
+      receiverId: workerId,
+      senderRole: 'hhm',
+      receiverRole: 'worker',
+      type: 'INVITATION_SENT',
+      message: `You have received a job invitation from HHM ${req.user.name || 'someone'}.`,
+      relatedId: invitation._id,
+      relatedModel: 'Invitation'
+    });
+
     res.status(201).json({
       success: true,
       message: 'Invitation sent successfully',
@@ -879,6 +892,18 @@ const updateApplicationStatus = async (req, res) => {
     ]);
 
     console.log(` Application ${status} successfully for worker: ${application.workerId.name}`);
+
+    // Notify Worker
+    await createNotification({
+      senderId: req.user._id,
+      receiverId: application.workerId._id,
+      senderRole: 'hhm',
+      receiverRole: 'worker',
+      type: status === 'approved' ? 'JOB_ASSIGNED' : 'SYSTEM_ALERT',
+      message: `Your job application for ${application.scheduleId.title} was ${status} by HHM ${req.user.name || 'someone'}.`,
+      relatedId: application._id,
+      relatedModel: 'Application'
+    });
 
     res.status(200).json({
       success: true,

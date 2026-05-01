@@ -4,7 +4,7 @@
 @keyframes fdBlink { 0%,100%{opacity:1} 50%{opacity:.4} }
 @keyframes fdSpin { to { transform: rotate(360deg); } }
 
-.fd-page { padding: 90px 48px 80px; max-width: 1280px; margin: 0 auto; }
+.fd-page { padding: 90px 48px 80px; width: 100%; max-width: 100%; margin: 0; }
 
 /* ═══════════════════════════════════════════════
    PAGE HEADER (Welcome + Crushing Status)

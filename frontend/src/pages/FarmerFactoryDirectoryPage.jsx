@@ -113,13 +113,7 @@ const FarmerFactoryDirectoryPage = () => {
           <option value="good">Good</option>
           <option value="poor">Poor</option>
         </select>
-        <select className="fd-filter" value={locationFilter} onChange={e => setLocationFilter(e.target.value)}>
-          <option value="">All Locations</option>
-          <option value="maharashtra">Maharashtra</option>
-          <option value="karnataka">Karnataka</option>
-          <option value="uttar pradesh">Uttar Pradesh</option>
-          <option value="gujarat">Gujarat</option>
-        </select>
+
         <select className="fd-filter" value={sortFilter} onChange={e => setSortFilter(e.target.value)}>
           <option value="score">Sort: Best Score</option>
           <option value="price">Sort: Highest Price</option>
@@ -195,7 +189,7 @@ const FarmerFactoryDirectoryPage = () => {
                   <span className="fd-hhm-pill">{f.associatedHHMs?.length || 0}</span>
                 </div>
                 {f.associatedHHMs?.length > 0 && (
-                  <button className="fd-hhm-manage" onClick={() => navigate(`/farmer/associate-hhm/${f._id}`)}>
+                  <button className="btn-base btn-outline" style={{ height: '28px', padding: '0 10px', fontSize: '0.7rem' }} onClick={() => navigate(`/farmer/associate-hhm/${f._id}`)}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
                     Manage
                   </button>
@@ -213,7 +207,7 @@ const FarmerFactoryDirectoryPage = () => {
                 ) : (
                   <>
                     <div className="fd-hhm-empty"><span className="fd-hhm-empty-icon">👥</span><span className="fd-hhm-empty-text">No associated HHMs</span></div>
-                    <button className="fd-btn-associate" onClick={() => navigate(`/farmer/associate-hhm/${f._id}`)}>
+                    <button className="btn-base btn-primary" style={{ width: '100%', height: '36px', fontSize: '0.8rem' }} onClick={() => navigate(`/farmer/associate-hhm/${f._id}`)}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14"/></svg>
                       Associate HHMs
                     </button>
@@ -223,11 +217,11 @@ const FarmerFactoryDirectoryPage = () => {
             </div>
 
             <div className="fc-actions">
-              <button className="fd-btn-contact" onClick={() => { setContactFactory(f); setContactModal(true); }}>
+              <button className="btn-base btn-primary" onClick={() => { setContactFactory(f); setContactModal(true); }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
                 Contact
               </button>
-              <button className="fd-btn-profile" onClick={() => navigate(`/farmer/factory/${f._id || f.id}`, { state: { factoryData: f } })}>
+              <button className="btn-base btn-secondary" onClick={() => navigate(`/farmer/factory/${f._id || f.id}`, { state: { factoryData: f } })}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 View Profile
               </button>

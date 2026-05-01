@@ -111,10 +111,22 @@ router.get('/profile/:userId', async (req, res) => {
           teamSize: user.teamSize || 'Not specified',
           managementOperations: user.managementOperations || 'Not specified',
           servicesOffered: user.servicesOffered || 'Agricultural coordination and worker management',
-          description: user.servicesOffered || 'Experienced Hub Head Manager coordinating agricultural operations and partnerships.',
+          workingAreas: user.workingAreas || [],
+          workerTypes: user.workerTypes || [],
+          activeJobs: user.activeJobs || 0,
+          completedJobs: user.completedJobs || 0,
+          avgCompletionTime: user.avgCompletionTime || 'Not specified',
+          priceRange: user.priceRange || 'Contact for pricing',
+          isNegotiable: user.isNegotiable !== undefined ? user.isNegotiable : true,
+          workHistory: user.workHistory || [],
+          rating: user.rating || 0,
+          reviews: user.reviews || [],
           associatedFactories: user.associatedFactories || [],
           profileType: 'hhm'
         };
+        // Remove contact info for public/farmer view for privacy
+        delete formattedProfile.email;
+        delete formattedProfile.phone;
         break;
 
       case 'Labour':

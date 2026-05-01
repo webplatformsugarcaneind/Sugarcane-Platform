@@ -43,6 +43,7 @@ app.use('/api/worker', require('./routes/worker.routes'));
 app.use('/api/factory', require('./routes/factory.routes'));
 app.use('/api/contracts', require('./routes/contract.routes'));
 app.use('/api/farmer-contracts', require('./routes/farmerContract.routes'));
+app.use('/api/notifications', require('./routes/notification.routes'));
 
 // Load analytics routes with debug logging
 try {

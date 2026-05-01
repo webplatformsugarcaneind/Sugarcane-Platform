@@ -1,5 +1,6 @@
 const Contract = require('../models/contract.model');
 const User = require('../models/user.model');
+const { createNotification } = require('../utils/notification.util');
 
 /**
  * @desc    Create a new contract request (HHM initiates)
@@ -83,6 +84,18 @@ const createContractRequest = async (req, res) => {
     ]);
 
     console.log('✅ Contract request created successfully:', contract._id);
+
+    // Notify Factory
+    await createNotification({
+      senderId: req.user._id,
+      receiverId: factory_id,
+      senderRole: 'hhm',
+      receiverRole: 'factory',
+      type: 'CONTRACT_REQUEST',
+      message: `You have received a new contract request from HHM ${req.user.name || 'a manager'}.`,
+      relatedId: contract._id,
+      relatedModel: 'Contract'
+    });
 
     res.status(201).json({
       success: true,
@@ -204,6 +217,18 @@ const createFactoryInvite = async (req, res) => {
 
     console.log('✅ Factory invite created successfully:', contract._id);
 
+    // Notify HHM
+    await createNotification({
+      senderId: req.user._id,
+      receiverId: hhm_id,
+      senderRole: 'factory',
+      receiverRole: 'hhm',
+      type: 'INVITATION_SENT',
+      message: `You have received a partnership invitation from ${req.user.factoryName || 'a factory'}.`,
+      relatedId: contract._id,
+      relatedModel: 'Contract'
+    });
+
     res.status(201).json({
       success: true,
       data: contract,
@@ -308,6 +333,18 @@ const acceptFactoryInvite = async (req, res) => {
 
     console.log('✅ Factory invitation accepted successfully');
 
+    // Notify Factory
+    await createNotification({
+      senderId: req.user._id,
+      receiverId: updatedContract.factory_id._id || updatedContract.factory_id,
+      senderRole: 'hhm',
+      receiverRole: 'factory',
+      type: 'INVITATION_ACCEPTED',
+      message: `Your partnership invitation was accepted by HHM ${req.user.name || 'a manager'}.`,
+      relatedId: updatedContract._id,
+      relatedModel: 'Contract'
+    });
+
     res.status(200).json({
       success: true,
       data: updatedContract,
@@ -383,6 +420,18 @@ const rejectFactoryInvite = async (req, res) => {
     ]);
 
     console.log('✅ Factory invitation rejected');
+
+    // Notify Factory
+    await createNotification({
+      senderId: req.user._id,
+      receiverId: updatedContract.factory_id._id || updatedContract.factory_id,
+      senderRole: 'hhm',
+      receiverRole: 'factory',
+      type: 'INVITATION_REJECTED',
+      message: `Your partnership invitation was rejected by HHM ${req.user.name || 'a manager'}.`,
+      relatedId: updatedContract._id,
+      relatedModel: 'Contract'
+    });
 
     res.status(200).json({
       success: true,
@@ -490,6 +539,20 @@ const respondToContract = async (req, res) => {
     ]);
 
     console.log('✅ Factory response processed successfully:', updatedContract._id);
+
+    // Notify HHM
+    await createNotification({
+      senderId: req.user._id,
+      receiverId: updatedContract.hhm_id._id || updatedContract.hhm_id,
+      senderRole: 'factory',
+      receiverRole: 'hhm',
+      type: decision === 'reject' ? 'CONTRACT_REJECTED' : 'CONTRACT_REQUEST',
+      message: decision === 'reject' 
+        ? `Your contract request was rejected by factory ${req.user.factoryName || 'a factory'}.`
+        : `You have received a counter-offer from factory ${req.user.factoryName || 'a factory'}.`,
+      relatedId: updatedContract._id,
+      relatedModel: 'Contract'
+    });
 
     res.status(200).json({
       success: true,

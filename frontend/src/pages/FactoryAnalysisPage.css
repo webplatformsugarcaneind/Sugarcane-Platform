@@ -41,8 +41,9 @@
 /* ── PAGE ── */
 .fap-page-content { 
   padding: 100px 48px 80px; 
-  max-width: 1200px; 
-  margin: 0 auto; 
+  width: 100%;
+  max-width: 100%; 
+  margin: 0; 
   position: relative;
   z-index: 10;
 }

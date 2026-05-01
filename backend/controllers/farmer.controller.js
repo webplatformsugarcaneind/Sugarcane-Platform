@@ -390,11 +390,11 @@ const deleteListing = async (req, res) => {
  */
 const getHHMs = async (req, res) => {
   try {
-    // Find all active users with HHM role
+    // Find all active users with HHM role — return only decision-relevant public fields
     const hhms = await User.find({ 
       role: 'HHM', 
       isActive: true 
-    }).select('_id name phone email username createdAt').sort({ name: 1 });
+    }).select('_id name location teamSize managementExperience isActive createdAt').sort({ name: 1 });
 
     res.status(200).json({
       success: true,
@@ -411,6 +411,7 @@ const getHHMs = async (req, res) => {
     });
   }
 };
+
 
 /**
  * @desc    Get all factories directory

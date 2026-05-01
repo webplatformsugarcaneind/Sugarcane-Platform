@@ -10,46 +10,44 @@ import FarmerContractsTab from '../components/FarmerContractsTab';
  * - Job Contracts (sent requests and status)
  */
 const FarmerDashboardPage = () => {
-  const [announcements, setAnnouncements] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
-    const fetchAnnouncements = async () => {
+    const fetchNotifications = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Get JWT token from localStorage
         const token = localStorage.getItem('token');
-        
         if (!token) {
           setError('No authentication token found');
           return;
         }
 
-        // Make API request with Authorization header
-        const response = await axios.get('/api/farmer/announcements', {
+        const response = await axios.get('/api/notifications', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
 
-        setAnnouncements(response.data.announcements || []);
+        // The response shape is { success, data: { notifications: [...] } } or { data: [...] }
+        setNotifications(response.data?.data?.notifications || response.data?.data || []);
       } catch (err) {
-        console.error('Error fetching announcements:', err);
+        console.error('Error fetching notifications:', err);
         setError(
           err.response?.data?.message || 
-          'Failed to fetch announcements. Please try again.'
+          'Failed to fetch notifications. Please try again.'
         );
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAnnouncements();
+    fetchNotifications();
   }, []);
 
   const formatDate = (dateString) => {
@@ -68,6 +66,20 @@ const FarmerDashboardPage = () => {
       case 'medium': return '#ff9800';
       case 'low': return '#4caf50';
       default: return '#2196f3';
+    }
+  };
+
+  const clearNotifications = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      await axios.delete('/api/notifications/all', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setNotifications([]);
+    } catch (err) {
+      console.error('Error clearing notifications:', err);
     }
   };
 
@@ -100,12 +112,38 @@ const FarmerDashboardPage = () => {
           <div className="overview-tab">
             {/* Announcements Section */}
             <div className="announcements-section">
-              <h2 className="section-title">📢 Latest Announcements</h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h2 className="section-title" style={{ marginBottom: 0 }}>🔔 Latest Notifications</h2>
+                {notifications.length > 0 && (
+                  <button
+                    onClick={clearNotifications}
+                    title="Clear all notifications"
+                    style={{
+                      background: 'none',
+                      border: '1px solid #dee2e6',
+                      borderRadius: '50%',
+                      width: '36px',
+                      height: '36px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '1.2rem',
+                      color: '#636e72',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => { e.target.style.backgroundColor = '#e74c3c'; e.target.style.color = 'white'; e.target.style.borderColor = '#e74c3c'; }}
+                    onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#636e72'; e.target.style.borderColor = '#dee2e6'; }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
               
               {loading ? (
                 <div className="loading-container">
                   <div className="loading-spinner"></div>
-                  <p>Loading announcements...</p>
+                  <p>Loading notifications...</p>
                 </div>
               ) : error ? (
                 <div className="error-container">
@@ -117,35 +155,30 @@ const FarmerDashboardPage = () => {
                     Retry
                   </button>
                 </div>
-              ) : announcements.length === 0 ? (
+              ) : notifications.length === 0 ? (
                 <div className="empty-state">
-                  <p className="empty-message">No announcements available at the moment.</p>
+                  <p className="empty-message">No notifications available at the moment.</p>
                 </div>
               ) : (
                 <div className="announcements-grid">
-                  {announcements.map((announcement) => (
-                    <div key={announcement._id} className="announcement-card">
+                  {notifications.map((notif) => (
+                    <div key={notif._id} className="announcement-card" style={{ borderLeft: notif.isRead ? 'none' : '4px solid #4caf50' }}>
                       <div className="announcement-header">
-                        <h3 className="announcement-title">{announcement.title}</h3>
+                        <h3 className="announcement-title">{notif.type?.replace(/_/g, ' ')}</h3>
                         <span 
                           className="priority-badge"
-                          style={{ backgroundColor: getPriorityColor(announcement.priority) }}
+                          style={{ backgroundColor: getPriorityColor(notif.priority) }}
                         >
-                          {announcement.priority || 'Normal'}
+                          {notif.priority || 'Normal'}
                         </span>
                       </div>
                       
-                      <p className="announcement-content">{announcement.content}</p>
+                      <p className="announcement-content">{notif.message}</p>
                       
                       <div className="announcement-footer">
                         <span className="announcement-date">
-                          📅 {formatDate(announcement.createdAt)}
+                          📅 {formatDate(notif.createdAt)}
                         </span>
-                        {announcement.expiresAt && (
-                          <span className="announcement-expires">
-                            ⏰ Expires: {formatDate(announcement.expiresAt)}
-                          </span>
-                        )}
                       </div>
                     </div>
                   ))}

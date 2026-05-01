@@ -112,6 +112,7 @@ import HHMWorkerProfileViewPage from './pages/HHMWorkerProfileViewPage.jsx';
 import FactoryHHMProfileViewPage from './pages/FactoryHHMProfileViewPage.jsx';
 
 import UserProfilePage from './pages/UserProfilePage.jsx';
+import CreateListingPage from './pages/CreateListingPage.jsx';
 
 // Error Boundary Component
 
@@ -570,6 +571,12 @@ function App() {
 
                   </SafeComponent>
 
+                } />
+
+                <Route path="listing/create" element={
+                  <SafeComponent name="CreateListingPage">
+                    <CreateListingPage />
+                  </SafeComponent>
                 } />
 
                 <Route path="listing/:listingId/farmer/:userId" element={

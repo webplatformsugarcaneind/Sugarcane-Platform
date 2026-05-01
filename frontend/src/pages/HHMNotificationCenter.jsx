@@ -49,7 +49,8 @@ const HHMNotificationCenter = () => {
             ]);
 
             // Process factory invitations into notifications
-            const invitationNotifications = factoryInvitationsRes.data.invitations
+            const invitationsData = factoryInvitationsRes.data.data || factoryInvitationsRes.data.invitations || [];
+            const invitationNotifications = invitationsData
                 .filter(inv => inv.status === 'pending')
                 .map(inv => ({
                     id: `invitation-${inv._id}`,
@@ -64,7 +65,8 @@ const HHMNotificationCenter = () => {
                 }));
 
             // Process new applications into notifications
-            const newApplications = applicationsRes.data.applications
+            const applicationsData = applicationsRes.data.data || applicationsRes.data.applications || [];
+            const newApplications = applicationsData
                 .filter(app => app.status === 'pending' && isRecent(app.createdAt, 7));
 
             const applicationNotifications = newApplications.map(app => ({
@@ -80,7 +82,8 @@ const HHMNotificationCenter = () => {
             }));
 
             // Process schedule updates (closing soon)
-            const closingSoonSchedules = schedulesRes.data.schedules
+            const schedulesData = schedulesRes.data.data || schedulesRes.data.schedules || [];
+            const closingSoonSchedules = schedulesData
                 .filter(schedule => {
                     if (schedule.status !== 'open') return false;
                     const daysUntilStart = getDaysUntil(schedule.startDate);

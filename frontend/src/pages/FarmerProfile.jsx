@@ -266,7 +266,7 @@ const FarmerProfile = () => {
             </div>
             <div className="fp-header-right">
               <button 
-                className={`fp-btn-save-top ${pulseSave ? 'pulse' : ''}`} 
+                className={`btn-base btn-primary ${pulseSave ? 'pulse' : ''}`} 
                 onClick={handleSave} >
                 {pulseSave ? 'Saved!' : 'Save Changes'}
               </button>
@@ -415,8 +415,8 @@ const FarmerProfile = () => {
             <strong>Unsaved changes</strong> — save to update your profile
           </div>
           <div className="fp-sticky-btns">
-            <button className="fp-btn-discard" onClick={() => setShowSave(false)} >Discard</button>
-            <button className="fp-btn-save-sticky" onClick={handleSave} >Save Profile</button>
+            <button className="btn-base btn-outline" onClick={() => setShowSave(false)} style={{ border: 'none' }}>Discard</button>
+            <button className="btn-base btn-primary" onClick={handleSave}>Save Profile</button>
           </div>
         </div>
       </div>

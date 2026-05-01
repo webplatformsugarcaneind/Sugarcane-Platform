@@ -1,9 +1,10 @@
 /* HHM Notification Center Styles */
 
 .notification-center {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 2rem 3rem;
 }
 
 /* Page Header */

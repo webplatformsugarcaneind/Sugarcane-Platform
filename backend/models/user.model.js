@@ -151,6 +151,53 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  workingAreas: [{
+    type: String,
+    trim: true
+  }],
+  workerTypes: [{
+    type: String,
+    trim: true
+  }],
+  activeJobs: {
+    type: Number,
+    default: 0
+  },
+  completedJobs: {
+    type: Number,
+    default: 0
+  },
+  avgCompletionTime: {
+    type: String,
+    trim: true
+  },
+  priceRange: {
+    type: String,
+    trim: true
+  },
+  isNegotiable: {
+    type: Boolean,
+    default: true
+  },
+  workHistory: [{
+    cropType: String,
+    location: String,
+    status: String,
+    date: Date
+  }],
+  rating: {
+    type: Number,
+    min: 0,
+    max: 5,
+    default: 0
+  },
+  reviews: [{
+    farmerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    farmerName: String,
+    rating: Number,
+    comment: String,
+    date: { type: Date, default: Date.now }
+  }],
   // Associated factories for HHM (list of factory IDs)
   associatedFactories: [{
     type: mongoose.Schema.Types.ObjectId,

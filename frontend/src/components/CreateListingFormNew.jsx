@@ -1,1084 +1,475 @@
-import React, { useState } from 'react';
-
-/**
- * CreateListingForm Component
- * 
- * A form component for creating new crop listings with fields for:
- * - Title
- * - Crop variety  
- * - Quantity in gunthas
- * - Expected price per guntha
- * - Harvest availability date
- * - Location
- * - Description (optional)
- * 
- * Usage:
- * <CreateListingForm onSubmit={handleSubmit} isSubmitting={false} />
- */
-const CreateListingForm = ({ onSubmit, isSubmitting = false }) => {
-  const [
-    formData, setFormData] = useState({
-    // Basic Information
-    title: '',
-    sugarcane_variety: '',
-    
-    // Quality & Seed Information
-    disease_free_status: '',
-    certification_details: '',
-    crop_age: '',
-    germination_percentage: '',
-    seed_type: '',
-    
-    // Quantity & Pricing
-    quantity_value: '',
-    quantity_unit: 'gunthas',
-    price_per_unit: '',
-    price_negotiable: true,
-    minimum_order_quantity: '',
-    
-    // Delivery Information
-    delivery_location: '',
-    available_from: '',
-    available_until: '',
-    preferred_delivery_time: '',
-    
-    // Images
-    farm_images: [],
-    
-    // Description
-    description: '',
-    
-    // Legacy fields for backward compatibility
-    crop_variety: '',
-    quantity_in_tons: '',
-    expected_price_per_ton: '',
-    harvest_availability_date: '',
-    location: ''
-  });
-
-  const [imageFiles, setImageFiles] = useState([]);
-  const [errors, setErrors] = useState({});
-
-  const sugarcaneVarieties = [
-    'Co 86032', 'Co 0238', 'Co 62175', 'Co 06022', 
-    'CoM 0265', 'Co 1148', 'Other'
-  ];
-
-  const diseaseStatusOptions = [
-    'Certified Disease-Free', 
-    'Tested Healthy', 
-    'Standard Quality'
-  ];
-
-  const seedTypeOptions = [
-    '2-Bud Setts', 
-    '3-Bud Setts', 
-    'Mixed Setts'
-  ];
-
-  const quantityUnits = [
-    'gunthas'
-  ];
-
-  const deliveryTimeOptions = [
-    'Morning (6AM-12PM)', 
-    'Afternoon (12PM-6PM)', 
-    'Evening (6PM-9PM)', 
-    'Flexible'
-  ];
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-
-    // Clear error for this field when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    
-    // Validate file types
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-    const invalidFiles = files.filter(file => !validTypes.includes(file.type));
-    
-    if (invalidFiles.length > 0) {
-      setErrors(prev => ({
-        ...prev,
-        farm_images: 'Please select only JPEG, JPG, PNG, or WebP images'
-      }));
-      return;
-    }
-
-    // Validate file sizes (max 5MB each)
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    const oversizedFiles = files.filter(file => file.size > maxSize);
-    
-    if (oversizedFiles.length > 0) {
-      setErrors(prev => ({
-        ...prev,
-        farm_images: 'Each image must be smaller than 5MB'
-      }));
-      return;
-    }
-
-    // Limit to 5 images maximum
-    if (files.length > 5) {
-      setErrors(prev => ({
-        ...prev,
-        farm_images: 'You can upload maximum 5 images'
-      }));
-      return;
-    }
-
-    setImageFiles(files);
-    
-    // Clear any previous errors
-    if (errors.farm_images) {
-      setErrors(prev => ({
-        ...prev,
-        farm_images: ''
-      }));
-    }
-  };
-
-  const removeImage = (index) => {
-    const newFiles = imageFiles.filter((_, i) => i !== index);
-    setImageFiles(newFiles);
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Required field validation
-    if (!formData.title.trim()) {
-      newErrors.title = 'Product title is required';
-    }
-
-    if (!formData.sugarcane_variety) {
-      newErrors.sugarcane_variety = 'Sugarcane variety is required';
-    }
-
-    if (!formData.disease_free_status) {
-      newErrors.disease_free_status = 'Disease-free status is required';
-    }
-
-    if (!formData.crop_age || formData.crop_age < 1 || formData.crop_age > 24) {
-      newErrors.crop_age = 'Crop age must be between 1 and 24 months';
-    }
-
-    if (!formData.germination_percentage || formData.germination_percentage < 0 || formData.germination_percentage > 100) {
-      newErrors.germination_percentage = 'Germination percentage must be between 0 and 100';
-    }
-
-    if (!formData.seed_type) {
-      newErrors.seed_type = 'Seed type is required';
-    }
-
-    if (!formData.quantity_value || formData.quantity_value <= 0) {
-      newErrors.quantity_value = 'Quantity must be greater than 0';
-    }
-
-    if (!formData.price_per_unit || formData.price_per_unit <= 0) {
-      newErrors.price_per_unit = 'Price per unit must be greater than 0';
-    }
-
-    if (!formData.delivery_location.trim()) {
-      newErrors.delivery_location = 'Delivery location is required';
-    }
-
-    if (!formData.available_from) {
-      newErrors.available_from = 'Available from date is required';
-    }
-
-    if (!formData.available_until) {
-      newErrors.available_until = 'Available until date is required';
-    }
-
-    // Date validation
-    if (formData.available_from && formData.available_until) {
-      const fromDate = new Date(formData.available_from);
-      const untilDate = new Date(formData.available_until);
-      const today = new Date();
-      
-      if (fromDate < today) {
-        newErrors.available_from = 'Available from date cannot be in the past';
-      }
-      
-      if (untilDate <= fromDate) {
-        newErrors.available_until = 'Available until date must be after available from date';
-      }
-    }
-
-    // Image validation
-    if (imageFiles.length === 0) {
-      newErrors.farm_images = 'At least one image is required';
-    }
-
-    // Minimum order quantity validation
-    if (formData.minimum_order_quantity && Number(formData.minimum_order_quantity) > Number(formData.quantity_value)) {
-      newErrors.minimum_order_quantity = 'Minimum order quantity cannot be greater than available quantity';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      // Create FormData for file upload
-      const submissionData = new FormData();
-      
-      // Add text fields
-      submissionData.append('title', formData.title.trim());
-      submissionData.append('sugarcane_variety', formData.sugarcane_variety);
-      
-      // Add quality & seed information
-      submissionData.append('seed_quality', JSON.stringify({
-        disease_free_status: formData.disease_free_status,
-        certification_details: formData.certification_details.trim() || undefined
-      }));
-      submissionData.append('crop_age', parseInt(formData.crop_age));
-      submissionData.append('germination_percentage', parseInt(formData.germination_percentage));
-      submissionData.append('seed_type', formData.seed_type);
-      
-      // Add quantity & pricing
-      submissionData.append('quantity_available', JSON.stringify({
-        value: parseFloat(formData.quantity_value),
-        unit: formData.quantity_unit
-      }));
-      submissionData.append('price_details', JSON.stringify({
-        price_per_unit: parseFloat(formData.price_per_unit),
-        price_negotiable: formData.price_negotiable,
-        minimum_order_quantity: formData.minimum_order_quantity ? parseFloat(formData.minimum_order_quantity) : undefined
-      }));
-      
-      // Add delivery information
-      submissionData.append('delivery_location', formData.delivery_location.trim());
-      submissionData.append('delivery_timeframe', JSON.stringify({
-        available_from: formData.available_from,
-        available_until: formData.available_until,
-        preferred_delivery_time: formData.preferred_delivery_time || undefined
-      }));
-      
-      // Add description
-      if (formData.description.trim()) {
-        submissionData.append('description', formData.description.trim());
-      }
-      
-      // Add images
-      imageFiles.forEach((file, index) => {
-        submissionData.append('farm_images', file);
-      });
-      
-      // Add legacy fields for backward compatibility
-      submissionData.append('crop_variety', formData.sugarcane_variety);
-      if (formData.quantity_unit === 'gunthas') {
-        submissionData.append('quantity_in_tons', parseFloat(formData.quantity_value));
-        submissionData.append('expected_price_per_ton', parseFloat(formData.price_per_unit));
-      }
-      submissionData.append('harvest_availability_date', formData.available_from);
-      submissionData.append('location', formData.delivery_location.trim());
-
-      // Call the onSubmit prop if provided
-      if (onSubmit) {
-        await onSubmit(submissionData);
-      }
-      
-      // Reset form after successful submission
-      setFormData({
-        title: '',
-        sugarcane_variety: '',
-        disease_free_status: '',
-        certification_details: '',
-        crop_age: '',
-        germination_percentage: '',
-        seed_type: '',
-        quantity_value: '',
-        quantity_unit: 'gunthas',
-        price_per_unit: '',
-        price_negotiable: true,
-        minimum_order_quantity: '',
-        delivery_location: '',
-        available_from: '',
-        available_until: '',
-        preferred_delivery_time: '',
-        farm_images: [],
-        description: '',
-        crop_variety: '',
-        quantity_in_tons: '',
-        expected_price_per_ton: '',
-        harvest_availability_date: '',
-        location: ''
-      });
-      setImageFiles([]);
-      setErrors({});
-    } catch (error) {
-      console.error('Error submitting listing:', error);
-      // Let parent component handle the error display
-    }
-  };
-
-  // Get minimum date (today)
-  const getMinDate = () => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  };
-
-  return (
-    <div className="create-listing-form">
-      <form onSubmit={handleSubmit} className="listing-form">
-        
-        {/* Header */}
-        <div className="form-header">
-          <h2>🌾 Create Sugarcane Listing</h2>
-          <p>Provide detailed information about your sugarcane crop</p>
-        </div>
-
-        {/* Basic Product Information */}
-        <div className="form-section">
-          <h3>📝 Product Information</h3>
-          
-          <div className="form-group">
-            <label htmlFor="title" className="form-label">
-              Product Title *
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className={`form-input ${errors.title ? 'error' : ''}`}
-              placeholder="e.g., Premium Quality Sugarcane Setts - Co 86032"
-              disabled={isSubmitting}
-            />
-            {errors.title && <span className="error-message">{errors.title}</span>}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="sugarcane_variety" className="form-label">
-              Sugarcane Variety *
-            </label>
-            <select
-              id="sugarcane_variety"
-              name="sugarcane_variety"
-              value={formData.sugarcane_variety}
-              onChange={handleChange}
-              className={`form-input ${errors.sugarcane_variety ? 'error' : ''}`}
-              disabled={isSubmitting}
-            >
-              <option value="">Select a variety</option>
-              {sugarcaneVarieties.map(variety => (
-                <option key={variety} value={variety}>{variety}</option>
-              ))}
-            </select>
-            {errors.sugarcane_variety && <span className="error-message">{errors.sugarcane_variety}</span>}
-          </div>
-        </div>
-
-        {/* Quality & Seed Information */}
-        <div className="form-section">
-          <h3>🧪 Quality & Seed Information</h3>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="disease_free_status" className="form-label">
-                Seed Quality (Disease-Free Status) *
-              </label>
-              <select
-                id="disease_free_status"
-                name="disease_free_status"
-                value={formData.disease_free_status}
-                onChange={handleChange}
-                className={`form-input ${errors.disease_free_status ? 'error' : ''}`}
-                disabled={isSubmitting}
-              >
-                <option value="">Select status</option>
-                {diseaseStatusOptions.map(status => (
-                  <option key={status} value={status}>{status}</option>
-                ))}
-              </select>
-              {errors.disease_free_status && <span className="error-message">{errors.disease_free_status}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="seed_type" className="form-label">
-                Seed Type *
-              </label>
-              <select
-                id="seed_type"
-                name="seed_type"
-                value={formData.seed_type}
-                onChange={handleChange}
-                className={`form-input ${errors.seed_type ? 'error' : ''}`}
-                disabled={isSubmitting}
-              >
-                <option value="">Select seed type</option>
-                {seedTypeOptions.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-              {errors.seed_type && <span className="error-message">{errors.seed_type}</span>}
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="crop_age" className="form-label">
-                Crop Age (months) *
-              </label>
-              <input
-                type="number"
-                id="crop_age"
-                name="crop_age"
-                value={formData.crop_age}
-                onChange={handleChange}
-                className={`form-input ${errors.crop_age ? 'error' : ''}`}
-                placeholder="12"
-                min="1"
-                max="24"
-                disabled={isSubmitting}
-              />
-              {errors.crop_age && <span className="error-message">{errors.crop_age}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="germination_percentage" className="form-label">
-                Germination Percentage *
-              </label>
-              <input
-                type="number"
-                id="germination_percentage"
-                name="germination_percentage"
-                value={formData.germination_percentage}
-                onChange={handleChange}
-                className={`form-input ${errors.germination_percentage ? 'error' : ''}`}
-                placeholder="85"
-                min="0"
-                max="100"
-                disabled={isSubmitting}
-              />
-              <small className="field-hint">Enter percentage (0-100)</small>
-              {errors.germination_percentage && <span className="error-message">{errors.germination_percentage}</span>}
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="certification_details" className="form-label">
-              Certification Details (optional)
-            </label>
-            <input
-              type="text"
-              id="certification_details"
-              name="certification_details"
-              value={formData.certification_details}
-              onChange={handleChange}
-              className="form-input"
-              placeholder="e.g., Certified by Agricultural Department, Certificate No: AG-2024-001"
-              disabled={isSubmitting}
-            />
-          </div>
-        </div>
-
-        {/* Quantity & Pricing */}
-        <div className="form-section">
-          <h3>💰 Quantity & Pricing</h3>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="quantity_value" className="form-label">
-                Quantity Available *
-              </label>
-              <input
-                type="number"
-                id="quantity_value"
-                name="quantity_value"
-                value={formData.quantity_value}
-                onChange={handleChange}
-                className={`form-input ${errors.quantity_value ? 'error' : ''}`}
-                placeholder="25.5"
-                min="0"
-                step="0.1"
-                disabled={isSubmitting}
-              />
-              {errors.quantity_value && <span className="error-message">{errors.quantity_value}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="quantity_value" className="form-label">
-                Unit (Gunthas)*
-              </label>
-              <input
-                type="number"
-                id="quantity_value"
-                name="quantity_value"
-                value={formData.quantity_value}
-                onChange={handleChange}
-                className="form-input"
-                placeholder="Enter quantity in guntha"
-                min="0"
-                step="0.01"
-              />
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="price_per_unit" className="form-label">
-                Price per guntha (₹) *
-              </label>
-              <input
-                type="number"
-                id="price_per_unit"
-                name="price_per_unit"
-                value={formData.price_per_unit}
-                onChange={handleChange}
-                className={`form-input ${errors.price_per_unit ? 'error' : ''}`}
-                placeholder="3500"
-                min="0"
-                step="1"
-                disabled={isSubmitting}
-              />
-              {errors.price_per_unit && <span className="error-message">{errors.price_per_unit}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="minimum_order_quantity" className="form-label">
-                Minimum Order Quantity (optional)
-              </label>
-              <input
-                type="number"
-                id="minimum_order_quantity"
-                name="minimum_order_quantity"
-                value={formData.minimum_order_quantity}
-                onChange={handleChange}
-                className={`form-input ${errors.minimum_order_quantity ? 'error' : ''}`}
-                placeholder="1"
-                min="0"
-                step="0.1"
-                disabled={isSubmitting}
-              />
-              {errors.minimum_order_quantity && <span className="error-message">{errors.minimum_order_quantity}</span>}
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                name="price_negotiable"
-                checked={formData.price_negotiable}
-                onChange={handleChange}
-                disabled={isSubmitting}
-              />
-              <span className="checkmark"></span>
-              Price is negotiable
-            </label>
-          </div>
-
-          {/* Total Value Display */}
-          {formData.quantity_value && formData.price_per_unit && (
-            <div className="total-value-display">
-              <span className="total-label">Total Value:</span>
-              <span className="total-amount">
-                ₹{(parseFloat(formData.quantity_value || 0) * parseFloat(formData.price_per_unit || 0)).toLocaleString()}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Delivery Information */}
-        <div className="form-section">
-          <h3>🚚 Delivery Information</h3>
-          
-          <div className="form-group">
-            <label htmlFor="delivery_location" className="form-label">
-              Delivery Location *
-            </label>
-            <input
-              type="text"
-              id="delivery_location"
-              name="delivery_location"
-              value={formData.delivery_location}
-              onChange={handleChange}
-              className={`form-input ${errors.delivery_location ? 'error' : ''}`}
-              placeholder="e.g., Pune, Maharashtra or On-farm pickup available"
-              disabled={isSubmitting}
-            />
-            {errors.delivery_location && <span className="error-message">{errors.delivery_location}</span>}
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="available_from" className="form-label">
-                Available From *
-              </label>
-              <input
-                type="date"
-                id="available_from"
-                name="available_from"
-                value={formData.available_from}
-                onChange={handleChange}
-                className={`form-input ${errors.available_from ? 'error' : ''}`}
-                min={getMinDate()}
-                disabled={isSubmitting}
-              />
-              {errors.available_from && <span className="error-message">{errors.available_from}</span>}
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="available_until" className="form-label">
-                Available Until *
-              </label>
-              <input
-                type="date"
-                id="available_until"
-                name="available_until"
-                value={formData.available_until}
-                onChange={handleChange}
-                className={`form-input ${errors.available_until ? 'error' : ''}`}
-                min={formData.available_from || getMinDate()}
-                disabled={isSubmitting}
-              />
-              {errors.available_until && <span className="error-message">{errors.available_until}</span>}
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="preferred_delivery_time" className="form-label">
-              Preferred Delivery Time (optional)
-            </label>
-            <select
-              id="preferred_delivery_time"
-              name="preferred_delivery_time"
-              value={formData.preferred_delivery_time}
-              onChange={handleChange}
-              className="form-input"
-              disabled={isSubmitting}
-            >
-              <option value="">Select preferred time</option>
-              {deliveryTimeOptions.map(time => (
-                <option key={time} value={time}>{time}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Images */}
-        <div className="form-section">
-          <h3>📸 Farm/Crop Images</h3>
-          
-          <div className="form-group">
-            <label htmlFor="farm_images" className="form-label">
-              Upload Images (1-5 images) *
-            </label>
-            <input
-              type="file"
-              id="farm_images"
-              name="farm_images"
-              onChange={handleImageChange}
-              className={`form-input file-input ${errors.farm_images ? 'error' : ''}`}
-              accept="image/jpeg,image/jpg,image/png,image/webp"
-              multiple
-              disabled={isSubmitting}
-            />
-            <small className="field-hint">
-              Upload images of your farm, crop, or quality samples. Max 5 images, 5MB each. 
-              Accepted formats: JPEG, PNG, WebP
-            </small>
-            {errors.farm_images && <span className="error-message">{errors.farm_images}</span>}
-            
-            {/* Image Preview */}
-            {imageFiles.length > 0 && (
-              <div className="image-preview-grid">
-                {Array.from(imageFiles).map((file, index) => (
-                  <div key={index} className="image-preview-item">
-                    <img 
-                      src={URL.createObjectURL(file)} 
-                      alt={`Preview ${index + 1}`}
-                      className="preview-image"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="remove-image-btn"
-                      disabled={isSubmitting}
-                    >
-                      ×
-                    </button>
-                    <span className="image-name">{file.name}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Description */}
-        <div className="form-section">
-          <h3>📝 Additional Details</h3>
-          
-          <div className="form-group">
-            <label htmlFor="description" className="form-label">
-              Description (optional)
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="form-textarea"
-              placeholder="Additional details about farming methods, soil quality, irrigation, harvest process, storage conditions, or any special features..."
-              rows="4"
-              disabled={isSubmitting}
-            />
-          </div>
-        </div>
-
-        {/* Submit Button */}
-        <div className="form-actions">
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <span className="loading-spinner"></span>
-                Creating Listing...
-              </>
-            ) : (
-              '🌾 Create Listing'
-            )}
-          </button>
-        </div>
-      </form>
-
-      <style jsx>{`
-        .create-listing-form {
-          max-width: 800px;
-          margin: 2rem auto;
-          background: white;
-          padding: 2rem;
-          border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-
-        .form-header {
-          text-align: center;
-          margin-bottom: 2rem;
-          padding-bottom: 1.5rem;
-          border-bottom: 2px solid #e1e5e9;
-        }
-
-        .form-header h2 {
-          color: #2c5530;
-          margin-bottom: 0.5rem;
-          font-size: 1.75rem;
-        }
-
-        .form-header p {
-          color: #666;
-          margin: 0;
-        }
-
-        .form-section {
-          margin-bottom: 2.5rem;
-          padding: 1.5rem;
-          background: #f8fffe;
-          border-radius: 8px;
-          border-left: 4px solid #4CAF50;
-        }
-
-        .form-section h3 {
-          color: #2c5530;
-          margin-bottom: 1.5rem;
-          font-size: 1.2rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .listing-form {
-          display: flex;
-          flex-direction: column;
-          gap: 0;
-        }
-
-        .form-group {
-          margin-bottom: 1.5rem;
-        }
-
-        .form-row {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1.5rem;
-          margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-          display: block;
-          margin-bottom: 0.5rem;
-          font-weight: 600;
-          color: #2c5530;
-          font-size: 0.9rem;
-        }
-
-        .form-input,
-        .form-textarea {
-          width: 100%;
-          padding: 0.75rem;
-          border: 2px solid #e1e5e9;
-          border-radius: 6px;
-          font-size: 1rem;
-          transition: all 0.2s ease;
-          font-family: inherit;
-        }
-
-        .form-input:focus,
-        .form-textarea:focus {
-          outline: none;
-          border-color: #4CAF50;
-          box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-        }
-
-        .form-input.error,
-        .form-textarea.error {
-          border-color: #f44336;
-          box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
-        }
-
-        .form-input:disabled,
-        .form-textarea:disabled {
-          background-color: #f5f5f5;
-          
-        }
-
-        .form-input::placeholder,
-        .form-textarea::placeholder {
-          color: #999;
-        }
-
-        .field-hint {
-          color: #666;
-          font-size: 0.8rem;
-          margin-top: 0.25rem;
-          display: block;
-        }
-
-        .error-message {
-          color: #f44336;
-          font-size: 0.8rem;
-          margin-top: 0.25rem;
-          display: block;
-        }
-
-        .checkbox-label {
-          display: flex;
-          align-items: center;
-          
-          gap: 0.5rem;
-          font-size: 0.95rem;
-          color: #2c5530;
-        }
-
-        .checkbox-label input[type="checkbox"] {
-          margin-right: 0.5rem;
-          transform: scale(1.2);
-        }
-
-        .file-input {
-          border-style: dashed;
-          background: #f8fffe;
-        }
-
-        .file-input:hover {
-          border-color: #4CAF50;
-          background: #f0fff0;
-        }
-
-        .image-preview-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-          gap: 1rem;
-          margin-top: 1rem;
-          padding: 1rem;
-          background: #f9f9f9;
-          border-radius: 6px;
-        }
-
-        .image-preview-item {
-          position: relative;
-          background: white;
-          border-radius: 6px;
-          padding: 0.5rem;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .preview-image {
-          width: 100%;
-          height: 80px;
-          object-fit: cover;
-          border-radius: 4px;
-          margin-bottom: 0.5rem;
-        }
-
-        .remove-image-btn {
-          position: absolute;
-          top: -8px;
-          right: -8px;
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          background: #f44336;
-          color: white;
-          border: none;
-          
-          font-weight: bold;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .remove-image-btn:hover {
-          background: #d32f2f;
-        }
-
-        .image-name {
-          font-size: 0.7rem;
-          color: #666;
-          display: block;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .total-value-display {
-          background: #e8f5e8;
-          padding: 1rem;
-          border-radius: 8px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-left: 4px solid #4CAF50;
-          margin-top: 1rem;
-        }
-
-        .total-label {
-          font-weight: 500;
-          color: #2c5530;
-        }
-
-        .total-amount {
-          font-weight: 700;
-          font-size: 1.2rem;
-          color: #2e7d32;
-        }
-
-        .form-actions {
-          margin-top: 2rem;
-          padding-top: 1.5rem;
-          border-top: 2px solid #e1e5e9;
-        }
-
-        .submit-button {
-          width: 100%;
-          padding: 1rem 2rem;
-          background: #4CAF50;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 1.1rem;
-          font-weight: 600;
-          
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-
-        .submit-button:hover:not(:disabled) {
-          background: #45a049;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
-        }
-
-        .submit-button:disabled {
-          background: #ccc;
-          
-          transform: none;
-          box-shadow: none;
-        }
-
-        .loading-spinner {
-          width: 20px;
-          height: 20px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-top: 2px solid white;
-          border-radius: 50%;
-          display: inline-block;
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-          .create-listing-form {
-            padding: 1.5rem;
-            margin: 1rem;
-          }
-
-          .form-row {
-            grid-template-columns: 1fr;
-            gap: 1rem;
-          }
-
-          .form-section {
-            padding: 1rem;
-          }
-
-          .image-preview-grid {
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-          }
-
-          .form-header h2 {
-            font-size: 1.5rem;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .create-listing-form {
-            padding: 1rem;
-            margin: 0.5rem;
-          }
-
-          .form-section h3 {
-            font-size: 1.1rem;
-          }
-        }
-      `}</style>
-    </div>
-  );
-};
-
-export default CreateListingForm;
+import React, { useState, useEffect } from 'react';
+import '../pages/FarmerProfile.css';
+
+const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
+  const [formData, setFormData] = useState({
+    title: '',
+    sugarcane_variety: '',
+    crop_type: 'Harvest Cane',
+    disease_free_status: 'Standard Quality',
+    certification_details: '',
+    crop_age: '',
+    germination_percentage: '',
+    seed_type: '2-Bud Setts',
+    soil_type: 'Black Soil',
+    irrigation_method: 'Drip',
+    quantity_value: '',
+    quantity_unit: 'gunthas',
+    unit_type: 'Guntha',
+    price_per_unit: '',
+    price_negotiable: true,
+    minimum_order_quantity: '',
+    bulk_discount_available: false,
+    bulk_discount_details: '',
+    delivery_location: '',
+    delivery_method: 'Both',
+    transport_available: false,
+    delivery_radius: '',
+    available_from: '',
+    available_until: '',
+    preferred_delivery_time: 'Flexible',
+    harvest_method: 'Manual',
+    storage_condition: 'Fresh',
+    description: '',
+    tags: []
+  });
+
+  const [imageFiles, setImageFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
+  const [errors, setErrors] = useState({});
+
+  const varieties = ['Co 86032', 'Co 0238', 'Co 62175', 'Co 06022', 'CoM 0265', 'Co 1148', 'Other'];
+  const cropTypes = ['Planting Setts', 'Seed Cane', 'Harvest Cane'];
+  const soilTypes = ['Black Soil', 'Red Soil', 'Mixed'];
+  const irrigationMethods = ['Drip', 'Flood', 'Rain-fed'];
+  const deliveryMethods = ['Pickup', 'Farmer Delivery', 'Both'];
+
+  useEffect(() => {
+    // Scroll to top on mount
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + imageFiles.length > 5) {
+      setErrors(prev => ({ ...prev, images: 'Maximum 5 images allowed' }));
+      return;
+    }
+    
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    setPreviews(prev => [...prev, ...newPreviews]);
+    setImageFiles(prev => [...prev, ...files]);
+  };
+
+  const removeImage = (index) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const validate = () => {
+    const e = {};
+    if (!formData.title) e.title = 'Required';
+    if (!formData.sugarcane_variety) e.sugarcane_variety = 'Required';
+    if (!formData.quantity_value || formData.quantity_value <= 0) e.quantity_value = 'Invalid quantity';
+    if (!formData.price_per_unit || formData.price_per_unit <= 0) e.price_per_unit = 'Invalid price';
+    if (formData.germination_percentage && (formData.germination_percentage < 0 || formData.germination_percentage > 100)) e.germination_percentage = '0-100 only';
+    if (imageFiles.length === 0) e.images = 'At least 1 image required';
+    if (!formData.delivery_location) e.delivery_location = 'Required';
+    
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const submission = new FormData();
+    submission.append('title', formData.title);
+    submission.append('sugarcane_variety', formData.sugarcane_variety);
+    submission.append('crop_type', formData.crop_type);
+    submission.append('seed_quality', JSON.stringify({
+      disease_free_status: formData.disease_free_status,
+      certification_details: formData.certification_details
+    }));
+    submission.append('crop_age', formData.crop_age);
+    submission.append('germination_percentage', formData.germination_percentage);
+    submission.append('seed_type', formData.seed_type);
+    submission.append('soil_type', formData.soil_type);
+    submission.append('irrigation_method', formData.irrigation_method);
+    submission.append('quantity_available', JSON.stringify({
+      value: formData.quantity_value,
+      unit: formData.quantity_unit
+    }));
+    submission.append('unit_type', formData.unit_type);
+    submission.append('price_details', JSON.stringify({
+      price_per_unit: formData.price_per_unit,
+      price_negotiable: formData.price_negotiable,
+      minimum_order_quantity: formData.minimum_order_quantity
+    }));
+    submission.append('bulk_discount', JSON.stringify({
+      available: formData.bulk_discount_available,
+      details: formData.bulk_discount_details
+    }));
+    submission.append('delivery_location', formData.delivery_location);
+    submission.append('delivery_method', formData.delivery_method);
+    submission.append('transport_available', formData.transport_available);
+    submission.append('delivery_radius', formData.delivery_radius);
+    submission.append('delivery_timeframe', JSON.stringify({
+      available_from: formData.available_from,
+      available_until: formData.available_until,
+      preferred_delivery_time: formData.preferred_delivery_time
+    }));
+    submission.append('harvest_method', formData.harvest_method);
+    submission.append('storage_condition', formData.storage_condition);
+    submission.append('description', formData.description);
+
+    imageFiles.forEach(file => submission.append('farm_images', file));
+
+    if (onSubmit) await onSubmit(submission);
+  };
+
+  return (
+    <div className="farmer-profile-page full-screen-form" style={{ minHeight: '100vh', background: 'radial-gradient(circle at top right, rgba(126,200,67,0.08), transparent), #0b0f0b', display: 'flex', justifyContent: 'center', width: '100%' }}>
+      <div className="fp-noise" />
+      
+      <div className="fp-layout-shell" style={{ maxWidth: '1400px', width: '100%', padding: '60px 40px', position: 'relative', zIndex: 1 }}>
+        <div className="form-layout-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '60px' }}>
+          
+          {/* LEFT COLUMN: HEADER & INFO */}
+          <aside className="form-sidebar" style={{ gridColumn: 'span 4' }}>
+            <div style={{ position: 'sticky', top: '60px' }}>
+              <div className="fp-eyebrow" style={{ color: 'var(--green)', letterSpacing: '2px', fontWeight: '800', textTransform: 'uppercase', fontSize: '0.8rem', marginBottom: '15px' }}>Marketplace Listing</div>
+              <h1 className="fp-title" style={{ fontSize: '2.2rem', lineHeight: '1.2', marginBottom: '20px', fontWeight: '900' }}>
+                Create <br /><em className="fp-highlight" style={{ color: 'var(--green)', fontStyle: 'normal' }}>Sugarcane</em> <br />Listing
+              </h1>
+              <p className="fp-subtitle" style={{ fontSize: '1.1rem', color: '#888', lineHeight: '1.6', marginBottom: '40px', maxWidth: '300px' }}>
+                Provide accurate technical details about your crop to attract premium buyers and get the best market rates.
+              </p>
+              
+              <div className="sidebar-guide" style={{ padding: '25px', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid #222' }}>
+                <h4 style={{ color: '#fff', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>💡</span> Listing Tips
+                </h4>
+                <ul style={{ color: '#888', fontSize: '0.9rem', padding: '0', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <li>• Use high-quality field photos</li>
+                  <li>• Mention irrigation methods</li>
+                  <li>• Be precise with quantity</li>
+                </ul>
+              </div>
+            </div>
+          </aside>
+
+          {/* RIGHT COLUMN: THE FORM */}
+          <main className="form-main-content" style={{ gridColumn: 'span 8' }}>
+            <form onSubmit={handleSubmit} className="premium-form-layout" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+              
+              {/* SECTION 1: PRODUCT INFORMATION */}
+              <section className="fp-card">
+                <div className="fp-card-header">
+                  <div className="fp-card-icon">🏷️</div>
+                  <div className="fp-card-txt">
+                    <h2 className="fp-card-title">Product Information</h2>
+                    <div className="fp-card-sub">Basic details about your sugarcane</div>
+                  </div>
+                </div>
+                <div className="fp-card-body">
+                  <div className="fp-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+                    <div className="fp-field" style={{ gridColumn: 'span 2' }}>
+                      <label>Listing Title *</label>
+                      <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="e.g. High Yield Co 86032 Seed Cane" required />
+                      {errors.title && <span className="error-txt">{errors.title}</span>}
+                    </div>
+                    <div className="fp-field">
+                      <label>Sugarcane Variety *</label>
+                      <select name="sugarcane_variety" value={formData.sugarcane_variety} onChange={handleChange} required>
+                        <option value="">Select Variety</option>
+                        {varieties.map(v => <option key={v} value={v}>{v}</option>)}
+                      </select>
+                    </div>
+                    <div className="fp-field">
+                      <label>Crop Type *</label>
+                      <div className="fp-radio-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                        {cropTypes.map(t => (
+                          <div key={t} className={`fp-radio-tile ${formData.crop_type === t ? 'selected' : ''}`} onClick={() => setFormData(p => ({...p, crop_type: t}))}>
+                            <span className="fp-tile-label" style={{ fontSize: '0.8rem' }}>{t}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION 2: QUALITY & SEED DETAILS */}
+              <section className="fp-card">
+                <div className="fp-card-header">
+                  <div className="fp-card-icon">💎</div>
+                  <div className="fp-card-txt">
+                    <h2 className="fp-card-title">Quality & Growth Details</h2>
+                    <div className="fp-card-sub">Technical specs of the crop</div>
+                  </div>
+                </div>
+                <div className="fp-card-body">
+                  <div className="fp-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+                    <div className="fp-field">
+                      <label>Disease-Free Status</label>
+                      <select name="disease_free_status" value={formData.disease_free_status} onChange={handleChange}>
+                        <option value="Certified Disease-Free">Certified Disease-Free</option>
+                        <option value="Tested Healthy">Tested Healthy</option>
+                        <option value="Standard Quality">Standard Quality</option>
+                      </select>
+                    </div>
+                    <div className="fp-field">
+                      <label>Seed Type</label>
+                      <select name="seed_type" value={formData.seed_type} onChange={handleChange}>
+                        <option value="2-Bud Setts">2-Bud Setts</option>
+                        <option value="3-Bud Setts">3-Bud Setts</option>
+                        <option value="Mixed Setts">Mixed Setts</option>
+                      </select>
+                    </div>
+                    <div className="fp-field">
+                      <label>Crop Age (Months)</label>
+                      <input type="number" name="crop_age" value={formData.crop_age} onChange={handleChange} placeholder="12" />
+                    </div>
+                    <div className="fp-field">
+                      <label>Germination %</label>
+                      <input type="number" name="germination_percentage" value={formData.germination_percentage} onChange={handleChange} placeholder="95" />
+                      {errors.germination_percentage && <span className="error-txt">{errors.germination_percentage}</span>}
+                    </div>
+                    <div className="fp-field">
+                      <label>Soil Type</label>
+                      <select name="soil_type" value={formData.soil_type} onChange={handleChange}>
+                        {soilTypes.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </div>
+                    <div className="fp-field">
+                      <label>Irrigation Method</label>
+                      <select name="irrigation_method" value={formData.irrigation_method} onChange={handleChange}>
+                        {irrigationMethods.map(i => <option key={i} value={i}>{i}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION 3: QUANTITY & PRICING */}
+              <section className="fp-card">
+                <div className="fp-card-header">
+                  <div className="fp-card-icon">💰</div>
+                  <div className="fp-card-txt">
+                    <h2 className="fp-card-title">Quantity & Pricing</h2>
+                    <div className="fp-card-sub">Set your volume and rates</div>
+                  </div>
+                </div>
+                <div className="fp-card-body">
+                  <div className="fp-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+                    <div className="fp-field">
+                      <label>Quantity Available</label>
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        <input type="number" name="quantity_value" value={formData.quantity_value} onChange={handleChange} placeholder="20" style={{ flex: 1 }} />
+                        <select name="quantity_unit" value={formData.quantity_unit} onChange={handleChange} style={{ width: '120px' }}>
+                          <option value="gunthas">Gunthas</option>
+                          <option value="acres">Acres</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="fp-field">
+                      <label>Price Per Unit (₹)</label>
+                      <input type="number" name="price_per_unit" value={formData.price_per_unit} onChange={handleChange} placeholder="5000" />
+                    </div>
+                    
+                    <div className="fp-field" style={{ gridColumn: 'span 2', marginTop: '10px', padding: '24px', background: 'rgba(126,200,67,0.05)', borderRadius: '16px', border: '1px solid rgba(126,200,67,0.2)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ color: '#888', fontSize: '0.85rem', marginBottom: '4px' }}>Estimated Total Value</div>
+                        <div style={{ fontSize: '1.75rem', color: 'var(--green)', fontWeight: '800' }}>
+                          ₹{(formData.quantity_value * formData.price_per_unit).toLocaleString()}
+                        </div>
+                      </div>
+                      <div className="fp-field" style={{ margin: 0 }}>
+                        <label className="checkbox-wrap" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                          <input type="checkbox" name="price_negotiable" checked={formData.price_negotiable} onChange={handleChange} /> 
+                          <span style={{ fontSize: '0.9rem' }}>Price Negotiable</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="fp-field">
+                      <label>Minimum Order</label>
+                      <input type="number" name="minimum_order_quantity" value={formData.minimum_order_quantity} onChange={handleChange} placeholder="1" />
+                    </div>
+                    <div className="fp-field" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                      <label className="checkbox-wrap" style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                        <input type="checkbox" name="bulk_discount_available" checked={formData.bulk_discount_available} onChange={handleChange} /> 
+                        <span>Offer Bulk Discount?</span>
+                      </label>
+                    </div>
+
+                    {formData.bulk_discount_available && (
+                      <div className="fp-field" style={{ gridColumn: 'span 2' }}>
+                        <input type="text" name="bulk_discount_details" value={formData.bulk_discount_details} onChange={handleChange} placeholder="e.g. 10% off for orders over 50 gunthas" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION 4: DELIVERY INFORMATION */}
+              <section className="fp-card">
+                <div className="fp-card-header">
+                  <div className="fp-card-icon">🚚</div>
+                  <div className="fp-card-txt">
+                    <h2 className="fp-card-title">Delivery & Logistics</h2>
+                    <div className="fp-card-sub">How will buyers get the product?</div>
+                  </div>
+                </div>
+                <div className="fp-card-body">
+                  <div className="fp-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+                    <div className="fp-field" style={{ gridColumn: 'span 2' }}>
+                      <label>Pickup/Delivery Location *</label>
+                      <input type="text" name="delivery_location" value={formData.delivery_location} onChange={handleChange} placeholder="Village, Taluka, District" required />
+                    </div>
+                    <div className="fp-field">
+                      <label>Delivery Method</label>
+                      <select name="delivery_method" value={formData.delivery_method} onChange={handleChange}>
+                        {deliveryMethods.map(m => <option key={m} value={m}>{m}</option>)}
+                      </select>
+                    </div>
+                    <div className="fp-field">
+                      <label>Transport Available?</label>
+                      <div className="fp-radio-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                        <div className={`fp-radio-tile ${formData.transport_available ? 'selected' : ''}`} onClick={() => setFormData(p => ({...p, transport_available: true}))}>Yes</div>
+                        <div className={`fp-radio-tile ${!formData.transport_available ? 'selected' : ''}`} onClick={() => setFormData(p => ({...p, transport_available: false}))}>No</div>
+                      </div>
+                    </div>
+                    <div className="fp-field">
+                      <label>Available From</label>
+                      <input type="date" name="available_from" value={formData.available_from} onChange={handleChange} style={{ colorScheme: 'dark' }} />
+                    </div>
+                    <div className="fp-field">
+                      <label>Available Until</label>
+                      <input type="date" name="available_until" value={formData.available_until} onChange={handleChange} style={{ colorScheme: 'dark' }} />
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* SECTION 5: IMAGES */}
+              <section className="fp-card">
+                <div className="fp-card-header">
+                  <div className="fp-card-icon">📸</div>
+                  <div className="fp-card-txt">
+                    <h2 className="fp-card-title">Product Images</h2>
+                    <div className="fp-card-sub">Upload 1-5 clear photos of your crop</div>
+                  </div>
+                </div>
+                <div className="fp-card-body">
+                  <div className="image-upload-zone" style={{ border: '2px dashed #333', borderRadius: '16px', padding: '48px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'border-color 0.2s' }}>
+                    <input type="file" multiple accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} id="listing-images" />
+                    <label htmlFor="listing-images" style={{ cursor: 'pointer' }}>
+                      <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>☁️</div>
+                      <div style={{ color: '#fff', fontWeight: 'bold', fontSize: '1.1rem' }}>Click to Upload Photos</div>
+                      <div style={{ color: '#888', fontSize: '0.9rem', marginTop: '4px' }}>Field View • Close Crop • Sample</div>
+                    </label>
+                  </div>
+                  
+                  {previews.length > 0 && (
+                    <div className="image-preview-strip" style={{ display: 'flex', gap: '16px', marginTop: '24px', flexWrap: 'wrap' }}>
+                      {previews.map((url, i) => (
+                        <div key={i} className="preview-item" style={{ position: 'relative', width: '120px', height: '120px' }}>
+                          <img src={url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px', border: '1px solid #333' }} />
+                          <button type="button" onClick={() => removeImage(i)} style={{ position: 'absolute', top: '-8px', right: '-8px', width: '28px', height: '28px', borderRadius: '50%', background: '#ff6b6b', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>×</button>
+                          {i === 0 && <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'var(--green)', color: 'black', fontSize: '0.7rem', textAlign: 'center', borderRadius: '0 0 12px 12px', fontWeight: 'bold', padding: '2px 0' }}>MAIN IMAGE</div>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {errors.images && <div style={{ color: '#ff6b6b', marginTop: '12px', fontSize: '0.9rem' }}>{errors.images}</div>}
+                </div>
+              </section>
+
+              {/* SECTION 6: ADDITIONAL DETAILS */}
+              <section className="fp-card">
+                <div className="fp-card-header">
+                  <div className="fp-card-icon">⚙️</div>
+                  <div className="fp-card-txt">
+                    <h2 className="fp-card-title">Farming & Storage</h2>
+                    <div className="fp-card-sub">Harvesting methods and features</div>
+                  </div>
+                </div>
+                <div className="fp-card-body">
+                  <div className="fp-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+                    <div className="fp-field">
+                      <label>Harvest Method</label>
+                      <div className="fp-radio-grid">
+                        <div className={`fp-radio-tile ${formData.harvest_method === 'Manual' ? 'selected' : ''}`} onClick={() => setFormData(p => ({...p, harvest_method: 'Manual'}))}>Manual</div>
+                        <div className={`fp-radio-tile ${formData.harvest_method === 'Machine' ? 'selected' : ''}`} onClick={() => setFormData(p => ({...p, harvest_method: 'Machine'}))}>Machine</div>
+                      </div>
+                    </div>
+                    <div className="fp-field">
+                      <label>Storage Condition</label>
+                      <div className="fp-radio-grid">
+                        <div className={`fp-radio-tile ${formData.storage_condition === 'Fresh' ? 'selected' : ''}`} onClick={() => setFormData(p => ({...p, storage_condition: 'Fresh'}))}>Fresh Field</div>
+                        <div className={`fp-radio-tile ${formData.storage_condition === 'Stored' ? 'selected' : ''}`} onClick={() => setFormData(p => ({...p, storage_condition: 'Stored'}))}>Stored</div>
+                      </div>
+                    </div>
+                    <div className="fp-field" style={{ gridColumn: 'span 2' }}>
+                      <label>Detailed Description</label>
+                      <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Describe organic practices, special features, soil quality details, etc." rows="5" style={{ resize: 'vertical' }} />
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <div className="form-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px', marginTop: '20px', paddingBottom: '100px' }}>
+                <button type="button" className="btn-base btn-outline" onClick={onCancel} disabled={isSubmitting} style={{ padding: '14px 32px' }}>Cancel</button>
+                <button type="submit" className="btn-base btn-primary" disabled={isSubmitting} style={{ minWidth: '280px', padding: '14px 32px' }}>
+                  {isSubmitting ? 'Creating Listing...' : '🚀 Launch Marketplace Listing'}
+                </button>
+              </div>
+
+            </form>
+          </main>
+        </div>
+      </div>
+
+      <style>{`
+        .error-txt { color: #ff6b6b; font-size: 0.75rem; margin-top: 4px; display: block; }
+        .full-screen-form select, .full-screen-form input[type="text"], .full-screen-form input[type="number"], .full-screen-form input[type="date"], .full-screen-form textarea {
+          width: 100%;
+          padding: 14px;
+          background: var(--surface-2);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          color: var(--white);
+          font-size: 1rem;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+        .full-screen-form select:focus, .full-screen-form input:focus, .full-screen-form textarea:focus {
+          border-color: var(--green);
+        }
+        
+        @media (max-width: 1024px) {
+          .form-layout-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .form-sidebar { grid-column: span 1 !important; text-align: center; }
+          .form-sidebar aside { position: static !important; }
+          .form-sidebar h1 { fontSize: 2.5rem !important; }
+          .form-sidebar p { margin: 0 auto 30px !important; }
+          .form-main-content { grid-column: span 1 !important; }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default CreateListingForm;

@@ -219,6 +219,54 @@
 }
 .fp-btn-save-top:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(126,200,67,0.4); }
 
+/* ─────────────────────────────────────────────────────────────
+   STANDARDIZED BUTTON HIERARCHY
+   ───────────────────────────────────────────────────────────── */
+.btn-base {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 48px; padding: 0 24px; border-radius: 12px; font-weight: 700; font-size: 0.95rem;
+  font-family: 'Instrument Sans', sans-serif; cursor: pointer;
+  transition: all 0.25s var(--ease-out); outline: none; text-decoration: none;
+}
+.btn-base:active { transform: scale(0.97); }
+
+/* 1. Primary Button (Main CTA) */
+.btn-primary {
+  background: rgba(126, 200, 67, 0.12);
+  color: var(--green); 
+  border: 1px solid rgba(126, 200, 67, 0.4);
+  box-shadow: 0 4px 15px var(--green-glow);
+}
+.btn-primary:hover {
+  background: var(--green);
+  color: var(--bg);
+  border-color: var(--green);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(126, 200, 67, 0.35);
+}
+.btn-primary:active { transform: translateY(0) scale(0.97); }
+
+/* 2. Secondary Button */
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.03); color: var(--white);
+  border: 1px solid var(--border); backdrop-filter: blur(10px);
+}
+.btn-secondary:hover {
+  background: rgba(126, 200, 67, 0.08); border-color: rgba(126, 200, 67, 0.4);
+  transform: translateY(-2px);
+}
+
+/* 3. Ghost / Outline Button */
+.btn-outline {
+  background: transparent; color: var(--muted); border: 1px solid transparent;
+}
+.btn-outline:hover {
+  color: var(--white); background: rgba(255, 255, 255, 0.05);
+}
+
+/* Icon Utility for Buttons */
+.btn-icon { font-size: 1.1em; display: flex; align-items: center; justify-content: center; }
+
 /* CARDS */
 .fp-card {
   background: var(--bg-2); border: 1px solid var(--border); border-radius: 24px;

@@ -1,6 +1,7 @@
 const FarmerContract = require('../models/farmerContract.model');
 const User = require('../models/user.model');
 const mongoose = require('mongoose');
+const { createNotification } = require('../utils/notification.util');
 
 /**
  * @desc    Create a new contract request from Farmer to HHM
@@ -95,15 +96,12 @@ const createContractRequest = async (req, res) => {
     const contractData = {
       farmer_id,
       hhm_id,
-      contract_details,
+      status: 'farmer_pending',
       duration_days: parseInt(duration_days),
-      status: 'farmer_pending'
+      grace_period_days: grace_period_days !== undefined ? parseInt(grace_period_days) : 2,
+      ...contract_details, // Spread structured fields (farmLocation, landArea, etc.)
+      contract_details     // Keep original for legacy/backup
     };
-
-    // Add grace period if provided
-    if (grace_period_days !== undefined) {
-      contractData.grace_period_days = parseInt(grace_period_days);
-    }
 
     const farmerContract = new FarmerContract(contractData);
     await farmerContract.save();
@@ -115,6 +113,18 @@ const createContractRequest = async (req, res) => {
     ]);
 
     console.log('✅ FarmerContract created successfully:', farmerContract._id);
+
+    // Notify HHM
+    await createNotification({
+      senderId: farmer_id,
+      receiverId: hhm_id,
+      senderRole: 'farmer',
+      receiverRole: 'hhm',
+      type: 'CONTRACT_REQUEST',
+      message: `You have received a new harvest request from farmer ${req.user.name || 'someone'}.`,
+      relatedId: farmerContract._id,
+      relatedModel: 'FarmerContract'
+    });
 
     res.status(201).json({
       success: true,
@@ -355,6 +365,18 @@ const respondToContract = async (req, res) => {
       
       console.log('✅ Contract rejected successfully');
       
+      // Notify Farmer
+      await createNotification({
+        senderId: req.user._id,
+        receiverId: contract.farmer_id._id || contract.farmer_id,
+        senderRole: 'hhm',
+        receiverRole: 'farmer',
+        type: 'CONTRACT_REJECTED',
+        message: `Your harvest request was rejected by HHM ${req.user.name || 'a manager'}.`,
+        relatedId: contract._id,
+        relatedModel: 'FarmerContract'
+      });
+      
     } else if (decision === 'accept') {
       // ================================
       // ACCEPT LOGIC WITH FARMER EXCLUSIVITY
@@ -410,6 +432,18 @@ const respondToContract = async (req, res) => {
       };
       
       console.log('🎉 Contract accepted with Farmer Exclusivity logic completed');
+
+      // Notify Farmer
+      await createNotification({
+        senderId: req.user._id,
+        receiverId: contract.farmer_id._id || contract.farmer_id,
+        senderRole: 'hhm',
+        receiverRole: 'farmer',
+        type: 'CONTRACT_ACCEPTED',
+        message: `Your harvest request was accepted by HHM ${req.user.name || 'a manager'}!`,
+        relatedId: contract._id,
+        relatedModel: 'FarmerContract'
+      });
     }
 
     // Send success response

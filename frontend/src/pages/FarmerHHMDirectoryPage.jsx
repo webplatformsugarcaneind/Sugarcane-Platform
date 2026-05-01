@@ -12,6 +12,7 @@ const FarmerHHMDirectoryPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
   const [sortFilter, setSortFilter] = useState('name');
+  const [availFilter, setAvailFilter] = useState('');
   const [isListView, setIsListView] = useState(false);
 
   useEffect(() => { fetchHHMs(); }, []);
@@ -33,37 +34,48 @@ const FarmerHHMDirectoryPage = () => {
     } finally { setLoading(false); }
   };
 
+
+
   const doFilter = useCallback(() => {
     let list = [...hhms];
     if (locationFilter) list = list.filter(h => (h.location || '').toLowerCase().includes(locationFilter));
+    if (availFilter === 'available') list = list.filter(h => h.isActive !== false);
+    if (availFilter === 'busy') list = list.filter(h => h.isActive === false);
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
       list = list.filter(h =>
         h.name?.toLowerCase().includes(q) ||
-        h.username?.toLowerCase().includes(q) ||
-        h.email?.toLowerCase().includes(q) ||
-        h.phone?.includes(q)
+        h.location?.toLowerCase().includes(q)
       );
     }
     list.sort((a, b) => {
       if (sortFilter === 'name') return (a.name || '').localeCompare(b.name || '');
-      if (sortFilter === 'username') return (a.username || '').localeCompare(b.username || '');
-      if (sortFilter === 'email') return (a.email || '').localeCompare(b.email || '');
+      if (sortFilter === 'location') return (a.location || '').localeCompare(b.location || '');
+      if (sortFilter === 'workers') return (parseInt(b.teamSize) || 0) - (parseInt(a.teamSize) || 0);
       return 0;
     });
     setFiltered(list);
-  }, [hhms, searchTerm, locationFilter, sortFilter]);
+  }, [hhms, searchTerm, locationFilter, sortFilter, availFilter]);
 
   useEffect(() => { doFilter(); }, [doFilter]);
 
-  const fmtDate = d => d ? new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A';
   const getInitials = n => n ? n.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : '??';
+
+  // Handles both "12" and "30-35 workers" formats from DB
+  const parseWorkers = val => {
+    if (!val) return null;
+    const trimmed = val.trim();
+    // If it's already a descriptive string (contains letters), use it directly
+    if (/[a-zA-Z]/.test(trimmed)) return trimmed;
+    const n = parseInt(trimmed);
+    return isNaN(n) ? null : `${n} workers`;
+  };
 
   const uniqueLocations = [...new Set(hhms.map(h => h.location).filter(Boolean))];
   const kpiTotal = hhms.length;
-  const kpiActive = hhms.filter(h => h.isActive !== false).length;
+  const kpiAvailable = hhms.filter(h => h.isActive !== false).length;
   const kpiLocations = uniqueLocations.length;
-  const kpiRecent = hhms.filter(h => { if (!h.createdAt) return false; const d = new Date(h.createdAt); const now = new Date(); return (now - d) < 30 * 24 * 60 * 60 * 1000; }).length;
+  const kpiWithTeam = hhms.filter(h => h.teamSize).length;
 
   return (
     <div className="hd-page">
@@ -73,7 +85,7 @@ const FarmerHHMDirectoryPage = () => {
           <div>
             <div className="ph-eyebrow">Farmer View</div>
             <h1 className="hd-title">HHM <em>Directory</em></h1>
-            <p className="hd-sub">Connect with Harvest Head Managers in your network — find the right coordinator for your cane deliveries.</p>
+            <p className="hd-sub">Find the right Harvest Manager for your cane deliveries — check availability, team size, and location at a glance.</p>
           </div>
         </div>
       </div>
@@ -81,25 +93,27 @@ const FarmerHHMDirectoryPage = () => {
       {/* KPI ROW */}
       <div className="hd-kpi-row">
         <div className="hd-kpi g"><div className="hd-kpi-label">Total HHMs</div><div className="hd-kpi-val g">{kpiTotal}</div><div className="hd-kpi-sub">In directory</div></div>
-        <div className="hd-kpi a"><div className="hd-kpi-label">Active HHMs</div><div className="hd-kpi-val a">{kpiActive}</div><div className="hd-kpi-sub">Ready to coordinate</div></div>
+        <div className="hd-kpi a"><div className="hd-kpi-label">Available</div><div className="hd-kpi-val a">{kpiAvailable}</div><div className="hd-kpi-sub">Ready to coordinate</div></div>
         <div className="hd-kpi b"><div className="hd-kpi-label">Locations</div><div className="hd-kpi-val b">{kpiLocations}</div><div className="hd-kpi-sub">Regions covered</div></div>
-        <div className="hd-kpi g"><div className="hd-kpi-label">New This Month</div><div className="hd-kpi-val g">{kpiRecent}</div><div className="hd-kpi-sub">Recently joined</div></div>
+        <div className="hd-kpi g"><div className="hd-kpi-label">With Team</div><div className="hd-kpi-val g">{kpiWithTeam}</div><div className="hd-kpi-sub">Has workers listed</div></div>
       </div>
 
       {/* TOOLBAR */}
       <div className="hd-toolbar">
         <div className="hd-search-wrap">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path strokeLinecap="round" d="M21 21l-4.35-4.35"/></svg>
-          <input type="text" className="hd-search" placeholder="Search by name, username, email or phone…" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <input type="text" className="hd-search" placeholder="Search by name or location…" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
         </div>
-        <select className="hd-filter" value={locationFilter} onChange={e => setLocationFilter(e.target.value)}>
-          <option value="">All Locations</option>
-          {uniqueLocations.map((loc, i) => <option key={i} value={loc.toLowerCase()}>📍 {loc}</option>)}
+
+        <select className="hd-filter" value={availFilter} onChange={e => setAvailFilter(e.target.value)}>
+          <option value="">All Status</option>
+          <option value="available">✅ Available</option>
+          <option value="busy">🔴 Busy</option>
         </select>
         <select className="hd-filter" value={sortFilter} onChange={e => setSortFilter(e.target.value)}>
           <option value="name">Sort: Name A–Z</option>
-          <option value="username">Sort: Username</option>
-          <option value="email">Sort: Email</option>
+          <option value="location">Sort: Location</option>
+          <option value="workers">Sort: Most Workers</option>
         </select>
         <div className="hd-view-toggle">
           <button className={`hd-vt-btn ${!isListView ? 'active' : ''}`} onClick={() => setIsListView(false)} title="Grid view">
@@ -113,7 +127,7 @@ const FarmerHHMDirectoryPage = () => {
 
       {/* RESULTS META */}
       <div className="hd-results-meta">
-        <div className="hd-results-count"><strong>{filtered.length}</strong> of {hhms.length} HHMs found</div>
+        <div className="hd-results-count"><strong>{filtered.length}</strong> of {hhms.length} Harvest Managers found</div>
       </div>
 
       {/* GRID */}
@@ -124,61 +138,85 @@ const FarmerHHMDirectoryPage = () => {
           <div className="hd-empty"><div className="hd-empty-icon">⚠️</div><div className="hd-empty-title">{error}</div></div>
         ) : filtered.length === 0 ? (
           <div className="hd-empty"><div className="hd-empty-icon">👥</div><div className="hd-empty-title">No HHMs found</div><div className="hd-empty-sub">Try adjusting your search or filter criteria</div></div>
-        ) : filtered.map((hhm, idx) => (
-          <div key={hhm._id || `hhm-${idx}`} className={`hd-card ${hhm.isActive !== false ? 'active' : 'inactive'}`} style={{ animation: `hdFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
-            <div className="hc-header">
-              <div className="hc-avatar">👤</div>
-              <div className="hc-title-wrap">
-                <div className="hc-name">{hhm.name || 'Unknown Name'}</div>
-                <div className="hc-username">@{hhm.username}</div>
-                <div className="hc-role-badge">Harvest Manager</div>
+        ) : filtered.map((hhm, idx) => {
+          const isAvailable = hhm.isActive !== false;
+          const workers = parseWorkers(hhm.teamSize);
+          const experience = hhm.managementExperience;
+
+          return (
+            <div
+              key={hhm._id || `hhm-${idx}`}
+              className={`hd-card ${isAvailable ? 'active' : 'inactive'}`}
+              style={{ animation: `hdFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}
+            >
+              {/* ── TOP: Avatar + Identity + Availability ── */}
+              <div className="hc-header">
+                <div className="hc-avatar-wrap">
+                  <div className="hc-avatar">{getInitials(hhm.name)}</div>
+                  <span className={`hc-avail-dot ${isAvailable ? 'available' : 'busy'}`} title={isAvailable ? 'Available' : 'Busy'} />
+                </div>
+                <div className="hc-title-wrap">
+                  <div className="hc-name">{hhm.name || 'Unknown'}</div>
+                  <div className="hc-header-meta">
+                    <span className="hc-role-badge">Harvest Manager</span>
+                    <span className={`hc-avail-badge ${isAvailable ? 'available' : 'busy'}`}>
+                      <span className="hc-avail-indicator" />
+                      {isAvailable ? 'Available' : 'Busy'}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="hc-status">
-                <span className={`hd-status-badge ${hhm.isActive !== false ? 'active' : 'inactive'}`}>
-                  {hhm.isActive !== false ? 'ACTIVE' : 'INACTIVE'}
-                </span>
+
+              {/* ── INFO GRID: Location · Workers · Experience ── */}
+              <div className="hc-info-grid">
+                {hhm.location && (
+                  <div className="hc-info-row">
+                    <span className="hc-info-icon">📍</span>
+                    <span className="hc-info-label">Location</span>
+                    <span className="hc-info-val">{hhm.location}</span>
+                  </div>
+                )}
+                {workers !== null && (
+                  <div className="hc-info-row">
+                    <span className="hc-info-icon">👷</span>
+                    <span className="hc-info-label">Team Size</span>
+                    <span className="hc-info-val">{workers}</span>
+                  </div>
+                )}
+                {experience && (
+                  <div className="hc-info-row">
+                    <span className="hc-info-icon">⭐</span>
+                    <span className="hc-info-label">Experience</span>
+                    <span className="hc-info-val">{experience} yrs</span>
+                  </div>
+                )}
+                {!hhm.location && workers === null && !experience && (
+                  <div className="hc-info-empty">Profile details not filled</div>
+                )}
+              </div>
+
+              <div className="hc-divider" />
+
+              {/* ── ACTIONS ── */}
+              <div className="hc-actions">
+                <button
+                  className={`btn-base btn-primary ${!isAvailable ? 'disabled' : ''}`}
+                  onClick={() => navigate(`/farmer/hhms/${hhm._id}/contract`)}
+                  disabled={!isAvailable}
+                  title={!isAvailable ? 'This HHM is currently busy' : 'Send a contract request'}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  Send Request
+                </button>
+                <button className="btn-base btn-secondary" onClick={() => navigate(`/farmer/hhm-directory/${hhm._id}`)}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  View Profile
+                </button>
               </div>
             </div>
+          );
 
-            <div className="hc-contact">
-              {hhm.email && (
-                <div className="hc-contact-item">
-                  <span className="hc-contact-icon">📧</span>
-                  <span className="hc-contact-text">{hhm.email}</span>
-                </div>
-              )}
-              {hhm.phone && (
-                <div className="hc-contact-item">
-                  <span className="hc-contact-icon">📱</span>
-                  <span className="hc-contact-text">{hhm.phone}</span>
-                </div>
-              )}
-              {hhm.location && (
-                <div className="hc-contact-item">
-                  <span className="hc-contact-icon">📍</span>
-                  <span className="hc-contact-text">{hhm.location}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="hc-divider"></div>
-
-            <div className="hc-meta">
-              <div className="hc-meta-item">Member since: <strong>{fmtDate(hhm.createdAt)}</strong></div>
-            </div>
-
-            <div className="hc-actions">
-              <button className="hd-btn-request" onClick={() => navigate(`/farmer/hhms/${hhm._id}/contract`)}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                Send Request
-              </button>
-              <button className="hd-btn-profile" onClick={() => navigate(`/farmer/hhm-directory/${hhm._id}`)}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                View Profile
-              </button>
-            </div>
-          </div>
-        ))}
+        })}
       </div>
     </div>
   );

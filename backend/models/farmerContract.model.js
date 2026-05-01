@@ -19,7 +19,6 @@ const farmerContractSchema = new mongoose.Schema({
     index: true,
     validate: {
       validator: async function (userId) {
-        // Validate that the referenced user exists and has role 'Farmer'
         const User = mongoose.model('User');
         const user = await User.findById(userId);
         return user && user.role === 'Farmer';
@@ -36,7 +35,6 @@ const farmerContractSchema = new mongoose.Schema({
     index: true,
     validate: {
       validator: async function (userId) {
-        // Validate that the referenced user exists and has role 'HHM'
         const User = mongoose.model('User');
         const user = await User.findById(userId);
         return user && user.role === 'HHM';
@@ -45,7 +43,7 @@ const farmerContractSchema = new mongoose.Schema({
     }
   },
 
-  // Contract Status - Tracks the current state of the farmer contract
+  // Contract Status
   status: {
     type: String,
     required: [true, 'Contract status is required'],
@@ -57,52 +55,93 @@ const farmerContractSchema = new mongoose.Schema({
     index: true
   },
 
-  // Contract Details - Object containing specific contract information
+  // NEW STRUCTURED FIELDS
+  
+  // SECTION 1: WORK DETAILS
+  farmLocation: { type: String, required: true },
+  workType: { type: String, default: 'Sugarcane harvesting' },
+  landArea: { type: Number, required: true },
+  workersRequired: { type: Number, required: true },
+  workTypeDetails: [{ 
+    type: String, 
+    enum: ['cutting', 'loading', 'transport'] 
+  }],
+
+  // SECTION 2: EQUIPMENT & CONDITIONS
+  equipment: {
+    tractor: { type: Boolean, default: false },
+    loadingTools: { type: Boolean, default: false }
+  },
+  fieldAccessibility: { 
+    type: String, 
+    enum: ['easy', 'medium', 'difficult'],
+    default: 'easy'
+  },
+  cropCondition: { 
+    type: String, 
+    enum: ['ready', 'almost_ready'],
+    default: 'ready'
+  },
+
+  // SECTION 3: PAYMENT TERMS
+  paymentType: { 
+    type: String, 
+    enum: ['per_day', 'per_acre', 'contract'],
+    default: 'per_day'
+  },
+  amount: { type: Number, required: true },
+  advancePayment: { type: Boolean, default: false },
+  isNegotiable: { type: Boolean, default: false },
+
+  // SECTION 4: TIMELINE
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
+  duration_days: {
+    type: Number,
+    required: [true, 'Contract duration in days is required'],
+    min: [1, 'Duration must be at least 1 day']
+  },
+  grace_period_days: {
+    type: Number,
+    required: [true, 'Grace period is required'],
+    default: 2
+  },
+  urgency: { 
+    type: String, 
+    enum: ['low', 'medium', 'high'],
+    default: 'medium'
+  },
+  isFlexibleStart: { type: Boolean, default: false },
+
+  // SECTION 5: LOGISTICS & NOTES
+  roadAccess: { 
+    type: String, 
+    enum: ['good', 'limited', 'none'],
+    default: 'good'
+  },
+  waterAvailability: { 
+    type: String, 
+    enum: ['available', 'nearby', 'not_available'],
+    default: 'available'
+  },
+  additionalNotes: { type: String, maxlength: 500 },
+
+  // LEGACY COMPATIBILITY
   contract_details: {
     type: mongoose.Schema.Types.Mixed,
     default: {}
   },
 
-  // Duration in Days - How long the contract is expected to last
-  duration_days: {
-    type: Number,
-    required: [true, 'Contract duration in days is required'],
-    min: [1, 'Duration must be at least 1 day'],
-    max: [365, 'Duration cannot exceed 365 days']
-  },
-
-  // Grace Period Days - Days to wait before auto-cancellation
-  grace_period_days: {
-    type: Number,
-    required: [true, 'Grace period is required'],
-    default: 2,
-    min: [1, 'Grace period must be at least 1 day'],
-    max: [30, 'Grace period cannot exceed 30 days']
-  },
-
-  // Delivery Date - When the contract work was delivered/completed
-  delivery_date: {
-    type: Date,
-    required: false
-  },
-
-  // Payment Date - When payment was made for the contract
-  payment_date: {
-    type: Date,
-    required: false
-  },
-
-  // Payment Status - Whether payment has been made
+  // Operational Fields
+  delivery_date: { type: Date },
+  payment_date: { type: Date },
   payment_status: {
     type: String,
-    enum: {
-      values: ['pending', 'paid'],
-      message: 'Payment status must be either pending or paid'
-    },
+    enum: ['pending', 'paid'],
     default: 'pending'
   }
 }, {
-  timestamps: true, // Automatically adds createdAt and updatedAt fields
+  timestamps: true,
   toJSON: {
     transform: function (doc, ret) {
       ret.id = ret._id;
@@ -121,69 +160,39 @@ const farmerContractSchema = new mongoose.Schema({
   }
 });
 
-// Compound index for efficient queries
+// Indexes
 farmerContractSchema.index({ farmer_id: 1, hhm_id: 1 });
 farmerContractSchema.index({ status: 1, createdAt: -1 });
 farmerContractSchema.index({ createdAt: -1 });
 
-// Instance method to check if contract is pending
-farmerContractSchema.methods.isPending = function () {
-  return this.status === 'farmer_pending';
+// Instance methods
+farmerContractSchema.methods.isPending = function () { return this.status === 'farmer_pending'; };
+farmerContractSchema.methods.isAccepted = function () { return this.status === 'hhm_accepted'; };
+farmerContractSchema.methods.isRejectedOrCancelled = function () { 
+  return this.status === 'hhm_rejected' || this.status === 'auto_cancelled'; 
 };
 
-// Instance method to check if contract is accepted
-farmerContractSchema.methods.isAccepted = function () {
-  return this.status === 'hhm_accepted';
-};
-
-// Instance method to check if contract is rejected or cancelled
-farmerContractSchema.methods.isRejectedOrCancelled = function () {
-  return this.status === 'hhm_rejected' || this.status === 'auto_cancelled';
-};
-
-// Instance method to accept the contract
 farmerContractSchema.methods.acceptContract = function () {
-  if (!this.isPending()) {
-    throw new Error('Only pending contracts can be accepted');
-  }
+  if (!this.isPending()) throw new Error('Only pending contracts can be accepted');
   this.status = 'hhm_accepted';
   return this.save();
 };
 
-// Instance method to reject the contract
 farmerContractSchema.methods.rejectContract = function () {
-  if (!this.isPending()) {
-    throw new Error('Only pending contracts can be rejected');
-  }
+  if (!this.isPending()) throw new Error('Only pending contracts can be rejected');
   this.status = 'hhm_rejected';
   return this.save();
 };
 
-// Instance method to auto-cancel the contract
-farmerContractSchema.methods.autoCancelContract = function () {
-  if (!this.isPending()) {
-    throw new Error('Only pending contracts can be auto-cancelled');
-  }
-  this.status = 'auto_cancelled';
-  return this.save();
-};
-
-// Static method to find contracts by farmer
+// Static methods
 farmerContractSchema.statics.findByFarmer = function (farmerId) {
   return this.find({ farmer_id: farmerId }).populate('farmer_id hhm_id', 'name username email phone');
 };
 
-// Static method to find contracts by HHM
 farmerContractSchema.statics.findByHHM = function (hhmId) {
   return this.find({ hhm_id: hhmId }).populate('farmer_id hhm_id', 'name username email phone');
 };
 
-// Static method to find pending contracts
-farmerContractSchema.statics.findPending = function () {
-  return this.find({ status: 'farmer_pending' }).populate('farmer_id hhm_id', 'name username email phone');
-};
-
-// Static method to find contracts that should be auto-cancelled
 farmerContractSchema.statics.findExpiredPendingContracts = function () {
   const now = new Date();
   return this.find({
@@ -191,21 +200,17 @@ farmerContractSchema.statics.findExpiredPendingContracts = function () {
     $expr: {
       $gte: [
         { $subtract: [now, '$createdAt'] },
-        { $multiply: ['$grace_period_days', 24 * 60 * 60 * 1000] } // Convert days to milliseconds
+        { $multiply: ['$grace_period_days', 24 * 60 * 60 * 1000] }
       ]
     }
   });
 };
 
-// Pre-save hook to validate contract details
 farmerContractSchema.pre('save', function (next) {
-  // Ensure farmer and HHM are different users
   if (this.farmer_id && this.hhm_id && this.farmer_id.toString() === this.hhm_id.toString()) {
     return next(new Error('Farmer and HHM cannot be the same user'));
   }
-  
   next();
 });
 
-// Export the model
 module.exports = mongoose.model('FarmerContract', farmerContractSchema);

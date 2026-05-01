@@ -7,7 +7,7 @@
 @keyframes fdSpin { to { transform: rotate(360deg); } }
 
 /* ── PAGE ── */
-.fd-page { padding: 90px 48px 80px; max-width: 1280px; margin: 0 auto; }
+.fd-page { padding: 90px 48px 80px; width: 100%; max-width: 100%; margin: 0; }
 
 /* ── PAGE HEADER ── */
 .fd-page .fd-header { margin-bottom: 40px; animation: fdFadeUp .7s var(--ease-out) both; }

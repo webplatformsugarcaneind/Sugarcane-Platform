@@ -307,7 +307,7 @@ nav.scrolled { padding: 14px 48px; }
 
 /* ─── SECTION BASE ─── */
 section { position: relative; }
-.container { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+.container { width: 100%; max-width: 100%; margin: 0; padding: 0 48px; }
 
 .sec-tag {
   display: inline-flex; align-items: center; gap: 8px;

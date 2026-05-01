@@ -22,7 +22,7 @@ const FarmerContractsDashboard = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setContracts(data.data || []);
+        setContracts(data.data?.contracts || (Array.isArray(data.data) ? data.data : []));
       } else {
         setError('Failed to load contracts');
       }

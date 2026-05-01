@@ -26,23 +26,15 @@ const MarketplacePage = () => {
     try {
       setLoading(true); setError(null);
       const token = localStorage.getItem('token');
-      if (!token) { setError('No authentication token found.'); return; }
+      if (!token) { setError('Please login to view listings.'); return; }
       const params = new URLSearchParams();
       if (filterVariety) params.append('crop_variety', filterVariety);
-      if (sortBy && sortBy !== 'createdAt') {
-        if (sortBy === 'price') params.append('sort', 'price');
-        else if (sortBy === 'quantity') params.append('sort', 'quantity');
-        else if (sortBy === 'harvest') params.append('sort', 'harvest');
-      }
+      
       const res = await axios.get(`http://localhost:5000/api/listings/marketplace?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+        headers: { Authorization: `Bearer ${token}` }
       });
       setListings(Array.isArray(res.data.data) ? res.data.data : []);
     } catch (err) {
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        localStorage.removeItem('token'); localStorage.removeItem('user');
-        window.location.href = '/login'; return;
-      }
       setError(err.response?.data?.message || 'Failed to fetch listings.');
     } finally { setLoading(false); }
   }, [filterVariety, sortBy]);
@@ -53,332 +45,129 @@ const MarketplacePage = () => {
     try {
       setIsSubmitting(true);
       const token = localStorage.getItem('token');
-      if (!token) throw new Error('No authentication token found.');
       const res = await axios.post('http://localhost:5000/api/listings/create', formData, {
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          // Don't set Content-Type, axios handles FormData
+        }
       });
-      if (res.data.data && res.data.data._id) setListings(prev => [res.data.data, ...prev]);
       setIsModalOpen(false);
+      fetchListings();
       alert('🎉 Listing created successfully!');
     } catch (err) {
       alert(`❌ ${err.response?.data?.message || 'Failed to create listing.'}`);
-      throw err;
     } finally { setIsSubmitting(false); }
   };
 
-  const handleViewDetails = (listing) => {
-    if (!listing?._id) { alert('Listing details not available'); return; }
-    navigate(`/farmer/listing/${listing._id}`, { state: { listing } });
-  };
+  const handleViewDetails = (listing) => navigate(`/farmer/listing/${listing._id}`, { state: { listing } });
 
   const fetchMyListings = async () => {
     try {
       setMyListingsLoading(true);
       const token = localStorage.getItem('token');
-      if (!token) return;
       const res = await axios.get('http://localhost:5000/api/listings/my-listings', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (res.data.success) setMyListings(res.data.data || []);
-    } catch (err) {
-      try {
-        const token = localStorage.getItem('token');
-        const userRes = await axios.get('http://localhost:5000/api/auth/verify', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (userRes.data.success) setMyListings(userRes.data.data.user.listings || []);
-      } catch (e) { console.error('Fallback failed:', e); }
-    } finally { setMyListingsLoading(false); }
-  };
-
-  const fetchMyOrders = async () => {
-    try {
-      setMyOrdersLoading(true);
-      const token = localStorage.getItem('token');
-      if (!token) return;
-      const res = await axios.get('http://localhost:5000/api/orders/received', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.data.success) setMyOrders(res.data.data || res.data.orders || []);
-    } catch (err) { console.error('Error fetching orders:', err); }
-    finally { setMyOrdersLoading(false); }
+      setMyListings(res.data.data || []);
+    } catch (err) { console.error(err); }
+    finally { setMyListingsLoading(false); }
   };
 
   const viewMyListings = async () => { await fetchMyListings(); setShowMyListings(true); setShowMyOrders(false); };
-  const viewMyOrders = async () => { await fetchMyOrders(); setShowMyOrders(true); setShowMyListings(false); };
   const showAllListings = () => { setShowMyListings(false); setShowMyOrders(false); };
-
-  const handleEditListing = (listing) => navigate(`/farmer/listing/${listing._id}`, { state: { listing } });
-  const handleDeleteListing = async (id, title) => {
-    if (!window.confirm(`Delete "${title}"?`)) return;
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/listings/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-      await fetchMyListings(); alert('Listing deleted!');
-    } catch (err) { alert('Failed to delete listing.'); }
-  };
-
-  const handleAcceptOrder = async (orderId) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) { alert('Please login first'); return; }
-      const res = await axios.put(`http://localhost:5000/api/orders/${orderId}/status`, { status: 'accepted' }, { headers: { Authorization: `Bearer ${token}` } });
-      if (res.data.success) {
-        let msg = '✅ Order accepted!';
-        if (res.data.order?.isPartialFulfillment) msg = `🔄 Partial: ${res.data.order.orderDetails.quantityWanted} of ${res.data.order.originalQuantityRequested} tons`;
-        alert(msg); await fetchMyOrders();
-      } else alert('❌ ' + res.data.message);
-    } catch (e) { alert('❌ Failed to accept order.'); }
-  };
-
-  const handleRejectOrder = async (orderId) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) { alert('Please login first'); return; }
-      const res = await axios.put(`http://localhost:5000/api/orders/${orderId}/status`, { status: 'rejected' }, { headers: { Authorization: `Bearer ${token}` } });
-      if (res.data.success) { alert('✅ Order rejected!'); await fetchMyOrders(); }
-      else alert('❌ ' + res.data.message);
-    } catch (e) { alert('❌ Failed to reject order.'); }
-  };
-
-  const fmtDate = d => new Date(d).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
-  const fmtPrice = p => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(p);
-  const daysUntil = d => { const diff = Math.ceil((new Date(d) - new Date()) / (1000 * 60 * 60 * 24)); return diff; };
 
   const filteredListings = listings.filter(l => {
     if (!searchTerm) return true;
     const q = searchTerm.toLowerCase();
-    return l.title?.toLowerCase().includes(q) || l.crop_variety?.toLowerCase().includes(q) || l.location?.toLowerCase().includes(q);
+    const title = (l.title || "").toLowerCase();
+    const variety = (l.sugarcane_variety || l.crop_variety || "").toLowerCase();
+    const loc = (l.delivery_location || l.location || "").toLowerCase();
+    return title.includes(q) || variety.includes(q) || loc.includes(q);
   });
 
-  const kpiTotal = listings.length;
-  const kpiActive = listings.filter(l => l.status === 'active').length;
-  const kpiAvgPrice = listings.length > 0 ? Math.round(listings.reduce((a, l) => a + (l.expected_price_per_ton || 0), 0) / listings.length) : 0;
-  const kpiTotalTons = listings.reduce((a, l) => a + (l.quantity_in_tons || 0), 0);
-
-  const activeView = showMyListings ? 'my-listings' : showMyOrders ? 'my-orders' : 'all';
+  const fmtPrice = p => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(p);
 
   return (
     <div className="mp-page">
-      {/* HEADER */}
       <div className="mp-header">
         <div className="ph-top">
           <div>
             <div className="ph-eyebrow">Farmer Marketplace</div>
             <h1 className="mp-title">Sugarcane <em>Marketplace</em></h1>
-            <p className="mp-sub">Discover, list, and trade quality sugarcane crops — connect directly with buyers across the region.</p>
+            <p className="mp-sub">Direct trade platform for premium sugarcane and seeds.</p>
           </div>
+          <button className="btn-base btn-primary" onClick={() => navigate('/farmer/listing/create')}>+ Add Listing</button>
         </div>
       </div>
 
-      {/* KPI ROW */}
-      <div className="mp-kpi-row">
-        <div className="mp-kpi g"><div className="mp-kpi-label">Total Listings</div><div className="mp-kpi-val g">{kpiTotal}</div><div className="mp-kpi-sub">In marketplace</div></div>
-        <div className="mp-kpi a"><div className="mp-kpi-label">Active Listings</div><div className="mp-kpi-val a">{kpiActive}</div><div className="mp-kpi-sub">Available now</div></div>
-        <div className="mp-kpi b"><div className="mp-kpi-label">Avg. Price</div><div className="mp-kpi-val b">{fmtPrice(kpiAvgPrice)}</div><div className="mp-kpi-sub">Per tonne</div></div>
-        <div className="mp-kpi g"><div className="mp-kpi-label">Total Quantity</div><div className="mp-kpi-val g">{kpiTotalTons.toLocaleString('en-IN')}</div><div className="mp-kpi-sub">Tonnes listed</div></div>
-      </div>
-
-      {/* TOOLBAR */}
       <div className="mp-toolbar">
-        <div className="mp-search-wrap">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path strokeLinecap="round" d="M21 21l-4.35-4.35"/></svg>
-          <input type="text" className="mp-search" placeholder="Search by title, variety or location…" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-        </div>
-        <select className="mp-filter" value={filterVariety} onChange={e => setFilterVariety(e.target.value)}>
-          <option value="">All Varieties</option>
-          <option value="Co 86032">Co 86032</option>
-          <option value="Co 238">Co 238</option>
-          <option value="Co 0233">Co 0233</option>
-          <option value="Co 62175">Co 62175</option>
-        </select>
-        <select className="mp-filter" value={sortBy} onChange={e => setSortBy(e.target.value)}>
-          <option value="createdAt">Sort: Newest</option>
-          <option value="price">Sort: Price</option>
-          <option value="quantity">Sort: Quantity</option>
-          <option value="harvest">Sort: Harvest Date</option>
-        </select>
+        <input type="text" className="mp-search" placeholder="Search variety, location..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+        <button className={`mp-action-btn ${!showMyListings ? 'active' : ''}`} onClick={showAllListings}>All Listings</button>
+        <button className={`mp-action-btn ${showMyListings ? 'active' : ''}`} onClick={viewMyListings}>My Listings</button>
       </div>
 
-      {/* ACTION BUTTONS */}
-      <div className="mp-actions-row">
-        <button className={`mp-action-btn ${activeView === 'all' ? 'active' : ''}`} onClick={showAllListings}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-          All Listings
-        </button>
-        <button className="mp-action-btn primary" onClick={() => setIsModalOpen(true)}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" d="M12 5v14M5 12h14"/></svg>
-          Add Listing
-        </button>
-        <button className={`mp-action-btn ${activeView === 'my-listings' ? 'active' : ''}`} onClick={viewMyListings}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          My Listings
-        </button>
-        <button className={`mp-action-btn ${activeView === 'my-orders' ? 'active' : ''}`} onClick={viewMyOrders}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-          My Orders
-        </button>
+      <div className="mp-grid">
+        {loading ? (
+          <div className="mp-loading-state" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '100px 0' }}>
+            <div className="mp-spinner" style={{ border: '4px solid rgba(126,200,67,0.1)', borderTop: '4px solid var(--green)', borderRadius: '50%', width: '40px', height: '40px', margin: '0 auto 20px', animation: 'mpSpin 1s linear infinite' }}></div>
+            <p style={{ color: '#888' }}>Searching for the best sugarcane deals...</p>
+          </div>
+        ) : (showMyListings ? myListings : filteredListings).length === 0 ? (
+          <div className="mp-empty-state" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '100px 0', background: '#161b16', borderRadius: '20px', border: '1px dashed #333' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '20px' }}>🌾</div>
+            <h3>No Listings Available</h3>
+            <p style={{ color: '#888', marginBottom: '25px' }}>Be the first to list your sugarcane crop and connect with buyers!</p>
+            <button className="btn-base btn-primary" onClick={() => navigate('/farmer/listing/create')}>+ Create New Listing</button>
+          </div>
+        ) : (showMyListings ? myListings : filteredListings).map((l, i) => (
+          <div key={l._id} className="mp-card" onClick={() => handleViewDetails(l)}>
+            <div className="mc-img-wrap">
+              {l.farm_images?.[0]?.url ? (
+                <img src={`http://localhost:5000${l.farm_images[0].url}`} alt={l.title} />
+              ) : (
+                <div className="mc-img-placeholder">🌾</div>
+              )}
+              <div className="mc-badge">{l.sugarcane_variety || l.crop_variety}</div>
+            </div>
+            <div className="mc-content">
+              <h3 className="mc-title">{l.title}</h3>
+              <div className="mc-metrics">
+                <span><strong>{l.quantity_available?.value || l.quantity_in_tons || 0}</strong> {l.quantity_available?.unit || 'Gunthas'}</span>
+                <span className="mc-price">{fmtPrice(l.price_details?.price_per_unit || l.expected_price_per_ton || 0)}</span>
+              </div>
+              <div className="mc-loc">📍 {l.delivery_location || l.location}</div>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* MY LISTINGS */}
-      {showMyListings && (
-        <>
-          <div className="mp-section-header">
-            <div className="mp-section-title">📋 My Listings</div>
-            <span className="mp-section-count">{myListingsLoading ? '...' : `${myListings.length} listings`}</span>
-          </div>
-          <div className="mp-grid">
-            {myListingsLoading ? (
-              <div className="mp-loading"><div className="mp-spinner"></div><div className="mp-empty-title">Loading your listings...</div></div>
-            ) : myListings.length === 0 ? (
-              <div className="mp-empty"><div className="mp-empty-icon">📝</div><div className="mp-empty-title">No listings yet</div><div className="mp-empty-sub">Create your first listing to get started!</div>
-                <button className="mp-action-btn primary" onClick={() => setIsModalOpen(true)}>Create Your First Listing</button>
-              </div>
-            ) : myListings.map((l, idx) => {
-              const total = l.quantity_in_tons * l.expected_price_per_ton;
-              return (
-                <div key={l._id || idx} className="mp-card" style={{ animation: `mpFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
-                  <div className="mc-header">
-                    <div className="mc-title">{l.title}</div>
-                    <span className={`mc-status ${l.status}`}>{l.status?.toUpperCase()}</span>
-                  </div>
-                  <div className="mc-metrics">
-                    <div className="mc-metric"><div className="mc-metric-label">Variety</div><div className="mc-metric-val">{l.crop_variety}</div></div>
-                    <div className="mc-metric"><div className="mc-metric-label">Quantity</div><div className="mc-metric-val amber">{l.quantity_in_tons} t</div></div>
-                    <div className="mc-metric"><div className="mc-metric-label">Price/Ton</div><div className="mc-metric-val">{fmtPrice(l.expected_price_per_ton)}</div></div>
-                  </div>
-                  <div className="mc-total"><span className="mc-total-label">Total Value</span><span className="mc-total-val">{fmtPrice(total)}</span></div>
-                  <div className="mc-divider"></div>
-                  <div className="mc-actions triple">
-                    <button className="mp-btn-secondary" onClick={() => handleViewDetails(l)}>👁️ View</button>
-                    <button className="mp-btn-primary" onClick={() => handleEditListing(l)}>✏️ Edit</button>
-                    <button className="mp-btn-danger" onClick={() => handleDeleteListing(l._id, l.title)}>🗑️ Delete</button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-
-      {/* MY ORDERS */}
-      {showMyOrders && (
-        <>
-          <div className="mp-section-header">
-            <div className="mp-section-title">📦 My Orders</div>
-            <span className="mp-section-count">{myOrdersLoading ? '...' : `${myOrders.length} orders`}</span>
-          </div>
-          <div className="mp-grid">
-            {myOrdersLoading ? (
-              <div className="mp-loading"><div className="mp-spinner"></div><div className="mp-empty-title">Loading your orders...</div></div>
-            ) : myOrders.length === 0 ? (
-              <div className="mp-empty"><div className="mp-empty-icon">📦</div><div className="mp-empty-title">No orders yet</div><div className="mp-empty-sub">Share your listings to receive orders!</div></div>
-            ) : myOrders.map((o, idx) => (
-              <div key={o._id || idx} className="mp-card" style={{ animation: `mpFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
-                <div className="mc-header">
-                  <div className="mc-title">🌾 {o.orderDetails?.quantityWanted || 'N/A'} tons</div>
-                  <span className={`mc-status ${o.status}`}>{o.status?.toUpperCase()}</span>
-                </div>
-                <div className="mc-metrics">
-                  <div className="mc-metric"><div className="mc-metric-label">Buyer</div><div className="mc-metric-val">{o.buyerDetails?.name || 'N/A'}</div></div>
-                  <div className="mc-metric"><div className="mc-metric-label">Price/Ton</div><div className="mc-metric-val amber">{fmtPrice(o.orderDetails?.proposedPrice || 0)}</div></div>
-                  <div className="mc-metric"><div className="mc-metric-label">Total</div><div className="mc-metric-val">{fmtPrice(o.orderDetails?.totalAmount || 0)}</div></div>
-                </div>
-                <div className="mc-details">
-                  <div className="mc-detail-item"><span className="mc-detail-icon">📧</span><span className="mc-detail-text">{o.buyerDetails?.email || 'N/A'}</span></div>
-                  {o.orderDetails?.deliveryLocation && (
-                    <div className="mc-detail-item"><span className="mc-detail-icon">📍</span><span className="mc-detail-text">{o.orderDetails.deliveryLocation}</span></div>
-                  )}
-                  <div className="mc-detail-item"><span className="mc-detail-icon">⏱️</span><span className="mc-detail-text">Urgency: <strong>{(o.orderDetails?.urgency || 'normal').toUpperCase()}</strong></span></div>
-                </div>
-                {o.orderDetails?.message && (
-                  <div className="mc-message"><div className="mc-message-label">Message</div><div className="mc-message-text">{o.orderDetails.message}</div></div>
-                )}
-                {o.isPartialFulfillment && (
-                  <div className="mc-partial">⚠️ Partial — Original: {o.originalQuantityRequested}t → Fulfilled: {o.orderDetails?.quantityWanted}t</div>
-                )}
-                <div className="mc-divider"></div>
-                <div className="mc-meta"><div className="mc-meta-item">Created: <strong>{fmtDate(o.createdAt)}</strong></div></div>
-                {o.status === 'pending' && (
-                  <div className="mc-actions">
-                    <button className="mp-btn-accept" onClick={() => handleAcceptOrder(o.orderId)}>✅ Accept</button>
-                    <button className="mp-btn-reject" onClick={() => handleRejectOrder(o.orderId)}>❌ Reject</button>
-                  </div>
-                )}
-                {o.status !== 'pending' && <div style={{ paddingBottom: '24px' }}></div>}
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* ALL LISTINGS */}
-      {!showMyListings && !showMyOrders && (
-        <>
-          <div className="mp-results-meta">
-            <div className="mp-results-count"><strong>{filteredListings.length}</strong> listings available</div>
-          </div>
-          <div className="mp-grid">
-            {loading ? (
-              <div className="mp-loading"><div className="mp-spinner"></div><div className="mp-empty-title">Loading marketplace...</div></div>
-            ) : error ? (
-              <div className="mp-empty"><div className="mp-empty-icon">⚠️</div><div className="mp-empty-title">{error}</div></div>
-            ) : filteredListings.length === 0 ? (
-              <div className="mp-empty"><div className="mp-empty-icon">📦</div><div className="mp-empty-title">No listings found</div><div className="mp-empty-sub">{listings.length === 0 ? 'Be the first to create a listing!' : 'Try adjusting your search.'}</div>
-                <button className="mp-action-btn primary" onClick={() => setIsModalOpen(true)}>Create Listing</button>
-              </div>
-            ) : filteredListings.map((l, idx) => {
-              const days = daysUntil(l.harvest_availability_date);
-              const total = l.quantity_in_tons * l.expected_price_per_ton;
-              return (
-                <div key={l._id || idx} className="mp-card" style={{ animation: `mpFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
-                  <div className="mc-header">
-                    <div className="mc-title">{l.title}</div>
-                    <span className="mc-status active">ACTIVE</span>
-                  </div>
-                  <div className="mc-metrics">
-                    <div className="mc-metric"><div className="mc-metric-label">Quantity</div><div className="mc-metric-val">{l.quantity_in_tons} t</div></div>
-                    <div className="mc-metric"><div className="mc-metric-label">₹/Ton</div><div className="mc-metric-val amber">{fmtPrice(l.expected_price_per_ton)}</div></div>
-                    <div className="mc-metric"><div className="mc-metric-label">Harvest</div><div className="mc-metric-val blue">{days > 0 ? `${days}d` : 'Now'}</div></div>
-                  </div>
-                  <div className="mc-details">
-                    <div className="mc-detail-item"><span className="mc-detail-icon">🌾</span><span className="mc-detail-text">Variety: <strong>{l.crop_variety}</strong></span></div>
-                    <div className="mc-detail-item"><span className="mc-detail-icon">📍</span><span className="mc-detail-text">{l.location}</span></div>
-                  </div>
-                  <div className="mc-total"><span className="mc-total-label">Total Value</span><span className="mc-total-val">{fmtPrice(total)}</span></div>
-                  {l.description && <div className="mc-desc">{l.description}</div>}
-                  <div className="mc-divider"></div>
-                  <div className="mc-meta">
-                    <div className="mc-meta-item">👤 <strong>{l.farmer_id?.name || 'Unknown'}</strong></div>
-                    <div className="mc-meta-item">Posted <strong>{fmtDate(l.createdAt)}</strong></div>
-                  </div>
-                  <div className="mc-actions single">
-                    <button className="mp-btn-primary" onClick={() => handleViewDetails(l)}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      View Details
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-
-      {/* CREATE LISTING MODAL */}
-      {isModalOpen && (
-        <div className="mp-modal-overlay" onClick={() => setIsModalOpen(false)}>
-          <div className="mp-modal" onClick={e => e.stopPropagation()}>
-            <div className="mp-modal-header">
-              <div className="mp-modal-title">Create New Listing</div>
-              <button className="mp-modal-close" onClick={() => setIsModalOpen(false)} disabled={isSubmitting}>×</button>
-            </div>
-            <div className="mp-modal-body">
-              <CreateListingFormNew onSubmit={handleCreateListing} isSubmitting={isSubmitting} />
-            </div>
-          </div>
-        </div>
-      )}
+      <style>{`
+        @keyframes mpSpin { to { transform: rotate(360deg); } }
+        @keyframes mpFadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .mp-page { padding: 40px; background: #0b0f0b; min-height: 100vh; color: #fff; }
+        .mp-title em { color: var(--green); font-style: normal; }
+        .mp-toolbar { display: flex; gap: 20px; margin: 30px 0; }
+        .mp-search { flex: 1; background: #1a1f1a; border: 1px solid #333; padding: 15px 25px; border-radius: 12px; color: #fff; font-size: 1rem; transition: border-color 0.2s; }
+        .mp-search:focus { border-color: var(--green); outline: none; background: #222; }
+        .mp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-top: 20px; }
+        @media (max-width: 1200px) { .mp-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 900px) { .mp-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .mp-grid { grid-template-columns: 1fr; } }
+        .mp-card { background: #161b16; border-radius: 20px; overflow: hidden; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #222; animation: mpFadeUp 0.5s ease-out both; }
+        .mp-card:hover { transform: translateY(-8px); border-color: var(--green); box-shadow: 0 10px 30px -10px rgba(126,200,67,0.3); }
+        .mc-img-wrap { height: 220px; position: relative; background: #000; }
+        .mc-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: opacity 0.3s; }
+        .mp-card:hover img { opacity: 1; }
+        .mc-badge { position: absolute; top: 20px; left: 20px; background: var(--green); color: #000; padding: 6px 14px; border-radius: 30px; font-weight: bold; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .mc-content { padding: 25px; }
+        .mc-title { margin: 0 0 15px; font-size: 1.3rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mc-metrics { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 12px; background: #1a1f1a; border-radius: 12px; }
+        .mc-price { color: var(--green); font-weight: 800; font-size: 1.2rem; }
+        .mc-loc { color: #888; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+        .mp-action-btn { background: #1a1f1a; border: 1px solid #333; color: #fff; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .mp-action-btn.active { border-color: var(--green); background: rgba(126,200,67,0.15); color: var(--green); }
+        .mp-action-btn:hover { background: #222; }
+      `}</style>
     </div>
   );
 };

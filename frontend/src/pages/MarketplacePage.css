@@ -3,7 +3,7 @@
 @keyframes mpFadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes mpSpin { to { transform: rotate(360deg); } }
 
-.mp-page { padding: 90px 48px 80px; max-width: 1280px; margin: 0 auto; }
+.mp-page { padding: 90px 48px 80px; width: 100%; max-width: 100%; margin: 0; }
 
 /* HEADER */
 .mp-page .mp-header { margin-bottom: 40px; animation: mpFadeUp .7s var(--ease-out) both; }
