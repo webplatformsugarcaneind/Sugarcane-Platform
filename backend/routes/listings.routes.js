@@ -93,8 +93,8 @@ router.post('/create', protect, authorize('Farmer'), upload.array('farm_images',
       sugarcane_variety: data.sugarcane_variety,
       crop_type: data.crop_type,
       seed_quality: data.seed_quality,
-      crop_age: parseInt(data.crop_age),
-      germination_percentage: parseInt(data.germination_percentage),
+      crop_age: data.crop_age ? parseInt(data.crop_age) : undefined,
+      germination_percentage: data.germination_percentage ? parseInt(data.germination_percentage) : undefined,
       seed_type: data.seed_type,
       soil_type: data.soil_type,
       irrigation_method: data.irrigation_method,
@@ -105,7 +105,7 @@ router.post('/create', protect, authorize('Farmer'), upload.array('farm_images',
       delivery_location: data.delivery_location,
       delivery_method: data.delivery_method,
       transport_available: data.transport_available === 'true' || data.transport_available === true,
-      delivery_radius: parseInt(data.delivery_radius),
+      delivery_radius: data.delivery_radius ? parseInt(data.delivery_radius) : undefined,
       delivery_timeframe: data.delivery_timeframe,
       harvest_method: data.harvest_method,
       storage_condition: data.storage_condition,
@@ -128,30 +128,53 @@ router.put('/:id', protect, authorize('Farmer'), upload.array('farm_images', 5),
   try {
     const listing = await CropListing.findById(req.params.id);
     if (!listing) return res.status(404).json({ success: false, message: 'Not found' });
-    if (listing.farmer_id.toString() !== req.user._id.toString()) return res.status(403).json({ success: false });
+    if (listing.farmer_id.toString() !== req.user._id.toString()) return res.status(403).json({ success: false, message: 'Not authorized' });
 
     const data = req.body;
-    const fields = [
-      'title', 'sugarcane_variety', 'crop_type', 'seed_quality', 'crop_age', 
-      'germination_percentage', 'seed_type', 'soil_type', 'irrigation_method',
-      'quantity_available', 'unit_type', 'price_details', 'bulk_discount',
-      'delivery_location', 'delivery_method', 'transport_available', 
-      'delivery_radius', 'delivery_timeframe', 'harvest_method', 
-      'storage_condition', 'tags', 'description', 'status'
+    
+    // Update basic fields
+    const basicFields = [
+      'title', 'sugarcane_variety', 'crop_type', 'seed_type', 'soil_type', 
+      'irrigation_method', 'unit_type', 'delivery_location', 'delivery_method', 
+      'harvest_method', 'storage_condition', 'description', 'status'
     ];
-
-    fields.forEach(f => {
+    basicFields.forEach(f => {
       if (data[f] !== undefined) listing[f] = data[f];
     });
 
-    if (data.farm_images) {
-      const keep = data.keep_existing_images ? JSON.parse(data.keep_existing_images) : [];
-      listing.farm_images = [...keep, ...data.farm_images];
+    // Update numeric fields
+    if (data.crop_age !== undefined) listing.crop_age = data.crop_age ? parseInt(data.crop_age) : undefined;
+    if (data.germination_percentage !== undefined) listing.germination_percentage = data.germination_percentage ? parseInt(data.germination_percentage) : undefined;
+    if (data.delivery_radius !== undefined) listing.delivery_radius = data.delivery_radius ? parseInt(data.delivery_radius) : undefined;
+
+    // Update boolean fields
+    if (data.transport_available !== undefined) {
+      listing.transport_available = data.transport_available === 'true' || data.transport_available === true;
+    }
+
+    // Update JSON objects
+    if (data.seed_quality) listing.seed_quality = data.seed_quality;
+    if (data.quantity_available) listing.quantity_available = data.quantity_available;
+    if (data.price_details) listing.price_details = data.price_details;
+    if (data.bulk_discount) listing.bulk_discount = data.bulk_discount;
+    if (data.delivery_timeframe) listing.delivery_timeframe = data.delivery_timeframe;
+    if (data.tags) listing.tags = data.tags;
+
+    // Update images
+    // If keep_existing_images is provided, it means the user managed images
+    if (data.keep_existing_images) {
+      const keep = JSON.parse(data.keep_existing_images);
+      const newImages = data.farm_images || [];
+      listing.farm_images = [...keep, ...newImages];
+    } else if (data.farm_images && data.farm_images.length > 0) {
+      // Fallback: if only new images provided without explicit "keep" list
+      listing.farm_images = [...listing.farm_images, ...data.farm_images];
     }
 
     await listing.save();
     res.json({ success: true, data: listing });
   } catch (error) {
+    console.error('Update Error:', error);
     res.status(400).json({ success: false, message: error.message });
   }
 });

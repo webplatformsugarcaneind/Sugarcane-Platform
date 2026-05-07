@@ -123,19 +123,58 @@ const MarketplacePage = () => {
           <div key={l._id} className="mp-card" onClick={() => handleViewDetails(l)}>
             <div className="mc-img-wrap">
               {l.farm_images?.[0]?.url ? (
-                <img src={`http://localhost:5000${l.farm_images[0].url}`} alt={l.title} />
+                <img src={`http://localhost:5000${l.farm_images[0].url}`} alt={l.sugarcane_variety || l.crop_variety} />
               ) : (
                 <div className="mc-img-placeholder">🌾</div>
               )}
               <div className="mc-badge">{l.sugarcane_variety || l.crop_variety}</div>
             </div>
+            
             <div className="mc-content">
-              <h3 className="mc-title">{l.title}</h3>
-              <div className="mc-metrics">
-                <span><strong>{l.quantity_available?.value || l.quantity_in_tons || 0}</strong> {l.quantity_available?.unit || 'Gunthas'}</span>
-                <span className="mc-price">{fmtPrice(l.price_details?.price_per_unit || l.expected_price_per_ton || 0)}</span>
+              <h3 className="mc-title">
+                {l.sugarcane_variety || l.crop_variety || 'Sugarcane'} {l.crop_type || 'Seed Cane'}
+              </h3>
+              
+              <div className="mc-price-row">
+                <div className="mc-price-val">
+                  {fmtPrice(l.price_details?.price_per_unit || l.expected_price_per_ton || 0)}
+                  <span className="mc-unit">/ {l.quantity_available?.unit || 'Guntha'}</span>
+                </div>
+                <div className="mc-qty-val">Available: {l.quantity_available?.value || l.quantity_in_tons || 0} {l.quantity_available?.unit || 'Gunthas'}</div>
               </div>
-              <div className="mc-loc">📍 {l.delivery_location || l.location}</div>
+
+              <div className="mc-tags">
+                {l.qualityTags && l.qualityTags.length > 0 ? (
+                  l.qualityTags.map((tag, idx) => <span key={idx} className="mc-tag">{tag}</span>)
+                ) : (
+                  <>
+                    {l.seed_quality?.disease_free_status === 'Certified Disease-Free' && <span className="mc-tag">✅ Disease-Free</span>}
+                    {l.crop_age && <span className="mc-tag">🌱 {l.crop_age}mo Old</span>}
+                    {l.harvest_method === 'Manual' && <span className="mc-tag">🌾 Hand Harvested</span>}
+                    {!l.crop_age && <span className="mc-tag">🌱 Fresh Harvest</span>}
+                  </>
+                )}
+              </div>
+
+              <div className="mc-loc-row">
+                <div className="mc-loc">📍 {l.delivery_location || l.location}</div>
+                <div className="mc-delivery">
+                  {l.deliveryAvailable || l.delivery_method === 'Farmer Delivery' || l.delivery_method === 'Both' ? '🚚 Delivery' : ''}
+                  {l.pickupAvailable || l.delivery_method === 'Pickup' || l.delivery_method === 'Both' ? ' • Pickup' : ''}
+                </div>
+              </div>
+
+              <div className="mc-seller-row">
+                <div className="mc-seller-info">
+                  <span className="mc-seller-name">👤 {l.farmer_id?.name || l.farmer_name || 'Verified Farmer'}</span>
+                  {(l.isVerifiedFarmer || l.isVerified) && <span className="mc-verified" title="Verified">✅</span>}
+                </div>
+                <div className="mc-seller-rating">⭐ {l.sellerRating || '4.8'}</div>
+              </div>
+
+              <button className="mc-btn-view" onClick={(e) => { e.stopPropagation(); handleViewDetails(l); }}>
+                View Details
+              </button>
             </div>
           </div>
         ))}
@@ -144,15 +183,15 @@ const MarketplacePage = () => {
       <style>{`
         @keyframes mpSpin { to { transform: rotate(360deg); } }
         @keyframes mpFadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .mp-page { padding: 40px; background: #0b0f0b; min-height: 100vh; color: #fff; }
+        .mp-page { padding: 40px 24px; background: #0b0f0b; min-height: 100vh; color: #fff; width: 100%; box-sizing: border-box; }
         .mp-title em { color: var(--green); font-style: normal; }
         .mp-toolbar { display: flex; gap: 20px; margin: 30px 0; }
         .mp-search { flex: 1; background: #1a1f1a; border: 1px solid #333; padding: 15px 25px; border-radius: 12px; color: #fff; font-size: 1rem; transition: border-color 0.2s; }
         .mp-search:focus { border-color: var(--green); outline: none; background: #222; }
-        .mp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-top: 20px; }
-        @media (max-width: 1200px) { .mp-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 900px) { .mp-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .mp-grid { grid-template-columns: 1fr; } }
+        .mp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px; }
+        @media (max-width: 1000px) { .mp-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .mp-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .mp-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); } }
         .mp-card { background: #161b16; border-radius: 20px; overflow: hidden; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #222; animation: mpFadeUp 0.5s ease-out both; }
         .mp-card:hover { transform: translateY(-8px); border-color: var(--green); box-shadow: 0 10px 30px -10px rgba(126,200,67,0.3); }
         .mc-img-wrap { height: 220px; position: relative; background: #000; }

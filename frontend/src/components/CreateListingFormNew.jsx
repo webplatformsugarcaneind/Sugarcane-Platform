@@ -1,41 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import '../pages/FarmerProfile.css';
 
-const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
+const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel, initialData = null }) => {
   const [formData, setFormData] = useState({
-    title: '',
-    sugarcane_variety: '',
-    crop_type: 'Harvest Cane',
-    disease_free_status: 'Standard Quality',
-    certification_details: '',
-    crop_age: '',
-    germination_percentage: '',
-    seed_type: '2-Bud Setts',
-    soil_type: 'Black Soil',
-    irrigation_method: 'Drip',
-    quantity_value: '',
-    quantity_unit: 'gunthas',
-    unit_type: 'Guntha',
-    price_per_unit: '',
-    price_negotiable: true,
-    minimum_order_quantity: '',
-    bulk_discount_available: false,
-    bulk_discount_details: '',
-    delivery_location: '',
-    delivery_method: 'Both',
-    transport_available: false,
-    delivery_radius: '',
-    available_from: '',
-    available_until: '',
-    preferred_delivery_time: 'Flexible',
-    harvest_method: 'Manual',
-    storage_condition: 'Fresh',
-    description: '',
-    tags: []
+    title: initialData?.title || '',
+    sugarcane_variety: initialData?.sugarcane_variety || initialData?.crop_variety || '',
+    crop_type: initialData?.crop_type || 'Harvest Cane',
+    disease_free_status: initialData?.seed_quality?.disease_free_status || 'Standard Quality',
+    certification_details: initialData?.seed_quality?.certification_details || '',
+    crop_age: initialData?.crop_age || '',
+    germination_percentage: initialData?.germination_percentage || '',
+    seed_type: initialData?.seed_type || '2-Bud Setts',
+    soil_type: initialData?.soil_type || 'Black Soil',
+    irrigation_method: initialData?.irrigation_method || 'Drip',
+    quantity_value: initialData?.quantity_available?.value || initialData?.quantity_in_tons || '',
+    quantity_unit: initialData?.quantity_available?.unit || 'gunthas',
+    unit_type: initialData?.unit_type || 'Guntha',
+    price_per_unit: initialData?.price_details?.price_per_unit || initialData?.expected_price_per_ton || '',
+    price_negotiable: initialData?.price_details?.price_negotiable ?? true,
+    minimum_order_quantity: initialData?.price_details?.minimum_order_quantity || '',
+    bulk_discount_available: initialData?.bulk_discount?.available || false,
+    bulk_discount_details: initialData?.bulk_discount?.details || '',
+    delivery_location: initialData?.delivery_location || initialData?.location || '',
+    delivery_method: initialData?.delivery_method || 'Both',
+    transport_available: initialData?.transport_available || false,
+    delivery_radius: initialData?.delivery_radius || '',
+    available_from: initialData?.delivery_timeframe?.available_from?.split('T')[0] || initialData?.harvest_availability_date?.split('T')[0] || '',
+    available_until: initialData?.delivery_timeframe?.available_until?.split('T')[0] || '',
+    preferred_delivery_time: initialData?.delivery_timeframe?.preferred_delivery_time || 'Flexible',
+    harvest_method: initialData?.harvest_method || 'Manual',
+    storage_condition: initialData?.storage_condition || 'Fresh',
+    description: initialData?.description || '',
+    tags: initialData?.tags || []
   });
 
   const [imageFiles, setImageFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
+  const [existingImages, setExistingImages] = useState(initialData?.farm_images || []);
+  const [imagesToDelete, setImagesToDelete] = useState([]);
   const [errors, setErrors] = useState({});
 
   const varieties = ['Co 86032', 'Co 0238', 'Co 62175', 'Co 06022', 'CoM 0265', 'Co 1148', 'Other'];
@@ -60,7 +62,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length + imageFiles.length > 5) {
+    if (files.length + imageFiles.length + existingImages.length > 5) {
       setErrors(prev => ({ ...prev, images: 'Maximum 5 images allowed' }));
       return;
     }
@@ -75,6 +77,11 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
     setPreviews(prev => prev.filter((_, i) => i !== index));
   };
 
+  const removeExistingImage = (index, image) => {
+    setExistingImages(prev => prev.filter((_, i) => i !== index));
+    setImagesToDelete(prev => [...prev, image]);
+  };
+
   const validate = () => {
     const e = {};
     if (!formData.title) e.title = 'Required';
@@ -82,7 +89,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
     if (!formData.quantity_value || formData.quantity_value <= 0) e.quantity_value = 'Invalid quantity';
     if (!formData.price_per_unit || formData.price_per_unit <= 0) e.price_per_unit = 'Invalid price';
     if (formData.germination_percentage && (formData.germination_percentage < 0 || formData.germination_percentage > 100)) e.germination_percentage = '0-100 only';
-    if (imageFiles.length === 0) e.images = 'At least 1 image required';
+    if (imageFiles.length === 0 && existingImages.length === 0) e.images = 'At least 1 image required';
     if (!formData.delivery_location) e.delivery_location = 'Required';
     
     setErrors(e);
@@ -101,8 +108,8 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
       disease_free_status: formData.disease_free_status,
       certification_details: formData.certification_details
     }));
-    submission.append('crop_age', formData.crop_age);
-    submission.append('germination_percentage', formData.germination_percentage);
+    if (formData.crop_age !== '') submission.append('crop_age', formData.crop_age);
+    if (formData.germination_percentage !== '') submission.append('germination_percentage', formData.germination_percentage);
     submission.append('seed_type', formData.seed_type);
     submission.append('soil_type', formData.soil_type);
     submission.append('irrigation_method', formData.irrigation_method);
@@ -112,9 +119,9 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
     }));
     submission.append('unit_type', formData.unit_type);
     submission.append('price_details', JSON.stringify({
-      price_per_unit: formData.price_per_unit,
+      price_per_unit: formData.price_per_unit || 0,
       price_negotiable: formData.price_negotiable,
-      minimum_order_quantity: formData.minimum_order_quantity
+      minimum_order_quantity: formData.minimum_order_quantity || 0
     }));
     submission.append('bulk_discount', JSON.stringify({
       available: formData.bulk_discount_available,
@@ -123,10 +130,10 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
     submission.append('delivery_location', formData.delivery_location);
     submission.append('delivery_method', formData.delivery_method);
     submission.append('transport_available', formData.transport_available);
-    submission.append('delivery_radius', formData.delivery_radius);
+    if (formData.delivery_radius !== '') submission.append('delivery_radius', formData.delivery_radius);
     submission.append('delivery_timeframe', JSON.stringify({
-      available_from: formData.available_from,
-      available_until: formData.available_until,
+      available_from: formData.available_from || null,
+      available_until: formData.available_until || null,
       preferred_delivery_time: formData.preferred_delivery_time
     }));
     submission.append('harvest_method', formData.harvest_method);
@@ -134,12 +141,18 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
     submission.append('description', formData.description);
 
     imageFiles.forEach(file => submission.append('farm_images', file));
+    
+    // Send info about existing images if editing
+    if (initialData) {
+      submission.append('keep_existing_images', JSON.stringify(existingImages));
+      submission.append('imagesToDelete', JSON.stringify(imagesToDelete));
+    }
 
     if (onSubmit) await onSubmit(submission);
   };
 
   return (
-    <div className="farmer-profile-page full-screen-form" style={{ minHeight: '100vh', background: 'radial-gradient(circle at top right, rgba(126,200,67,0.08), transparent), #0b0f0b', display: 'flex', justifyContent: 'center', width: '100%' }}>
+    <div className="farmer-profile-page full-screen-form w-full min-h-screen flex justify-center relative overflow-x-hidden bg-[#0b0f0b]" style={{ background: 'radial-gradient(ellipse at 20% 0%, rgba(126,200,67,0.07) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(126,200,67,0.05) 0%, transparent 50%), #0b0f0b' }}>
       <div className="fp-noise" />
       
       <div className="fp-layout-shell" style={{ maxWidth: '1400px', width: '100%', padding: '60px 40px', position: 'relative', zIndex: 1 }}>
@@ -147,13 +160,15 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
           
           {/* LEFT COLUMN: HEADER & INFO */}
           <aside className="form-sidebar" style={{ gridColumn: 'span 4' }}>
-            <div style={{ position: 'sticky', top: '60px' }}>
+            <div style={{ position: 'sticky', top: '90px' }}>
               <div className="fp-eyebrow" style={{ color: 'var(--green)', letterSpacing: '2px', fontWeight: '800', textTransform: 'uppercase', fontSize: '0.8rem', marginBottom: '15px' }}>Marketplace Listing</div>
               <h1 className="fp-title" style={{ fontSize: '2.2rem', lineHeight: '1.2', marginBottom: '20px', fontWeight: '900' }}>
-                Create <br /><em className="fp-highlight" style={{ color: 'var(--green)', fontStyle: 'normal' }}>Sugarcane</em> <br />Listing
+                {initialData ? 'Update' : 'Create'} <br /><em className="fp-highlight" style={{ color: 'var(--green)', fontStyle: 'normal' }}>Sugarcane</em> <br />Listing
               </h1>
               <p className="fp-subtitle" style={{ fontSize: '1.1rem', color: '#888', lineHeight: '1.6', marginBottom: '40px', maxWidth: '300px' }}>
-                Provide accurate technical details about your crop to attract premium buyers and get the best market rates.
+                {initialData 
+                  ? 'Update your listing details to keep buyers informed about your crop status.' 
+                  : 'Provide accurate technical details about your crop to attract premium buyers and get the best market rates.'}
               </p>
               
               <div className="sidebar-guide" style={{ padding: '25px', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: '1px solid #222' }}>
@@ -382,13 +397,23 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
                     </label>
                   </div>
                   
-                  {previews.length > 0 && (
+                  { (existingImages.length > 0 || previews.length > 0) && (
                     <div className="image-preview-strip" style={{ display: 'flex', gap: '16px', marginTop: '24px', flexWrap: 'wrap' }}>
+                      {/* Existing Images */}
+                      {existingImages.map((img, i) => (
+                        <div key={`existing-${i}`} className="preview-item" style={{ position: 'relative', width: '120px', height: '120px' }}>
+                          <img src={`http://localhost:5000${img.url || img}`} alt="Existing" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px', border: '1px solid #333' }} />
+                          <button type="button" onClick={() => removeExistingImage(i, img)} style={{ position: 'absolute', top: '-8px', right: '-8px', width: '28px', height: '28px', borderRadius: '50%', background: '#ff6b6b', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>×</button>
+                          {i === 0 && <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'var(--green)', color: 'black', fontSize: '0.7rem', textAlign: 'center', borderRadius: '0 0 12px 12px', fontWeight: 'bold', padding: '2px 0' }}>STORED</div>}
+                        </div>
+                      ))}
+                      
+                      {/* New Previews */}
                       {previews.map((url, i) => (
-                        <div key={i} className="preview-item" style={{ position: 'relative', width: '120px', height: '120px' }}>
+                        <div key={`new-${i}`} className="preview-item" style={{ position: 'relative', width: '120px', height: '120px' }}>
                           <img src={url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px', border: '1px solid #333' }} />
                           <button type="button" onClick={() => removeImage(i)} style={{ position: 'absolute', top: '-8px', right: '-8px', width: '28px', height: '28px', borderRadius: '50%', background: '#ff6b6b', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>×</button>
-                          {i === 0 && <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'var(--green)', color: 'black', fontSize: '0.7rem', textAlign: 'center', borderRadius: '0 0 12px 12px', fontWeight: 'bold', padding: '2px 0' }}>MAIN IMAGE</div>}
+                          {(existingImages.length === 0 && i === 0) && <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'var(--green)', color: 'black', fontSize: '0.7rem', textAlign: 'center', borderRadius: '0 0 12px 12px', fontWeight: 'bold', padding: '2px 0' }}>MAIN IMAGE</div>}
                         </div>
                       ))}
                     </div>
@@ -433,7 +458,9 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel }) => {
               <div className="form-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px', marginTop: '20px', paddingBottom: '100px' }}>
                 <button type="button" className="btn-base btn-outline" onClick={onCancel} disabled={isSubmitting} style={{ padding: '14px 32px' }}>Cancel</button>
                 <button type="submit" className="btn-base btn-primary" disabled={isSubmitting} style={{ minWidth: '280px', padding: '14px 32px' }}>
-                  {isSubmitting ? 'Creating Listing...' : '🚀 Launch Marketplace Listing'}
+                  {isSubmitting 
+                    ? (initialData ? 'Updating...' : 'Creating...') 
+                    : (initialData ? '💾 Save Listing Changes' : '🚀 Launch Marketplace Listing')}
                 </button>
               </div>
 

@@ -127,7 +127,20 @@ const cropListingSchema = new mongoose.Schema({
   expected_price_per_ton: { type: Number, min: 0 },
   harvest_availability_date: { type: Date },
   location: { type: String, trim: true },
-  description: { type: String, trim: true }
+  description: { type: String, trim: true },
+  
+  // Marketplace Display Fields (Newly Added)
+  qualityTags: [{ type: String }],
+  deliveryAvailable: { type: Boolean, default: true },
+  pickupAvailable: { type: Boolean, default: true },
+  sellerRating: { type: Number, default: 4.5 },
+  successfulSales: { type: Number, default: 0 },
+  isVerifiedFarmer: { type: Boolean, default: false },
+  farming_method: { 
+    type: String, 
+    enum: ['Organic', 'Natural', 'Conventional', 'Hydroponic'],
+    default: 'Conventional'
+  }
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

@@ -1107,12 +1107,12 @@ const MarketplacePage = () => {
       )}
 
       <style jsx={true}>{`
-        .marketplace-page {
-          padding: 2rem;
-          max-width: 1400px;
-          margin: 0 auto;
-          background: #f8f9fa;
-          min-height: 100vh;
+        .marketplace-page {
+          padding: 2rem 24px;
+          width: 100%;
+          margin: 0 auto;
+          background: #f8f9fa;
+          min-height: 100vh;
         }
 
         .marketplace-header {
@@ -1308,10 +1308,28 @@ const MarketplacePage = () => {
           margin-top: 1.5rem;
         }
 
-        .listings-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-          gap: 2rem;
+        .listings-grid {
+          display: grid;
+          grid-template-columns: repeat(1, minmax(0, 1fr));
+          gap: 20px;
+        }
+
+        @media (min-width: 640px) {
+          .listings-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        @media (min-width: 768px) {
+          .listings-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+
+        @media (min-width: 1000px) {
+          .listings-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
         }
 
         .listing-card {

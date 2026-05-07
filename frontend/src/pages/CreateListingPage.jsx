@@ -33,7 +33,7 @@ const CreateListingPage = () => {
   };
 
   return (
-    <div className="create-listing-standalone">
+    <div className="farmer-profile-page w-full min-h-screen flex flex-col bg-[#0b0f0b] relative overflow-x-hidden" style={{ marginTop: '-64px' }}>
       <CreateListingFormNew 
         onSubmit={handleCreateListing} 
         isSubmitting={isSubmitting} 
