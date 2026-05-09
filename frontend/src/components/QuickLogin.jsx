@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { persistAuthSession, getDashboardRouteForRole } from '../utils/authSession.js';
 
 /**
  * Quick Login Component for Marketplace
@@ -29,17 +30,18 @@ const QuickLogin = ({ onLoginSuccess }) => {
 
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', formData);
-      
+
       const { token, user } = response.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      // Set default authorization header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
+
+      // Use centralized session persistence
+      persistAuthSession(user, token);
+
+      // Dispatch custom event
+      window.dispatchEvent(new CustomEvent('authUpdate'));
+
       console.log('✅ Quick login successful:', user.name);
       onLoginSuccess(user);
-      
+
     } catch (err) {
       console.error('❌ Quick login failed:', err);
       setError(err.response?.data?.message || 'Login failed');
@@ -73,14 +75,14 @@ const QuickLogin = ({ onLoginSuccess }) => {
         <p style={{ marginBottom: '1rem', color: '#666' }}>
           Please login to access marketplace features like viewing orders.
         </p>
-        
+
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1rem' }}>
             <input
               type="text"
               placeholder="Username/Email"
               value={formData.identifier}
-              onChange={(e) => setFormData({...formData, identifier: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, identifier: e.target.value })}
               style={{
                 width: '100%',
                 padding: '0.5rem',
@@ -91,13 +93,13 @@ const QuickLogin = ({ onLoginSuccess }) => {
               required
             />
           </div>
-          
+
           <div style={{ marginBottom: '1rem' }}>
             <input
               type="password"
               placeholder="Password"
               value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               style={{
                 width: '100%',
                 padding: '0.5rem',
@@ -108,13 +110,13 @@ const QuickLogin = ({ onLoginSuccess }) => {
               required
             />
           </div>
-          
+
           {error && (
             <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>
               {error}
             </div>
           )}
-          
+
           <button
             type="submit"
             disabled={loading}
@@ -132,7 +134,7 @@ const QuickLogin = ({ onLoginSuccess }) => {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-        
+
         <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: '#666', textAlign: 'center' }}>
           Demo credentials are pre-filled for testing
         </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import './Navbar.css';
+import { getStoredToken, getStoredUser, getDashboardRouteForRole, clearAuthSession } from '../utils/authSession.js';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,40 +14,22 @@ const Navbar = () => {
   // Function to check authentication state
   const checkAuthState = () => {
     console.log('🔍 ==> NAVBAR: Starting auth state check...');
-    
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
-    console.log('🔍 ==> NAVBAR: Raw localStorage data:', { 
-      tokenExists: !!token, 
-      userDataExists: !!userData,
-      tokenLength: token?.length || 0,
-      rawUserData: userData 
-    });
-    
-    setIsAuthenticated(!!token);
-    console.log('🔍 ==> NAVBAR: Set isAuthenticated to:', !!token);
-    
-    if (token && userData) {
-      try {
-        const user = JSON.parse(userData);
-        console.log('� ==> NAVBAR: Parsed user object:', user);
-        console.log('🔍 ==> NAVBAR: User role from parsed data:', user.role);
-        console.log('🔍 ==> NAVBAR: Role type check:', typeof user.role);
-        console.log('🔍 ==> NAVBAR: Role === "Factory":', user.role === 'Factory');
-        
-        setUserRole(user.role);
-        console.log('🔍 ==> NAVBAR: Set userRole state to:', user.role);
-      } catch (error) {
-        console.error('❌ ==> NAVBAR: Error parsing user data:', error);
-        console.error('❌ ==> NAVBAR: Raw userData that failed to parse:', userData);
-        setUserRole(null);
-      }
+
+    const token = getStoredToken();
+    const user = getStoredUser();
+
+    const isAuth = !!token;
+    setIsAuthenticated(isAuth);
+    console.log('🔍 ==> NAVBAR: Set isAuthenticated to:', isAuth);
+
+    if (isAuth && user) {
+      console.log('✅ ==> NAVBAR: User authenticated as:', user.role);
+      setUserRole(user.role);
     } else {
-      console.log('🔍 ==> NAVBAR: No token or userData, setting userRole to null');
+      console.log('🔍 ==> NAVBAR: No user authenticated');
       setUserRole(null);
     }
-    
+
     console.log('🔍 ==> NAVBAR: Auth state check completed');
   };
 
@@ -73,13 +56,13 @@ const Navbar = () => {
 
     // Listen for storage events
     window.addEventListener('storage', handleStorageChange);
-    
+
     // Also listen for custom events (for same-tab updates)
     const handleAuthUpdate = () => {
       console.log('🔄 Auth update event received');
       checkAuthState();
     };
-    
+
     window.addEventListener('authUpdate', handleAuthUpdate);
 
     return () => {
@@ -97,15 +80,19 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    console.log('🔓 Logging out...');
+
+    // Use centralized session clearing
+    clearAuthSession();
+
     setIsAuthenticated(false);
     setUserRole(null);
     closeMenu();
-    
+
     // Dispatch custom event to notify other components of authentication change
     window.dispatchEvent(new CustomEvent('authUpdate'));
-    
+
+    console.log('✅ Logout complete, redirecting to home');
     navigate('/');
   };
 
@@ -119,10 +106,10 @@ const Navbar = () => {
   return (
     <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
       <div className="navbar-container">
-        {/* Logo Section */}
+        {/* Logo Section - Redirects to home if not authenticated, role dashboard if authenticated */}
         <div className="navbar-logo">
-          <NavLink 
-            to="/" 
+          <NavLink
+            to={isAuthenticated && userRole ? getDashboardRouteForRole(userRole) : "/"}
             className="logo-link"
             onClick={closeMenu}
           >
@@ -138,9 +125,9 @@ const Navbar = () => {
               // Public navigation links
               <>
                 <li>
-                  <NavLink 
-                    to="/" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/"
+                    className={({ isActive }) =>
                       isActive ? 'nav-link active' : 'nav-link'
                     }
                     onClick={closeMenu}
@@ -149,9 +136,9 @@ const Navbar = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink 
-                    to="/factories" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/factories"
+                    className={({ isActive }) =>
                       isActive ? 'nav-link active' : 'nav-link'
                     }
                     onClick={closeMenu}
@@ -160,9 +147,9 @@ const Navbar = () => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink 
-                    to="/about" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/about"
+                    className={({ isActive }) =>
                       isActive ? 'nav-link active' : 'nav-link'
                     }
                     onClick={closeMenu}
@@ -177,9 +164,9 @@ const Navbar = () => {
                 {userRole === 'Farmer' && (
                   <>
                     <li>
-                      <NavLink 
-                        to="/farmer/dashboard" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/farmer/dashboard"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -188,9 +175,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/farmer/marketplace" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/farmer/marketplace"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -199,9 +186,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/farmer/hhm-directory" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/farmer/hhm-directory"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -210,9 +197,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/farmer/factory-directory" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/farmer/factory-directory"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -221,9 +208,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/farmer/factory-analysis" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/farmer/factory-analysis"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -232,9 +219,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/farmer/profile" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/farmer/profile"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -244,13 +231,13 @@ const Navbar = () => {
                     </li>
                   </>
                 )}
-                
+
                 {userRole === 'HHM' && (
                   <>
                     <li>
-                      <NavLink 
-                        to="/hhm/dashboard" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/hhm/dashboard"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -259,9 +246,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/hhm/labor" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/hhm/labor"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -270,9 +257,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/hhm/factories" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/hhm/factories"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -281,9 +268,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/hhm/farmers" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/hhm/farmers"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -292,9 +279,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/hhm/profile" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/hhm/profile"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -308,9 +295,9 @@ const Navbar = () => {
                 {userRole === 'Labour' && (
                   <>
                     <li>
-                      <NavLink 
-                        to="/worker/jobs" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/worker/jobs"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -319,9 +306,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/worker/applications" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/worker/applications"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -330,9 +317,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/worker/hhm-directory" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/worker/hhm-directory"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -341,9 +328,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/worker/profile" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/worker/profile"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -358,9 +345,9 @@ const Navbar = () => {
                   <>
                     {console.log('🏭 RENDERING FACTORY NAVIGATION')}
                     <li>
-                      <NavLink 
-                        to="/factory/dashboard" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/factory/dashboard"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -369,9 +356,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/factory/hhm-directory" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/factory/hhm-directory"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -380,9 +367,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/factory/factory-directory" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/factory/factory-directory"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -391,9 +378,9 @@ const Navbar = () => {
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink 
-                        to="/factory/profile" 
-                        className={({ isActive }) => 
+                      <NavLink
+                        to="/factory/profile"
+                        className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
@@ -406,19 +393,19 @@ const Navbar = () => {
               </>
             )}
           </ul>
-          
+
           {/* Auth Button */}
           <div className="navbar-auth">
             {!isAuthenticated ? (
-              <NavLink 
-                to="/login" 
+              <NavLink
+                to="/login"
                 className="auth-button"
                 onClick={closeMenu}
               >
                 Login / Sign Up
               </NavLink>
             ) : (
-              <button 
+              <button
                 className="auth-button logout-button"
                 onClick={handleLogout}
               >
@@ -446,35 +433,35 @@ const Navbar = () => {
           {!isAuthenticated ? (
             // Public mobile navigation links
             <>
-              <NavLink 
-                to="/" 
-                className={({ isActive }) => 
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
                   isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                 }
                 onClick={closeMenu}
               >
                 Home
               </NavLink>
-              <NavLink 
-                to="/factories" 
-                className={({ isActive }) => 
+              <NavLink
+                to="/factories"
+                className={({ isActive }) =>
                   isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                 }
                 onClick={closeMenu}
               >
                 Factories
               </NavLink>
-              <NavLink 
-                to="/about" 
-                className={({ isActive }) => 
+              <NavLink
+                to="/about"
+                className={({ isActive }) =>
                   isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                 }
                 onClick={closeMenu}
               >
                 About Us
               </NavLink>
-              <NavLink 
-                to="/login" 
+              <NavLink
+                to="/login"
                 className="mobile-auth-button"
                 onClick={closeMenu}
               >
@@ -486,54 +473,54 @@ const Navbar = () => {
             <>
               {userRole === 'Farmer' && (
                 <>
-                  <NavLink 
-                    to="/farmer/dashboard" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/farmer/dashboard"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     Dashboard
                   </NavLink>
-                  <NavLink 
-                    to="/farmer/marketplace" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/farmer/marketplace"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     Marketplace
                   </NavLink>
-                  <NavLink 
-                    to="/farmer/hhm-directory" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/farmer/hhm-directory"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     HHMs
                   </NavLink>
-                  <NavLink 
-                    to="/farmer/factory-directory" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/farmer/factory-directory"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     Factories
                   </NavLink>
-                  <NavLink 
-                    to="/farmer/factory-analysis" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/farmer/factory-analysis"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     📊 Factory Analysis
                   </NavLink>
-                  <NavLink 
-                    to="/farmer/profile" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/farmer/profile"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
@@ -542,39 +529,39 @@ const Navbar = () => {
                   </NavLink>
                 </>
               )}
-              
+
               {userRole === 'HHM' && (
                 <>
-                  <NavLink 
-                    to="/hhm/dashboard" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/hhm/dashboard"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     Dashboard
                   </NavLink>
-                  <NavLink 
-                    to="/hhm/labor" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/hhm/labor"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     Labor Management
                   </NavLink>
-                  <NavLink 
-                    to="/hhm/factories" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/hhm/factories"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     Factory Directory
                   </NavLink>
-                  <NavLink 
-                    to="/hhm/profile" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/hhm/profile"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
@@ -586,36 +573,36 @@ const Navbar = () => {
 
               {userRole === 'Labour' && (
                 <>
-                  <NavLink 
-                    to="/worker/jobs" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/worker/jobs"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     Available Jobs
                   </NavLink>
-                  <NavLink 
-                    to="/worker/applications" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/worker/applications"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     My Applications
                   </NavLink>
-                  <NavLink 
-                    to="/worker/hhm-directory" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/worker/hhm-directory"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     HHM Directory
                   </NavLink>
-                  <NavLink 
-                    to="/worker/profile" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/worker/profile"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
@@ -628,36 +615,36 @@ const Navbar = () => {
               {userRole === 'Factory' && (
                 <>
                   {console.log('🏭 RENDERING MOBILE FACTORY NAVIGATION')}
-                  <NavLink 
-                    to="/factory/dashboard" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/factory/dashboard"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     Dashboard
                   </NavLink>
-                  <NavLink 
-                    to="/factory/hhm-directory" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/factory/hhm-directory"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     HHM Directory
                   </NavLink>
-                  <NavLink 
-                    to="/factory/factory-directory" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/factory/factory-directory"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
                     Factory Network
                   </NavLink>
-                  <NavLink 
-                    to="/factory/profile" 
-                    className={({ isActive }) => 
+                  <NavLink
+                    to="/factory/profile"
+                    className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
@@ -666,8 +653,8 @@ const Navbar = () => {
                   </NavLink>
                 </>
               )}
-              
-              <button 
+
+              <button
                 className="mobile-auth-button logout-button"
                 onClick={handleLogout}
               >

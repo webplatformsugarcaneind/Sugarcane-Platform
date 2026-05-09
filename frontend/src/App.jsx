@@ -8,14 +8,16 @@ import './pages/Auth.css';
 // Import components with proper ES6 imports
 import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import RoleProtectedRoute from './components/RoleProtectedRoute.jsx';
+import GuestRoute from './components/GuestRoute.jsx';
 import AuthenticatedLayout from './components/AuthenticatedLayout.jsx';
 import HomePage from './pages/HomePage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import SignUpPage from './pages/SignUpPage.jsx';
+import UnauthorizedPage from './pages/UnauthorizedPage.jsx';
 import FactoriesPage from './pages/FactoriesPage.jsx';
 import SpecificFactoryPage from './pages/SpecificFactoryPage.jsx';
 import AboutUsPage from './pages/AboutUsPage.jsx';
-import LoginPage from './pages/LoginPage.jsx';
-
-import SignUpPage from './pages/SignUpPage.jsx';
 
 import FarmerDashboardPage from './pages/FarmerDashboardPage.jsx';
 
@@ -258,23 +260,60 @@ function App() {
 
             } />
 
-            {/* Authentication Routes */}
+            {/* Authentication Routes - Protected from authenticated users */}
 
+            {/* Login Route - Only accessible to guests (not authenticated users) */}
             <Route path="/login" element={
 
-              <SafeComponent name="LoginPage">
+              <SafeComponent name="GuestRoute">
 
-                <LoginPage />
+                <GuestRoute />
 
               </SafeComponent>
 
-            } />
+            }>
 
+              <Route index element={
+
+                <SafeComponent name="LoginPage">
+
+                  <LoginPage />
+
+                </SafeComponent>
+
+              } />
+
+            </Route>
+
+            {/* Signup Route - Only accessible to guests (not authenticated users) */}
             <Route path="/signup" element={
 
-              <SafeComponent name="SignUpPage">
+              <SafeComponent name="GuestRoute">
 
-                <SignUpPage />
+                <GuestRoute />
+
+              </SafeComponent>
+
+            }>
+
+              <Route index element={
+
+                <SafeComponent name="SignUpPage">
+
+                  <SignUpPage />
+
+                </SafeComponent>
+
+              } />
+
+            </Route>
+
+            {/* Unauthorized Route - Shown when user tries to access a route for a different role */}
+            <Route path="/unauthorized" element={
+
+              <SafeComponent name="UnauthorizedPage">
+
+                <UnauthorizedPage />
 
               </SafeComponent>
 
@@ -386,13 +425,13 @@ function App() {
 
             </Route>
 
-            {/* Protected Farmer Routes */}
+            {/* Protected Farmer Routes - Only Farmer role can access */}
 
             <Route path="/farmer" element={
 
-              <SafeComponent name="ProtectedRoute">
+              <SafeComponent name="RoleProtectedRoute">
 
-                <ProtectedRoute />
+                <RoleProtectedRoute allowedRoles={['Farmer']} />
 
               </SafeComponent>
 
@@ -603,11 +642,11 @@ function App() {
 
             </Route>
 
-            {/* Protected HHM Routes */}
+            {/* Protected HHM Routes - Only HHM role can access */}
 
             <Route path="/hhm" element={
-              <SafeComponent name="ProtectedRoute">
-                <ProtectedRoute />
+              <SafeComponent name="RoleProtectedRoute">
+                <RoleProtectedRoute allowedRoles={['HHM']} />
               </SafeComponent>
             }>
               <Route path="profile" element={
@@ -798,11 +837,11 @@ function App() {
 
             </Route>
 
-            {/* Protected Worker Routes */}
+            {/* Protected Worker Routes - Only Worker/Labour role can access */}
 
             <Route path="/worker" element={
-              <SafeComponent name="ProtectedRoute">
-                <ProtectedRoute />
+              <SafeComponent name="RoleProtectedRoute">
+                <RoleProtectedRoute allowedRoles={['Labour', 'Worker']} />
               </SafeComponent>
             }>
               <Route path="profile" element={
@@ -893,11 +932,11 @@ function App() {
 
             </Route>
 
-            {/* Protected Factory Routes */}
+            {/* Protected Factory Routes - Only Factory role can access */}
 
             <Route path="/factory" element={
-              <SafeComponent name="ProtectedRoute">
-                <ProtectedRoute />
+              <SafeComponent name="RoleProtectedRoute">
+                <RoleProtectedRoute allowedRoles={['Factory']} />
               </SafeComponent>
             }>
               <Route path="profile" element={
