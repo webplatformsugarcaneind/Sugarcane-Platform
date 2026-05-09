@@ -1,9 +1,10 @@
 
 import React, { Suspense, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, NavLink } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate, NavLink, matchPath } from 'react-router-dom';
 import './App.css';
 import './components/Navbar.css';
 import './pages/Auth.css';
+import { getDashboardRouteForRole, getStoredUser, isAuthenticated } from './utils/authSession.js';
 
 // Import components with proper ES6 imports
 import Navbar from './components/Navbar.jsx';
@@ -206,7 +207,18 @@ const ConditionalNavbar = () => {
   // Pages that render their own internal/immersive navigation
   const pagesWithInternalNav = ['/', '/signup'];
 
-  if (pagesWithInternalNav.includes(location.pathname)) {
+  const knownRoutePatterns = [
+    '/', '/login', '/signup', '/unauthorized', '/about', '/factories',
+    '/notification-test', '/debug-factory-analysis', '/factory/:id',
+    '/hhm/profile/:hhmId', '/farmers', '/farmer/*', '/factory/*',
+    '/hhm/*', '/worker/*'
+  ];
+
+  const isKnownRoute = knownRoutePatterns.some((pattern) =>
+    matchPath({ path: pattern, end: pattern === '/' || pattern === '/login' || pattern === '/signup' || pattern === '/unauthorized' || pattern === '/about' || pattern === '/factories' || pattern === '/notification-test' || pattern === '/debug-factory-analysis' }, location.pathname)
+  );
+
+  if (pagesWithInternalNav.includes(location.pathname) || !isKnownRoute) {
     return null;
   }
 
@@ -1185,67 +1197,142 @@ function App() {
 // 404 Not Found Component
 
 const NotFound = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const authenticated = isAuthenticated();
+  const storedUser = getStoredUser();
+  const dashboardRoute = authenticated && storedUser?.role
+    ? getDashboardRouteForRole(storedUser.role)
+    : '/';
+  const primaryActionLabel = authenticated ? 'Return to Dashboard' : 'Go Home';
+  const secondaryActionLabel = authenticated ? 'Go Back' : 'Login';
+
+  const ErrorPageNavbar = () => (
+    <header className="not-found-nav" aria-label="404 page navigation">
+      <button
+        type="button"
+        className="not-found-nav-back"
+        onClick={() => navigate(-1)}
+      >
+        ← Back
+      </button>
+
+      <NavLink to={authenticated ? dashboardRoute : '/'} className="not-found-nav-brand" onClick={(e) => { e.preventDefault(); navigate(authenticated ? dashboardRoute : '/'); }}>
+        <span className="not-found-nav-mark">✦</span>
+        <span className="not-found-nav-text">CaneSetu</span>
+      </NavLink>
+    </header>
+  );
 
   return (
+    <div className="not-found-page">
+      <ErrorPageNavbar />
+      <div className="not-found-ambient not-found-ambient-left" aria-hidden="true" />
+      <div className="not-found-ambient not-found-ambient-right" aria-hidden="true" />
 
-    <div style={{
+      <div className="not-found-shell">
+        <aside className="not-found-illustration-card" aria-hidden="true">
+          <span className="not-found-float not-found-float-one" />
+          <span className="not-found-float not-found-float-two" />
+          <span className="not-found-float not-found-float-three" />
+          <span className="not-found-grid-lines" />
+          <div className="not-found-illustration-frame">
+            <svg viewBox="0 0 340 280" className="not-found-illustration" role="img" aria-label="Sugarcane platform illustration">
+              <defs>
+                <linearGradient id="nfGlow" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="rgba(126, 200, 67, 0.95)" />
+                  <stop offset="100%" stopColor="rgba(126, 200, 67, 0.15)" />
+                </linearGradient>
+                <linearGradient id="nfLeaf" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#a7e463" />
+                  <stop offset="100%" stopColor="#4f8227" />
+                </linearGradient>
+              </defs>
+              <rect x="18" y="20" width="304" height="236" rx="24" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" />
+              <circle cx="260" cy="58" r="36" fill="url(#nfGlow)" opacity="0.55" />
+              <circle cx="260" cy="58" r="18" fill="rgba(126,200,67,0.18)" stroke="rgba(126,200,67,0.5)" />
+              <path d="M250 58l7 7 14-16" fill="none" stroke="#f0f5ec" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M106 206c16-36 38-60 63-93 20-27 36-50 53-72" fill="none" stroke="url(#nfLeaf)" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M130 197c11-31 22-50 38-72" fill="none" stroke="#7ec843" strokeWidth="7" strokeLinecap="round" opacity="0.85" />
+              <path d="M164 124c-18-7-33-21-40-39 18 1 35 8 46 21" fill="none" stroke="#a7e463" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M189 88c18-2 34 2 49 13-18 8-35 10-51 7" fill="none" stroke="#7ec843" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M88 205c19-7 38-8 62-4" fill="none" stroke="rgba(126,200,67,0.55)" strokeWidth="7" strokeLinecap="round" />
+              <path d="M102 220c15-2 34 1 54 9" fill="none" stroke="rgba(240,245,236,0.28)" strokeWidth="5" strokeLinecap="round" />
+              <g fill="rgba(240,245,236,0.88)">
+                <circle cx="80" cy="66" r="4" />
+                <circle cx="110" cy="50" r="3" />
+                <circle cx="224" cy="176" r="4" />
+                <circle cx="256" cy="146" r="3" />
+                <circle cx="62" cy="172" r="2.5" />
+                <circle cx="286" cy="100" r="2.5" />
+              </g>
+              <g stroke="rgba(126,200,67,0.55)" strokeWidth="2" fill="none">
+                <path d="M78 66h18" />
+                <path d="M110 50h20" />
+                <path d="M224 176h18" />
+                <path d="M256 146h15" />
+                <path d="M52 172h18" />
+                <path d="M276 100h16" />
+              </g>
+              <circle cx="62" cy="216" r="14" fill="none" stroke="rgba(126,200,67,0.24)" strokeWidth="2" />
+              <circle cx="290" cy="214" r="10" fill="none" stroke="rgba(240,245,236,0.18)" strokeWidth="2" />
+            </svg>
+          </div>
+          <div className="not-found-mini-grid">
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
+        </aside>
 
-      padding: '4rem 2rem',
+        <section className="not-found-card">
+          <div className="not-found-badge">Sugarcane Platform</div>
+          <div className="not-found-code">404</div>
+          <h1 className="not-found-title">Page Not Found</h1>
+          <p className="not-found-text">
+            The page you&apos;re looking for doesn&apos;t exist or may have been moved.
+          </p>
 
-      textAlign: 'center',
+          <div className="not-found-path" title={location.pathname}>
+            <span>Requested path</span>
+            <strong>{location.pathname}</strong>
+          </div>
 
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          <div className="not-found-actions">
+            <button
+              type="button"
+              className="not-found-button not-found-button-secondary"
+              onClick={() => navigate(authenticated ? -1 : '/')}
+            >
+              {secondaryActionLabel}
+            </button>
 
-      color: 'white',
+            <button
+              type="button"
+              className="not-found-button not-found-button-primary"
+              onClick={() => navigate(authenticated ? dashboardRoute : '/', { replace: true })}
+            >
+              {primaryActionLabel}
+            </button>
 
-      minHeight: '60vh',
+            {!authenticated && (
+              <button
+                type="button"
+                className="not-found-button not-found-button-tertiary"
+                onClick={() => navigate('/login', { replace: true })}
+              >
+                Login
+              </button>
+            )}
+          </div>
 
-      display: 'flex',
-
-      flexDirection: 'column',
-
-      justifyContent: 'center',
-
-      alignItems: 'center'
-
-    }}>
-
-      <h1 style={{ fontSize: '4rem', margin: '0' }}>404</h1>
-
-      <h2 style={{ fontSize: '2rem', margin: '1rem 0' }}>Page Not Found</h2>
-
-      <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
-
-        The page you're looking for doesn't exist.
-
-      </p>
-
-      <a
-
-        href="/"
-
-        style={{
-
-          background: '#4CAF50',
-
-          color: 'white',
-
-          padding: '1rem 2rem',
-
-          textDecoration: 'none',
-
-          borderRadius: '5px',
-
-          fontSize: '1.1rem'
-
-        }}
-
-      >
-
-        🏠 Go Back Home
-
-      </a>
-
+          <div className="not-found-footer-note">
+            {authenticated ? 'Your session is active, so we can take you back to your dashboard.' : 'You can return home or log in to continue.'}
+          </div>
+        </section>
+      </div>
     </div>
 
   );
