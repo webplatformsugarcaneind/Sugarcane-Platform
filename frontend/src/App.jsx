@@ -1,10 +1,33 @@
+import React,
+  {
+  Suspense,
+  useState
+}
 
-import React, { Suspense, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate, NavLink, matchPath } from 'react-router-dom';
+from 'react';
+
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  NavLink,
+  matchPath
+}
+
+from 'react-router-dom';
 import './App.css';
 import './components/Navbar.css';
 import './pages/Auth.css';
-import { getDashboardRouteForRole, getStoredUser, isAuthenticated } from './utils/authSession.js';
+
+import {
+  getDashboardRouteForRole,
+  getStoredUser,
+  isAuthenticated
+}
+
+from './utils/authSession.js';
 
 // Import components with proper ES6 imports
 import Navbar from './components/Navbar.jsx';
@@ -125,19 +148,31 @@ class ErrorBoundary extends React.Component {
 
     super(props);
 
-    this.state = { hasError: false, error: null };
+    this.state= {
+      hasError: false, error: null
+    }
+
+    ;
 
   }
 
   static getDerivedStateFromError(error) {
 
-    return { hasError: true, error };
+    return {
+      hasError: true, error
+    }
+
+    ;
 
   }
 
   componentDidCatch(error, errorInfo) {
 
-    console.error(`Error in ${this.props.componentName}:`, error, errorInfo);
+    console.error(`Error in $ {
+        this.props.componentName
+      }
+
+      :`, error, errorInfo);
 
   }
 
@@ -145,33 +180,43 @@ class ErrorBoundary extends React.Component {
 
     if (this.state.hasError) {
 
-      return (
+      return (<div style= {
+            {
 
-        <div style={{
+            padding: '1rem',
 
-          padding: '1rem',
+            margin: '1rem',
 
-          margin: '1rem',
+            border: '2px solid #ff6b6b',
 
-          border: '2px solid #ff6b6b',
+            borderRadius: '8px',
 
-          borderRadius: '8px',
+            background: '#ffe0e0'
 
-          background: '#ffe0e0'
+          }
+        }
 
-        }}>
+        > <h3 style= {
+            {
+            color: '#d63031'
+          }
+        }
 
-          <h3 style={{ color: '#d63031' }}>Error in {this.props.componentName}</h3>
+        >Error in {
+          this.props.componentName
+        }
 
-          <p style={{ color: '#636e72' }}>
+        </h3> <p style= {
+            {
+            color: '#636e72'
+          }
+        }
 
-            {this.state.error?.message || 'Unknown error occurred'}
+        > {
+          this.state.error?.message || 'Unknown error occurred'
+        }
 
-          </p>
-
-        </div>
-
-      );
+        </p> </div>);
 
     }
 
@@ -183,1163 +228,725 @@ class ErrorBoundary extends React.Component {
 
 // Safe component wrapper
 
-const SafeComponent = ({ name, children }) => (
+const SafeComponent=( {
+    name, children
+  }
 
-  <ErrorBoundary componentName={name}>
+)=>(<ErrorBoundary componentName= {
+    name
+  }
 
-    <Suspense fallback={<div style={{ padding: '1rem' }}>Loading {name}...</div>}>
+  > <Suspense fallback= {
+    <div style= {
+        {
+        padding: '1rem'
+      }
+    }
 
-      {children}
+    >Loading {
+      name
+    }
 
-    </Suspense>
+    ...</div>
+  }
 
-  </ErrorBoundary>
+  > {
+    children
+  }
 
-);
+  </Suspense> </ErrorBoundary>);
 
 console.log('All components imported successfully');
 
 // Component to conditionally render navbar based on route
 
-const ConditionalNavbar = () => {
-  const location = useLocation();
+const ConditionalNavbar=()=> {
+  const location=useLocation();
 
   // Pages that render their own internal/immersive navigation
-  const pagesWithInternalNav = ['/', '/signup'];
+  const pagesWithInternalNav=['/',
+  '/signup'];
 
-  const knownRoutePatterns = [
-    '/', '/login', '/signup', '/unauthorized', '/about', '/factories',
-    '/notification-test', '/debug-factory-analysis', '/factory/:id',
-    '/hhm/profile/:hhmId', '/farmers', '/farmer/*', '/factory/*',
-    '/hhm/*', '/worker/*'
+  const knownRoutePatterns=[ '/',
+  '/login',
+  '/signup',
+  '/unauthorized',
+  '/about',
+  '/factories',
+  '/notification-test',
+  '/debug-factory-analysis',
+  '/factory/:id',
+  '/hhm/profile/:hhmId',
+  '/farmers',
+  '/farmer/*',
+  '/factory/*',
+  '/hhm/*',
+  '/worker/*'
   ];
 
-  const isKnownRoute = knownRoutePatterns.some((pattern) =>
-    matchPath({ path: pattern, end: pattern === '/' || pattern === '/login' || pattern === '/signup' || pattern === '/unauthorized' || pattern === '/about' || pattern === '/factories' || pattern === '/notification-test' || pattern === '/debug-factory-analysis' }, location.pathname)
-  );
+  const isKnownRoute=knownRoutePatterns.some((pattern)=> matchPath( {
+        path: pattern, end: pattern==='/'|| pattern==='/login'|| pattern==='/signup'|| pattern==='/unauthorized'|| pattern==='/about'|| pattern==='/factories'|| pattern==='/notification-test'|| pattern==='/debug-factory-analysis'
+      }
+
+      , location.pathname));
 
   if (pagesWithInternalNav.includes(location.pathname) || !isKnownRoute) {
     return null;
   }
 
-  return (
-    <SafeComponent name="Navbar">
-      <Navbar />
-    </SafeComponent>
-  );
-};
+  return (<SafeComponent name="Navbar"> <Navbar /> </SafeComponent>);
+}
 
-const Footer = () => (
-  <footer className="auth-footer" style={{ marginTop: 'auto' }}>
-    <span className="auth-footer-copy">© 2025 CaneSetu Technologies Pvt. Ltd. All rights reserved.</span>
-    <div className="auth-footer-links">
-      <a href="/about" onClick={(e) => e.preventDefault()}>About</a>
-      <a href="#contact" onClick={(e) => e.preventDefault()}>Contact</a>
-      <a href="#privacy" onClick={(e) => e.preventDefault()}>Privacy Policy</a>
-    </div>
-  </footer>
-);
+;
 
-const ConditionalFooter = () => {
-  const location = useLocation();
-  // Only hide on home, login, and signup — those pages have their own footers
-  const hideFooterRoutes = ['/', '/login', '/signup'];
+const Footer=()=>(<footer className="auth-footer"style= {
+      {
+      marginTop: 'auto'
+    }
+  }
 
-  const shouldHide = hideFooterRoutes.includes(location.pathname);
+  > <span className="auth-footer-copy">© 2025 CaneSetu Technologies Pvt. Ltd. All rights reserved.</span> <div className="auth-footer-links"> <a href="/about"onClick= {
+    (e)=> e.preventDefault()
+  }
 
-  return shouldHide ? null : <Footer />;
-};
+  >About</a> <a href="#contact"onClick= {
+    (e)=> e.preventDefault()
+  }
+
+  >Contact</a> <a href="#privacy"onClick= {
+    (e)=> e.preventDefault()
+  }
+
+  >Privacy Policy</a> </div> </footer>);
+
+const ConditionalFooter=()=> {
+  const location=useLocation();
+  // Only hide on home, login, and signup - those pages have their own footers
+  const hideFooterRoutes=['/',
+  '/login',
+  '/signup'];
+
+  const shouldHide=hideFooterRoutes.includes(location.pathname);
+
+  return shouldHide ? null: <Footer />;
+}
+
+;
 
 function App() {
 
   console.log('App component rendering...');
 
-  return (
-    <Router>
-      <div className="App" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        {/* Conditional Navbar */}
-        <ConditionalNavbar />
+  return (<Router> <div className="App"style= {
+        {
+        minHeight: '100vh', display: 'flex', flexDirection: 'column'
+      }
+    }
 
-        {/* Main content area */}
-        <main className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#0b0f0b' }}>
-          <Routes>
-            {/* Home Route */}
-            <Route path="/" element={
-              <SafeComponent name="HomePage">
-                <HomePage />
+    > {
+      /* Conditional Navbar */
+    }
 
-              </SafeComponent>
+    <ConditionalNavbar /> {
+      /* Main content area */
+    }
 
-            } />
+    <main className="main-content"style= {
+        {
+        flex: 1, display: 'flex', flexDirection: 'column', background: '#0b0f0b'
+      }
+    }
 
-            {/* Authentication Routes - Protected from authenticated users */}
+    > <Routes> {
+      /* Home Route */
+    }
 
-            {/* Login Route - Only accessible to guests (not authenticated users) */}
-            <Route path="/login" element={
+    <Route path="/"element= {
+      <SafeComponent name="HomePage"> <HomePage /> </SafeComponent>
+    }
 
-              <SafeComponent name="GuestRoute">
+    /> {
+      /* Authentication Routes - Protected from authenticated users */
+    }
 
-                <GuestRoute />
+      {
+      /* Login Route - Only accessible to guests (not authenticated users) */
+    }
 
-              </SafeComponent>
+    <Route path="/login"element= {
 
-            }>
+      <SafeComponent name="GuestRoute"> <GuestRoute /> </SafeComponent>
+    }
 
-              <Route index element={
+    > <Route index element= {
 
-                <SafeComponent name="LoginPage">
+      <SafeComponent name="LoginPage"> <LoginPage /> </SafeComponent>
+    }
 
-                  <LoginPage />
+    /> </Route> {
+      /* Signup Route - Only accessible to guests (not authenticated users) */
+    }
 
-                </SafeComponent>
+    <Route path="/signup"element= {
 
-              } />
+      <SafeComponent name="GuestRoute"> <GuestRoute /> </SafeComponent>
+    }
 
-            </Route>
+    > <Route index element= {
 
-            {/* Signup Route - Only accessible to guests (not authenticated users) */}
-            <Route path="/signup" element={
+      <SafeComponent name="SignUpPage"> <SignUpPage /> </SafeComponent>
+    }
 
-              <SafeComponent name="GuestRoute">
+    /> </Route> {
+      /* Unauthorized Route - Shown when user tries to access a route for a different role */
+    }
 
-                <GuestRoute />
+    <Route path="/unauthorized"element= {
 
-              </SafeComponent>
+      <SafeComponent name="UnauthorizedPage"> <UnauthorizedPage /> </SafeComponent>
+    }
 
-            }>
+    /> {
+      /* Factories Routes */
+    }
 
-              <Route index element={
+    <Route path="/factories"element= {
 
-                <SafeComponent name="SignUpPage">
+      <SafeComponent name="FactoriesPage"> <FactoriesPage /> </SafeComponent>
+    }
 
-                  <SignUpPage />
+    /> <Route path="/factory/:id"element= {
 
-                </SafeComponent>
+      <SafeComponent name="SpecificFactoryPage"> <SpecificFactoryPage /> </SafeComponent>
+    }
 
-              } />
+    /> {
+      /* About Route */
+    }
 
-            </Route>
+    <Route path="/about"element= {
 
-            {/* Unauthorized Route - Shown when user tries to access a route for a different role */}
-            <Route path="/unauthorized" element={
+      <SafeComponent name="AboutUsPage"> <AboutUsPage /> </SafeComponent>
+    }
 
-              <SafeComponent name="UnauthorizedPage">
+    /> {
+      /* Debug Route - Temporary */
+    }
 
-                <UnauthorizedPage />
+    <Route path="/debug-factory-analysis"element= {
 
-              </SafeComponent>
+      <SafeComponent name="FactoryAnalysisDebug"> <FactoryAnalysisDebug /> </SafeComponent>
+    }
 
-            } />
+    /> {
+      /* Notification Test Route */
+    }
 
-            {/* Factories Routes */}
+    <Route path="/notification-test"element= {
 
-            <Route path="/factories" element={
+      <SafeComponent name="NotificationTestPage"> <NotificationTestPage /> </SafeComponent>
+    }
 
-              <SafeComponent name="FactoriesPage">
+    /> {
+      /* HHM Profile View Route - Accessible by any authenticated user */
+    }
 
-                <FactoriesPage />
+    <Route path="/hhm/profile/:hhmId"element= {
 
-              </SafeComponent>
+      <SafeComponent name="ProtectedRoute"> <ProtectedRoute /> </SafeComponent>
+    }
 
-            } />
+    > <Route index element= {
 
-            <Route path="/factory/:id" element={
+      <SafeComponent name="HHMProfileViewPage"> <HHMProfileViewPage /> </SafeComponent>
+    }
 
-              <SafeComponent name="SpecificFactoryPage">
+    /> </Route> {
+      /* Factory Profile View Route - Accessible by any authenticated user */
+    }
 
-                <SpecificFactoryPage />
+    <Route path="/factory/profile/:factoryId"element= {
 
-              </SafeComponent>
+      <SafeComponent name="ProtectedRoute"> <ProtectedRoute /> </SafeComponent>
+    }
 
-            } />
+    > <Route index element= {
 
-            {/* About Route */}
+      <SafeComponent name="FactoryProfileViewPage"> <FactoryProfileViewPage /> </SafeComponent>
+    }
 
-            <Route path="/about" element={
+    /> </Route> {
+      /* Protected Farmer Routes - Only Farmer role can access */
+    }
 
-              <SafeComponent name="AboutUsPage">
+    <Route path="/farmer"element= {
 
-                <AboutUsPage />
+      <SafeComponent name="RoleProtectedRoute"> <RoleProtectedRoute allowedRoles= {
+        ['Farmer']
+      }
 
-              </SafeComponent>
+      /> </SafeComponent>
+    }
 
-            } />
+    > <Route path="profile"element= {
+      <SafeComponent name="FarmerProfile"> <FarmerProfile /> </SafeComponent>
+    }
 
-            {/* Debug Route - Temporary */}
+    /> <Route element= {
 
-            <Route path="/debug-factory-analysis" element={
+      <SafeComponent name="AuthenticatedLayout"> <AuthenticatedLayout /> </SafeComponent>
+    }
 
-              <SafeComponent name="FactoryAnalysisDebug">
+    > <Route path="dashboard"element= {
 
-                <FactoryAnalysisDebug />
+      <SafeComponent name="FarmerDashboardPage"> <FarmerDashboardPage /> </SafeComponent>
+    }
 
-              </SafeComponent>
+    /> <Route path="marketplace"element= {
 
-            } />
+      <SafeComponent name="MarketplacePage"> <MarketplacePage /> </SafeComponent>
+    }
 
-            {/* Notification Test Route */}
+    /> <Route path="hhm-directory"element= {
 
-            <Route path="/notification-test" element={
+      <SafeComponent name="FarmerHHMDirectoryPage"> <FarmerHHMDirectoryPage /> </SafeComponent>
+    }
 
-              <SafeComponent name="NotificationTestPage">
+    /> <Route path="hhm-directory/:userId"element= {
 
-                <NotificationTestPage />
+      <SafeComponent name="UserProfilePage"> <UserProfilePage /> </SafeComponent>
+    }
 
-              </SafeComponent>
+    /> <Route path="hhms"element= {
 
-            } />
+      <SafeComponent name="FarmerHHMDirectoryPage"> <FarmerHHMDirectoryPage /> </SafeComponent>
+    }
 
-            {/* HHM Profile View Route - Accessible by any authenticated user */}
+    /> <Route path="factory-directory"element= {
 
-            <Route path="/hhm/profile/:hhmId" element={
+      <SafeComponent name="FarmerFactoryDirectoryPage"> <FarmerFactoryDirectoryPage /> </SafeComponent>
+    }
 
-              <SafeComponent name="ProtectedRoute">
+    /> <Route path="factory-directory/:userId"element= {
 
-                <ProtectedRoute />
+      <SafeComponent name="UserProfilePage"> <UserProfilePage /> </SafeComponent>
+    }
 
-              </SafeComponent>
+    /> <Route path="associate-hhm/:factoryId"element= {
 
-            }>
+      <SafeComponent name="AssociateHHMPage"> <AssociateHHMPage /> </SafeComponent>
+    }
 
-              <Route index element={
+    /> <Route path="factory/:id"element= {
 
-                <SafeComponent name="HHMProfileViewPage">
+      <SafeComponent name="FactoryProfileViewPage"> <FactoryProfileViewPage /> </SafeComponent>
+    }
 
-                  <HHMProfileViewPage />
+    /> <Route path="hhm/public-profile/:id"element= {
 
-                </SafeComponent>
+      <SafeComponent name="HHMPublicProfilePage"> <HHMPublicProfilePage /> </SafeComponent>
+    }
 
-              } />
+    /> <Route path="hhms/:hhmId/contract"element= {
 
-            </Route>
+      <SafeComponent name="FarmerContractRequestPage"> <FarmerContractRequestPage /> </SafeComponent>
+    }
 
-            {/* Factory Profile View Route - Accessible by any authenticated user */}
+    /> <Route path="contracts"element= {
 
-            <Route path="/factory/profile/:factoryId" element={
+      <SafeComponent name="FarmerContractsDashboard"> <FarmerContractsDashboard /> </SafeComponent>
+    }
 
-              <SafeComponent name="ProtectedRoute">
+    /> <Route path="factory-analysis"element= {
 
-                <ProtectedRoute />
+      <SafeComponent name="FactoryAnalysisPage"> <FactoryAnalysisPage /> </SafeComponent>
+    }
 
-              </SafeComponent>
+    /> <Route path="profile/:farmerId"element= {
 
-            }>
+      <SafeComponent name="FarmerPublicProfilePage"> <FarmerPublicProfilePage /> </SafeComponent>
+    }
 
-              <Route index element={
+    /> <Route path="listing/:listingId"element= {
 
-                <SafeComponent name="FactoryProfileViewPage">
+      <SafeComponent name="ListingDetailsPage"> <ListingDetailsPage /> </SafeComponent>
+    }
 
-                  <FactoryProfileViewPage />
+    /> <Route path="listing/edit/:listingId"element= {
 
-                </SafeComponent>
+      <SafeComponent name="EditListingPage"> <EditListingPage /> </SafeComponent>
+    }
 
-              } />
+    /> <Route path="listing/create"element= {
+      <SafeComponent name="CreateListingPage"> <CreateListingPage /> </SafeComponent>
+    }
 
-            </Route>
+    /> <Route path="listing/:listingId/farmer/:userId"element= {
 
-            {/* Protected Farmer Routes - Only Farmer role can access */}
+      <SafeComponent name="UserProfilePage"> <UserProfilePage /> </SafeComponent>
+    }
 
-            <Route path="/farmer" element={
+    /> <Route index element= {
 
-              <SafeComponent name="RoleProtectedRoute">
+      <SafeComponent name="FarmerDashboardPage"> <FarmerDashboardPage /> </SafeComponent>
+    }
 
-                <RoleProtectedRoute allowedRoles={['Farmer']} />
+    /> </Route> </Route> {
+      /* Protected HHM Routes - Only HHM role can access */
+    }
 
-              </SafeComponent>
+    <Route path="/hhm"element= {
+      <SafeComponent name="RoleProtectedRoute"> <RoleProtectedRoute allowedRoles= {
+        ['HHM']
+      }
 
-            }>
+      /> </SafeComponent>
+    }
 
-              <Route path="profile" element={
-                <SafeComponent name="FarmerProfile">
-                  <FarmerProfile />
-                </SafeComponent>
-              } />
-              <Route element={
+    > <Route path="profile"element= {
+      <SafeComponent name="ProfilePage"> <ProfilePage /> </SafeComponent>
+    }
 
-                <SafeComponent name="AuthenticatedLayout">
+    /> <Route element= {
+      <SafeComponent name="AuthenticatedLayout"> <AuthenticatedLayout /> </SafeComponent>
+    }
 
-                  <AuthenticatedLayout />
+    > <Route path="dashboard"element= {
 
-                </SafeComponent>
+      <SafeComponent name="HHMDashboardPage"> <HHMDashboardPage /> </SafeComponent>
+    }
 
-              }>
+    /> <Route path="labor"element= {
 
-                <Route path="dashboard" element={
+      <SafeComponent name="LaborManagementPage"> <LaborManagementPage /> </SafeComponent>
+    }
 
-                  <SafeComponent name="FarmerDashboardPage">
+    /> <Route path="labour/:labourId"element= {
 
-                    <FarmerDashboardPage />
+      <SafeComponent name="HHMWorkerProfileViewPage"> <HHMWorkerProfileViewPage /> </SafeComponent>
+    }
 
-                  </SafeComponent>
+    /> <Route path="factory-directory"element= {
 
-                } />
+      <SafeComponent name="HHMFactoryDirectoryPage"> <HHMFactoryDirectoryPage /> </SafeComponent>
+    }
 
-                <Route path="marketplace" element={
+    /> <Route path="factory-directory/:userId"element= {
 
-                  <SafeComponent name="MarketplacePage">
+      <SafeComponent name="UserProfilePage"> <UserProfilePage /> </SafeComponent>
+    }
 
-                    <MarketplacePage />
+    /> <Route path="factories"element= {
 
-                  </SafeComponent>
+      <SafeComponent name="HHMFactoryDirectoryPage"> <HHMFactoryDirectoryPage /> </SafeComponent>
+    }
 
-                } />
+    /> <Route path="factories/:id"element= {
 
-                <Route path="hhm-directory" element={
+      <SafeComponent name="HHMSpecificFactoryPage"> <HHMSpecificFactoryPage /> </SafeComponent>
+    }
 
-                  <SafeComponent name="FarmerHHMDirectoryPage">
+    /> <Route path="factory-invitations"element= {
 
-                    <FarmerHHMDirectoryPage />
+      <SafeComponent name="HHMFactoryInvitationsPage"> <HHMFactoryInvitationsPage /> </SafeComponent>
+    }
 
-                  </SafeComponent>
+    /> <Route path="sent-factory-invitations"element= {
 
-                } />
+      <SafeComponent name="HHMSentFactoryInvitationsPage"> <HHMSentFactoryInvitationsPage /> </SafeComponent>
+    }
 
-                <Route path="hhm-directory/:userId" element={
+    /> <Route path="associated-factories"element= {
 
-                  <SafeComponent name="UserProfilePage">
+      <SafeComponent name="HHMAssociatedFactoriesPage"> <HHMAssociatedFactoriesPage /> </SafeComponent>
+    }
 
-                    <UserProfilePage />
+    /> <Route path="performance"element= {
 
-                  </SafeComponent>
+      <SafeComponent name="HHMPerformancePage"> <HHMPerformancePage /> </SafeComponent>
+    }
 
-                } />
+    /> <Route path="notifications"element= {
 
-                <Route path="hhms" element={
+      <SafeComponent name="HHMNotificationCenter"> <HHMNotificationCenter /> </SafeComponent>
+    }
 
-                  <SafeComponent name="FarmerHHMDirectoryPage">
+    /> <Route path="contracts"element= {
 
-                    <FarmerHHMDirectoryPage />
+      <SafeComponent name="HHMContractDashboard"> <HHMContractDashboard /> </SafeComponent>
+    }
 
-                  </SafeComponent>
+    /> <Route path="farmers"element= {
 
-                } />
+      <SafeComponent name="HHMFarmerDirectoryPage"> <HHMFarmerDirectoryPage /> </SafeComponent>
+    }
 
-                <Route path="factory-directory" element={
+    /> <Route path="farmers/:userId"element= {
 
-                  <SafeComponent name="FarmerFactoryDirectoryPage">
+      <SafeComponent name="UserProfilePage"> <UserProfilePage /> </SafeComponent>
+    }
 
-                    <FarmerFactoryDirectoryPage />
+    /> <Route path="farmer/profile/:id"element= {
 
-                  </SafeComponent>
+      <SafeComponent name="HHMFarmerProfilePage"> <HHMFarmerProfilePage /> </SafeComponent>
+    }
 
-                } />
+    /> <Route index element= {
 
-                <Route path="factory-directory/:userId" element={
+      <SafeComponent name="HHMDashboardPage"> <HHMDashboardPage /> </SafeComponent>
+    }
 
-                  <SafeComponent name="UserProfilePage">
+    /> </Route> </Route> {
+      /* Protected Worker Routes - Only Worker/Labour role can access */
+    }
 
-                    <UserProfilePage />
+    <Route path="/worker"element= {
+      <SafeComponent name="RoleProtectedRoute"> <RoleProtectedRoute allowedRoles= {
+        ['Labour', 'Worker']
+      }
 
-                  </SafeComponent>
+      /> </SafeComponent>
+    }
 
-                } />
+    > <Route path="profile"element= {
+      <SafeComponent name="ProfilePage"> <ProfilePage /> </SafeComponent>
+    }
 
-                <Route path="associate-hhm/:factoryId" element={
+    /> <Route element= {
+      <SafeComponent name="AuthenticatedLayout"> <AuthenticatedLayout /> </SafeComponent>
+    }
 
-                  <SafeComponent name="AssociateHHMPage">
+    > <Route path="dashboard"element= {
 
-                    <AssociateHHMPage />
+      <SafeComponent name="WorkerDashboardPage"> <WorkerDashboardPage /> </SafeComponent>
+    }
 
-                  </SafeComponent>
+    /> <Route path="jobs"element= {
 
-                } />
+      <SafeComponent name="WorkerDashboardPage"> <WorkerDashboardPage /> </SafeComponent>
+    }
 
-                <Route path="factory/:id" element={
+    /> <Route path="applications"element= {
 
-                  <SafeComponent name="FactoryProfileViewPage">
+      <SafeComponent name="InvitesAndApplicationsPage"> <InvitesAndApplicationsPage /> </SafeComponent>
+    }
 
-                    <FactoryProfileViewPage />
+    /> <Route path="hhm-directory"element= {
 
-                  </SafeComponent>
+      <SafeComponent name="WorkerHHMDirectoryPage"> <WorkerHHMDirectoryPage /> </SafeComponent>
+    }
 
-                } />
+    /> <Route path="hhm-directory/:userId"element= {
 
-                <Route path="hhm/public-profile/:id" element={
+      <SafeComponent name="UserProfilePage"> <UserProfilePage /> </SafeComponent>
+    }
 
-                  <SafeComponent name="HHMPublicProfilePage">
+    /> <Route path="hhm/profile/:id"element= {
 
-                    <HHMPublicProfilePage />
+      <SafeComponent name="WorkerHHMProfileViewPage"> <WorkerHHMProfileViewPage /> </SafeComponent>
+    }
 
-                  </SafeComponent>
+    /> <Route index element= {
 
-                } />
+      <SafeComponent name="WorkerDashboardPage"> <WorkerDashboardPage /> </SafeComponent>
+    }
 
-                <Route path="hhms/:hhmId/contract" element={
+    /> </Route> </Route> {
+      /* Protected Factory Routes - Only Factory role can access */
+    }
 
-                  <SafeComponent name="FarmerContractRequestPage">
+    <Route path="/factory"element= {
+      <SafeComponent name="RoleProtectedRoute"> <RoleProtectedRoute allowedRoles= {
+        ['Factory']
+      }
 
-                    <FarmerContractRequestPage />
+      /> </SafeComponent>
+    }
 
-                  </SafeComponent>
+    > <Route path="profile"element= {
+      <SafeComponent name="ProfilePage"> <ProfilePage /> </SafeComponent>
+    }
 
-                } />
+    /> <Route element= {
+      <SafeComponent name="AuthenticatedLayout"> <AuthenticatedLayout /> </SafeComponent>
+    }
 
-                <Route path="contracts" element={
+    > <Route path="dashboard"element= {
 
-                  <SafeComponent name="FarmerContractsDashboard">
+      <SafeComponent name="FactoryDashboardPage"> <FactoryDashboardPage /> </SafeComponent>
+    }
 
-                    <FarmerContractsDashboard />
+    /> <Route path="post-bill"element= {
 
-                  </SafeComponent>
+      <SafeComponent name="FactoryPostBillPage"> <FactoryPostBillPage /> </SafeComponent>
+    }
 
-                } />
+    /> <Route path="hhm-directory"element= {
 
-                <Route path="factory-analysis" element={
+      <SafeComponent name="FactoryHHMDirectoryPage"> <FactoryHHMDirectoryPage /> </SafeComponent>
+    }
 
-                  <SafeComponent name="FactoryAnalysisPage">
+    /> <Route path="hhm-directory/:userId"element= {
 
-                    <FactoryAnalysisPage />
+      <SafeComponent name="UserProfilePage"> <UserProfilePage /> </SafeComponent>
+    }
 
-                  </SafeComponent>
+    /> <Route path="hhm/profile/:id"element= {
 
-                } />
+      <SafeComponent name="FactoryHHMProfileViewPage"> <FactoryHHMProfileViewPage /> </SafeComponent>
+    }
 
-                <Route path="profile/:farmerId" element={
+    /> <Route path="hhm-profile/:id"element= {
 
-                  <SafeComponent name="FarmerPublicProfilePage">
+      <SafeComponent name="HHMPublicProfilePage"> <HHMPublicProfilePage /> </SafeComponent>
+    }
 
-                    <FarmerPublicProfilePage />
+    /> <Route path="sent-invitations"element= {
 
-                  </SafeComponent>
+      <SafeComponent name="FactorySentInvitationsPage"> <FactorySentInvitationsPage /> </SafeComponent>
+    }
 
-                } />
+    /> <Route path="received-invitations"element= {
 
-                <Route path="listing/:listingId" element={
+      <SafeComponent name="FactoryReceivedInvitationsPage"> <FactoryReceivedInvitationsPage /> </SafeComponent>
+    }
 
-                  <SafeComponent name="ListingDetailsPage">
+    /> <Route path="associated-hhms"element= {
 
-                    <ListingDetailsPage />
+      <SafeComponent name="FactoryAssociatedHHMsPage"> <FactoryAssociatedHHMsPage /> </SafeComponent>
+    }
 
-                  </SafeComponent>
+    /> <Route path="associated-hhms/:userId"element= {
 
-                } />
+      <SafeComponent name="UserProfilePage"> <UserProfilePage /> </SafeComponent>
+    }
 
-                <Route path="listing/edit/:listingId" element={
+    /> <Route path="factory-directory"element= {
 
-                  <SafeComponent name="EditListingPage">
+      <SafeComponent name="FactoryDirectoryPage"> <FactoryDirectoryPage /> </SafeComponent>
+    }
 
-                    <EditListingPage />
+    /> <Route path="factory-directory/:id"element= {
 
-                  </SafeComponent>
+      <SafeComponent name="FactoryProfilePage"> <FactoryProfilePage /> </SafeComponent>
+    }
 
-                } />
+    /> <Route path="contracts"element= {
 
-                <Route path="listing/create" element={
-                  <SafeComponent name="CreateListingPage">
-                    <CreateListingPage />
-                  </SafeComponent>
-                } />
+      <SafeComponent name="ContractsDashboard"> <ContractsDashboard /> </SafeComponent>
+    }
 
-                <Route path="listing/:listingId/farmer/:userId" element={
+    /> <Route index element= {
 
-                  <SafeComponent name="UserProfilePage">
+      <SafeComponent name="FactoryDashboardPage"> <FactoryDashboardPage /> </SafeComponent>
+    }
 
-                    <UserProfilePage />
+    /> </Route> </Route> {
+      /* Catch-all route for 404 pages */
+    }
 
-                  </SafeComponent>
+    <Route path="*"element= {
+      <NotFound />
+    }
 
-                } />
+    /> </Routes> </main> <ConditionalFooter /> {
+      /* Conditional Footer */
+    }
 
-                <Route index element={
-
-                  <SafeComponent name="FarmerDashboardPage">
-
-                    <FarmerDashboardPage />
-
-                  </SafeComponent>
-
-                } />
-
-              </Route>
-
-            </Route>
-
-            {/* Protected HHM Routes - Only HHM role can access */}
-
-            <Route path="/hhm" element={
-              <SafeComponent name="RoleProtectedRoute">
-                <RoleProtectedRoute allowedRoles={['HHM']} />
-              </SafeComponent>
-            }>
-              <Route path="profile" element={
-                <SafeComponent name="ProfilePage">
-                  <ProfilePage />
-                </SafeComponent>
-              } />
-              <Route element={
-                <SafeComponent name="AuthenticatedLayout">
-
-                  <AuthenticatedLayout />
-
-                </SafeComponent>
-
-              }>
-
-                <Route path="dashboard" element={
-
-                  <SafeComponent name="HHMDashboardPage">
-
-                    <HHMDashboardPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="labor" element={
-
-                  <SafeComponent name="LaborManagementPage">
-
-                    <LaborManagementPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="labour/:labourId" element={
-
-                  <SafeComponent name="HHMWorkerProfileViewPage">
-
-                    <HHMWorkerProfileViewPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="factory-directory" element={
-
-                  <SafeComponent name="HHMFactoryDirectoryPage">
-
-                    <HHMFactoryDirectoryPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="factory-directory/:userId" element={
-
-                  <SafeComponent name="UserProfilePage">
-
-                    <UserProfilePage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="factories" element={
-
-                  <SafeComponent name="HHMFactoryDirectoryPage">
-
-                    <HHMFactoryDirectoryPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="factories/:id" element={
-
-                  <SafeComponent name="HHMSpecificFactoryPage">
-
-                    <HHMSpecificFactoryPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="factory-invitations" element={
-
-                  <SafeComponent name="HHMFactoryInvitationsPage">
-
-                    <HHMFactoryInvitationsPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="sent-factory-invitations" element={
-
-                  <SafeComponent name="HHMSentFactoryInvitationsPage">
-
-                    <HHMSentFactoryInvitationsPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="associated-factories" element={
-
-                  <SafeComponent name="HHMAssociatedFactoriesPage">
-
-                    <HHMAssociatedFactoriesPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="performance" element={
-
-                  <SafeComponent name="HHMPerformancePage">
-
-                    <HHMPerformancePage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="notifications" element={
-
-                  <SafeComponent name="HHMNotificationCenter">
-
-                    <HHMNotificationCenter />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="contracts" element={
-
-                  <SafeComponent name="HHMContractDashboard">
-
-                    <HHMContractDashboard />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="farmers" element={
-
-                  <SafeComponent name="HHMFarmerDirectoryPage">
-
-                    <HHMFarmerDirectoryPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="farmers/:userId" element={
-
-                  <SafeComponent name="UserProfilePage">
-
-                    <UserProfilePage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="farmer/profile/:id" element={
-
-                  <SafeComponent name="HHMFarmerProfilePage">
-
-                    <HHMFarmerProfilePage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route index element={
-
-                  <SafeComponent name="HHMDashboardPage">
-
-                    <HHMDashboardPage />
-
-                  </SafeComponent>
-
-                } />
-
-              </Route>
-
-            </Route>
-
-            {/* Protected Worker Routes - Only Worker/Labour role can access */}
-
-            <Route path="/worker" element={
-              <SafeComponent name="RoleProtectedRoute">
-                <RoleProtectedRoute allowedRoles={['Labour', 'Worker']} />
-              </SafeComponent>
-            }>
-              <Route path="profile" element={
-                <SafeComponent name="ProfilePage">
-                  <ProfilePage />
-                </SafeComponent>
-              } />
-              <Route element={
-                <SafeComponent name="AuthenticatedLayout">
-
-                  <AuthenticatedLayout />
-
-                </SafeComponent>
-
-              }>
-
-                <Route path="dashboard" element={
-
-                  <SafeComponent name="WorkerDashboardPage">
-
-                    <WorkerDashboardPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="jobs" element={
-
-                  <SafeComponent name="WorkerDashboardPage">
-
-                    <WorkerDashboardPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="applications" element={
-
-                  <SafeComponent name="InvitesAndApplicationsPage">
-
-                    <InvitesAndApplicationsPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="hhm-directory" element={
-
-                  <SafeComponent name="WorkerHHMDirectoryPage">
-
-                    <WorkerHHMDirectoryPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="hhm-directory/:userId" element={
-
-                  <SafeComponent name="UserProfilePage">
-
-                    <UserProfilePage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="hhm/profile/:id" element={
-
-                  <SafeComponent name="WorkerHHMProfileViewPage">
-
-                    <WorkerHHMProfileViewPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route index element={
-
-                  <SafeComponent name="WorkerDashboardPage">
-
-                    <WorkerDashboardPage />
-
-                  </SafeComponent>
-
-                } />
-
-              </Route>
-
-            </Route>
-
-            {/* Protected Factory Routes - Only Factory role can access */}
-
-            <Route path="/factory" element={
-              <SafeComponent name="RoleProtectedRoute">
-                <RoleProtectedRoute allowedRoles={['Factory']} />
-              </SafeComponent>
-            }>
-              <Route path="profile" element={
-                <SafeComponent name="ProfilePage">
-                  <ProfilePage />
-                </SafeComponent>
-              } />
-              <Route element={
-                <SafeComponent name="AuthenticatedLayout">
-
-                  <AuthenticatedLayout />
-
-                </SafeComponent>
-
-              }>
-
-                <Route path="dashboard" element={
-
-                  <SafeComponent name="FactoryDashboardPage">
-
-                    <FactoryDashboardPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="post-bill" element={
-
-                  <SafeComponent name="FactoryPostBillPage">
-
-                    <FactoryPostBillPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="hhm-directory" element={
-
-                  <SafeComponent name="FactoryHHMDirectoryPage">
-
-                    <FactoryHHMDirectoryPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="hhm-directory/:userId" element={
-
-                  <SafeComponent name="UserProfilePage">
-
-                    <UserProfilePage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="hhm/profile/:id" element={
-
-                  <SafeComponent name="FactoryHHMProfileViewPage">
-
-                    <FactoryHHMProfileViewPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="hhm-profile/:id" element={
-
-                  <SafeComponent name="HHMPublicProfilePage">
-
-                    <HHMPublicProfilePage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="sent-invitations" element={
-
-                  <SafeComponent name="FactorySentInvitationsPage">
-
-                    <FactorySentInvitationsPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="received-invitations" element={
-
-                  <SafeComponent name="FactoryReceivedInvitationsPage">
-
-                    <FactoryReceivedInvitationsPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="associated-hhms" element={
-
-                  <SafeComponent name="FactoryAssociatedHHMsPage">
-
-                    <FactoryAssociatedHHMsPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="associated-hhms/:userId" element={
-
-                  <SafeComponent name="UserProfilePage">
-
-                    <UserProfilePage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="factory-directory" element={
-
-                  <SafeComponent name="FactoryDirectoryPage">
-
-                    <FactoryDirectoryPage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="factory-directory/:id" element={
-
-                  <SafeComponent name="FactoryProfilePage">
-
-                    <FactoryProfilePage />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route path="contracts" element={
-
-                  <SafeComponent name="ContractsDashboard">
-
-                    <ContractsDashboard />
-
-                  </SafeComponent>
-
-                } />
-
-                <Route index element={
-
-                  <SafeComponent name="FactoryDashboardPage">
-
-                    <FactoryDashboardPage />
-
-                  </SafeComponent>
-
-                } />
-
-              </Route>
-
-            </Route>
-
-            {/* Unauthorized page */}
-
-            <Route path="/unauthorized" element={
-
-              <div style={{
-
-                padding: '4rem 2rem',
-
-                textAlign: 'center',
-
-                background: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
-
-                color: 'white',
-
-                minHeight: '60vh',
-
-                display: 'flex',
-
-                flexDirection: 'column',
-
-                justifyContent: 'center',
-
-                alignItems: 'center'
-
-              }}>
-
-                <h1 style={{ fontSize: '3rem', margin: '0' }}>🚫</h1>
-
-                <h2 style={{ fontSize: '2rem', margin: '1rem 0' }}>Access Denied</h2>
-
-                <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
-
-                  You don't have permission to access this page.
-
-                </p>
-
-                <a
-
-                  href="/"
-
-                  style={{
-
-                    background: '#27ae60',
-
-                    color: 'white',
-
-                    padding: '1rem 2rem',
-
-                    textDecoration: 'none',
-
-                    borderRadius: '5px',
-
-                    fontSize: '1.1rem'
-
-                  }}
-
-                >
-
-                  🏠 Go Back Home
-
-                </a>
-
-              </div>
-
-            } />
-
-            {/* Catch-all route for 404 pages */}
-
-            <Route path="*" element={<NotFound />} />
-
-          </Routes>
-
-        </main>
-        <ConditionalFooter />
-
-        {/* Conditional Footer */}
-
-      </div>
-
-    </Router>
-
-  );
+    </div> </Router>);
 
 }
 
 // 404 Not Found Component
 
-const NotFound = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+const NotFound=()=> {
+  const navigate=useNavigate();
+  const location=useLocation();
 
-  const authenticated = isAuthenticated();
-  const storedUser = getStoredUser();
-  const dashboardRoute = authenticated && storedUser?.role
-    ? getDashboardRouteForRole(storedUser.role)
-    : '/';
-  const primaryActionLabel = authenticated ? 'Return to Dashboard' : 'Go Home';
-  const secondaryActionLabel = authenticated ? 'Go Back' : 'Login';
+  const authenticated=isAuthenticated();
+  const storedUser=getStoredUser();
+  const dashboardRoute=authenticated && storedUser?.role ? getDashboardRouteForRole(storedUser.role): '/';
+  const primaryActionLabel=authenticated ? 'Return to Dashboard': 'Go Home';
+  const secondaryActionLabel=authenticated ? 'Go Back': 'Login';
 
-  const ErrorPageNavbar = () => (
-    <header className="not-found-nav" aria-label="404 page navigation">
-      <button
-        type="button"
-        className="not-found-nav-back"
-        onClick={() => navigate(-1)}
-      >
-        ← Back
-      </button>
+  const ErrorPageNavbar=()=>(<header className="not-found-nav"aria-label="404 page navigation"> <button type="button"
+    className="not-found-nav-back"
 
-      <NavLink to={authenticated ? dashboardRoute : '/'} className="not-found-nav-brand" onClick={(e) => { e.preventDefault(); navigate(authenticated ? dashboardRoute : '/'); }}>
-        <span className="not-found-nav-mark">✦</span>
-        <span className="not-found-nav-text">CaneSetu</span>
-      </NavLink>
-    </header>
-  );
+    onClick= {
+      ()=> navigate(-1)
+    }
 
-  return (
-    <div className="not-found-page">
-      <ErrorPageNavbar />
-      <div className="not-found-ambient not-found-ambient-left" aria-hidden="true" />
-      <div className="not-found-ambient not-found-ambient-right" aria-hidden="true" />
+    > ← Back </button> <NavLink to= {
+      authenticated ? dashboardRoute : '/'
+    }
 
-      <div className="not-found-shell">
-        <aside className="not-found-illustration-card" aria-hidden="true">
-          <span className="not-found-float not-found-float-one" />
-          <span className="not-found-float not-found-float-two" />
-          <span className="not-found-float not-found-float-three" />
-          <span className="not-found-grid-lines" />
-          <div className="not-found-illustration-frame">
-            <svg viewBox="0 0 340 280" className="not-found-illustration" role="img" aria-label="Sugarcane platform illustration">
-              <defs>
-                <linearGradient id="nfGlow" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="rgba(126, 200, 67, 0.95)" />
-                  <stop offset="100%" stopColor="rgba(126, 200, 67, 0.15)" />
-                </linearGradient>
-                <linearGradient id="nfLeaf" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#a7e463" />
-                  <stop offset="100%" stopColor="#4f8227" />
-                </linearGradient>
-              </defs>
-              <rect x="18" y="20" width="304" height="236" rx="24" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.08)" />
-              <circle cx="260" cy="58" r="36" fill="url(#nfGlow)" opacity="0.55" />
-              <circle cx="260" cy="58" r="18" fill="rgba(126,200,67,0.18)" stroke="rgba(126,200,67,0.5)" />
-              <path d="M250 58l7 7 14-16" fill="none" stroke="#f0f5ec" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M106 206c16-36 38-60 63-93 20-27 36-50 53-72" fill="none" stroke="url(#nfLeaf)" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M130 197c11-31 22-50 38-72" fill="none" stroke="#7ec843" strokeWidth="7" strokeLinecap="round" opacity="0.85" />
-              <path d="M164 124c-18-7-33-21-40-39 18 1 35 8 46 21" fill="none" stroke="#a7e463" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M189 88c18-2 34 2 49 13-18 8-35 10-51 7" fill="none" stroke="#7ec843" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M88 205c19-7 38-8 62-4" fill="none" stroke="rgba(126,200,67,0.55)" strokeWidth="7" strokeLinecap="round" />
-              <path d="M102 220c15-2 34 1 54 9" fill="none" stroke="rgba(240,245,236,0.28)" strokeWidth="5" strokeLinecap="round" />
-              <g fill="rgba(240,245,236,0.88)">
-                <circle cx="80" cy="66" r="4" />
-                <circle cx="110" cy="50" r="3" />
-                <circle cx="224" cy="176" r="4" />
-                <circle cx="256" cy="146" r="3" />
-                <circle cx="62" cy="172" r="2.5" />
-                <circle cx="286" cy="100" r="2.5" />
-              </g>
-              <g stroke="rgba(126,200,67,0.55)" strokeWidth="2" fill="none">
-                <path d="M78 66h18" />
-                <path d="M110 50h20" />
-                <path d="M224 176h18" />
-                <path d="M256 146h15" />
-                <path d="M52 172h18" />
-                <path d="M276 100h16" />
-              </g>
-              <circle cx="62" cy="216" r="14" fill="none" stroke="rgba(126,200,67,0.24)" strokeWidth="2" />
-              <circle cx="290" cy="214" r="10" fill="none" stroke="rgba(240,245,236,0.18)" strokeWidth="2" />
-            </svg>
-          </div>
-          <div className="not-found-mini-grid">
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
-        </aside>
+    className="not-found-nav-brand"onClick= {
+      (e)=> {
+        e.preventDefault(); navigate(authenticated ? dashboardRoute : '/');
+      }
+    }
 
-        <section className="not-found-card">
-          <div className="not-found-badge">Sugarcane Platform</div>
-          <div className="not-found-code">404</div>
-          <h1 className="not-found-title">Page Not Found</h1>
-          <p className="not-found-text">
-            The page you&apos;re looking for doesn&apos;t exist or may have been moved.
-          </p>
+    > <span className="not-found-nav-mark">✦</span> <span className="not-found-nav-text">CaneSetu</span> </NavLink> </header>);
 
-          <div className="not-found-path" title={location.pathname}>
-            <span>Requested path</span>
-            <strong>{location.pathname}</strong>
-          </div>
+  return (<div className="not-found-page"> <ErrorPageNavbar /> <div className="not-found-ambient not-found-ambient-left"aria-hidden="true"/> <div className="not-found-ambient not-found-ambient-right"aria-hidden="true"/> <div className="not-found-shell"> <aside className="not-found-illustration-card"aria-hidden="true"> <span className="not-found-float not-found-float-one"/> <span className="not-found-float not-found-float-two"/> <span className="not-found-float not-found-float-three"/> <span className="not-found-grid-lines"/> <div className="not-found-illustration-frame"> <svg viewBox="0 0 340 280"className="not-found-illustration"role="img"aria-label="Sugarcane platform illustration"> <defs> <linearGradient id="nfGlow"x1="0"y1="0"x2="1"y2="1"> <stop offset="0%"stopColor="rgba(126, 200, 67, 0.95)"/> <stop offset="100%"stopColor="rgba(126, 200, 67, 0.15)"/> </linearGradient> <linearGradient id="nfLeaf"x1="0"y1="0"x2="0"y2="1"> <stop offset="0%"stopColor="#a7e463"/> <stop offset="100%"stopColor="#4f8227"/> </linearGradient> </defs> <rect x="18"y="20"width="304"height="236"rx="24"fill="rgba(255,255,255,0.03)"stroke="rgba(255,255,255,0.08)"/> <circle cx="260"cy="58"r="36"fill="url(#nfGlow)"opacity="0.55"/> <circle cx="260"cy="58"r="18"fill="rgba(126,200,67,0.18)"stroke="rgba(126,200,67,0.5)"/> <path d="M250 58l7 7 14-16"fill="none"stroke="#f0f5ec"strokeWidth="4"strokeLinecap="round"strokeLinejoin="round"/> <path d="M106 206c16-36 38-60 63-93 20-27 36-50 53-72"fill="none"stroke="url(#nfLeaf)"strokeWidth="10"strokeLinecap="round"strokeLinejoin="round"/> <path d="M130 197c11-31 22-50 38-72"fill="none"stroke="#7ec843"strokeWidth="7"strokeLinecap="round"opacity="0.85"/> <path d="M164 124c-18-7-33-21-40-39 18 1 35 8 46 21"fill="none"stroke="#a7e463"strokeWidth="6"strokeLinecap="round"strokeLinejoin="round"/> <path d="M189 88c18-2 34 2 49 13-18 8-35 10-51 7"fill="none"stroke="#7ec843"strokeWidth="6"strokeLinecap="round"strokeLinejoin="round"/> <path d="M88 205c19-7 38-8 62-4"fill="none"stroke="rgba(126,200,67,0.55)"strokeWidth="7"strokeLinecap="round"/> <path d="M102 220c15-2 34 1 54 9"fill="none"stroke="rgba(240,245,236,0.28)"strokeWidth="5"strokeLinecap="round"/> <g fill="rgba(240,245,236,0.88)"> <circle cx="80"cy="66"r="4"/> <circle cx="110"cy="50"r="3"/> <circle cx="224"cy="176"r="4"/> <circle cx="256"cy="146"r="3"/> <circle cx="62"cy="172"r="2.5"/> <circle cx="286"cy="100"r="2.5"/> </g> <g stroke="rgba(126,200,67,0.55)"strokeWidth="2"fill="none"> <path d="M78 66h18"/> <path d="M110 50h20"/> <path d="M224 176h18"/> <path d="M256 146h15"/> <path d="M52 172h18"/> <path d="M276 100h16"/> </g> <circle cx="62"cy="216"r="14"fill="none"stroke="rgba(126,200,67,0.24)"strokeWidth="2"/> <circle cx="290"cy="214"r="10"fill="none"stroke="rgba(240,245,236,0.18)"strokeWidth="2"/> </svg> </div> <div className="not-found-mini-grid"> <span /> <span /> <span /> <span /> </div> </aside> <section className="not-found-card"> <div className="not-found-badge">Sugarcane Platform</div> <div className="not-found-code">404</div> <h1 className="not-found-title">Page Not Found</h1> <p className="not-found-text"> The page you&apos; re looking for doesn&apos; t exist or may have been moved. </p> <div className="not-found-path"title= {
+      location.pathname
+    }
 
-          <div className="not-found-actions">
-            <button
-              type="button"
-              className="not-found-button not-found-button-secondary"
-              onClick={() => navigate(authenticated ? -1 : '/')}
-            >
-              {secondaryActionLabel}
-            </button>
+    > <span>Requested path</span> <strong> {
+      location.pathname
+    }
 
-            <button
-              type="button"
-              className="not-found-button not-found-button-primary"
-              onClick={() => navigate(authenticated ? dashboardRoute : '/', { replace: true })}
-            >
-              {primaryActionLabel}
-            </button>
+    </strong> </div> <div className="not-found-actions"> <button type="button"
+    className="not-found-button not-found-button-secondary"
 
-            {!authenticated && (
-              <button
-                type="button"
-                className="not-found-button not-found-button-tertiary"
-                onClick={() => navigate('/login', { replace: true })}
-              >
-                Login
-              </button>
-            )}
-          </div>
+    onClick= {
+      ()=> navigate(authenticated ? -1 : '/')
+    }
 
-          <div className="not-found-footer-note">
-            {authenticated ? 'Your session is active, so we can take you back to your dashboard.' : 'You can return home or log in to continue.'}
-          </div>
-        </section>
-      </div>
-    </div>
+    > {
+      secondaryActionLabel
+    }
 
-  );
+    </button> <button type="button"
+    className="not-found-button not-found-button-primary"
 
-};
+    onClick= {
+      ()=> navigate(authenticated ? dashboardRoute : '/', {
+          replace: true
+        }
+
+      )
+    }
+
+    > {
+      primaryActionLabel
+    }
+
+    </button> {
+       !authenticated && (<button type="button"
+        className="not-found-button not-found-button-tertiary"
+
+        onClick= {
+          ()=> navigate('/login', {
+              replace: true
+            }
+
+          )
+        }
+
+        > Login </button>)
+    }
+
+    </div> <div className="not-found-footer-note"> {
+      authenticated ? 'Your session is active, so we can take you back to your dashboard.' : 'You can return home or log in to continue.'
+    }
+
+    </div> </section> </div> </div>);
+
+}
+
+;
 
 
 
 export default App;
-
