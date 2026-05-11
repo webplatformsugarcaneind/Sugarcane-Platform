@@ -148,6 +148,8 @@ notes.txt
 TODO.txt
 NOTES.md
 cmd.txt
+md/
+test/
 .gitignore
 # Local Netlify folder
 .netlify
