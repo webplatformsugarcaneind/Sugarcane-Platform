@@ -1,21 +1,119 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import FarmerContractsTab from '../components/FarmerContractsTab';
+import './FarmerDashboardPage.css';
+
+/**
+ * Premium SVG Icons
+ */
+const Icons = {
+  Sprout: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.974 0-5.749-.536-8.227-1.5" />
+    </svg>
+  ),
+  Clock: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    </svg>
+  ),
+  Handshake: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+    </svg>
+  ),
+  Market: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+    </svg>
+  ),
+  Chart: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+    </svg>
+  ),
+  List: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+    </svg>
+  ),
+  Bell: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+    </svg>
+  ),
+  Calendar: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+    </svg>
+  ),
+  Empty: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 9v.906a2.25 2.25 0 0 1-1.183 1.981l-6.478 3.488M2.25 9v.906a2.25 2.25 0 0 0 1.183 1.981l6.478 3.488m8.839 2.51-4.66-2.51m0 0-1.023-.55a2.25 2.25 0 0 0-2.134 0l-1.022.55m0 0-4.661 2.51m16.5 1.615a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V8.844a2.25 2.25 0 0 1 1.183-1.981l7.5-4.039a2.25 2.25 0 0 1 2.134 0l7.5 4.039a2.25 2.25 0 0 1 1.183 1.98V19.5Z" />
+    </svg>
+  ),
+  Alert: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" />
+    </svg>
+  )
+};
+
+/**
+ * Animated Vector Illustration for Hero section
+ */
+const HeroIllustration = () => (
+  <svg viewBox="0 0 400 300" fill="none" className="fr-hero-svg" xmlns="http://www.w3.org/2000/svg">
+    <path className="fr-svg-path" d="M50 250C100 250 150 150 200 150C250 150 300 200 350 100" stroke="url(#gradient-line)" strokeWidth="4" strokeLinecap="round" />
+    <circle cx="350" cy="100" r="8" fill="var(--green)" className="fr-svg-dot" />
+    <circle cx="200" cy="150" r="6" fill="var(--surface)" stroke="var(--blue)" strokeWidth="3" className="fr-svg-dot" style={{animationDelay: '0.5s'}} />
+    <defs>
+      <linearGradient id="gradient-line" x1="50" y1="250" x2="350" y2="100" gradientUnits="userSpaceOnUse">
+        <stop stopColor="var(--blue)" stopOpacity="0.2" />
+        <stop offset="0.5" stopColor="var(--green)" />
+        <stop offset="1" stopColor="var(--green)" />
+      </linearGradient>
+    </defs>
+    
+    <g className="fr-svg-card">
+      <rect x="70" y="80" width="80" height="120" rx="16" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+      <rect x="85" y="100" width="50" height="6" rx="3" fill="var(--green)" opacity="0.6" />
+      <rect x="85" y="120" width="30" height="6" rx="3" fill="var(--muted)" />
+      <rect x="85" y="140" width="40" height="6" rx="3" fill="var(--muted)" />
+      <circle cx="110" cy="170" r="16" fill="var(--blue)" opacity="0.2" />
+      <path d="M104 170L108 174L116 166" stroke="var(--blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </g>
+    
+    <g className="fr-svg-card" style={{animationDelay: '0.4s'}}>
+      <rect x="230" y="180" width="100" height="70" rx="16" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+      <circle cx="280" cy="215" r="20" fill="none" stroke="var(--amber)" opacity="0.4" strokeWidth="4" />
+      <path d="M280 195 A 20 20 0 0 1 300 215" fill="none" stroke="var(--amber)" strokeWidth="4" strokeLinecap="round" />
+    </g>
+  </svg>
+);
 
 /**
  * FarmerDashboardPage Component
- * 
- * Main dashboard page for farmers with tabbed interface showing:
- * - Overview (announcements and quick stats)
- * - Job Contracts (sent requests and status)
+ * Refined and evolved based on the original structure.
  */
 const FarmerDashboardPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (err) {
+        console.error('Error parsing user data:', err);
+      }
+    }
+
     const fetchNotifications = async () => {
       try {
         setLoading(true);
@@ -34,7 +132,6 @@ const FarmerDashboardPage = () => {
           }
         });
 
-        // The response shape is { success, data: { notifications: [...] } } or { data: [...] }
         setNotifications(response.data?.data?.notifications || response.data?.data || []);
       } catch (err) {
         console.error('Error fetching notifications:', err);
@@ -60,12 +157,12 @@ const FarmerDashboardPage = () => {
     });
   };
 
-  const getPriorityColor = (priority) => {
+  const getPriorityClass = (priority) => {
     switch (priority?.toLowerCase()) {
-      case 'high': return '#ff4444';
-      case 'medium': return '#ff9800';
-      case 'low': return '#4caf50';
-      default: return '#2196f3';
+      case 'high': return 'high';
+      case 'medium': return 'medium';
+      case 'low': return 'low';
+      default: return 'medium';
     }
   };
 
@@ -84,107 +181,141 @@ const FarmerDashboardPage = () => {
   };
 
   return (
-    <div className="farmer-dashboard-page">
-      <div className="dashboard-header">
-        <h1>🌾 Farmer Dashboard</h1>
-        <p className="dashboard-subtitle">Welcome back! Manage your farm activities and job requests.</p>
+    <div className="fr-page">
+      {/* Background ambient glows integrated organically into layout */}
+      <div className="fr-ambient-glow fr-ambient-left"></div>
+      <div className="fr-ambient-glow fr-ambient-right"></div>
+
+      {/* Page Header (Hero Banner) */}
+      <div className="fr-header">
+        <div className="fr-header-inner">
+          <div className="fr-welcome">
+            <div className="fr-eyebrow">
+              <span className="fr-eyebrow-icon"><Icons.Sprout /></span>
+              Farmer Dashboard
+            </div>
+            <h1 className="fr-title">
+              Welcome back, <em>{user?.name || 'Farmer'}</em>
+            </h1>
+            <p className="fr-sub">
+              Manage your farm activities, track job requests, and stay updated with the latest alerts.
+            </p>
+          </div>
+          <div className="fr-hero-illustration-wrapper">
+            <HeroIllustration />
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Stats Row */}
+      <div className="fr-stats-row">
+        <div className="fr-stat-card">
+          <div className="fr-stat-top">
+            <span className="fr-stat-label">Pending Requests</span>
+            <span className="fr-stat-icon-svg amber"><Icons.Clock /></span>
+          </div>
+          <div className="fr-stat-bottom">
+            <div className="fr-stat-val amber">3</div>
+            <div className="fr-stat-trend">New requests</div>
+          </div>
+        </div>
+        <div className="fr-stat-card">
+          <div className="fr-stat-top">
+            <span className="fr-stat-label">Active Contracts</span>
+            <span className="fr-stat-icon-svg green"><Icons.Handshake /></span>
+          </div>
+          <div className="fr-stat-bottom">
+            <div className="fr-stat-val green">1</div>
+            <div className="fr-stat-trend">In progress</div>
+          </div>
+        </div>
+        <div className="fr-stat-card">
+          <div className="fr-stat-top">
+            <span className="fr-stat-label">Market Listings</span>
+            <span className="fr-stat-icon-svg blue"><Icons.Market /></span>
+          </div>
+          <div className="fr-stat-bottom">
+            <div className="fr-stat-val blue">2</div>
+            <div className="fr-stat-trend">Active posts</div>
+          </div>
+        </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="tab-navigation">
+      <div className="fr-tabs">
         <button 
-          className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+          className={`fr-tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
         >
-          📊 Overview
+          <span className="fr-tab-icon"><Icons.Chart /></span>
+          Overview
         </button>
         <button 
-          className={`tab-button ${activeTab === 'contracts' ? 'active' : ''}`}
+          className={`fr-tab-btn ${activeTab === 'contracts' ? 'active' : ''}`}
           onClick={() => setActiveTab('contracts')}
         >
-          📋 Job Contracts
+          <span className="fr-tab-icon"><Icons.List /></span>
+          Job Contracts
         </button>
       </div>
 
       {/* Tab Content */}
-      <div className="tab-content">
+      <div className="fr-content">
         {activeTab === 'overview' && (
-          <div className="overview-tab">
-            {/* Announcements Section */}
-            <div className="announcements-section">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h2 className="section-title" style={{ marginBottom: 0 }}>🔔 Latest Notifications</h2>
-                {notifications.length > 0 && (
-                  <button
-                    onClick={clearNotifications}
-                    title="Clear all notifications"
-                    style={{
-                      background: 'none',
-                      border: '1px solid #dee2e6',
-                      borderRadius: '50%',
-                      width: '36px',
-                      height: '36px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      fontSize: '1.2rem',
-                      color: '#636e72',
-                      transition: 'all 0.2s ease'
-                    }}
-                    onMouseEnter={(e) => { e.target.style.backgroundColor = '#e74c3c'; e.target.style.color = 'white'; e.target.style.borderColor = '#e74c3c'; }}
-                    onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; e.target.style.color = '#636e72'; e.target.style.borderColor = '#dee2e6'; }}
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-              
-              {loading ? (
-                <div className="loading-container">
-                  <div className="loading-spinner"></div>
-                  <p>Loading notifications...</p>
-                </div>
-              ) : error ? (
-                <div className="error-container">
-                  <p className="error-message">⚠️ {error}</p>
-                  <button 
-                    onClick={() => window.location.reload()} 
-                    className="retry-button"
-                  >
-                    Retry
-                  </button>
-                </div>
-              ) : notifications.length === 0 ? (
-                <div className="empty-state">
-                  <p className="empty-message">No notifications available at the moment.</p>
-                </div>
-              ) : (
-                <div className="announcements-grid">
-                  {notifications.map((notif) => (
-                    <div key={notif._id} className="announcement-card" style={{ borderLeft: notif.isRead ? 'none' : '4px solid #4caf50' }}>
-                      <div className="announcement-header">
-                        <h3 className="announcement-title">{notif.type?.replace(/_/g, ' ')}</h3>
-                        <span 
-                          className="priority-badge"
-                          style={{ backgroundColor: getPriorityColor(notif.priority) }}
-                        >
-                          {notif.priority || 'Normal'}
-                        </span>
-                      </div>
-                      
-                      <p className="announcement-content">{notif.message}</p>
-                      
-                      <div className="announcement-footer">
-                        <span className="announcement-date">
-                          📅 {formatDate(notif.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+          <div className="fr-section">
+            <div className="fr-section-header">
+              <h2 className="fr-section-title">
+                <span className="fr-title-icon"><Icons.Bell /></span>
+                Recent Notifications
+              </h2>
+              {notifications.length > 0 && (
+                <button onClick={clearNotifications} className="fr-clear-btn">
+                  Clear All
+                </button>
               )}
             </div>
+            
+            {loading ? (
+              <div className="fr-loading">
+                <div className="fr-spinner"></div>
+                <p>Loading alerts...</p>
+              </div>
+            ) : error ? (
+              <div className="fr-empty">
+                <div className="fr-empty-icon fr-error"><Icons.Alert /></div>
+                <p className="fr-error-text">{error}</p>
+                <button 
+                  onClick={() => window.location.reload()} 
+                  className="fr-retry-btn"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : notifications.length === 0 ? (
+              <div className="fr-empty">
+                <div className="fr-empty-icon"><Icons.Empty /></div>
+                <p>No new notifications at the moment.</p>
+              </div>
+            ) : (
+              <div className="fr-notif-grid">
+                {notifications.map((notif) => (
+                  <div key={notif._id} className="fr-notif-card">
+                    {!notif.isRead && <div className="fr-notif-unread" />}
+                    <div className="fr-notif-header">
+                      <span className="fr-notif-type">{notif.type?.replace(/_/g, ' ')}</span>
+                      <span className={`fr-priority ${getPriorityClass(notif.priority)}`}>
+                        {notif.priority || 'Normal'}
+                      </span>
+                    </div>
+                    <p className="fr-notif-msg">{notif.message}</p>
+                    <div className="fr-notif-footer">
+                      <span className="fr-footer-icon"><Icons.Calendar /></span>
+                      {formatDate(notif.createdAt)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -192,231 +323,6 @@ const FarmerDashboardPage = () => {
           <FarmerContractsTab />
         )}
       </div>
-
-      <style jsx>{`
-        .farmer-dashboard-page {
-          padding: 2rem;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .dashboard-header {
-          text-align: center;
-          margin-bottom: 2rem;
-        }
-
-        .dashboard-header h1 {
-          color: #2c5530;
-          font-size: 2.5rem;
-          margin-bottom: 0.5rem;
-        }
-
-        .dashboard-subtitle {
-          color: #666;
-          font-size: 1.1rem;
-        }
-
-        .tab-navigation {
-          display: flex;
-          justify-content: center;
-          margin-bottom: 2rem;
-          border-bottom: 2px solid #e9ecef;
-        }
-
-        .tab-button {
-          background: none;
-          border: none;
-          padding: 1rem 2rem;
-          font-size: 1.1rem;
-          font-weight: 600;
-          
-          color: #6c757d;
-          border-bottom: 3px solid transparent;
-          transition: all 0.3s ease;
-        }
-
-        .tab-button:hover {
-          color: #2c5530;
-          background: #f8f9fa;
-        }
-
-        .tab-button.active {
-          color: #2c5530;
-          border-bottom-color: #4caf50;
-        }
-
-        .tab-content {
-          min-height: 400px;
-        }
-
-        .overview-tab {
-          width: 100%;
-        }
-
-        .announcements-section {
-          background: #fff;
-          border-radius: 12px;
-          padding: 2rem;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .section-title {
-          color: #2c5530;
-          font-size: 1.5rem;
-          margin-bottom: 1.5rem;
-          border-bottom: 2px solid #4caf50;
-          padding-bottom: 0.5rem;
-        }
-
-        .loading-container {
-          text-align: center;
-          padding: 3rem;
-        }
-
-        .loading-spinner {
-          width: 40px;
-          height: 40px;
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #4caf50;
-          border-radius: 50%;
-          margin: 0 auto 1rem;
-        }
-
-        .error-container {
-          text-align: center;
-          padding: 2rem;
-          background: #fff5f5;
-          border: 1px solid #fed7d7;
-          border-radius: 8px;
-        }
-
-        .error-message {
-          color: #c53030;
-          margin-bottom: 1rem;
-        }
-
-        .retry-button {
-          background: #4caf50;
-          color: white;
-          border: none;
-          padding: 0.5rem 1rem;
-          border-radius: 4px;
-          
-        }
-
-        .empty-state {
-          text-align: center;
-          padding: 3rem;
-          color: #666;
-        }
-
-        .announcements-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-          gap: 1.5rem;
-        }
-
-        .announcement-card {
-          background: #f8f9fa;
-          border: 1px solid #e9ecef;
-          border-radius: 8px;
-          padding: 1.5rem;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .announcement-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .announcement-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 1rem;
-        }
-
-        .announcement-title {
-          color: #2c5530;
-          font-size: 1.2rem;
-          margin: 0;
-          flex: 1;
-          margin-right: 1rem;
-        }
-
-        .priority-badge {
-          color: white;
-          font-size: 0.8rem;
-          padding: 0.25rem 0.5rem;
-          border-radius: 12px;
-          font-weight: 500;
-          text-transform: uppercase;
-        }
-
-        .announcement-content {
-          color: #555;
-          line-height: 1.6;
-          margin-bottom: 1rem;
-        }
-
-        .announcement-footer {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 0.9rem;
-          color: #777;
-          border-top: 1px solid #e9ecef;
-          padding-top: 1rem;
-        }
-
-        .announcement-date,
-        .announcement-expires {
-          display: flex;
-          align-items: center;
-          gap: 0.25rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-          .farmer-dashboard-page {
-            padding: 1rem;
-          }
-
-          .dashboard-header h1 {
-            font-size: 2rem;
-          }
-
-          .tab-navigation {
-            justify-content: stretch;
-          }
-
-          .tab-button {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-          }
-
-          .announcements-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .announcement-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-          }
-
-          .announcement-title {
-            margin-right: 0;
-          }
-
-          .announcement-footer {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-          }
-        }
-      `}</style>
     </div>
   );
 };
