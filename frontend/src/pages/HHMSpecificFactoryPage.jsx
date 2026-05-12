@@ -1,1170 +1,315 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import ContractRequestModal from '../components/ContractRequestModal';
-
-axios.defaults.baseURL = 'http://localhost:5000';
-
-/**
- * HHMSpecificFactoryPage Component
- * 
- * Displays detailed information for a specific factory.
- * HHM users can view full factory details, contact information, and partnership opportunities.
- */
-const HHMSpecificFactoryPage = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  
-  const [factory, setFactory] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
-  const [isAssociated, setIsAssociated] = useState(false);
-  const [checkingAssociation, setCheckingAssociation] = useState(false);
-  const [removingAssociation, setRemovingAssociation] = useState(false);
-  const [sendingInvitation, setSendingInvitation] = useState(false);
-  const [showContractModal, setShowContractModal] = useState(false);
-
-  const fetchFactoryDetails = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      console.log('🔄 Fetching factory details for ID:', id);
-      
-      const response = await axios.get(`/api/public/factories/${id}`);
-      
-      console.log('✅ Factory details response:', response.data);
-      
-      if (response.data.success) {
-        const factoryData = response.data.data?.factory || response.data.factory || null;
-        setFactory(factoryData);
-        console.log('✅ Factory loaded:', factoryData);
-      } else {
-        throw new Error('Failed to fetch factory details');
-      }
-    } catch (err) {
-      console.error('❌ Error fetching factory details:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to load factory details');
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
-
-  const checkAssociation = useCallback(async () => {
-    try {
-      setCheckingAssociation(true);
-      const token = localStorage.getItem('token');
-      
-      const response = await axios.get('/api/hhm/associated-factories', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      const associatedFactories = response.data.data || [];
-      const isAlreadyAssociated = associatedFactories.some(associatedFactory => associatedFactory._id === id);
-      setIsAssociated(isAlreadyAssociated);
-    } catch (err) {
-      console.error('Error checking association:', err);
-      // If we can't check association, default to showing invite option
-      setIsAssociated(false);
-    } finally {
-      setCheckingAssociation(false);
-    }
-  }, [id]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await fetchFactoryDetails();
-      await checkAssociation();
-    };
-    fetchData();
-  }, [fetchFactoryDetails, checkAssociation]);
-
-  // Debug: Log factory object whenever it changes
-  useEffect(() => {
-    if (factory) {
-      console.log('🔍 Factory object updated:', factory);
-      console.log('🔍 Factory _id:', factory._id);
-      console.log('🔍 Factory id:', factory.id);
-      console.log('🔍 Factory ID type:', typeof (factory._id || factory.id));
-      console.log('🔍 Factory name:', factory.name);
-    }
-  }, [factory]);
-
-  const handleSendInvitation = async () => {
-    if (!factory) return;
-    
-    // Prevent multiple concurrent requests
-    if (sendingInvitation) return;
-
-    try {
-      setSendingInvitation(true);
-      const token = localStorage.getItem('token');
-
-      // Debug: Log the factory object and what we're sending
-      console.log('🔍 Factory object:', factory);
-      console.log('🔍 Factory ID being sent:', factory._id || factory.id);
-      
-      const requestData = {
-        factoryId: factory._id || factory.id,
-        personalMessage: `I would like to establish a partnership with ${factory.name}`,
-        invitationReason: 'Seeking collaboration opportunities for worker placement and operations'
-      };
-      
-      console.log('🔍 Request data being sent:', requestData);
-
-      await axios.post('/api/hhm/invite-factory', requestData, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      alert('✅ Invitation sent successfully!');
-    } catch (err) {
-      console.error('Error sending invitation:', err);
-      console.error('Error response data:', err.response?.data);
-      
-      let errorMessage = 'Failed to send invitation';
-      
-      if (err.response?.data?.message) {
-        const backendMessage = err.response.data.message;
-        if (backendMessage.includes('pending invitation')) {
-          errorMessage = 'You have already sent a pending invitation to this factory. Please wait for their response.';
-        } else if (backendMessage.includes('already associated')) {
-          errorMessage = 'This factory is already associated with your profile.';
-        } else if (backendMessage.includes('invitation conflict')) {
-          errorMessage = 'There seems to be a pending invitation for this factory. Please try again in a few moments.';
-        } else {
-          errorMessage = backendMessage;
-        }
-      } else if (err.response?.status) {
-        errorMessage = `Failed to send invitation (Error ${err.response.status})`;
-      }
-      
-      alert(`❌ ${errorMessage}`);
-    } finally {
-      setSendingInvitation(false);
-    }
-  };
-
-  const handleRemoveAssociation = async () => {
-    if (!factory) return;
-    
-    // Show confirmation dialog
-    const confirmRemoval = window.confirm(
-      `Are you sure you want to end the contract/association with ${factory.name}? This action cannot be undone.`
-    );
-    
-    if (!confirmRemoval) return;
-    
-    try {
-      setRemovingAssociation(true);
-      const token = localStorage.getItem('token');
-
-      await axios.delete(`/api/hhm/associated-factories/${factory._id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      alert('✅ Association removed successfully!');
-      setIsAssociated(false); // Update the state to show invite option again
-    } catch (err) {
-      console.error('Error removing association:', err);
-      console.error('Error response data:', err.response?.data);
-      
-      let errorMessage = 'Failed to remove association';
-      
-      if (err.response?.data?.message) {
-        errorMessage = err.response.data.message;
-      } else if (err.response?.status) {
-        errorMessage = `Failed to remove association (Error ${err.response.status})`;
-      }
-      
-      alert(`❌ ${errorMessage}`);
-    } finally {
-      setRemovingAssociation(false);
-    }
-  };
-
-  const handleBack = () => {
-    navigate('/hhm/factories');
-  };
-
-  const getCapacityColor = (capacity) => {
-    if (!capacity) return '#666';
-    const numericCapacity = Number(capacity);
-    if (numericCapacity < 1000) return '#ff9800';
-    if (numericCapacity < 5000) return '#2196f3';
-    return '#4caf50';
-  };
-
-  const getCapacityLabel = (capacity) => {
-    if (!capacity) return 'Unknown Scale';
-    const numericCapacity = Number(capacity);
-    if (numericCapacity < 1000) return 'Small Scale';
-    if (numericCapacity < 5000) return 'Medium Scale';
-    return 'Large Scale';
-  };
-
-  if (loading) {
-    return (
-      <div style={styles.container}>
-        <div style={styles.loadingSection}>
-          <div style={styles.spinner}></div>
-          <p>Loading factory details...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={styles.container}>
-        <div style={styles.errorSection}>
-          <div style={styles.errorIcon}>⚠️</div>
-          <h3 style={styles.errorTitle}>Error Loading Factory</h3>
-          <p style={styles.errorMessage}>{error}</p>
-          <div style={styles.errorActions}>
-            <button style={styles.retryButton} onClick={fetchFactoryDetails}>
-              🔄 Retry
-            </button>
-            <button style={styles.backButton} onClick={handleBack}>
-              ← Back to Directory
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!factory) {
-    return (
-      <div style={styles.container}>
-        <div style={styles.errorSection}>
-          <div style={styles.errorIcon}>🏭</div>
-          <h3 style={styles.errorTitle}>Factory Not Found</h3>
-          <p style={styles.errorMessage}>
-            The factory you're looking for doesn't exist or has been removed.
-          </p>
-          <button style={styles.backButton} onClick={handleBack}>
-            ← Back to Directory
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div style={styles.container}>
-      {/* Header with Back Button */}
-      <div style={styles.header}>
-        <button style={styles.backButton} onClick={handleBack}>
-          ← Back to Directory
-        </button>
-      </div>
-
-      {/* Factory Header Card */}
-      <div style={styles.headerCard}>
-        <div style={styles.factoryHeader}>
-          <div style={styles.factoryAvatar}>
-            <span style={styles.avatarIcon}>🏭</span>
-          </div>
-          <div style={styles.factoryMainInfo}>
-            <h1 style={styles.factoryName}>{factory.name || 'Factory Name'}</h1>
-            <p style={styles.factoryLocation}>📍 {factory.location || 'Location not specified'}</p>
-            <div style={styles.factoryBadges}>
-              <span style={{
-                ...styles.badge,
-                backgroundColor: getCapacityColor(factory.capacity)
-              }}>
-                {getCapacityLabel(factory.capacity)}
-              </span>
-              {factory.specialization && (
-                <span style={styles.specializationBadge}>
-                  ⚙️ {factory.specialization}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div style={styles.quickStats}>
-          <div style={styles.statCard}>
-            <div style={styles.statIcon}>⚡</div>
-            <div style={styles.statContent}>
-              <div style={styles.statLabel}>Processing Capacity</div>
-              <div style={styles.statValue}>{factory.capacity || 'N/A'}</div>
-            </div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={styles.statIcon}>📅</div>
-            <div style={styles.statContent}>
-              <div style={styles.statLabel}>Experience</div>
-              <div style={styles.statValue}>{factory.experience || 'N/A'}</div>
-            </div>
-          </div>
-          <div style={styles.statCard}>
-            <div style={styles.statIcon}>👥</div>
-            <div style={styles.statContent}>
-              <div style={styles.statLabel}>Associated HHMs</div>
-              <div style={styles.statValue}>{factory.hhmCount || 0}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div style={styles.tabsContainer}>
-        <button
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'overview' ? styles.activeTab : {})
-          }}
-          onClick={() => setActiveTab('overview')}
-        >
-          📋 Overview
-        </button>
-        <button
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'contact' ? styles.activeTab : {})
-          }}
-          onClick={() => setActiveTab('contact')}
-        >
-          📞 Contact Information
-        </button>
-        <button
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'operations' ? styles.activeTab : {})
-          }}
-          onClick={() => setActiveTab('operations')}
-        >
-          ⚙️ Operations
-        </button>
-        <button
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'partnership' ? styles.activeTab : {})
-          }}
-          onClick={() => setActiveTab('partnership')}
-        >
-          🤝 Partnership
-        </button>
-      </div>
-
-      {/* Tab Content */}
-      <div style={styles.tabContent}>
-        {/* Overview Tab */}
-        {activeTab === 'overview' && (
-          <div style={styles.tabPanel}>
-            <div style={styles.section}>
-              <h2 style={styles.sectionTitle}>About This Factory</h2>
-              <div style={styles.descriptionBox}>
-                <p style={styles.description}>
-                  {factory.description || 'Modern sugar processing facility committed to quality and efficiency.'}
-                </p>
-              </div>
-            </div>
-
-            <div style={styles.section}>
-              <h2 style={styles.sectionTitle}>Key Information</h2>
-              <div style={styles.infoGrid}>
-                <div style={styles.infoItem}>
-                  <span style={styles.infoLabel}>Factory Name:</span>
-                  <span style={styles.infoValue}>{factory.name}</span>
-                </div>
-                <div style={styles.infoItem}>
-                  <span style={styles.infoLabel}>Location:</span>
-                  <span style={styles.infoValue}>{factory.location}</span>
-                </div>
-                <div style={styles.infoItem}>
-                  <span style={styles.infoLabel}>Capacity:</span>
-                  <span style={styles.infoValue}>{factory.capacity}</span>
-                </div>
-                <div style={styles.infoItem}>
-                  <span style={styles.infoLabel}>Specialization:</span>
-                  <span style={styles.infoValue}>{factory.specialization || 'N/A'}</span>
-                </div>
-                <div style={styles.infoItem}>
-                  <span style={styles.infoLabel}>Experience:</span>
-                  <span style={styles.infoValue}>{factory.experience}</span>
-                </div>
-                <div style={styles.infoItem}>
-                  <span style={styles.infoLabel}>Status:</span>
-                  <span style={{
-                    ...styles.infoValue,
-                    color: factory.isActive ? '#27ae60' : '#e74c3c',
-                    fontWeight: 'bold'
-                  }}>
-                    {factory.isActive ? '✅ Active' : '❌ Inactive'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Contact Information Tab */}
-        {activeTab === 'contact' && (
-          <div style={styles.tabPanel}>
-            <div style={styles.section}>
-              <h2 style={styles.sectionTitle}>Contact Details</h2>
-              <div style={styles.contactGrid}>
-                {factory.contactInfo?.email && (
-                  <div style={styles.contactCard}>
-                    <div style={styles.contactIcon}>📧</div>
-                    <div style={styles.contactContent}>
-                      <div style={styles.contactLabel}>Email</div>
-                      <a href={`mailto:${factory.contactInfo.email}`} style={styles.contactLink}>
-                        {factory.contactInfo.email}
-                      </a>
-                    </div>
-                  </div>
-                )}
-                
-                {factory.contactInfo?.phone && (
-                  <div style={styles.contactCard}>
-                    <div style={styles.contactIcon}>📱</div>
-                    <div style={styles.contactContent}>
-                      <div style={styles.contactLabel}>Phone</div>
-                      <a href={`tel:${factory.contactInfo.phone}`} style={styles.contactLink}>
-                        {factory.contactInfo.phone}
-                      </a>
-                    </div>
-                  </div>
-                )}
-                
-                {factory.contactInfo?.website && (
-                  <div style={styles.contactCard}>
-                    <div style={styles.contactIcon}>🌐</div>
-                    <div style={styles.contactContent}>
-                      <div style={styles.contactLabel}>Website</div>
-                      <a 
-                        href={factory.contactInfo.website.startsWith('http') 
-                          ? factory.contactInfo.website 
-                          : `https://${factory.contactInfo.website}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={styles.contactLink}
-                      >
-                        Visit Website →
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                {factory.contactInfo?.fax && (
-                  <div style={styles.contactCard}>
-                    <div style={styles.contactIcon}>📠</div>
-                    <div style={styles.contactContent}>
-                      <div style={styles.contactLabel}>Fax</div>
-                      <span style={styles.contactValue}>{factory.contactInfo.fax}</span>
-                    </div>
-                  </div>
-                )}
-
-                {factory.contactInfo?.tollfree && (
-                  <div style={styles.contactCard}>
-                    <div style={styles.contactIcon}>☎️</div>
-                    <div style={styles.contactContent}>
-                      <div style={styles.contactLabel}>Toll Free</div>
-                      <a href={`tel:${factory.contactInfo.tollfree}`} style={styles.contactLink}>
-                        {factory.contactInfo.tollfree}
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                {factory.contactInfo?.landline && (
-                  <div style={styles.contactCard}>
-                    <div style={styles.contactIcon}>📞</div>
-                    <div style={styles.contactContent}>
-                      <div style={styles.contactLabel}>Landline</div>
-                      <a href={`tel:${factory.contactInfo.landline}`} style={styles.contactLink}>
-                        {factory.contactInfo.landline}
-                      </a>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Operations Tab */}
-        {activeTab === 'operations' && (
-          <div style={styles.tabPanel}>
-            <div style={styles.section}>
-              <h2 style={styles.sectionTitle}>⚙️ Operations</h2>
-              {factory.operatingSeason && (
-                <div style={styles.operatingSeasonCard}>
-                  <div style={styles.seasonIcon}>📅</div>
-                  <div style={styles.seasonInfo}>
-                    <div style={styles.seasonLabel}>Operating Season</div>
-                    <div style={styles.seasonValue}>{factory.operatingSeason}</div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div style={styles.section}>
-              <h2 style={styles.sectionTitle}>Operational Capacity</h2>
-              <div style={styles.capacityDetails}>
-                <div style={styles.capacityCard}>
-                  <div style={styles.capacityIcon}>⚡</div>
-                  <div style={styles.capacityInfo}>
-                    <div style={styles.capacityLabel}>Processing Capacity</div>
-                    <div style={styles.capacityValue}>{factory.capacity || 'Not specified'}</div>
-                    <div style={styles.capacityType}>{getCapacityLabel(factory.capacity)}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {factory.associatedHHMs && factory.associatedHHMs.length > 0 && (
-              <div style={styles.section}>
-                <h2 style={styles.sectionTitle}>Associated HHM Partners ({factory.associatedHHMs.length})</h2>
-                <div style={styles.hhmGrid}>
-                  {factory.associatedHHMs.map((hhm, index) => (
-                    <div key={index} style={styles.hhmCard}>
-                      <div style={styles.hhmAvatar}>👤</div>
-                      <div style={styles.hhmInfo}>
-                        <div style={styles.hhmName}>{hhm.name}</div>
-                        <div style={styles.hhmContact}>{hhm.email}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Partnership Tab */}
-        {activeTab === 'partnership' && (
-          <div style={styles.tabPanel}>
-            <div style={styles.section}>
-              <h2 style={styles.sectionTitle}>🤝 Partnership Opportunities</h2>
-              <div style={styles.partnershipContent}>
-                <p style={styles.partnershipIntro}>
-                  Connect with this factory to explore mutually beneficial partnership opportunities
-                  in workforce management, operations support, and agricultural development.
-                </p>
-
-                <div style={styles.opportunitiesGrid}>
-                  <div style={styles.opportunityCard}>
-                    <div style={styles.opportunityIcon}>👥</div>
-                    <h3 style={styles.opportunityTitle}>Worker Placement</h3>
-                    <p style={styles.opportunityDescription}>
-                      Provide skilled agricultural workers for harvesting seasons and processing operations.
-                    </p>
-                  </div>
-
-                  <div style={styles.opportunityCard}>
-                    <div style={styles.opportunityIcon}>⚙️</div>
-                    <h3 style={styles.opportunityTitle}>Maintenance Support</h3>
-                    <p style={styles.opportunityDescription}>
-                      Offer technical expertise and workforce for equipment maintenance and facility upkeep.
-                    </p>
-                  </div>
-
-                  <div style={styles.opportunityCard}>
-                    <div style={styles.opportunityIcon}>📊</div>
-                    <h3 style={styles.opportunityTitle}>Operations Coordination</h3>
-                    <p style={styles.opportunityDescription}>
-                      Collaborate on harvest scheduling, logistics coordination, and resource optimization.
-                    </p>
-                  </div>
-
-                  <div style={styles.opportunityCard}>
-                    <div style={styles.opportunityIcon}>🌱</div>
-                    <h3 style={styles.opportunityTitle}>Training Programs</h3>
-                    <p style={styles.opportunityDescription}>
-                      Joint training initiatives to enhance worker skills and operational efficiency.
-                    </p>
-                  </div>
-                </div>
-
-                <div style={styles.ctaSection}>
-                  <h3 style={styles.ctaTitle}>Ready to Start a Partnership?</h3>
-                  <p style={styles.ctaDescription}>
-                    Contact this factory directly using the information in the Contact tab to discuss
-                    partnership opportunities and explore collaboration possibilities.
-                  </p>
-                  <div style={styles.ctaButtons}>
-                    {isAssociated ? (
-                      <button 
-                        style={{
-                          ...styles.primaryButton,
-                          backgroundColor: '#dc3545',
-                          ':hover': { backgroundColor: '#c82333' }
-                        }}
-                        onClick={handleRemoveAssociation}
-                        disabled={removingAssociation || checkingAssociation}
-                      >
-                        {removingAssociation ? '🔄 Removing...' : '🚫 End Contract'}
-                      </button>
-                    ) : (
-                      <>
-                        <button 
-                          style={styles.primaryButton}
-                          onClick={handleSendInvitation}
-                          disabled={sendingInvitation || checkingAssociation}
-                        >
-                          {sendingInvitation ? '🔄 Sending...' : '📨 Send Partnership Invitation'}
-                        </button>
-                        <button 
-                          style={styles.contractButton}
-                          onClick={() => setShowContractModal(true)}
-                        >
-                          📋 Request Contract
-                        </button>
-                      </>
-                    )}
-                    <button 
-                      style={styles.secondaryButton}
-                      onClick={() => setActiveTab('contact')}
-                    >
-                      ï¿½ View Contact Information
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Contract Request Modal */}
-      <ContractRequestModal 
-        isOpen={showContractModal}
-        onClose={() => setShowContractModal(false)}
-        factoryInfo={factory}
-      />
-    </div>
-  );
-};
-
-// Styles
-const styles = {
-  container: {
-    padding: '2rem',
-    maxWidth: '1200px',
-    margin: '0 auto',
-    backgroundColor: '#f8f9fa',
-    minHeight: '100vh'
-  },
-  header: {
-    marginBottom: '1.5rem'
-  },
-  backButton: {
-    padding: '0.75rem 1.5rem',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '0.95rem',
-    fontWeight: '500',
-    transition: 'background-color 0.2s'
-  },
-  headerCard: {
-    backgroundColor: 'white',
-    borderRadius: '12px',
-    padding: '2rem',
-    marginBottom: '2rem',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
-  },
-  factoryHeader: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '1.5rem',
-    marginBottom: '2rem'
-  },
-  factoryAvatar: {
-    width: '80px',
-    height: '80px',
-    borderRadius: '12px',
-    background: 'linear-gradient(135deg, #2c5f2d 0%, #4a7c59 100%)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0
-  },
-  avatarIcon: {
-    fontSize: '3rem'
-  },
-  factoryMainInfo: {
-    flex: 1
-  },
-  factoryName: {
-    fontSize: '2rem',
-    fontWeight: 'bold',
-    color: '#2d3436',
-    margin: '0 0 0.5rem 0'
-  },
-  factoryLocation: {
-    fontSize: '1.1rem',
-    color: '#636e72',
-    margin: '0 0 1rem 0'
-  },
-  factoryBadges: {
-    display: 'flex',
-    gap: '0.75rem',
-    flexWrap: 'wrap'
-  },
-  badge: {
-    padding: '0.5rem 1rem',
-    borderRadius: '20px',
-    color: 'white',
-    fontSize: '0.9rem',
-    fontWeight: '600'
-  },
-  specializationBadge: {
-    padding: '0.5rem 1rem',
-    borderRadius: '20px',
-    backgroundColor: '#667eea',
-    color: 'white',
-    fontSize: '0.9rem',
-    fontWeight: '600'
-  },
-  quickStats: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '1.5rem'
-  },
-  statCard: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem',
-    padding: '1rem',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px'
-  },
-  statIcon: {
-    fontSize: '2rem'
-  },
-  statContent: {
-    flex: 1
-  },
-  statLabel: {
-    fontSize: '0.85rem',
-    color: '#636e72',
-    marginBottom: '0.25rem'
-  },
-  statValue: {
-    fontSize: '1.1rem',
-    fontWeight: 'bold',
-    color: '#2d3436'
-  },
-  tabsContainer: {
-    display: 'flex',
-    gap: '0.5rem',
-    marginBottom: '1.5rem',
-    borderBottom: '2px solid #e1e5e9',
-    backgroundColor: 'white',
-    borderRadius: '12px 12px 0 0',
-    padding: '1rem 1rem 0 1rem',
-    flexWrap: 'wrap'
-  },
-  tab: {
-    padding: '1rem 1.5rem',
-    border: 'none',
-    backgroundColor: 'transparent',
-    fontSize: '1rem',
-    borderBottom: '3px solid transparent',
-    transition: 'all 0.3s ease',
-    whiteSpace: 'nowrap',
-    color: '#636e72'
-  },
-  activeTab: {
-    borderBottom: '3px solid #2c5f2d',
-    color: '#2c5f2d',
-    fontWeight: 'bold'
-  },
-  tabContent: {
-    backgroundColor: 'white',
-    borderRadius: '0 0 12px 12px',
-    padding: '2rem',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-    minHeight: '400px'
-  },
-  tabPanel: {
-    animation: 'fadeIn 0.3s ease'
-  },
-  section: {
-    marginBottom: '2.5rem'
-  },
-  sectionTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
-    color: '#2d3436',
-    marginBottom: '1.5rem',
-    paddingBottom: '0.75rem',
-    borderBottom: '2px solid #e1e5e9'
-  },
-  descriptionBox: {
-    padding: '1.5rem',
-    backgroundColor: '#f8f9ff',
-    borderLeft: '4px solid #667eea',
-    borderRadius: '0 8px 8px 0'
-  },
-  description: {
-    fontSize: '1.05rem',
-    lineHeight: '1.7',
-    color: '#555',
-    margin: 0
-  },
-  infoGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-    gap: '1rem'
-  },
-  infoItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5rem',
-    padding: '1rem',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px'
-  },
-  infoLabel: {
-    fontSize: '0.85rem',
-    color: '#636e72',
-    fontWeight: '600'
-  },
-  infoValue: {
-    fontSize: '1rem',
-    color: '#2d3436',
-    fontWeight: '500'
-  },
-  contactGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-    gap: '1.5rem'
-  },
-  contactCard: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem',
-    padding: '1.5rem',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '12px',
-    border: '2px solid #e1e5e9',
-    transition: 'transform 0.2s, box-shadow 0.2s'
-  },
-  contactIcon: {
-    fontSize: '2rem'
-  },
-  contactContent: {
-    flex: 1
-  },
-  contactLabel: {
-    fontSize: '0.85rem',
-    color: '#636e72',
-    fontWeight: '600',
-    marginBottom: '0.5rem'
-  },
-  contactLink: {
-    color: '#2c5f2d',
-    textDecoration: 'none',
-    fontSize: '1rem',
-    fontWeight: '500',
-    transition: 'color 0.2s'
-  },
-  contactValue: {
-    color: '#2d3436',
-    fontSize: '1rem'
-  },
-  operatingHoursGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-    gap: '1rem'
-  },
-  operatingSeasonCard: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1.5rem',
-    padding: '2rem',
-    backgroundColor: '#e8f5e9',
-    borderRadius: '12px',
-    border: '2px solid #4caf50',
-    maxWidth: '400px'
-  },
-  seasonIcon: {
-    fontSize: '3rem'
-  },
-  seasonInfo: {
-    flex: 1
-  },
-  seasonLabel: {
-    fontSize: '0.85rem',
-    fontWeight: '600',
-    color: '#2e7d32',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-    marginBottom: '0.25rem'
-  },
-  seasonValue: {
-    fontSize: '1.5rem',
-    fontWeight: '700',
-    color: '#1b5e20'
-  },
-  operatingHourCard: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '1rem',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px'
-  },
-  dayLabel: {
-    fontSize: '0.95rem',
-    fontWeight: '600',
-    color: '#2d3436'
-  },
-  timeValue: {
-    fontSize: '0.95rem',
-    color: '#636e72'
-  },
-  noDataMessage: {
-    fontSize: '1rem',
-    color: '#636e72',
-    fontStyle: 'italic',
-    padding: '2rem',
-    textAlign: 'center',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px'
-  },
-  capacityDetails: {
-    display: 'flex',
-    justifyContent: 'center'
-  },
-  capacityCard: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1.5rem',
-    padding: '2rem',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '12px',
-    border: '2px solid #e1e5e9',
-    minWidth: '300px'
-  },
-  capacityIcon: {
-    fontSize: '3rem'
-  },
-  capacityInfo: {
-    flex: 1
-  },
-  capacityLabel: {
-    fontSize: '0.85rem',
-    color: '#636e72',
-    marginBottom: '0.5rem'
-  },
-  capacityValue: {
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
-    color: '#2d3436',
-    marginBottom: '0.5rem'
-  },
-  capacityType: {
-    fontSize: '0.9rem',
-    color: '#2c5f2d',
-    fontWeight: '600'
-  },
-  hhmGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-    gap: '1rem'
-  },
-  hhmCard: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '1rem',
-    padding: '1rem',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px',
-    border: '1px solid #e1e5e9'
-  },
-  hhmAvatar: {
-    width: '40px',
-    height: '40px',
-    borderRadius: '50%',
-    backgroundColor: '#2c5f2d',
-    color: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '1.2rem'
-  },
-  hhmInfo: {
-    flex: 1
-  },
-  hhmName: {
-    fontSize: '1rem',
-    fontWeight: '600',
-    color: '#2d3436',
-    marginBottom: '0.25rem'
-  },
-  hhmContact: {
-    fontSize: '0.85rem',
-    color: '#636e72'
-  },
-  partnershipContent: {
-    maxWidth: '900px',
-    margin: '0 auto'
-  },
-  partnershipIntro: {
-    fontSize: '1.1rem',
-    lineHeight: '1.7',
-    color: '#555',
-    marginBottom: '2rem',
-    padding: '1.5rem',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px'
-  },
-  opportunitiesGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-    gap: '1.5rem',
-    marginBottom: '3rem'
-  },
-  opportunityCard: {
-    padding: '1.5rem',
-    backgroundColor: 'white',
-    border: '2px solid #e1e5e9',
-    borderRadius: '12px',
-    textAlign: 'center',
-    transition: 'transform 0.2s, box-shadow 0.2s'
-  },
-  opportunityIcon: {
-    fontSize: '2.5rem',
-    marginBottom: '1rem'
-  },
-  opportunityTitle: {
-    fontSize: '1.1rem',
-    fontWeight: 'bold',
-    color: '#2d3436',
-    marginBottom: '0.75rem'
-  },
-  opportunityDescription: {
-    fontSize: '0.95rem',
-    color: '#636e72',
-    lineHeight: '1.5',
-    margin: 0
-  },
-  ctaSection: {
-    padding: '2rem',
-    backgroundColor: '#f0f8f0',
-    borderRadius: '12px',
-    textAlign: 'center'
-  },
-  ctaTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
-    color: '#2d3436',
-    marginBottom: '0.75rem'
-  },
-  ctaDescription: {
-    fontSize: '1rem',
-    color: '#636e72',
-    marginBottom: '1.5rem',
-    lineHeight: '1.6'
-  },
-  ctaButtons: {
-    display: 'flex',
-    gap: '1rem',
-    justifyContent: 'center',
-    flexWrap: 'wrap'
-  },
-  primaryButton: {
-    padding: '1rem 2rem',
-    backgroundColor: '#2c5f2d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '1rem',
-    fontWeight: '600',
-    transition: 'background-color 0.2s'
-  },
-  secondaryButton: {
-    padding: '1rem 2rem',
-    backgroundColor: 'white',
-    color: '#2c5f2d',
-    border: '2px solid #2c5f2d',
-    borderRadius: '8px',
-    fontSize: '1rem',
-    fontWeight: '600',
-    transition: 'all 0.2s'
-  },
-  contractButton: {
-    padding: '1rem 2rem',
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '1rem',
-    fontWeight: '600',
-    transition: 'background-color 0.2s',
-    marginLeft: '1rem'
-  },
-  loadingSection: {
-    textAlign: 'center',
-    padding: '4rem 2rem',
-    backgroundColor: 'white',
-    borderRadius: '12px',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
-  },
-  spinner: {
-    width: '50px',
-    height: '50px',
-    margin: '0 auto 1rem',
-    border: '4px solid #f3f3f3',
-    borderTop: '4px solid #2c5f2d',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite'
-  },
-  errorSection: {
-    textAlign: 'center',
-    padding: '4rem 2rem',
-    backgroundColor: 'white',
-    borderRadius: '12px',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
-  },
-  errorIcon: {
-    fontSize: '4rem',
-    marginBottom: '1rem'
-  },
-  errorTitle: {
-    fontSize: '1.5rem',
-    color: '#e74c3c',
-    margin: '0 0 1rem 0'
-  },
-  errorMessage: {
-    fontSize: '1rem',
-    color: '#636e72',
-    marginBottom: '1.5rem'
-  },
-  errorActions: {
-    display: 'flex',
-    gap: '1rem',
-    justifyContent: 'center',
-    flexWrap: 'wrap'
-  },
-  retryButton: {
-    padding: '0.875rem 2rem',
-    backgroundColor: '#3498db',
-    color: 'white',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '1rem',
-    fontWeight: '600',
-    transition: 'background-color 0.2s'
-  }
-};
-
-export default HHMSpecificFactoryPage;
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { motion, AnimatePresence } from 'framer-motion';
+import ContractRequestModal from '../components/ContractRequestModal';
+import './FarmerProfile.css';
+
+/**
+ * Premium SVG Icons Mapping
+ */
+const Icons = {
+  Factory: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" /></svg>),
+  Location: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>),
+  Capacity: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>),
+  Contract: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>),
+  Check: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>),
+};
+
+const HHMSpecificFactoryPage = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  
+  const [factory, setFactory] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isAssociated, setIsAssociated] = useState(false);
+  const [checkingAssociation, setCheckingAssociation] = useState(false);
+  const [removingAssociation, setRemovingAssociation] = useState(false);
+  const [sendingInvitation, setSendingInvitation] = useState(false);
+  const [showContractModal, setShowContractModal] = useState(false);
+
+  const fetchFactoryDetails = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axios.get(`/api/public/factories/${id}`);
+      if (response.data.success) {
+        setFactory(response.data.data?.factory || response.data.factory || null);
+      } else {
+        throw new Error('Failed to fetch factory details');
+      }
+    } catch (err) {
+      console.error('Error fetching factory details:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load factory details');
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  const checkAssociation = useCallback(async () => {
+    try {
+      setCheckingAssociation(true);
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/hhm/associated-factories', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const associatedFactories = response.data.data || [];
+      setIsAssociated(associatedFactories.some(associatedFactory => associatedFactory._id === id));
+    } catch (err) {
+      console.error('Error checking association:', err);
+      setIsAssociated(false);
+    } finally {
+      setCheckingAssociation(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchFactoryDetails();
+    checkAssociation();
+  }, [fetchFactoryDetails, checkAssociation]);
+
+  const handleSendInvitation = async () => {
+    if (!factory || sendingInvitation) return;
+    try {
+      setSendingInvitation(true);
+      const token = localStorage.getItem('token');
+      await axios.post('/api/hhm/invite-factory', {
+        factoryId: factory._id || factory.id,
+        personalMessage: `I would like to establish a partnership with ${factory.name}`,
+        invitationReason: 'Seeking collaboration opportunities for worker placement and operations'
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('✅ Invitation sent successfully!');
+    } catch (err) {
+      alert(`❌ ${err.response?.data?.message || 'Failed to send invitation'}`);
+    } finally {
+      setSendingInvitation(false);
+    }
+  };
+
+  const handleRemoveAssociation = async () => {
+    if (!factory || removingAssociation) return;
+    if (!window.confirm(`Are you sure you want to end the contract with ${factory.name}?`)) return;
+    try {
+      setRemovingAssociation(true);
+      const token = localStorage.getItem('token');
+      await axios.delete(`/api/hhm/associated-factories/${factory._id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('✅ Contract ended successfully!');
+      setIsAssociated(false);
+    } catch (err) {
+      alert(`❌ ${err.response?.data?.message || 'Failed to remove association'}`);
+    } finally {
+      setRemovingAssociation(false);
+    }
+  };
+
+  const getCapacityLabel = (capacity) => {
+    const num = Number(capacity);
+    if (!num) return 'Unknown Scale';
+    if (num < 1000) return 'Small Scale';
+    if (num < 5000) return 'Medium Scale';
+    return 'Large Scale';
+  };
+
+  if (loading) {
+    return (
+      <div className="farmer-profile-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div className="fp-spinner" style={{ borderTopColor: 'var(--green)' }}></div>
+        <div style={{ color: 'var(--white)', marginLeft: '1rem' }}>Syncing Industrial Node...</div>
+      </div>
+    );
+  }
+
+  if (error || !factory) {
+    return (
+      <div className="farmer-profile-page" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ color: '#ff6b6b', fontSize: '2.5rem', marginBottom: '1rem' }}>⚠️</div>
+        <h3 style={{ color: 'var(--white)', marginBottom: '1rem' }}>{error || 'Factory Profile Not Found'}</h3>
+        <button className="fp-save-btn" onClick={() => navigate('/hhm/associated-factories')}>← Back to Network</button>
+      </div>
+    );
+  }
+
+  const initials = factory.name ? factory.name.substring(0, 2).toUpperCase() : 'FA';
+
+  return (
+    <div className="farmer-profile-page">
+      <div className="fp-noise" />
+      <div className="fp-bg-glow" />
+
+      <div className="fp-layout-shell">
+        {/* Sidebar */}
+        <aside className="fp-sidebar">
+          <div className="fp-sidebar-profile">
+            <div className="fp-avatar-wrap">
+              <div className="fp-avatar">{initials}</div>
+              <div className="fp-avatar-ring"></div>
+            </div>
+            <div className="fp-user-name">{factory.name}</div>
+            <div className="fp-user-role">
+              <span className="fp-role-dot" style={{ background: factory.isActive ? 'var(--green)' : '#e74c3c' }}></span>
+              {factory.isActive ? 'Active' : 'Offline'} • {getCapacityLabel(factory.capacity)}
+            </div>
+          </div>
+
+          <div className="fp-stats-grid">
+            <div className="fp-stat-item">
+              <div className="fp-stat-val">{factory.capacity || '-'}</div>
+              <div className="fp-stat-lbl">Capacity TCD</div>
+            </div>
+            <div className="fp-stat-item">
+              <div className="fp-stat-val">{factory.experience || '-'}</div>
+              <div className="fp-stat-lbl">Years Op.</div>
+            </div>
+          </div>
+
+          <div className="fp-side-nav" style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button className="btn-base btn-primary" onClick={() => { if (factory.contactInfo?.email) window.location.href = `mailto:${factory.contactInfo.email}`; }} style={{ width: '100%' }}>
+                📧 Email Factory
+              </button>
+              {factory.contactInfo?.phone && (
+                <button className="btn-base btn-secondary" onClick={() => window.location.href = `tel:${factory.contactInfo.phone}`} style={{ width: '100%' }}>
+                  📱 Call Factory
+                </button>
+              )}
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <main className="fp-main">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="fp-page-header">
+            <div className="fp-header-left">
+              <div className="fp-eyebrow">Factory Profile View</div>
+              <h1 className="fp-title">{factory.name}'s <em className="fp-highlight">Profile</em></h1>
+              <p className="fp-subtitle">📍 {factory.location}</p>
+            </div>
+            <div className="fp-header-right">
+              <button className="btn-base btn-secondary" onClick={() => navigate('/hhm/associated-factories')}>← Back to Directory</button>
+            </div>
+          </motion.div>
+
+          {/* Technical Specifications */}
+          <section className="fp-card">
+            <div className="fp-card-header">
+              <div className="fp-card-icon">🏭</div>
+              <div className="fp-card-txt">
+                <h2 className="fp-card-title">Technical Specifications</h2>
+                <div className="fp-card-sub">Core industrial data and capabilities</div>
+              </div>
+            </div>
+            <div className="fp-card-body">
+              <div className="fp-form-grid">
+                <div className="fp-field full">
+                  <label>About This Factory</label>
+                  <textarea readOnly value={factory.description || 'No detailed description provided for this industrial node.'}></textarea>
+                </div>
+                <div className="fp-field">
+                  <label>Crushing Capacity</label>
+                  <input type="text" readOnly value={factory.capacity || 'Not specified'} />
+                </div>
+                <div className="fp-field">
+                  <label>Specialization</label>
+                  <input type="text" readOnly value={factory.specialization || 'General Sugar Processing'} />
+                </div>
+                <div className="fp-field">
+                  <label>Operating Season</label>
+                  <input type="text" readOnly value={factory.operatingSeason || 'Contact for schedule'} />
+                </div>
+                <div className="fp-field">
+                  <label>Current Status</label>
+                  <input type="text" readOnly value={factory.isActive ? '✅ Active / Online' : '❌ Inactive / Offline'} style={{ color: factory.isActive ? 'var(--green)' : '#ff6b6b' }} />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Operational Network */}
+          {factory.associatedHHMs?.length > 0 && (
+            <section className="fp-card">
+              <div className="fp-card-header">
+                <div className="fp-card-icon">👥</div>
+                <div className="fp-card-txt">
+                  <h2 className="fp-card-title">Operational Network</h2>
+                  <div className="fp-card-sub">Currently associated HHM partners</div>
+                </div>
+              </div>
+              <div className="fp-card-body">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                  {factory.associatedHHMs.map((hhm, index) => (
+                    <div key={index} style={{ padding: '16px', background: 'var(--surface)', borderRadius: '12px', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ width: '32px', height: '32px', background: 'var(--green-dim)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--white)', fontSize: '0.8rem' }}>👤</div>
+                      <div>
+                         <div style={{ fontSize: '0.9rem', fontWeight: '700' }}>{hhm.name}</div>
+                         <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>Partner Node</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Partnership Actions */}
+          <section className="fp-card" style={{ background: 'linear-gradient(135deg, rgba(126, 200, 67, 0.05) 0%, rgba(0, 0, 0, 0.2) 100%)' }}>
+            <div className="fp-card-header" style={{ borderBottom: 'none' }}>
+              <div className="fp-card-icon">🤝</div>
+              <div className="fp-card-txt">
+                <h2 className="fp-card-title">Partnership & Linkage</h2>
+                <div className="fp-card-sub">Manage your industrial collaboration with this unit</div>
+              </div>
+            </div>
+            <div className="fp-card-body" style={{ paddingTop: 0 }}>
+              <p style={{ color: 'var(--muted)', lineHeight: 1.6, marginBottom: '24px' }}>
+                Establish a secure operational link with this unit to begin collaboration, data exchange, and worker placement synchronization.
+              </p>
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                {isAssociated ? (
+                  <button 
+                    className="btn-base"
+                    onClick={handleRemoveAssociation}
+                    disabled={removingAssociation}
+                    style={{ background: 'rgba(255, 107, 107, 0.1)', color: '#ff6b6b', border: '1px solid rgba(255, 107, 107, 0.2)', flex: 1 }}
+                  >
+                    {removingAssociation ? 'Terminating...' : 'End Active Contract'}
+                  </button>
+                ) : (
+                  <>
+                    <button 
+                      className="btn-base btn-primary"
+                      onClick={handleSendInvitation}
+                      disabled={sendingInvitation}
+                      style={{ flex: 1 }}
+                    >
+                      {sendingInvitation ? 'Sending...' : 'Invite to Link'}
+                    </button>
+                    <button 
+                      className="btn-base btn-secondary"
+                      onClick={() => setShowContractModal(true)}
+                      style={{ flex: 1 }}
+                    >
+                      <Icons.Contract /> Request Contract
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <ContractRequestModal 
+        isOpen={showContractModal}
+        onClose={() => setShowContractModal(false)}
+        factoryInfo={factory}
+      />
+    </div>
+  );
+};
+
+export default HHMSpecificFactoryPage;

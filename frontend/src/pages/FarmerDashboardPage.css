@@ -236,6 +236,11 @@
   transition: transform 0.3s ease, background 0.3s ease;
 }
 
+.fr-stat-icon-svg svg {
+  width: 24px;
+  height: 24px;
+}
+
 .fr-stat-card:hover .fr-stat-icon-svg {
   transform: scale(1.1) rotate(5deg);
 }

@@ -657,8 +657,10 @@ function App() {
     }
 
     /> <Route path="associated-factories"element= {
-
       <SafeComponent name="HHMAssociatedFactoriesPage"> <HHMAssociatedFactoriesPage /> </SafeComponent>
+    }
+    /> <Route path="associated-factories/:id"element= {
+      <SafeComponent name="HHMSpecificFactoryPage"> <HHMSpecificFactoryPage /> </SafeComponent>
     }
 
     /> <Route path="performance"element= {
