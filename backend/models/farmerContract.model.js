@@ -61,7 +61,7 @@ const farmerContractSchema = new mongoose.Schema({
   farmLocation: { type: String, required: true },
   workType: { type: String, default: 'Sugarcane harvesting' },
   landArea: { type: Number, required: true },
-  workersRequired: { type: Number, required: true },
+  labourRequired: { type: Number, required: true },
   workTypeDetails: [{ 
     type: String, 
     enum: ['cutting', 'loading', 'transport'] 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-const LaborManagementPage = () => {
+const LabourManagementPage = () => {
   const [activeTab, setActiveTab] = useState('create-job');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -14,7 +14,7 @@ const LaborManagementPage = () => {
     startDate: '',
     endDate: '',
     wageOffered: '',
-    workerCount: '',
+    labourCount: '',
     requiredSkills: '',
     workType: '',
     workingHours: ''
@@ -25,15 +25,15 @@ const LaborManagementPage = () => {
   const [fieldErrors, setFieldErrors] = useState({});
   
   // Hire Labour tab state
-  const [workers, setWorkers] = useState([]);
-  const [filteredWorkers, setFilteredWorkers] = useState([]);
-  const [loadingWorkers, setLoadingWorkers] = useState(false);
-  const [workerSearchTerm, setWorkerSearchTerm] = useState('');
+  const [labours, setLabours] = useState([]);
+  const [filteredLabours, setFilteredLabours] = useState([]);
+  const [loadingLabours, setLoadingLabours] = useState(false);
+  const [labourSearchTerm, setLabourSearchTerm] = useState('');
   const [selectedSkillFilter, setSelectedSkillFilter] = useState('');
 
   // Invitation modal state
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [selectedWorker, setSelectedWorker] = useState(null);
+  const [selectedLabour, setSelectedLabour] = useState(null);
   const [mySchedules, setMySchedules] = useState([]);
   const [loadingSchedules, setLoadingSchedules] = useState(false);
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
@@ -47,41 +47,41 @@ const LaborManagementPage = () => {
     }
   }, [activeTab]);
 
-  // Fetch workers when Hire Labour tab is selected
+  // Fetch labours when Hire Labour tab is selected
   useEffect(() => {
     if (activeTab === 'hire-labour') {
-      fetchWorkers();
+      fetchLabours();
     }
   }, [activeTab]);
 
-  // Filter workers based on search and skill filter
-  const filterWorkers = useCallback(() => {
-    let filtered = [...workers];
+  // Filter labours based on search and skill filter
+  const filterLabours = useCallback(() => {
+    let filtered = [...labours];
 
     // Apply search filter (name, username, email)
-    if (workerSearchTerm) {
-      filtered = filtered.filter(worker =>
-        worker.name?.toLowerCase().includes(workerSearchTerm.toLowerCase()) ||
-        worker.username?.toLowerCase().includes(workerSearchTerm.toLowerCase()) ||
-        worker.email?.toLowerCase().includes(workerSearchTerm.toLowerCase())
+    if (labourSearchTerm) {
+      filtered = filtered.filter(labour =>
+        labour.name?.toLowerCase().includes(labourSearchTerm.toLowerCase()) ||
+        labour.username?.toLowerCase().includes(labourSearchTerm.toLowerCase()) ||
+        labour.email?.toLowerCase().includes(labourSearchTerm.toLowerCase())
       );
     }
 
     // Apply skill filter
     if (selectedSkillFilter) {
-      filtered = filtered.filter(worker =>
-        worker.skills?.some(skill => 
+      filtered = filtered.filter(labour =>
+        labour.skills?.some(skill => 
           skill.toLowerCase().includes(selectedSkillFilter.toLowerCase())
         )
       );
     }
 
-    setFilteredWorkers(filtered);
-  }, [workers, workerSearchTerm, selectedSkillFilter]);
+    setFilteredLabours(filtered);
+  }, [labours, labourSearchTerm, selectedSkillFilter]);
 
   useEffect(() => {
-    filterWorkers();
-  }, [filterWorkers]);
+    filterLabours();
+  }, [filterLabours]);
 
   const fetchApplications = async () => {
     try {
@@ -108,15 +108,15 @@ const LaborManagementPage = () => {
       
       const mappedApplications = applicationsData.map(app => ({
         _id: app._id,
-        workerId: {
-          _id: app.worker?.id || app.worker?._id,
-          name: app.worker?.name || 'Unknown Worker',
-          email: app.worker?.email || 'N/A',
-          phone: app.worker?.phone || 'N/A',
-          username: app.worker?.username || app.worker?.email?.split('@')[0] || 'N/A',
-          skills: app.worker?.skills || [],
-          availabilityStatus: app.worker?.availabilityStatus,
-          profileImage: app.worker?.profileImage
+        labourId: {
+          _id: app.labour?.id || app.labour?._id,
+          name: app.labour?.name || 'Unknown Labour',
+          email: app.labour?.email || 'N/A',
+          phone: app.labour?.phone || 'N/A',
+          username: app.labour?.username || app.labour?.email?.split('@')[0] || 'N/A',
+          skills: app.labour?.skills || [],
+          availabilityStatus: app.labour?.availabilityStatus,
+          profileImage: app.labour?.profileImage
         },
         scheduleId: {
           _id: app.schedule?.id || app.schedule?._id,
@@ -126,14 +126,14 @@ const LaborManagementPage = () => {
           startDate: app.schedule?.startDate,
           endDate: app.schedule?.endDate,
           wageOffered: app.schedule?.wageOffered,
-          workerCount: app.schedule?.workerCount,
+          labourCount: app.schedule?.labourCount,
           requiredSkills: app.schedule?.requiredSkills
         },
         status: app.status,
         appliedAt: app.appliedAt || app.createdAt,
         reviewedAt: app.reviewedAt,
         message: app.applicationMessage || app.message || 'No message provided',
-        skills: app.workerSkills || app.skills || [],
+        skills: app.labourSkills || app.skills || [],
         experience: app.experience || 'Not specified',
         expectedWage: app.expectedWage,
         availability: app.availability,
@@ -161,54 +161,51 @@ const LaborManagementPage = () => {
       setApplications([]);
     } finally {
       setLoadingApplications(false);
-    }
-  };
-
-  // Fetch available workers
-  const fetchWorkers = async () => {
+    }  // Fetch available labours
+  const fetchLabours = async () => {
     try {
-      setLoadingWorkers(true);
+      setLoadingLabours(true);
       const token = localStorage.getItem('token');
       
       if (!token) {
         throw new Error('No authentication token found');
       }
-
-      console.log('🔄 Fetching workers from backend...');
-      const response = await axios.get('/api/hhm/workers', {
+ 
+      console.log('🔄 Fetching labours from backend...');
+      const response = await axios.get('/api/hhm/labours', {
         headers: { Authorization: `Bearer ${token}` }
       });
-
+ 
       console.log('✅ Backend response:', response.data);
       
-      const backendWorkers = response.data.data || response.data || [];
-      console.log('👥 Workers from backend:', backendWorkers.length, 'workers');
+      const backendLabours = response.data.data || response.data || [];
+      console.log('👥 Labours from backend:', backendLabours.length, 'labours');
       
-      const mappedWorkers = backendWorkers.map(worker => ({
-        _id: worker.workerId || worker._id,
-        name: worker.name,
-        username: worker.email?.split('@')[0] || 'user',
-        email: worker.email,
-        phone: worker.phone,
-        skills: worker.skills || [],
+      const mappedLabours = backendLabours.map(labour => ({
+        _id: labour.labourId || labour._id,
+        name: labour.name,
+        username: labour.email?.split('@')[0] || 'user',
+        email: labour.email,
+        phone: labour.phone,
+        skills: labour.skills || [],
         workPreferences: 'Available for work',
         wageRate: 'Negotiable',
-        availability: worker.availabilityStatus === 'available' ? 'Available' : 'Busy',
-        workExperience: worker.experience ? `${worker.experience} years` : 'N/A',
+        availability: labour.availabilityStatus === 'available' ? 'Available' : 'Busy',
+        workExperience: labour.experience ? `${labour.experience} years` : 'N/A',
         rating: 4.0,
         completedJobs: 0,
-        location: worker.location,
-        bio: worker.bio,
-        profileImage: worker.profileImage,
-        isVerified: worker.isVerified
+        location: labour.location,
+        bio: labour.bio,
+        profileImage: labour.profileImage,
+        isVerified: labour.isVerified
       }));
       
-      console.log('✅ Mapped workers:', mappedWorkers);
-      setWorkers(mappedWorkers);
-      setFilteredWorkers(mappedWorkers);
+      console.log('✅ Mapped labours:', mappedLabours);
+      setLabours(mappedLabours);
+      setFilteredLabours(mappedLabours);
     } catch (err) {
-      console.error('❌ Error fetching workers:', err.response?.data || err.message);
-      const mockWorkers = [
+      console.error('❌ Error fetching labours:', err.response?.data || err.message);
+      const mockLabours = [
         {
           _id: '1',
           name: 'Amit Kumar',
@@ -224,10 +221,12 @@ const LaborManagementPage = () => {
           completedJobs: 45
         }
       ];
-      setWorkers(mockWorkers);
-      setFilteredWorkers(mockWorkers);
+      setLabours(mockLabours);
+      setFilteredLabours(mockLabours);
     } finally {
-      setLoadingWorkers(false);
+      setLoadingLabours(false);
+    }
+  };ers(false);
     }
   };
 
@@ -257,8 +256,8 @@ const LaborManagementPage = () => {
       );
 
       const successMsg = action === 'approved' 
-        ? '✅ Application approved successfully! The worker has been notified and added to your hired workers in your profile.'
-        : '❌ Application rejected. The worker has been notified.';
+        ? '✅ Application approved successfully! The labour has been notified and added to your hired labours in your profile.'
+        : '❌ Application rejected. The labour has been notified.';
       
       alert(successMsg);
 
@@ -288,7 +287,7 @@ const LaborManagementPage = () => {
   if (loading) {
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <div>Loading labor management data...</div>
+        <div>Loading labour management data...</div>
       </div>
     );
   }
@@ -309,10 +308,10 @@ const LaborManagementPage = () => {
     <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto', backgroundColor: '#f8f9fa' }}>
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#2c3e50', marginBottom: '0.5rem' }}>
-          Labor Management
+          Labour Management
         </h1>
         <p style={{ fontSize: '1.1rem', color: '#7f8c8d', marginBottom: '0' }}>
-          Manage job schedules, review applications, and connect with workers. <strong>Note:</strong> Your hired workers are now managed in your Profile page.
+          Manage job schedules, review applications, and connect with labours. <strong>Note:</strong> Your hired labours are now managed in your Profile page.
         </p>
       </div>
 
@@ -371,7 +370,7 @@ const LaborManagementPage = () => {
           <div>
             <h2 style={{ marginBottom: '1rem', color: '#2c3e50' }}>Create Job Schedule</h2>
             <p style={{ color: '#7f8c8d', marginBottom: '2rem' }}>
-              Create new job opportunities for workers
+              Create new job opportunities for labours
             </p>
             <div style={{ textAlign: 'center', padding: '3rem', color: '#7f8c8d' }}>
               <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📝</div>
@@ -384,7 +383,7 @@ const LaborManagementPage = () => {
           <div>
             <h2 style={{ marginBottom: '1rem', color: '#2c3e50' }}>Job Applications</h2>
             <p style={{ color: '#7f8c8d', marginBottom: '2rem' }}>
-              Review and manage worker applications. Approved workers will appear in your Profile page under "My Hired Workers".
+              Review and manage labour applications. Approved labours will appear in your Profile page under "My Hired Labours".
             </p>
             {loadingApplications ? (
               <div style={{ textAlign: 'center', padding: '3rem', color: '#7f8c8d' }}>
@@ -395,7 +394,7 @@ const LaborManagementPage = () => {
               <div style={{ textAlign: 'center', padding: '3rem', color: '#7f8c8d' }}>
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📄</div>
                 <p><strong>No applications received yet</strong></p>
-                <p>Applications from workers will appear here for review</p>
+                <p>Applications from labours will appear here for review</p>
               </div>
             ) : (
               <div>
@@ -409,12 +408,12 @@ const LaborManagementPage = () => {
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
-                        <h3 style={{ margin: '0 0 0.5rem 0', color: '#2c3e50' }}>{app.workerId.name}</h3>
+                        <h3 style={{ margin: '0 0 0.5rem 0', color: '#2c3e50' }}>{app.labourId.name}</h3>
                         <p style={{ margin: '0 0 0.25rem 0', color: '#7f8c8d' }}>
                           <strong>Job:</strong> {app.scheduleId.title}
                         </p>
                         <p style={{ margin: '0 0 0.25rem 0', color: '#7f8c8d' }}>
-                          <strong>Email:</strong> {app.workerId.email}
+                          <strong>Email:</strong> {app.labourId.email}
                         </p>
                         <p style={{ margin: '0 0 1rem 0' }}>
                           <strong>Status:</strong> <span style={{
@@ -468,40 +467,40 @@ const LaborManagementPage = () => {
 
         {activeTab === 'hire-labour' && (
           <div>
-            <h2 style={{ marginBottom: '1rem', color: '#2c3e50' }}>Available Workers</h2>
+            <h2 style={{ marginBottom: '1rem', color: '#2c3e50' }}>Available Labours</h2>
             <p style={{ color: '#7f8c8d', marginBottom: '2rem' }}>
-              Browse and invite workers for your jobs
+              Browse and invite labours for your jobs
             </p>
-            {loadingWorkers ? (
+            {loadingLabours ? (
               <div style={{ textAlign: 'center', padding: '3rem', color: '#7f8c8d' }}>
                 <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
-                <p>Loading workers...</p>
+                <p>Loading labours...</p>
               </div>
-            ) : filteredWorkers.length === 0 ? (
+            ) : filteredLabours.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '3rem', color: '#7f8c8d' }}>
                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>👷</div>
-                <p><strong>No workers available</strong></p>
-                <p>Available workers will appear here for invitation</p>
+                <p><strong>No labours available</strong></p>
+                <p>Available labours will appear here for invitation</p>
               </div>
             ) : (
               <div>
-                {filteredWorkers.map(worker => (
-                  <div key={worker._id} style={{
+                {filteredLabours.map(labour => (
+                  <div key={labour._id} style={{
                     border: '1px solid #ddd',
                     borderRadius: '8px',
                     padding: '1.5rem',
                     marginBottom: '1rem',
                     backgroundColor: '#fff'
                   }}>
-                    <h3 style={{ margin: '0 0 0.5rem 0', color: '#2c3e50' }}>{worker.name}</h3>
+                    <h3 style={{ margin: '0 0 0.5rem 0', color: '#2c3e50' }}>{labour.name}</h3>
                     <p style={{ margin: '0 0 0.25rem 0', color: '#7f8c8d' }}>
-                      <strong>Email:</strong> {worker.email}
+                      <strong>Email:</strong> {labour.email}
                     </p>
                     <p style={{ margin: '0 0 0.25rem 0', color: '#7f8c8d' }}>
-                      <strong>Availability:</strong> {worker.availability}
+                      <strong>Availability:</strong> {labour.availability}
                     </p>
                     <p style={{ margin: '0 0 1rem 0', color: '#7f8c8d' }}>
-                      <strong>Skills:</strong> {worker.skills.join(', ')}
+                      <strong>Skills:</strong> {labour.skills.join(', ')}
                     </p>
                     <button
                       style={{
@@ -526,4 +525,4 @@ const LaborManagementPage = () => {
   );
 };
 
-export default LaborManagementPage;
+export default LabourManagementPage;

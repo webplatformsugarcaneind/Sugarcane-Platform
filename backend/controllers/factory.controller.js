@@ -185,7 +185,7 @@ const createMaintenanceJob=async (req, res)=> {
 
     const {
       requiredSkills,
-      workerCount,
+      labourCount,
       wageOffered,
       startDate,
       title,
@@ -197,10 +197,10 @@ const createMaintenanceJob=async (req, res)=> {
     =req.body;
 
     // Validate required fields
-    if ( !requiredSkills || !workerCount || !wageOffered || !startDate) {
+    if ( !requiredSkills || !labourCount || !wageOffered || !startDate) {
       return res.status(400).json( {
           success: false,
-          message: 'Please provide requiredSkills, workerCount, wageOffered, and startDate'
+          message: 'Please provide requiredSkills, labourCount, wageOffered, and startDate'
         }
 
       );
@@ -210,7 +210,7 @@ const createMaintenanceJob=async (req, res)=> {
     const maintenanceJob=await Schedule.create( {
         hhmId: req.user._id, // Factory acts as HHM for maintenance jobs
         requiredSkills,
-        workerCount,
+        labourCount,
         wageOffered,
         startDate: new Date(startDate),
         endDate: endDate ? new Date(endDate) : undefined,
@@ -311,7 +311,7 @@ const getMaintenanceApplications=async (req, res)=> {
     const skip=(parseInt(page) - 1) * parseInt(limit);
 
     // Get applications with pagination
-    const applications=await Application.find(query).populate('workerId', 'name email phone').populate('scheduleId', 'title description requiredSkills wageOffered startDate endDate').sort( {
+    const applications=await Application.find(query).populate('labourId', 'name email phone').populate('scheduleId', 'title description requiredSkills wageOffered startDate endDate').sort( {
         createdAt: -1
       }
 
@@ -321,11 +321,7 @@ const getMaintenanceApplications=async (req, res)=> {
     const totalApplications=await Application.countDocuments(query);
     const totalPages=Math.ceil(totalApplications / parseInt(limit));
 
-    console.log(` Retrieved $ {
-        applications.length
-      }
-
-      maintenance applications for factory`);
+    console.log(` Retrieved ${applications.length} maintenance applications for factory`);
 
     res.status(200).json( {
 
@@ -432,36 +428,28 @@ const updateMaintenanceApplication=async (req, res)=> {
     application.reviewedAt=new Date();
     await application.save();
 
-    // If approved, increment the accepted workers count on the schedule
+    // If approved, increment the accepted labour count on the schedule
     if (status==='approved') {
 
       await Schedule.findByIdAndUpdate(application.scheduleId._id,
           {
           $inc: {
-            acceptedWorkersCount: 1
+            acceptedLabourCount: 1
           }
         }
 
       );
     }
 
-    // Populate the worker details for response
-    await application.populate('workerId', 'name email phone');
+    // Populate the labour details for response
+    await application.populate('labourId', 'name email phone');
 
-    console.log(` Application $ {
-        status
-      }
-
-      successfully:`, application._id);
+    console.log(` Application ${status} successfully:`, application._id);
 
     res.status(200).json( {
 
         success: true,
-        message: `Application $ {
-          status
-        }
-
-        successfully`,
+        message: `Application ${status} successfully`,
         data: application
       }
 

@@ -77,7 +77,7 @@ const UserProfilePage = () => {
     const activeJobs = user.activeJobs || "3";
     const priceRange = user.priceRange || "₹1500 - ₹2500 / acre";
     
-    const workerTypes = user.workerTypes && user.workerTypes.length > 0 ? user.workerTypes : ['Sugarcane Cutting', 'Loading', 'Transport'];
+    const labourTypes = user.labourTypes && user.labourTypes.length > 0 ? user.labourTypes : ['Sugarcane Cutting', 'Loading', 'Transport'];
     const workingAreas = user.workingAreas && user.workingAreas.length > 0 ? user.workingAreas : [user.location];
     const workHistory = user.workHistory && user.workHistory.length > 0 ? user.workHistory : [
         { cropType: 'Sugarcane', location: user.location || 'Local Area', status: 'Completed', date: new Date() }
@@ -182,7 +182,7 @@ const UserProfilePage = () => {
                                 </div>
                                 <div className="fp-card-body" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px' }}>
                                     <div>
-                                        <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Workers</div>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Total Labours</div>
                                         <div style={{ color: 'var(--white)', fontSize: '1.4rem', fontWeight: '600' }}>{user.teamSize || 'Not specified'}</div>
                                     </div>
                                     <div>
@@ -190,9 +190,9 @@ const UserProfilePage = () => {
                                         <div style={{ color: 'var(--amber)', fontSize: '1.4rem', fontWeight: '600' }}>{activeJobs} Active</div>
                                     </div>
                                     <div style={{ gridColumn: '1 / -1' }}>
-                                        <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Worker Types Available</div>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Labour Types Available</div>
                                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                            {workerTypes.map((type, idx) => (
+                                            {labourTypes.map((type, idx) => (
                                                 <span key={idx} style={{ background: 'rgba(126,200,67,0.1)', color: 'var(--green)', border: '1px solid rgba(126,200,67,0.2)', padding: '6px 12px', borderRadius: '8px', fontSize: '0.85rem' }}>✓ {type}</span>
                                             ))}
                                         </div>

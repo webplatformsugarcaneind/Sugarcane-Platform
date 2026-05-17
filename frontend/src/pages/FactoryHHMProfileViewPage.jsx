@@ -122,7 +122,7 @@ const FactoryHHMProfileViewPage = () => {
                             <div className="fp-form-grid">
                                 <div className="fp-field full-width">
                                     <div style={{ background: 'rgba(126,200,67,0.1)', padding: '1rem', borderRadius: '8px', color: '#f0f5ec', margin: '0.5rem 0' }}>✅ Available for factory partnerships</div>
-                                    <div style={{ background: '#101510', padding: '1rem', borderRadius: '8px', color: '#f0f5ec', margin: '0.5rem 0', border: '1px solid rgba(255,255,255,0.05)' }}>👥 Worker coordination and management services</div>
+                                    <div style={{ background: '#101510', padding: '1rem', borderRadius: '8px', color: '#f0f5ec', margin: '0.5rem 0', border: '1px solid rgba(255,255,255,0.05)' }}>👥 Labour coordination and management services</div>
                                     <div style={{ background: '#101510', padding: '1rem', borderRadius: '8px', color: '#f0f5ec', margin: '0.5rem 0', border: '1px solid rgba(255,255,255,0.05)' }}>🌾 Agricultural operations expertise</div>
                                 </div>
                             </div>

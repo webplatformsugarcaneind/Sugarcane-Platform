@@ -433,62 +433,144 @@ const InvitesAndApplicationsPage = () => {
               </div>
             ) : (
               <div style={styles.itemsList}>
-                {applications.map(application => (
-                  <div key={application._id} style={styles.itemCard}>
-                    <div style={styles.itemHeader}>
-                      <div style={styles.itemTitleSection}>
-                        <h3 style={styles.itemTitle}>{application.job?.title || 'Unknown Job'}</h3>
-                        <p style={styles.itemEmployer}>
-                          by {application.employer?.name || 'Unknown Employer'} ⭐ {application.employer?.rating || 0}
+                {applications.map((application, idx) => (
+                  <div key={application._id} style={{
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: 'linear-gradient(145deg, rgba(20, 24, 20, 0.9) 0%, rgba(10, 12, 10, 0.95) 100%)',
+                    borderRadius: '20px',
+                    padding: '24px',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    animation: `fadeInUp 0.5s ease-out ${idx * 0.1}s both`
+                  }}>
+                    {/* Status Glow */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '-60px',
+                      right: '-60px',
+                      width: '180px',
+                      height: '180px',
+                      background: application.status === 'approved' ? 'radial-gradient(circle, rgba(76, 175, 80, 0.15) 0%, transparent 70%)' :
+                                  application.status === 'pending' ? 'radial-gradient(circle, rgba(243, 156, 18, 0.15) 0%, transparent 70%)' :
+                                  'radial-gradient(circle, rgba(231, 76, 60, 0.15) 0%, transparent 70%)',
+                      borderRadius: '50%',
+                      pointerEvents: 'none'
+                    }} />
+
+                    {/* Header: Employer & Job Title */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                          <span style={{ fontSize: '1.2rem' }}>🏢</span>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--green, #7ec843)', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                            {application.employer?.name || 'Labour Node'}
+                          </span>
+                        </div>
+                        <h3 style={{ margin: 0, fontSize: '1.4rem', color: '#ffffff', fontWeight: '600' }}>
+                          {application.job?.title || 'New Job'}
+                        </h3>
+                      </div>
+                      <div style={{
+                        padding: '6px 14px',
+                        borderRadius: '100px',
+                        fontSize: '0.75rem',
+                        fontWeight: '800',
+                        letterSpacing: '0.5px',
+                        textTransform: 'uppercase',
+                        background: application.status === 'approved' ? 'rgba(76, 175, 80, 0.1)' : (application.status === 'pending' ? 'rgba(243, 156, 18, 0.1)' : 'rgba(231, 76, 60, 0.1)'),
+                        color: application.status === 'approved' ? '#4caf50' : (application.status === 'pending' ? '#f39c12' : '#e74c3c'),
+                        border: `1px solid ${application.status === 'approved' ? 'rgba(76, 175, 80, 0.2)' : (application.status === 'pending' ? 'rgba(243, 156, 18, 0.2)' : 'rgba(231, 76, 60, 0.2)')}`
+                      }}>
+                        {application.status}
+                      </div>
+                    </div>
+
+                    {/* Application Message */}
+                    <div style={{
+                      background: 'rgba(0, 0, 0, 0.3)',
+                      borderRadius: '12px',
+                      padding: '16px',
+                      border: '1px solid rgba(255, 255, 255, 0.04)',
+                      marginBottom: '20px',
+                      position: 'relative',
+                      zIndex: 1
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '1rem', color: 'rgba(255, 255, 255, 0.4)' }}>💬</span>
+                        <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>Your Pitch</span>
+                      </div>
+                      <p style={{ margin: 0, color: '#e0e0e0', fontSize: '0.95rem', lineHeight: '1.6', fontStyle: 'italic' }}>
+                        "{application.message || 'I am interested in this position and believe my skills and experience make me a good fit for this role.'}"
+                      </p>
+                    </div>
+
+                    {/* Job Details Grid */}
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
+                      gap: '16px', 
+                      marginBottom: '24px', 
+                      paddingBottom: '24px', 
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.06)' 
+                    }}>
+                      <div>
+                        <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>📍 Location</div>
+                        <div style={{ fontSize: '0.9rem', color: '#cccccc' }}>{application.job?.location || 'N/A'}</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>💰 Wage</div>
+                        <div style={{ fontSize: '0.9rem', color: '#4caf50', fontWeight: '600' }}>₹{application.job?.wageOffered || 0}/day</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>📅 Applied</div>
+                        <div style={{ fontSize: '0.9rem', color: '#cccccc' }}>{new Date(application.appliedAt).toLocaleDateString()}</div>
+                      </div>
+                    </div>
+
+                    {/* Employer Response (if any) */}
+                    {application.response && (
+                      <div style={{
+                        background: 'rgba(76, 175, 80, 0.05)',
+                        borderRadius: '12px',
+                        padding: '16px',
+                        border: '1px solid rgba(76, 175, 80, 0.1)',
+                        marginBottom: '24px'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                          <span style={{ fontSize: '1rem', color: '#4caf50' }}>✓</span>
+                          <span style={{ fontSize: '0.75rem', color: '#4caf50', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>Employer Response</span>
+                        </div>
+                        <p style={{ margin: 0, color: '#e0e0e0', fontSize: '0.95rem', lineHeight: '1.6' }}>
+                          {application.response}
                         </p>
                       </div>
-                      <div style={styles.itemStatus}>
-                        <span style={getStatusStyle(application.status)}>
-                          {application.status.toUpperCase()}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div style={styles.itemDetails}>
-                      <div style={styles.detailRow}>
-                        <span style={styles.detailLabel}>📍 Location:</span>
-                        <span>{application.job?.location || 'N/A'}</span>
-                      </div>
-                      <div style={styles.detailRow}>
-                        <span style={styles.detailLabel}>💰 Wage:</span>
-                        <span>₹{application.job?.wageOffered || 0}/day</span>
-                      </div>
-                      <div style={styles.detailRow}>
-                        <span style={styles.detailLabel}>📅 Applied:</span>
-                        <span>{new Date(application.appliedAt).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                    
-                    <div style={styles.itemMessage}>
-                      <strong>Your Application:</strong>
-                      <p style={styles.messageText}>{application.message || 'No message'}</p>
-                    </div>
-                    
-                    {application.response && (
-                      <div style={styles.responseMessage}>
-                        <strong>Employer Response:</strong>
-                        <p style={styles.responseText}>{application.response}</p>
-                      </div>
                     )}
-                    
-                    <div style={styles.itemActions}>
+
+                    {/* Action Buttons */}
+                    <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
                       {application.status === 'pending' && (
-                        <button style={styles.editButton}>
-                          Edit Application
+                        <button style={{
+                          flex: 1, padding: '10px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.1)', cursor: 'pointer', fontWeight: '600', transition: 'all 0.2s', fontSize: '0.9rem'
+                        }} onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }} onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}>
+                          Edit Pitch
                         </button>
                       )}
                       {application.status === 'approved' && (
-                        <button style={styles.contactButton}>
+                        <button style={{
+                          flex: 1, padding: '10px', borderRadius: '8px', background: 'rgba(76, 175, 80, 0.15)', color: '#4caf50', border: '1px solid rgba(76, 175, 80, 0.3)', cursor: 'pointer', fontWeight: '600', transition: 'all 0.2s', fontSize: '0.9rem'
+                        }} onMouseOver={e => { e.currentTarget.style.background = 'rgba(76, 175, 80, 0.25)'; }} onMouseOut={e => { e.currentTarget.style.background = 'rgba(76, 175, 80, 0.15)'; }}>
                           Contact Employer
                         </button>
                       )}
-                      <button style={styles.detailsButton}>
-                        View Job Details
+                      <button style={{
+                        flex: application.status === 'pending' || application.status === 'approved' ? 1 : 'none',
+                        width: application.status !== 'pending' && application.status !== 'approved' ? '100%' : 'auto',
+                        padding: '10px', borderRadius: '8px', background: 'transparent', color: 'var(--green, #7ec843)', border: '1px solid var(--green, #7ec843)', cursor: 'pointer', fontWeight: '600', transition: 'all 0.2s', fontSize: '0.9rem'
+                      }} onMouseOver={e => { e.currentTarget.style.background = 'rgba(126, 200, 67, 0.1)'; }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; }}>
+                        Job Details
                       </button>
                     </div>
                   </div>
@@ -529,7 +611,7 @@ const getStatusStyle = (status) => {
 const styles = {
   container: {
     padding: '2rem',
-    maxWidth: '1200px',
+    maxWidth: '1400px',
     margin: '0 auto'
   },
   header: {
@@ -607,9 +689,10 @@ const styles = {
     lineHeight: '1.6'
   },
   itemsList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1.5rem'
+    display: 'grid',
+    gridTemplateColumns: 'repeat(4, 1fr)',
+    gap: '1.5rem',
+    alignItems: 'start'
   },
   itemCard: {
     border: '1px solid #ecf0f1',

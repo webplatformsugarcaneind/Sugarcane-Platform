@@ -121,7 +121,7 @@ const profileSchema = new mongoose.Schema({
     },
     default: 'available'
   },
-  // Track which HHM currently employs this worker (for exclusivity)
+  // Track which HHM currently employs this labour (for exclusivity)
   currentEmployer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -249,7 +249,7 @@ profileSchema.methods.updateAvailabilityStatus = function(status) {
   throw new Error('Invalid availability status. Must be either available or unavailable');
 };
 
-// Instance method to hire worker (set exclusive employment)
+// Instance method to hire labour (set exclusive employment)
 profileSchema.methods.hireByHHM = function(hhmId) {
   this.currentEmployer = hhmId;
   this.employmentStartDate = new Date();
@@ -258,7 +258,7 @@ profileSchema.methods.hireByHHM = function(hhmId) {
   return this.save();
 };
 
-// Instance method to release worker (end exclusive employment)
+// Instance method to release labour (end exclusive employment)
 profileSchema.methods.releaseFromEmployment = function() {
   this.currentEmployer = null;
   this.employmentStartDate = null;
@@ -267,12 +267,12 @@ profileSchema.methods.releaseFromEmployment = function() {
   return this.save();
 };
 
-// Instance method to check if worker is employed by specific HHM
+// Instance method to check if labour is employed by specific HHM
 profileSchema.methods.isEmployedBy = function(hhmId) {
   return this.currentEmployer && this.currentEmployer.toString() === hhmId.toString();
 };
 
-// Virtual to check if worker is currently employed
+// Virtual to check if labour is currently employed
 profileSchema.virtual('isEmployed').get(function() {
   return this.currentEmployer !== null;
 });
@@ -339,15 +339,15 @@ profileSchema.statics.findBySkills = function(skillsArray) {
   }).populate('userId', 'name role');
 };
 
-// Static method to find available workers
-profileSchema.statics.findAvailableWorkers = function() {
+// Static method to find available labour
+profileSchema.statics.findAvailableLabour = function() {
   return this.find({ 
     availabilityStatus: 'available' 
   }).populate('userId', 'name role');
 };
 
-// Static method to find workers by skills and availability
-profileSchema.statics.findWorkersBySkillsAndAvailability = function(skillsArray, availabilityStatus = 'available') {
+// Static method to find labour by skills and availability
+profileSchema.statics.findLabourBySkillsAndAvailability = function(skillsArray, availabilityStatus = 'available') {
   return this.find({
     skills: { $in: skillsArray.map(skill => new RegExp(skill, 'i')) },
     availabilityStatus: availabilityStatus

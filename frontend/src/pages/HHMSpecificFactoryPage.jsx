@@ -77,7 +77,7 @@ const HHMSpecificFactoryPage = () => {
       await axios.post('/api/hhm/invite-factory', {
         factoryId: factory._id || factory.id,
         personalMessage: `I would like to establish a partnership with ${factory.name}`,
-        invitationReason: 'Seeking collaboration opportunities for worker placement and operations'
+        invitationReason: 'Seeking collaboration opportunities for labour placement and operations'
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -266,7 +266,7 @@ const HHMSpecificFactoryPage = () => {
             </div>
             <div className="fp-card-body" style={{ paddingTop: 0 }}>
               <p style={{ color: 'var(--muted)', lineHeight: 1.6, marginBottom: '24px' }}>
-                Establish a secure operational link with this unit to begin collaboration, data exchange, and worker placement synchronization.
+                Establish a secure operational link with this unit to begin collaboration, data exchange, and labour placement synchronization.
               </p>
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                 {isAssociated ? (

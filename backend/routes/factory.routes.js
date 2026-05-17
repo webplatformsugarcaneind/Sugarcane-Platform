@@ -92,7 +92,7 @@ router.get('/bills', getBills);
  * @route   POST /api/factory/maintenance-jobs
  * @desc    Post a new maintenance job (creates a schedule with jobType: 'maintenance')
  * @access  Private (Factory only)
- * @body    { requiredSkills, workerCount, wageOffered, startDate, title?, description?, location?, endDate? }
+ * @body    { requiredSkills, labourCount, wageOffered, startDate, title?, description?, location?, endDate? }
  */
 router.post('/maintenance-jobs', createMaintenanceJob);
 

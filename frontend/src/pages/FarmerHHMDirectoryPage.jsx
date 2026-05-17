@@ -51,7 +51,7 @@ const FarmerHHMDirectoryPage = () => {
     list.sort((a, b) => {
       if (sortFilter === 'name') return (a.name || '').localeCompare(b.name || '');
       if (sortFilter === 'location') return (a.location || '').localeCompare(b.location || '');
-      if (sortFilter === 'workers') return (parseInt(b.teamSize) || 0) - (parseInt(a.teamSize) || 0);
+      if (sortFilter === 'labour') return (parseInt(b.teamSize) || 0) - (parseInt(a.teamSize) || 0);
       return 0;
     });
     setFiltered(list);
@@ -61,14 +61,14 @@ const FarmerHHMDirectoryPage = () => {
 
   const getInitials = n => n ? n.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : '??';
 
-  // Handles both "12" and "30-35 workers" formats from DB
-  const parseWorkers = val => {
+  // Handles both "12" and "30-35 labours" formats from DB
+  const parseLabours = val => {
     if (!val) return null;
     const trimmed = val.trim();
     // If it's already a descriptive string (contains letters), use it directly
     if (/[a-zA-Z]/.test(trimmed)) return trimmed;
     const n = parseInt(trimmed);
-    return isNaN(n) ? null : `${n} workers`;
+    return isNaN(n) ? null : `${n} labours`;
   };
 
   const uniqueLocations = [...new Set(hhms.map(h => h.location).filter(Boolean))];
@@ -95,7 +95,7 @@ const FarmerHHMDirectoryPage = () => {
         <div className="hd-kpi g"><div className="hd-kpi-label">Total HHMs</div><div className="hd-kpi-val g">{kpiTotal}</div><div className="hd-kpi-sub">In directory</div></div>
         <div className="hd-kpi a"><div className="hd-kpi-label">Available</div><div className="hd-kpi-val a">{kpiAvailable}</div><div className="hd-kpi-sub">Ready to coordinate</div></div>
         <div className="hd-kpi b"><div className="hd-kpi-label">Locations</div><div className="hd-kpi-val b">{kpiLocations}</div><div className="hd-kpi-sub">Regions covered</div></div>
-        <div className="hd-kpi g"><div className="hd-kpi-label">With Team</div><div className="hd-kpi-val g">{kpiWithTeam}</div><div className="hd-kpi-sub">Has workers listed</div></div>
+        <div className="hd-kpi g"><div className="hd-kpi-label">With Team</div><div className="hd-kpi-val g">{kpiWithTeam}</div><div className="hd-kpi-sub">Has labours listed</div></div>
       </div>
 
       {/* TOOLBAR */}
@@ -113,7 +113,7 @@ const FarmerHHMDirectoryPage = () => {
         <select className="hd-filter" value={sortFilter} onChange={e => setSortFilter(e.target.value)}>
           <option value="name">Sort: Name A–Z</option>
           <option value="location">Sort: Location</option>
-          <option value="workers">Sort: Most Workers</option>
+          <option value="labour">Sort: Most Labours</option>
         </select>
         <div className="hd-view-toggle">
           <button className={`hd-vt-btn ${!isListView ? 'active' : ''}`} onClick={() => setIsListView(false)} title="Grid view">
@@ -140,7 +140,7 @@ const FarmerHHMDirectoryPage = () => {
           <div className="hd-empty"><div className="hd-empty-icon">👥</div><div className="hd-empty-title">No HHMs found</div><div className="hd-empty-sub">Try adjusting your search or filter criteria</div></div>
         ) : filtered.map((hhm, idx) => {
           const isAvailable = hhm.isActive !== false;
-          const workers = parseWorkers(hhm.teamSize);
+          const labours = parseLabours(hhm.teamSize);
           const experience = hhm.managementExperience;
 
           return (
@@ -167,7 +167,7 @@ const FarmerHHMDirectoryPage = () => {
                 </div>
               </div>
 
-              {/* ── INFO GRID: Location · Workers · Experience ── */}
+              {/* ── INFO GRID: Location · Labours · Experience ── */}
               <div className="hc-info-grid">
                 {hhm.location && (
                   <div className="hc-info-row">
@@ -176,11 +176,11 @@ const FarmerHHMDirectoryPage = () => {
                     <span className="hc-info-val">{hhm.location}</span>
                   </div>
                 )}
-                {workers !== null && (
+                {labours !== null && (
                   <div className="hc-info-row">
                     <span className="hc-info-icon">👷</span>
                     <span className="hc-info-label">Team Size</span>
-                    <span className="hc-info-val">{workers}</span>
+                    <span className="hc-info-val">{labours}</span>
                   </div>
                 )}
                 {experience && (
@@ -190,7 +190,7 @@ const FarmerHHMDirectoryPage = () => {
                     <span className="hc-info-val">{experience} yrs</span>
                   </div>
                 )}
-                {!hhm.location && workers === null && !experience && (
+                {!hhm.location && labours === null && !experience && (
                   <div className="hc-info-empty">Profile details not filled</div>
                 )}
               </div>

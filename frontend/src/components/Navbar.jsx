@@ -253,7 +253,7 @@ const Navbar = () => {
                         }
                         onClick={closeMenu}
                       >
-                        Labor Management
+                        Labour Management
                       </NavLink>
                     </li>
                     <li>
@@ -296,18 +296,18 @@ const Navbar = () => {
                   <>
                     <li>
                       <NavLink
-                        to="/worker/jobs"
+                        to="/labour/jobs"
                         className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
                         onClick={closeMenu}
                       >
-                        Dashbord
+                        Dashboard
                       </NavLink>
                     </li>
                     <li>
                       <NavLink
-                        to="/worker/applications"
+                        to="/labour/applications"
                         className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
@@ -318,7 +318,7 @@ const Navbar = () => {
                     </li>
                     <li>
                       <NavLink
-                        to="/worker/hhm-directory"
+                        to="/labour/hhm-directory"
                         className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
@@ -329,7 +329,7 @@ const Navbar = () => {
                     </li>
                     <li>
                       <NavLink
-                        to="/worker/profile"
+                        to="/labour/profile"
                         className={({ isActive }) =>
                           isActive ? 'nav-link active' : 'nav-link'
                         }
@@ -548,7 +548,7 @@ const Navbar = () => {
                     }
                     onClick={closeMenu}
                   >
-                    Labor Management
+                    Labour Management
                   </NavLink>
                   <NavLink
                     to="/hhm/factories"
@@ -574,16 +574,16 @@ const Navbar = () => {
               {userRole === 'Labour' && (
                 <>
                   <NavLink
-                    to="/worker/jobs"
+                    to="/labour/jobs"
                     className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
                     onClick={closeMenu}
                   >
-                    Available Jobs
+                    Dashboard
                   </NavLink>
                   <NavLink
-                    to="/worker/applications"
+                    to="/labour/applications"
                     className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
@@ -592,7 +592,7 @@ const Navbar = () => {
                     My Applications
                   </NavLink>
                   <NavLink
-                    to="/worker/hhm-directory"
+                    to="/labour/hhm-directory"
                     className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }
@@ -601,7 +601,7 @@ const Navbar = () => {
                     HHM Directory
                   </NavLink>
                   <NavLink
-                    to="/worker/profile"
+                    to="/labour/profile"
                     className={({ isActive }) =>
                       isActive ? 'mobile-nav-link active' : 'mobile-nav-link'
                     }

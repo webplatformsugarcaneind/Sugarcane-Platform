@@ -130,15 +130,7 @@ const HHMFarmerDirectoryPage = () => {
     });
   };
 
-  const kpiTotal = farmers.length;
-  const kpiActive = farmers.filter(f => f.isActive !== false).length;
-  const kpiLocations = uniqueLocations.length;
-  const kpiNew = farmers.filter(f => {
-    if (!f.createdAt) return false;
-    const date = new Date(f.createdAt);
-    const now = new Date();
-    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-  }).length;
+
 
   return (
     <div className="hd-page">
@@ -153,13 +145,7 @@ const HHMFarmerDirectoryPage = () => {
         </div>
       </div>
 
-      {/* KPI ROW */}
-      <div className="hd-kpi-row">
-        <div className="hd-kpi g"><div className="hd-kpi-label">Total Farmers</div><div className="hd-kpi-val g">{kpiTotal}</div><div className="hd-kpi-sub">Registered in network</div></div>
-        <div className="hd-kpi a"><div className="hd-kpi-label">Active Farmers</div><div className="hd-kpi-val a">{kpiActive}</div><div className="hd-kpi-sub">Currently available</div></div>
-        <div className="hd-kpi b"><div className="hd-kpi-label">Locations</div><div className="hd-kpi-val b">{kpiLocations}</div><div className="hd-kpi-sub">Coverage areas</div></div>
-        <div className="hd-kpi g"><div className="hd-kpi-label">New This Month</div><div className="hd-kpi-val g">{kpiNew}</div><div className="hd-kpi-sub">Recent joins</div></div>
-      </div>
+
 
       {/* TOOLBAR */}
       <div className="hd-toolbar">

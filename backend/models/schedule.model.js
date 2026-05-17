@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 /**
  * Schedule Schema
  * 
- * Represents work schedules created by HHMs (Hub Head Managers) for workers.
- * HHMs can post schedules with required skills, worker count, wages, and dates.
+ * Represents work schedules created by HHMs (Hub Head Managers) for labour.
+ * HHMs can post schedules with required skills, labour count, wages, and dates.
  */
 const scheduleSchema = new mongoose.Schema({
   hhmId: {
@@ -23,11 +23,11 @@ const scheduleSchema = new mongoose.Schema({
       message: 'At least one required skill must be specified'
     }
   },
-  workerCount: {
+  labourCount: {
     type: Number,
-    required: [true, 'Worker count is required'],
-    min: [1, 'Worker count must be at least 1'],
-    max: [1000, 'Worker count cannot exceed 1000']
+    required: [true, 'Labour count is required'],
+    min: [1, 'Labour count must be at least 1'],
+    max: [1000, 'Labour count cannot exceed 1000']
   },
   wageOffered: {
     type: Number,
@@ -88,7 +88,7 @@ const scheduleSchema = new mongoose.Schema({
     default: 0,
     min: 0
   },
-  acceptedWorkersCount: {
+  acceptedLabourCount: {
     type: Number,
     default: 0,
     min: 0
@@ -111,7 +111,7 @@ scheduleSchema.virtual('isExpired').get(function() {
 
 // Virtual for checking if schedule is full
 scheduleSchema.virtual('isFull').get(function() {
-  return this.acceptedWorkersCount >= this.workerCount;
+  return this.acceptedLabourCount >= this.labourCount;
 });
 
 // Pre-save middleware to auto-close expired schedules
@@ -140,11 +140,11 @@ scheduleSchema.statics.findBySkills = function(skills) {
   }).populate('hhmId', 'name email phone');
 };
 
-// Instance method to check if worker can apply
-scheduleSchema.methods.canWorkerApply = function() {
+// Instance method to check if labour can apply
+scheduleSchema.methods.canLabourApply = function() {
   return this.status === 'open' && 
          this.startDate >= new Date() && 
-         this.acceptedWorkersCount < this.workerCount;
+         this.acceptedLabourCount < this.labourCount;
 };
 
 // Instance method to increment applications count
@@ -153,10 +153,10 @@ scheduleSchema.methods.incrementApplications = function() {
   return this.save();
 };
 
-// Instance method to increment accepted workers count
-scheduleSchema.methods.incrementAcceptedWorkers = function() {
-  this.acceptedWorkersCount += 1;
-  if (this.acceptedWorkersCount >= this.workerCount) {
+// Instance method to increment accepted labour count
+scheduleSchema.methods.incrementAcceptedLabour = function() {
+  this.acceptedLabourCount += 1;
+  if (this.acceptedLabourCount >= this.labourCount) {
     this.status = 'closed';
   }
   return this.save();

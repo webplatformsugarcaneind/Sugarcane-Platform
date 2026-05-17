@@ -3,14 +3,14 @@ const mongoose = require('mongoose');
 /**
  * Application Schema
  * 
- * Represents job applications submitted by workers to HHM schedules.
- * Workers can apply to open schedules, and HHMs can approve or reject applications.
+ * Represents job applications submitted by labour to HHM schedules.
+ * Labour can apply to open schedules, and HHMs can approve or reject applications.
  */
 const applicationSchema = new mongoose.Schema({
-  workerId: {
+  labourId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: [true, 'Worker ID is required'],
+    required: [true, 'Labour ID is required'],
     index: true
   },
   scheduleId: {
@@ -40,13 +40,13 @@ const applicationSchema = new mongoose.Schema({
     trim: true,
     maxlength: [500, 'Application message cannot exceed 500 characters']
   },
-  workerSkills: {
+  labourSkills: {
     type: [String],
     validate: {
       validator: function(skills) {
         return skills && skills.length > 0;
       },
-      message: 'Worker must specify at least one skill'
+      message: 'Labour must specify at least one skill'
     }
   },
   experience: {
@@ -78,7 +78,7 @@ const applicationSchema = new mongoose.Schema({
 });
 
 // Compound indexes for better query performance
-applicationSchema.index({ workerId: 1, scheduleId: 1 }, { unique: true }); // Prevent duplicate applications
+applicationSchema.index({ labourId: 1, scheduleId: 1 }, { unique: true }); // Prevent duplicate applications
 applicationSchema.index({ hhmId: 1, status: 1 });
 applicationSchema.index({ scheduleId: 1, status: 1 });
 applicationSchema.index({ status: 1, createdAt: -1 });
@@ -102,9 +102,9 @@ applicationSchema.pre('save', function(next) {
   next();
 });
 
-// Static method to find applications by worker
-applicationSchema.statics.findByWorker = function(workerId, status = null) {
-  const query = { workerId };
+// Static method to find applications by labour
+applicationSchema.statics.findByLabour = function(labourId, status = null) {
+  const query = { labourId };
   if (status) query.status = status;
   
   return this.find(query)
@@ -119,8 +119,8 @@ applicationSchema.statics.findByHHM = function(hhmId, status = null) {
   if (status) query.status = status;
   
   return this.find(query)
-    .populate('workerId', 'name email phone skills')
-    .populate('scheduleId', 'title startDate workerCount')
+    .populate('labourId', 'name email phone skills')
+    .populate('scheduleId', 'title startDate labourCount')
     .sort({ createdAt: -1 });
 };
 
@@ -130,7 +130,7 @@ applicationSchema.statics.findBySchedule = function(scheduleId, status = null) {
   if (status) query.status = status;
   
   return this.find(query)
-    .populate('workerId', 'name email phone skills experience')
+    .populate('labourId', 'name email phone skills experience')
     .sort({ createdAt: -1 });
 };
 
@@ -142,7 +142,7 @@ applicationSchema.statics.findOldPendingApplications = function(days = 7) {
   return this.find({
     status: 'pending',
     createdAt: { $lt: cutoffDate }
-  }).populate('workerId scheduleId hhmId');
+  }).populate('labourId scheduleId hhmId');
 };
 
 // Instance method to approve application
@@ -161,14 +161,14 @@ applicationSchema.methods.reject = function(reviewNotes = '') {
   return this.save();
 };
 
-// Instance method to check if worker skills match schedule requirements
+// Instance method to check if labour skills match schedule requirements
 applicationSchema.methods.checkSkillsMatch = async function() {
   await this.populate('scheduleId');
-  if (!this.scheduleId || !this.workerSkills) return false;
+  if (!this.scheduleId || !this.labourSkills) return false;
   
   const requiredSkills = this.scheduleId.requiredSkills || [];
   return requiredSkills.some(skill => 
-    this.workerSkills.map(s => s.toLowerCase()).includes(skill.toLowerCase())
+    this.labourSkills.map(s => s.toLowerCase()).includes(skill.toLowerCase())
   );
 };
 
@@ -186,16 +186,16 @@ applicationSchema.post('save', async function(doc) {
     }
   }
   
-  // Update accepted workers count if approved
+  // Update accepted labour count if approved
   if (doc.isModified('status') && doc.status === 'approved') {
     try {
       const Schedule = mongoose.model('Schedule');
       const schedule = await Schedule.findById(doc.scheduleId);
       if (schedule) {
-        await schedule.incrementAcceptedWorkers();
+        await schedule.incrementAcceptedLabour();
       }
     } catch (error) {
-      console.error('Error updating accepted workers count:', error);
+      console.error('Error updating accepted labour count:', error);
     }
   }
 });

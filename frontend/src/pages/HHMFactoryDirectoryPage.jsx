@@ -107,7 +107,7 @@ const HHMFactoryDirectoryPage = () => {
       const response = await axios.post('/api/hhm/invite-factory', {
         factoryId: factoryId,
         personalMessage: invitationMessage || `I would like to establish a partnership with ${selectedFactory.name}`,
-        invitationReason: 'Seeking collaboration opportunities for worker placement and operations'
+        invitationReason: 'Seeking collaboration opportunities for labour placement and operations'
       }, { headers: { Authorization: `Bearer ${token}` } });
       
       if (response.data.success) {
@@ -140,7 +140,7 @@ const HHMFactoryDirectoryPage = () => {
           <div>
             <div className="ph-eyebrow">HHM View</div>
             <h1 className="fd-title">Factory <em>Directory</em></h1>
-            <p className="fd-sub">Connect with processing facilities for strategic partnerships and worker placement opportunities.</p>
+            <p className="fd-sub">Connect with processing facilities for strategic partnerships and labour placement opportunities.</p>
           </div>
         </div>
       </div>
@@ -294,7 +294,7 @@ const HHMFactoryDirectoryPage = () => {
                   <label>Message (Optional)</label>
                   <textarea 
                     rows="4" 
-                    placeholder="Describe why you want to partner (worker placement, etc.)"
+                    placeholder="Describe why you want to partner (labour placement, etc.)"
                     value={invitationMessage}
                     onChange={(e) => setInvitationMessage(e.target.value)}
                   ></textarea>

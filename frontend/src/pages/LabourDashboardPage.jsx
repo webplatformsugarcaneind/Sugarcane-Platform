@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const WorkerDashboardPage = () => {
+const LabourDashboardPage = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,7 +20,7 @@ const WorkerDashboardPage = () => {
         throw new Error('No authentication token found');
       }
 
-      const response = await axios.get('/api/worker/jobs', {
+      const response = await axios.get('/api/labour/jobs', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -32,10 +32,11 @@ const WorkerDashboardPage = () => {
         {
           _id: '1',
           title: 'Sugarcane Harvesting - Premium Farm',
-          description: 'Looking for experienced workers for sugarcane harvesting. Must have own tools and transportation.',
+          description: 'Looking for experienced labours for sugarcane harvesting. Must have own tools and transportation.',
           location: 'Punjab, India',
           wageOffered: 900,
-          workerCount: 15,
+          labourCount: 15,
+          labourCount: 15,
           startDate: '2025-10-15',
           endDate: '2025-10-30',
           workType: 'harvesting',
@@ -53,7 +54,8 @@ const WorkerDashboardPage = () => {
           description: 'Prepare fields for organic crop planting. Experience with soil management preferred.',
           location: 'Haryana, India',
           wageOffered: 750,
-          workerCount: 8,
+          labourCount: 8,
+          labourCount: 8,
           startDate: '2025-10-12',
           endDate: '2025-10-25',
           workType: 'preparation',
@@ -71,7 +73,8 @@ const WorkerDashboardPage = () => {
           description: 'Install and setup drip irrigation systems. Technical knowledge required.',
           location: 'Gujarat, India',
           wageOffered: 1200,
-          workerCount: 5,
+          labourCount: 5,
+          labourCount: 5,
           startDate: '2025-10-18',
           endDate: '2025-11-02',
           workType: 'irrigation',
@@ -110,13 +113,13 @@ const WorkerDashboardPage = () => {
       const applicationData = {
         scheduleId: jobId,  // Backend expects 'scheduleId', not 'jobId'
         applicationMessage: 'I am interested in this position and believe my skills and experience make me a good fit for this role.',
-        workerSkills: job.requiredSkills || [],  // Required: non-empty array
+        labourSkills: job.requiredSkills || [],  // Required: non-empty array
         experience: 'Experienced in agricultural work',
         expectedWage: job.wageOffered || 0,
         availability: 'full-time'  // Must be lowercase: 'full-time', 'part-time', or 'flexible'
       };
 
-      const response = await axios.post('/api/worker/applications', applicationData, {
+      const response = await axios.post('/api/labour/applications', applicationData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -159,9 +162,9 @@ const WorkerDashboardPage = () => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h1 style={styles.title}>Worker Dashboard</h1>
+        <h1 style={styles.title}>Labour Dashboard</h1>
         <p style={styles.subtitle}>
-          Welcome to your worker dashboard. Browse and apply for available jobs.
+          Welcome to your labour dashboard. Browse and apply for available jobs.
         </p>
         {error && (
           <div style={styles.errorBanner}>
@@ -227,8 +230,8 @@ const WorkerDashboardPage = () => {
                         <span>{job.location || 'Not specified'}</span>
                     </div>
                     <div style={styles.detailRow}>
-                      <span style={styles.detailLabel}>👥 Workers Needed:</span>
-                      <span>{job.workerCount || 'Not specified'}</span>
+                      <span style={styles.detailLabel}>👥 Labours Needed:</span>
+                      <span>{job.labourCount || 'Not specified'}</span>
                     </div>
                     <div style={styles.detailRow}>
                       <span style={styles.detailLabel}>🗓️ Duration:</span>
@@ -564,4 +567,4 @@ const styles = {
   }
 };
 
-export default WorkerDashboardPage;
+export default LabourDashboardPage;

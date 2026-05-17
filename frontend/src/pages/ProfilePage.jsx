@@ -47,9 +47,8 @@ const ProfilePage = () => {
             let apiEndpoint;
 
             switch (user.role) {
-                case 'Worker':
                 case 'Labour':
-                    apiEndpoint = '/api/worker/profile';
+                    apiEndpoint = '/api/labour/profile';
                     break;
                 case 'Factory':
                     apiEndpoint = '/api/factory/profile';
@@ -133,9 +132,8 @@ const ProfilePage = () => {
             // No need to split into arrays here.
 
             switch (userRole) {
-                case 'Worker':
                 case 'Labour':
-                    apiEndpoint = '/api/worker/profile';
+                    apiEndpoint = '/api/labour/profile';
                     break;
                 case 'Factory':
                     apiEndpoint = '/api/factory/profile';
@@ -404,7 +402,7 @@ const ProfilePage = () => {
                         </div>
                         <div className="fp-field">
                             <label>Team Size</label>
-                            <input type="text" name="teamSize" value={profileData.teamSize || ''} onChange={handleInputChange} className="fp-input" placeholder="e.g., 15-20 workers" />
+                            <input type="text" name="teamSize" value={profileData.teamSize || ''} onChange={handleInputChange} className="fp-input" placeholder="e.g., 15-20 labours" />
                         </div>
                         <div className="fp-field full-width">
                             <label>Management Operations</label>
@@ -426,7 +424,7 @@ const ProfilePage = () => {
                 <div className="fp-card-header">
                     <div className="fp-card-icon">👷</div>
                     <div className="fp-card-txt">
-                        <h2 className="fp-card-title">Worker Profile</h2>
+                        <h2 className="fp-card-title">Labour Profile</h2>
                     </div>
                 </div>
                 <div className="fp-card-body">
@@ -538,7 +536,7 @@ const ProfilePage = () => {
                         {userRole === 'Farmer' && renderFarmerProfile()}
                         {userRole === 'Factory' && renderFactoryProfile()}
                         {userRole === 'HHM' && renderHHMProfile()}
-                        {(userRole === 'Worker' || userRole === 'Labour') && renderLabourProfile()}
+                        {userRole === 'Labour' && renderLabourProfile()}
                     </form>
                 </main>
             </div>

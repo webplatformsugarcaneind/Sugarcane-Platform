@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
  * Invitation Schema
  * 
  * Represents invitations for various partnership types:
- * 1. 'hhm-to-worker' - HHM invites worker for a job schedule
+ * 1. 'hhm-to-labour' - HHM invites labour for a job schedule
  * 2. 'factory-to-hhm' - Factory invites HHM for partnership/association
  * 3. 'hhm-to-factory' - HHM invites Factory for partnership/association
  */
@@ -13,11 +13,11 @@ const invitationSchema = new mongoose.Schema({
   invitationType: {
     type: String,
     enum: {
-      values: ['hhm-to-worker', 'factory-to-hhm', 'hhm-to-factory'],
+      values: ['hhm-to-labour', 'factory-to-hhm', 'hhm-to-factory'],
       message: '{VALUE} is not a valid invitation type'
     },
     required: [true, 'Invitation type is required'],
-    default: 'hhm-to-worker',
+    default: 'hhm-to-labour',
     index: true
   },
 
@@ -38,32 +38,32 @@ const invitationSchema = new mongoose.Schema({
     }
   },
 
-  // Worker ID - Required for hhm-to-worker invitations
-  workerId: {
+  // Labour ID - Required for hhm-to-labour invitations
+  labourId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     index: true,
     validate: {
       validator: function (value) {
-        // Required if invitationType is 'hhm-to-worker'
-        if (this.invitationType === 'hhm-to-worker') {
+        // Required if invitationType is 'hhm-to-labour'
+        if (this.invitationType === 'hhm-to-labour') {
           return value != null;
         }
         return true;
       },
-      message: 'Worker ID is required for hhm-to-worker invitations'
+      message: 'Labour ID is required for hhm-to-labour invitations'
     }
   },
 
-  // HHM ID - Required for hhm-to-worker, factory-to-hhm, and hhm-to-factory
+  // HHM ID - Required for hhm-to-labour, factory-to-hhm, and hhm-to-factory
   hhmId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     index: true,
     validate: {
       validator: function (value) {
-        // Required if invitationType is 'hhm-to-worker' or 'factory-to-hhm' or 'hhm-to-factory'
-        if (this.invitationType === 'hhm-to-worker' ||
+        // Required if invitationType is 'hhm-to-labour' or 'factory-to-hhm' or 'hhm-to-factory'
+        if (this.invitationType === 'hhm-to-labour' ||
           this.invitationType === 'factory-to-hhm' ||
           this.invitationType === 'hhm-to-factory') {
           return value != null;
@@ -74,20 +74,20 @@ const invitationSchema = new mongoose.Schema({
     }
   },
 
-  // Schedule ID - Required only for hhm-to-worker invitations
+  // Schedule ID - Required only for hhm-to-labour invitations
   scheduleId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Schedule',
     index: true,
     validate: {
       validator: function (value) {
-        // Required if invitationType is 'hhm-to-worker'
-        if (this.invitationType === 'hhm-to-worker') {
+        // Required if invitationType is 'hhm-to-labour'
+        if (this.invitationType === 'hhm-to-labour') {
           return value != null;
         }
         return true;
       },
-      message: 'Schedule ID is required for hhm-to-worker invitations'
+      message: 'Schedule ID is required for hhm-to-labour invitations'
     }
   },
   status: {
@@ -141,7 +141,7 @@ const invitationSchema = new mongoose.Schema({
     trim: true,
     maxlength: [200, 'Invitation reason cannot exceed 200 characters']
   },
-  workerRating: {
+  labourRating: {
     type: Number,
     min: 1,
     max: 5
@@ -164,16 +164,16 @@ const invitationSchema = new mongoose.Schema({
 });
 
 // Compound indexes for better query performance
-// Prevent duplicate worker invitations for same schedule
-// CRITICAL: Include invitationType as first field to completely separate hhm-to-worker from factory-to-hhm
-// This ensures factory-to-hhm invitations (with undefined workerId/scheduleId) never conflict
+// Prevent duplicate labour invitations for same schedule
+// CRITICAL: Include invitationType as first field to completely separate hhm-to-labour from factory-to-hhm
+// This ensures factory-to-hhm invitations (with undefined labourId/scheduleId) never conflict
 invitationSchema.index(
-  { invitationType: 1, workerId: 1, scheduleId: 1 },
+  { invitationType: 1, labourId: 1, scheduleId: 1 },
   {
     unique: true,
     partialFilterExpression: {
-      invitationType: 'hhm-to-worker',
-      workerId: { $type: 'objectId' },
+      invitationType: 'hhm-to-labour',
+      labourId: { $type: 'objectId' },
       scheduleId: { $type: 'objectId' }
     }
   }
@@ -239,9 +239,9 @@ invitationSchema.pre('save', function (next) {
   next();
 });
 
-// Static method to find invitations by worker
-invitationSchema.statics.findByWorker = function (workerId, status = null) {
-  const query = { workerId };
+// Static method to find invitations by labour
+invitationSchema.statics.findByLabour = function (labourId, status = null) {
+  const query = { labourId };
   if (status) query.status = status;
 
   return this.find(query)
@@ -256,8 +256,8 @@ invitationSchema.statics.findByHHM = function (hhmId, status = null) {
   if (status) query.status = status;
 
   return this.find(query)
-    .populate('workerId', 'name email phone skills experience')
-    .populate('scheduleId', 'title startDate workerCount')
+    .populate('labourId', 'name email phone skills experience')
+    .populate('scheduleId', 'title startDate labourCount')
     .sort({ createdAt: -1 });
 };
 
@@ -267,7 +267,7 @@ invitationSchema.statics.findBySchedule = function (scheduleId, status = null) {
   if (status) query.status = status;
 
   return this.find(query)
-    .populate('workerId', 'name email phone skills')
+    .populate('labourId', 'name email phone skills')
     .sort({ createdAt: -1 });
 };
 
@@ -302,7 +302,7 @@ invitationSchema.statics.findExpired = function () {
   return this.find({
     status: 'pending',
     expiresAt: { $lt: new Date() }
-  }).populate('workerId scheduleId hhmId factoryId');
+  }).populate('labourId scheduleId hhmId factoryId');
 };
 
 // Static method to find invitations expiring soon (within specified days)
@@ -313,7 +313,7 @@ invitationSchema.statics.findExpiringSoon = function (days = 2) {
   return this.find({
     status: 'pending',
     expiresAt: { $lte: cutoffDate, $gt: new Date() }
-  }).populate('workerId scheduleId hhmId');
+  }).populate('labourId scheduleId hhmId');
 };
 
 // Instance method to accept invitation
@@ -352,14 +352,14 @@ invitationSchema.methods.sendReminder = function () {
   throw new Error('Cannot send reminder for non-pending invitations or max reminders reached');
 };
 
-// Instance method to check if worker is available for the schedule
-invitationSchema.methods.checkWorkerAvailability = async function () {
+// Instance method to check if labour is available for the schedule
+invitationSchema.methods.checkLabourAvailability = async function () {
   await this.populate('scheduleId');
   if (!this.scheduleId) return false;
 
-  // Check if worker has other accepted invitations or applications for the same time period
+  // Check if labour has other accepted invitations or applications for the same time period
   const conflictingInvitations = await this.constructor.find({
-    workerId: this.workerId,
+    labourId: this.labourId,
     status: 'accepted',
     scheduleId: { $ne: this.scheduleId }
   }).populate('scheduleId', 'startDate endDate');
@@ -380,18 +380,18 @@ invitationSchema.post('save', async function (doc) {
       const Schedule = mongoose.model('Schedule');
       const schedule = await Schedule.findById(doc.scheduleId);
       if (schedule) {
-        await schedule.incrementAcceptedWorkers();
+        await schedule.incrementAcceptedLabour();
 
         // Create an automatic application record for tracking
         const Application = mongoose.model('Application');
         const existingApplication = await Application.findOne({
-          workerId: doc.workerId,
+          labourId: doc.labourId,
           scheduleId: doc.scheduleId
         });
 
         if (!existingApplication) {
           await Application.create({
-            workerId: doc.workerId,
+            labourId: doc.labourId,
             scheduleId: doc.scheduleId,
             hhmId: doc.hhmId,
             status: 'approved',

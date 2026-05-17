@@ -118,7 +118,7 @@ const LoginPage = () => {
           <div className="auth-stats">
             <div className="astat">
               <div className="astat-n">Users</div>
-              <div className="astat-l">Farmers, Workers, HHMs, Factories</div>
+              <div className="astat-l">Farmers, Labours, HHMs, Factories</div>
             </div>
             <div className="astat">
               <div className="astat-n">Requests</div>

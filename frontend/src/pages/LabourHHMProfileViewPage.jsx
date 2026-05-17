@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './FarmerProfile.css'; // Leverage unified Dark Mode CSS
 
-const WorkerHHMProfileViewPage = () => {
+const LabourHHMProfileViewPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
     
@@ -16,7 +16,7 @@ const WorkerHHMProfileViewPage = () => {
         if (hhmData?.email) {
             const subject = encodeURIComponent('Work Opportunity Inquiry');
             const body = encodeURIComponent(
-                `Hello ${hhmData.name || 'there'},\n\nI am a worker looking for employment opportunities and found your contact through the HHM Directory. I would like to discuss potential work opportunities.\n\nBest regards`
+                `Hello ${hhmData.name || 'there'},\n\nI am a labour looking for employment opportunities and found your contact through the HHM Directory. I would like to discuss potential work opportunities.\n\nBest regards`
             );
             window.location.href = `mailto:${hhmData.email}?subject=${subject}&body=${body}`;
         }
@@ -96,7 +96,7 @@ const WorkerHHMProfileViewPage = () => {
                                 </div>
                                 <div className="fp-field full-width">
                                     <label>Description</label>
-                                    <textarea readOnly value={hhmData.description || 'Experienced Hub Head Manager coordinating agricultural operations and worker placement.'} rows={3}></textarea>
+                                    <textarea readOnly value={hhmData.description || 'Experienced Hub Head Manager coordinating agricultural operations and labour placement.'} rows={3}></textarea>
                                 </div>
                                 {hhmData.createdAt && (
                                     <div className="fp-field">
@@ -141,4 +141,4 @@ const WorkerHHMProfileViewPage = () => {
     );
 };
 
-export default WorkerHHMProfileViewPage;
+export default LabourHHMProfileViewPage;

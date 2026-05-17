@@ -13,12 +13,12 @@ const notificationSchema = new mongoose.Schema({
     },
     senderRole: {
         type: String,
-        enum: ['farmer', 'hhm', 'worker', 'factory', 'system', 'admin'],
+        enum: ['farmer', 'hhm', 'labour', 'factory', 'system', 'admin'],
         required: false
     },
     receiverRole: {
         type: String,
-        enum: ['farmer', 'hhm', 'worker', 'factory', 'system', 'admin'],
+        enum: ['farmer', 'hhm', 'labour', 'factory', 'system', 'admin'],
         required: true
     },
     type: {

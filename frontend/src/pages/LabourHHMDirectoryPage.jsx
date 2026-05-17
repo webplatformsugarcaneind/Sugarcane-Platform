@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './FarmerHHMDirectoryPage.css';
 
-const WorkerHHMDirectoryPage = () => {
+const LabourHHMDirectoryPage = () => {
   const navigate = useNavigate();
   const [hhms, setHhms] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -22,7 +22,7 @@ const WorkerHHMDirectoryPage = () => {
       setError(null);
       const token = localStorage.getItem('token');
       if (!token) { setError('No authentication token found. Please login again.'); return; }
-      const res = await axios.get('/api/worker/hhms', {
+      const res = await axios.get('/api/labour/hhms', {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
       });
       const data = res.data.data || [];
@@ -64,7 +64,7 @@ const WorkerHHMDirectoryPage = () => {
   const handleContact = (hhm) => {
     if (hhm.email) {
       const subject = encodeURIComponent('Work Opportunity Inquiry');
-      const body = encodeURIComponent(`Hello ${hhm.name || 'there'},\n\nI am a worker looking for employment opportunities and found your contact through the HHM Directory.\n\nBest regards`);
+      const body = encodeURIComponent(`Hello ${hhm.name || 'there'},\n\nI am a labour looking for employment opportunities and found your contact through the HHM Directory.\n\nBest regards`);
       window.location.href = `mailto:${hhm.email}?subject=${subject}&body=${body}`;
     }
   };
@@ -86,7 +86,7 @@ const WorkerHHMDirectoryPage = () => {
       <div className="hd-header">
         <div className="ph-top">
           <div>
-            <div className="ph-eyebrow">Worker View</div>
+            <div className="ph-eyebrow">Labour View</div>
             <h1 className="hd-title">HHM <em>Directory</em></h1>
             <p className="hd-sub">Find Harvest Head Managers in your area — connect with coordinators for work opportunities and employment.</p>
           </div>
@@ -204,4 +204,4 @@ const WorkerHHMDirectoryPage = () => {
   );
 };
 
-export default WorkerHHMDirectoryPage;
+export default LabourHHMDirectoryPage;

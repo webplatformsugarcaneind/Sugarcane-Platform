@@ -39,7 +39,7 @@ app.use('/api/test-raw', require('./routes/test-raw.routes')); // TEST ROUTE
 app.use('/api/users', require('./routes/user.routes'));
 app.use('/api/farmer', require('./routes/farmer.routes'));
 app.use('/api/hhm', require('./routes/hhm.routes'));
-app.use('/api/worker', require('./routes/worker.routes'));
+app.use('/api/labour', require('./routes/labour.routes'));
 app.use('/api/factory', require('./routes/factory.routes'));
 app.use('/api/contracts', require('./routes/contract.routes'));
 app.use('/api/farmer-contracts', require('./routes/farmerContract.routes'));
@@ -75,7 +75,7 @@ app.get('/', (req, res) => {
       users: '/api/users',
       farmer: '/api/farmer',
       hhm: '/api/hhm',
-      worker: '/api/worker',
+      labour: '/api/labour',
       factory: '/api/factory',
       contracts: '/api/contracts',
       'farmer-contracts': '/api/farmer-contracts',
@@ -134,7 +134,7 @@ app.use((req, res) => {
       public: '/api/public (GET /factories, GET /factories/:id, GET /roles-features)',
       farmer: '/api/farmer (Protected - GET /profile, PUT /profile, GET /announcements, etc.)',
       hhm: '/api/hhm (Protected - GET /schedules, POST /schedules, GET /workers, GET /applications, etc.)',
-      worker: '/api/worker (Protected - GET /jobs, POST /applications, GET /invitations, etc.)',
+      labour: '/api/labour (Protected - GET /jobs, POST /applications, GET /invitations, etc.)',
       factory: '/api/factory (Protected - POST /bills, GET /bills, POST /maintenance-jobs, etc.)',
       contracts: '/api/contracts (Protected - POST /request, PUT /respond/:id, GET /my-contracts, etc.)',
       'farmer-contracts': '/api/farmer-contracts (Protected - POST /request, GET /my-contracts)',
@@ -155,7 +155,7 @@ const server = app.listen(PORT, () => {
   console.log(` Public Endpoints: http://localhost:${PORT}/api/public`);
   console.log(` Farmer Endpoints: http://localhost:${PORT}/api/farmer`);
   console.log(` HHM Endpoints: http://localhost:${PORT}/api/hhm`);
-  console.log(` Worker Endpoints: http://localhost:${PORT}/api/worker`);
+  console.log(` Labour Endpoints: http://localhost:${PORT}/api/labour`);
   console.log(` Factory Endpoints: http://localhost:${PORT}/api/factory`);
   console.log(` Contract Endpoints: http://localhost:${PORT}/api/contracts`);
   console.log(` Analytics Endpoints: http://localhost:${PORT}/api/analytics`);

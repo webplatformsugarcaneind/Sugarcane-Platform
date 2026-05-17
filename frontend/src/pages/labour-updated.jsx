@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-const LaborManagementPage = () => {
+const LabourManagementPage = () => {
   const [activeTab, setActiveTab] = useState('create-job');
   const [applications, setApplications] = useState([]);
   const [loadingApplications, setLoadingApplications] = useState(false);
 
-  const [workers, setWorkers] = useState([]);
-  const [filteredWorkers, setFilteredWorkers] = useState([]);
-  const [loadingWorkers, setLoadingWorkers] = useState(false);
+  const [labours, setLabours] = useState([]);
+  const [filteredLabours, setFilteredLabours] = useState([]);
+  const [loadingLabours, setLoadingLabours] = useState(false);
 
-  const [workerSearchTerm, setWorkerSearchTerm] = useState('');
+  const [labourSearchTerm, setLabourSearchTerm] = useState('');
   const [selectedSkillFilter, setSelectedSkillFilter] = useState('');
 
   // Fetch applications
@@ -18,35 +18,35 @@ const LaborManagementPage = () => {
     if (activeTab === 'applications') fetchApplications();
   }, [activeTab]);
 
-  // Fetch workers
+  // Fetch labours
   useEffect(() => {
-    if (activeTab === 'hire-labour') fetchWorkers();
+    if (activeTab === 'hire-labour') fetchLabours();
   }, [activeTab]);
 
-  // Filter workers
-  const filterWorkers = useCallback(() => {
-    let filtered = [...workers];
+  // Filter labours
+  const filterLabours = useCallback(() => {
+    let filtered = [...labours];
 
-    if (workerSearchTerm) {
-      filtered = filtered.filter(worker =>
-        worker.name?.toLowerCase().includes(workerSearchTerm.toLowerCase())
+    if (labourSearchTerm) {
+      filtered = filtered.filter(labour =>
+        labour.name?.toLowerCase().includes(labourSearchTerm.toLowerCase())
       );
     }
 
     if (selectedSkillFilter) {
-      filtered = filtered.filter(worker =>
-        worker.skills?.some(skill =>
+      filtered = filtered.filter(labour =>
+        labour.skills?.some(skill =>
           skill.toLowerCase().includes(selectedSkillFilter.toLowerCase())
         )
       );
     }
 
-    setFilteredWorkers(filtered);
-  }, [workers, workerSearchTerm, selectedSkillFilter]);
+    setFilteredLabours(filtered);
+  }, [labours, labourSearchTerm, selectedSkillFilter]);
 
   useEffect(() => {
-    filterWorkers();
-  }, [filterWorkers]);
+    filterLabours();
+  }, [filterLabours]);
 
   const fetchApplications = async () => {
     try {
@@ -65,23 +65,23 @@ const LaborManagementPage = () => {
     }
   };
 
-  const fetchWorkers = async () => {
+  const fetchLabours = async () => {
     try {
-      setLoadingWorkers(true);
+      setLoadingLabours(true);
       const token = localStorage.getItem('token');
 
-      const res = await axios.get('/api/hhm/workers', {
+      const res = await axios.get('/api/hhm/labours', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       const data = res.data.data || [];
-      setWorkers(data);
-      setFilteredWorkers(data);
+      setLabours(data);
+      setFilteredLabours(data);
     } catch {
-      setWorkers([]);
-      setFilteredWorkers([]);
+      setLabours([]);
+      setFilteredLabours([]);
     } finally {
-      setLoadingWorkers(false);
+      setLoadingLabours(false);
     }
   };
 
@@ -111,7 +111,7 @@ const LaborManagementPage = () => {
         color: '#2c3e50',
         animation: 'fadeIn 0.6s ease'
       }}>
-        Labor Management
+        Labour Management
       </h1>
 
       {/* Tabs */}
@@ -168,8 +168,8 @@ const LaborManagementPage = () => {
                   }}
                 >
 
-                  <h3>{app.worker?.name}</h3>
-                  <p>{app.worker?.email}</p>
+                  <h3>{app.labour?.name}</h3>
+                  <p>{app.labour?.email}</p>
 
                   {/* Status */}
                   <span style={{
@@ -223,12 +223,12 @@ const LaborManagementPage = () => {
           </>
         )}
 
-        {/* WORKERS */}
+        {/* LABOURS */}
         {activeTab === 'hire-labour' && (
           <>
-            {loadingWorkers ? <p>Loading...</p> : (
-              filteredWorkers.map(worker => (
-                <div key={worker._id}
+            {loadingLabours ? <p>Loading...</p> : (
+              filteredLabours.map(labour => (
+                <div key={labour._id}
                   style={{
                     padding: '1.5rem',
                     marginBottom: '1rem',
@@ -243,9 +243,9 @@ const LaborManagementPage = () => {
                     e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
-                  <h3>{worker.name}</h3>
-                  <p>{worker.email}</p>
-                  <p>{worker.skills?.join(', ')}</p>
+                  <h3>{labour.name}</h3>
+                  <p>{labour.email}</p>
+                  <p>{labour.skills?.join(', ')}</p>
 
                   <button style={{
                     padding: '0.5rem 1rem',
@@ -272,4 +272,4 @@ const LaborManagementPage = () => {
   );
 };
 
-export default LaborManagementPage;
+export default LabourManagementPage;

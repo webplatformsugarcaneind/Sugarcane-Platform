@@ -16,7 +16,7 @@ const createSchedule = async (req, res) => {
 
     const {
       requiredSkills,
-      workerCount,
+      labourCount,
       wageOffered,
       startDate,
       title,
@@ -33,10 +33,10 @@ const createSchedule = async (req, res) => {
       });
     }
 
-    if (!workerCount || workerCount < 1) {
+    if (!labourCount || labourCount < 1) {
       return res.status(400).json({
         success: false,
-        message: 'Worker count must be at least 1'
+        message: 'Labour count must be at least 1'
       });
     }
 
@@ -58,7 +58,7 @@ const createSchedule = async (req, res) => {
     const schedule = await Schedule.create({
       hhmId: req.user._id,
       requiredSkills,
-      workerCount,
+      labourCount,
       wageOffered,
       startDate,
       title,
@@ -189,7 +189,7 @@ const updateSchedule = async (req, res) => {
 
     const {
       requiredSkills,
-      workerCount,
+      labourCount,
       wageOffered,
       startDate,
       title,
@@ -228,10 +228,10 @@ const updateSchedule = async (req, res) => {
       });
     }
 
-    if (workerCount && workerCount < 1) {
+    if (labourCount && labourCount < 1) {
       return res.status(400).json({
         success: false,
-        message: 'Worker count must be at least 1'
+        message: 'Labour count must be at least 1'
       });
     }
 
@@ -252,7 +252,7 @@ const updateSchedule = async (req, res) => {
     // Update fields
     const updateFields = {};
     if (requiredSkills) updateFields.requiredSkills = requiredSkills;
-    if (workerCount) updateFields.workerCount = workerCount;
+    if (labourCount) updateFields.labourCount = labourCount;
     if (wageOffered) updateFields.wageOffered = wageOffered;
     if (startDate) updateFields.startDate = startDate;
     if (title) updateFields.title = title;
@@ -347,13 +347,13 @@ const deleteSchedule = async (req, res) => {
 };
 
 /**
- * @desc    Get available workers directory
- * @route   GET /api/hhm/workers
+ * @desc    Get available labour directory
+ * @route   GET /api/hhm/labours
  * @access  Private (HHM only)
  */
-const getWorkers = async (req, res) => {
+const getLabours = async (req, res) => {
   try {
-    console.log(' Getting workers directory for HHM:', req.user._id);
+    console.log(' Getting labour directory for HHM:', req.user._id);
 
     const {
       skills,
@@ -367,16 +367,16 @@ const getWorkers = async (req, res) => {
     // Build query for users with Labour role
     const userQuery = { role: 'Labour' };
 
-    // Get worker user IDs
-    const workers = await User.find(userQuery).select('_id');
-    const workerIds = workers.map(worker => worker._id);
+    // Get labour user IDs
+    const labours = await User.find(userQuery).select('_id');
+    const labourIds = labours.map(labour => labour._id);
 
-    console.log(' Found', workers.length, 'users with Worker role');
+    console.log(' Found', labours.length, 'users with Labour role');
 
     // Build profile query with exclusivity logic
     const profileQuery = {
-      userId: { $in: workerIds },
-      // Show workers that are either:
+      userId: { $in: labourIds },
+      // Show labours that are either:
       // 1. Not employed by anyone (currentEmployer is null)
       // 2. Already employed by the requesting HHM
       $or: [
@@ -390,12 +390,12 @@ const getWorkers = async (req, res) => {
       profileQuery.availabilityStatus = availabilityStatus;
       console.log(' Filtering by availabilityStatus:', availabilityStatus);
     } else {
-      // Default to showing only available workers
+      // Default to showing only available labours
       profileQuery.availabilityStatus = 'available';
-      console.log(' Default filter: showing only available workers');
+      console.log(' Default filter: showing only available labours');
     }
 
-    console.log(' Applying worker exclusivity for HHM:', req.user._id);
+    console.log(' Applying labour exclusivity for HHM:', req.user._id);
     console.log(' Profile query with exclusivity:', JSON.stringify(profileQuery, null, 2));
 
     // Add skills filter if provided
@@ -417,8 +417,8 @@ const getWorkers = async (req, res) => {
     // Calculate pagination
     const skip = (page - 1) * limit;
 
-    // Get worker profiles with pagination and populate user information
-    const workerProfiles = await Profile.find(profileQuery)
+    // Get labour profiles with pagination and populate user information
+    const labourProfiles = await Profile.find(profileQuery)
       .populate('userId', 'name email phone createdAt')
       .sort({ 'userId.createdAt': -1 })
       .skip(skip)
@@ -427,12 +427,14 @@ const getWorkers = async (req, res) => {
     // Get total count for pagination
     const total = await Profile.countDocuments(profileQuery);
 
-    console.log(` Found ${workerProfiles.length} worker profiles out of ${total} total matching criteria`);
+    console.log(` Found ${labourProfiles.length} labour profiles out of ${total} total matching criteria`);
     console.log(' Profile query:', JSON.stringify(profileQuery));
 
-    // Transform data to include relevant worker information with full profile data
-    const workersData = workerProfiles.map(profile => ({
-      workerId: profile.userId._id,
+    // Transform data to include relevant labour information with full profile data
+    const laboursData = labourProfiles
+      .filter(profile => profile && profile.userId)
+      .map(profile => ({
+      labourId: profile.userId._id,
       name: profile.userId.name,
       email: profile.userId.email,
       phone: profile.userId.phone,
@@ -456,11 +458,11 @@ const getWorkers = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: workersData,
+      data: laboursData,
       pagination: {
         current: parseInt(page),
         total: Math.ceil(total / limit),
-        count: workersData.length,
+        count: laboursData.length,
         totalRecords: total
       },
       filters: {
@@ -472,17 +474,17 @@ const getWorkers = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(' Error getting workers:', error);
+    console.error(' Error getting labours:', error);
     res.status(500).json({
       success: false,
-      message: 'Error retrieving workers directory',
+      message: 'Error retrieving labour directory',
       error: error.message
     });
   }
 };
 
 /**
- * @desc    Create a new invitation to directly hire a worker
+ * @desc    Create a new invitation to directly hire a labour
  * @route   POST /api/hhm/invitations
  * @access  Private (HHM only)
  */
@@ -490,7 +492,7 @@ const createInvitation = async (req, res) => {
   try {
     console.log(' Creating invitation from HHM:', req.user._id);
 
-    const { scheduleId, workerId, personalMessage, offeredWage, priority } = req.body;
+    const { scheduleId, labourId, personalMessage, offeredWage, priority } = req.body;
 
     // Validate required fields
     if (!scheduleId) {
@@ -500,10 +502,10 @@ const createInvitation = async (req, res) => {
       });
     }
 
-    if (!workerId) {
+    if (!labourId) {
       return res.status(400).json({
         success: false,
-        message: 'Worker ID is required'
+        message: 'Labour ID is required'
       });
     }
 
@@ -516,7 +518,7 @@ const createInvitation = async (req, res) => {
     if (!schedule) {
       return res.status(404).json({
         success: false,
-        message: 'Schedule not found or you do not have permission to invite workers for this schedule'
+        message: 'Schedule not found or you do not have permission to invite labour for this schedule'
       });
     }
 
@@ -528,65 +530,65 @@ const createInvitation = async (req, res) => {
       });
     }
 
-    // Verify the worker exists and has Worker role
-    const worker = await User.findOne({
-      _id: workerId,
+    // Verify the labour exists and has Labour role
+    const labour = await User.findOne({
+      _id: labourId,
       role: 'Labour'
     });
 
-    if (!worker) {
+    if (!labour) {
       return res.status(404).json({
         success: false,
-        message: 'Worker not found or invalid worker ID'
+        message: 'Labour not found or invalid labour ID'
       });
     }
 
-    // Check if worker has a profile and is available
-    const workerProfile = await Profile.findOne({ userId: workerId });
+    // Check if labour has a profile and is available
+    const labourProfile = await Profile.findOne({ userId: labourId });
 
-    if (!workerProfile) {
+    if (!labourProfile) {
       return res.status(400).json({
         success: false,
-        message: 'Worker does not have a profile. They need to complete their profile first.'
+        message: 'Labour does not have a profile. They need to complete their profile first.'
       });
     }
 
-    if (workerProfile.availabilityStatus !== 'available') {
+    if (labourProfile.availabilityStatus !== 'available') {
       return res.status(400).json({
         success: false,
-        message: `Worker is currently ${workerProfile.availabilityStatus}. You can only invite available workers.`
+        message: `Labour is currently ${labourProfile.availabilityStatus}. You can only invite available labour.`
       });
     }
 
-    // Check if an invitation already exists for this worker and schedule
+    // Check if an invitation already exists for this labour and schedule
     const existingInvitation = await Invitation.findOne({
-      workerId,
+      labourId,
       scheduleId
     });
 
     if (existingInvitation) {
       return res.status(400).json({
         success: false,
-        message: `An invitation has already been sent to this worker for this schedule (Status: ${existingInvitation.status})`
+        message: `An invitation has already been sent to this labour for this schedule (Status: ${existingInvitation.status})`
       });
     }
 
-    // Check if worker has already applied for this schedule
+    // Check if labour has already applied for this schedule
     const existingApplication = await Application.findOne({
-      workerId,
+      labourId,
       scheduleId
     });
 
     if (existingApplication) {
       return res.status(400).json({
         success: false,
-        message: `This worker has already applied for this schedule (Status: ${existingApplication.status})`
+        message: `This labour has already applied for this schedule (Status: ${existingApplication.status})`
       });
     }
 
     // Create the invitation
     const invitation = await Invitation.create({
-      workerId,
+      labourId,
       hhmId: req.user._id,
       scheduleId,
       personalMessage: personalMessage || '',
@@ -596,18 +598,18 @@ const createInvitation = async (req, res) => {
 
     // Populate the created invitation with full details
     const populatedInvitation = await Invitation.findById(invitation._id)
-      .populate('workerId', 'name email phone')
+      .populate('labourId', 'name email phone')
       .populate('scheduleId', 'title startDate endDate wageOffered location requiredSkills')
       .populate('hhmId', 'name email phone companyName');
 
     console.log(' Invitation created successfully:', invitation._id);
 
-    // Notify Worker
+    // Notify Labour
     await createNotification({
       senderId: req.user._id,
-      receiverId: workerId,
+      receiverId: labourId,
       senderRole: 'hhm',
-      receiverRole: 'worker',
+      receiverRole: 'labour',
       type: 'INVITATION_SENT',
       message: `You have received a job invitation from HHM ${req.user.name || 'someone'}.`,
       relatedId: invitation._id,
@@ -619,11 +621,11 @@ const createInvitation = async (req, res) => {
       message: 'Invitation sent successfully',
       data: {
         invitationId: populatedInvitation._id,
-        worker: {
-          id: populatedInvitation.workerId._id,
-          name: populatedInvitation.workerId.name,
-          email: populatedInvitation.workerId.email,
-          phone: populatedInvitation.workerId.phone
+        labour: {
+          id: populatedInvitation.labourId._id,
+          name: populatedInvitation.labourId.name,
+          email: populatedInvitation.labourId.email,
+          phone: populatedInvitation.labourId.phone
         },
         schedule: {
           id: populatedInvitation.scheduleId._id,
@@ -649,7 +651,7 @@ const createInvitation = async (req, res) => {
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        message: 'An invitation for this worker and schedule already exists'
+        message: 'An invitation for this labour and schedule already exists'
       });
     }
 
@@ -692,12 +694,10 @@ const getApplications = async (req, res) => {
     // Calculate pagination
     const skip = (page - 1) * limit;
 
-    // Get applications with populated worker and schedule data
-    // CRITICAL: Using .populate() to explicitly select only needed fields
-    // This ensures worker name and email are included in the response
+    // Get applications with populated labour and schedule data
     const applications = await Application.find(query)
-      .populate('workerId', 'name email')
-      .populate('scheduleId', 'title requiredSkills wageOffered')
+      .populate('labourId', 'name email username phone')
+      .populate('scheduleId', 'title requiredSkills wageOffered location workType startDate endDate labourCount status')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
@@ -707,59 +707,79 @@ const getApplications = async (req, res) => {
 
     console.log(` Found ${applications.length} applications for HHM`);
 
-    // Enhance application data with worker profile information
-    const enhancedApplications = await Promise.all(
-      applications.map(async (app) => {
-        const workerProfile = await Profile.findOne({ userId: app.workerId._id });
+    // Enhance application data with labour profile information
+    let enhancedApplications = [];
+    try {
+      enhancedApplications = await Promise.all(
+        applications.map(async (app) => {
+          // Safe access to labourId and scheduleId
+          if (!app.labourId || !app.scheduleId) {
+            console.warn(`Skipping orphaned application ${app._id}: missing labour or schedule`);
+            return null;
+          }
 
-        return {
-          _id: app._id,
-          applicationId: app._id,
-          worker: {
-            id: app.workerId._id,
-            name: app.workerId.name,
-            username: app.workerId.username || app.workerId.email?.split('@')[0] || 'unknown',
-            email: app.workerId.email,
-            phone: app.workerId.phone,
-            skills: workerProfile?.skills || [],
-            availabilityStatus: workerProfile?.availabilityStatus || 'unknown',
-            experience: workerProfile?.farmingExperience || 0,
-            profileImage: workerProfile?.profileImageUrl || '/uploads/profiles/default.jpg'
-          },
-          schedule: {
-            id: app.scheduleId._id,
-            title: app.scheduleId.title,
-            jobType: app.scheduleId.workType || 'general', // Include jobType/workType
-            workType: app.scheduleId.workType,
-            startDate: app.scheduleId.startDate,
-            endDate: app.scheduleId.endDate,
-            wageOffered: app.scheduleId.wageOffered,
-            workerCount: app.scheduleId.workerCount,
-            location: app.scheduleId.location,
-            requiredSkills: app.scheduleId.requiredSkills,
-            status: app.scheduleId.status
-          },
-          status: app.status,
-          applicationMessage: app.applicationMessage,
-          workerSkills: app.workerSkills || [],
-          experience: app.experience,
-          expectedWage: app.expectedWage,
-          availability: app.availability,
-          reviewedAt: app.reviewedAt,
-          reviewNotes: app.reviewNotes,
-          appliedAt: app.createdAt,
-          daysSinceApplication: app.daysSinceApplication
-        };
-      })
-    );
+          try {
+            const labourProfile = await Profile.findOne({ userId: app.labourId._id });
+
+            return {
+              _id: app._id,
+              applicationId: app._id,
+              labour: {
+                id: app.labourId._id,
+                name: app.labourId.name || 'Unknown Labour',
+                username: app.labourId.username || app.labourId.email?.split('@')[0] || 'unknown',
+                email: app.labourId.email || 'N/A',
+                phone: app.labourId.phone || 'N/A',
+                skills: labourProfile?.skills || [],
+                availabilityStatus: labourProfile?.availabilityStatus || 'unknown',
+                experience: labourProfile?.farmingExperience || 0,
+                profileImage: labourProfile?.profileImageUrl || '/uploads/profiles/default.jpg'
+              },
+              schedule: {
+                id: app.scheduleId._id,
+                title: app.scheduleId.title || 'Untitled Schedule',
+                jobType: app.scheduleId.workType || 'general',
+                workType: app.scheduleId.workType,
+                startDate: app.scheduleId.startDate,
+                endDate: app.scheduleId.endDate,
+                wageOffered: app.scheduleId.wageOffered,
+                labourCount: app.scheduleId.labourCount,
+                location: app.scheduleId.location || 'Maharashtra',
+                requiredSkills: app.scheduleId.requiredSkills || [],
+                status: app.scheduleId.status
+              },
+              status: app.status,
+              applicationMessage: app.applicationMessage,
+              labourSkills: app.labourSkills || [],
+              experience: app.experience,
+              expectedWage: app.expectedWage,
+              availability: app.availability,
+              reviewedAt: app.reviewedAt,
+              reviewNotes: app.reviewNotes,
+              appliedAt: app.createdAt,
+              daysSinceApplication: app.daysSinceApplication
+            };
+          } catch (mapErr) {
+            console.error(`Error mapping application ${app._id}:`, mapErr);
+            return null;
+          }
+        })
+      );
+    } catch (promiseErr) {
+      console.error('Error in Promise.all for applications:', promiseErr);
+      throw new Error('Failed to process application data');
+    }
+
+    // Filter out null applications from orphaned or failed data
+    const filteredApplications = enhancedApplications.filter(app => app !== null);
 
     res.status(200).json({
       success: true,
-      data: enhancedApplications,
+      data: filteredApplications,
       pagination: {
         current: parseInt(page),
         total: Math.ceil(total / limit),
-        count: enhancedApplications.length,
+        count: filteredApplications.length,
         totalRecords: total
       },
       summary: {
@@ -801,8 +821,8 @@ const updateApplicationStatus = async (req, res) => {
 
     // Find application by ID first (without filtering by hhmId yet)
     const application = await Application.findById(req.params.id)
-      .populate('scheduleId', 'title workType workerCount acceptedWorkersCount status hhmId')
-      .populate('workerId', 'name email phone');
+      .populate('scheduleId', 'title workType labourCount acceptedLabourCount status hhmId')
+      .populate('labourId', 'name email phone');
 
     if (!application) {
       return res.status(404).json({
@@ -827,6 +847,7 @@ const updateApplicationStatus = async (req, res) => {
 
     // Check if application is already reviewed
     if (application.status !== 'pending') {
+      console.warn(`Update rejected: Application ${application._id} is already ${application.status}`);
       return res.status(400).json({
         success: false,
         message: `Application has already been ${application.status}. Cannot change status.`
@@ -839,45 +860,47 @@ const updateApplicationStatus = async (req, res) => {
 
       // Check if schedule is still open
       if (schedule.status === 'closed') {
+        console.warn(`Approval rejected: Schedule ${schedule._id} is closed`);
         return res.status(400).json({
           success: false,
           message: 'Schedule is closed. Cannot approve applications for closed schedules.'
         });
       }
 
-      // Check available worker slots
-      const acceptedCount = schedule.acceptedWorkersCount || 0;
-      if (acceptedCount >= schedule.workerCount) {
+      // Check available labour slots
+      const acceptedCount = schedule.acceptedLabourCount || 0;
+      if (acceptedCount >= schedule.labourCount) {
+        console.warn(`Approval rejected: Schedule ${schedule._id} is full (${acceptedCount}/${schedule.labourCount})`);
         return res.status(400).json({
           success: false,
-          message: `Schedule is already full (${acceptedCount}/${schedule.workerCount} workers accepted). Cannot approve more applications.`
+          message: `Schedule is already full (${acceptedCount}/${schedule.labourCount} labour accepted). Cannot approve more applications.`
         });
       }
 
-      console.log(` Schedule has space: ${acceptedCount + 1}/${schedule.workerCount} workers`);
+      console.log(` Schedule has space: ${acceptedCount + 1}/${schedule.labourCount} labour`);
     }
 
     // Update application status using instance methods
     if (status === 'approved') {
       await application.approve(reviewNotes);
 
-      // Mark worker as hired by this HHM (exclusive employment)
+      // Mark labour as hired by this HHM (exclusive employment)
       try {
-        const workerProfile = await Profile.findOne({ userId: application.workerId._id });
-        if (workerProfile) {
-          await workerProfile.hireByHHM(req.user._id);
-          console.log(` Worker ${application.workerId.name} is now exclusively hired by HHM ${req.user._id}`);
+        const labourProfile = await Profile.findOne({ userId: application.labourId._id });
+        if (labourProfile) {
+          await labourProfile.hireByHHM(req.user._id);
+          console.log(` Labour ${application.labourId.name} is now exclusively hired by HHM ${req.user._id}`);
         } else {
-          console.log(` Worker ${application.workerId.name} has no profile - creating basic profile for employment tracking`);
+          console.log(` Labour ${application.labourId.name} has no profile - creating basic profile for employment tracking`);
           await Profile.create({
-            userId: application.workerId._id,
+            userId: application.labourId._id,
             currentEmployer: req.user._id,
             employmentStartDate: new Date(),
             availabilityStatus: 'unavailable'
           });
         }
       } catch (employmentError) {
-        console.error(' Error updating worker employment status:', employmentError);
+        console.error(' Error updating labour employment status:', employmentError);
         // Continue with the response even if employment status update fails
       }
     } else {
@@ -886,19 +909,19 @@ const updateApplicationStatus = async (req, res) => {
 
     // Re-populate the updated application for response
     await application.populate([
-      { path: 'workerId', select: 'name email phone username' },
-      { path: 'scheduleId', select: 'title workType startDate endDate wageOffered workerCount location requiredSkills status' },
+      { path: 'labourId', select: 'name email phone username' },
+      { path: 'scheduleId', select: 'title workType startDate endDate wageOffered labourCount location requiredSkills status' },
       { path: 'hhmId', select: 'name email phone' }
     ]);
 
-    console.log(` Application ${status} successfully for worker: ${application.workerId.name}`);
+    console.log(` Application ${status} successfully for labour: ${application.labourId.name}`);
 
-    // Notify Worker
+    // Notify Labour
     await createNotification({
       senderId: req.user._id,
-      receiverId: application.workerId._id,
+      receiverId: application.labourId._id,
       senderRole: 'hhm',
-      receiverRole: 'worker',
+      receiverRole: 'labour',
       type: status === 'approved' ? 'JOB_ASSIGNED' : 'SYSTEM_ALERT',
       message: `Your job application for ${application.scheduleId.title} was ${status} by HHM ${req.user.name || 'someone'}.`,
       relatedId: application._id,
@@ -922,16 +945,16 @@ const updateApplicationStatus = async (req, res) => {
 };
 
 /**
- * @desc    Update worker availability status (HHM can mark workers as busy/available)
- * @route   PUT /api/hhm/workers/:workerId/availability
+ * @desc    Update labour availability status (HHM can mark labours as busy/available)
+ * @route   PUT /api/hhm/labours/:labourId/availability
  * @access  Private (HHM only)
  */
-const updateWorkerAvailability = async (req, res) => {
+const updateLabourAvailability = async (req, res) => {
   try {
-    console.log(' HHM updating worker availability:', req.params.workerId);
+    console.log(' HHM updating labour availability:', req.params.labourId);
 
     const { availability } = req.body;
-    const workerId = req.params.workerId;
+    const labourId = req.params.labourId;
 
     // Validate availability status
     if (!availability || !['available', 'busy'].includes(availability)) {
@@ -941,43 +964,43 @@ const updateWorkerAvailability = async (req, res) => {
       });
     }
 
-    // Verify the worker exists and has Worker role
-    const worker = await User.findOne({
-      _id: workerId,
+    // Verify the labour exists and has Labour role
+    const labour = await User.findOne({
+      _id: labourId,
       role: 'Labour'
     });
 
-    if (!worker) {
+    if (!labour) {
       return res.status(404).json({
         success: false,
-        message: 'Worker not found or invalid worker ID'
+        message: 'Labour not found or invalid labour ID'
       });
     }
 
-    // Update worker availability
-    const updatedWorker = await User.findByIdAndUpdate(
-      workerId,
+    // Update labour availability
+    const updatedLabour = await User.findByIdAndUpdate(
+      labourId,
       { availability: availability },
       { new: true, runValidators: true }
     ).select('name email availability');
 
-    console.log(` Worker ${updatedWorker.name} availability updated to: ${availability} by HHM: ${req.user._id}`);
+    console.log(` Labour ${updatedLabour.name} availability updated to: ${availability} by HHM: ${req.user._id}`);
 
     res.status(200).json({
       success: true,
       data: {
-        _id: updatedWorker._id,
-        name: updatedWorker.name,
-        availability: updatedWorker.availability
+        _id: updatedLabour._id,
+        name: updatedLabour.name,
+        availability: updatedLabour.availability
       },
-      message: `Worker availability updated to ${availability}`
+      message: `Labour availability updated to ${availability}`
     });
 
   } catch (error) {
-    console.error(' Error updating worker availability:', error);
+    console.error(' Error updating labour availability:', error);
     res.status(500).json({
       success: false,
-      message: 'Error updating worker availability status',
+      message: 'Error updating labour availability status',
       error: error.message
     });
   }
@@ -1397,14 +1420,14 @@ const getMyPerformance = async (req, res) => {
     const approvedApplications = allApplications.filter(app => app.status === 'approved').length;
     const rejectedApplications = allApplications.filter(app => app.status === 'rejected').length;
 
-    // Get worker invitations sent
-    const workerInvitations = await Invitation.countDocuments({
+    // Get labour invitations sent
+    const labourInvitations = await Invitation.countDocuments({
       hhmId: req.user._id,
-      invitationType: 'hhm-to-worker'
+      invitationType: 'hhm-to-labour'
     });
     const acceptedInvitations = await Invitation.countDocuments({
       hhmId: req.user._id,
-      invitationType: 'hhm-to-worker',
+      invitationType: 'hhm-to-labour',
       status: 'accepted'
     });
 
@@ -1414,8 +1437,8 @@ const getMyPerformance = async (req, res) => {
       : 0;
 
     // Calculate invitation acceptance rate
-    const invitationAcceptanceRate = workerInvitations > 0
-      ? ((acceptedInvitations / workerInvitations) * 100).toFixed(2)
+    const invitationAcceptanceRate = labourInvitations > 0
+      ? ((acceptedInvitations / labourInvitations) * 100).toFixed(2)
       : 0;
 
     // Get associated factories count
@@ -1446,13 +1469,13 @@ const getMyPerformance = async (req, res) => {
         rejected: rejectedApplications
       },
       invitations: {
-        sent: workerInvitations,
+        sent: labourInvitations,
         accepted: acceptedInvitations,
         acceptanceRate: parseFloat(invitationAcceptanceRate)
       },
       metrics: {
         successRate: parseFloat(successRate),
-        workersHired: approvedApplications,
+        laboursHired: approvedApplications,
         activeJobs: openSchedules,
         associatedFactories: associatedFactoriesCount,
         avgResponseTimeHours: avgResponseTimeHours
@@ -1760,65 +1783,147 @@ const getMyFactoryInvitations = async (req, res) => {
 };
 
 /**
- * @desc    Release a worker (end exclusive employment)
- * @route   POST /api/hhm/release-worker
+ * @desc    Release a labour (end exclusive employment)
+ * @route   POST /api/hhm/release-labour
  * @access  Private (HHM only)
  */
-const releaseWorker = async (req, res) => {
+const releaseLabour = async (req, res) => {
   try {
-    console.log(' Releasing worker for HHM:', req.user._id);
+    console.log(' Releasing labour for HHM:', req.user._id);
 
-    const { workerId } = req.body;
+    const { labourId } = req.body;
 
-    if (!workerId) {
+    if (!labourId) {
       return res.status(400).json({
         success: false,
-        message: 'Worker ID is required'
+        message: 'Labour ID is required'
       });
     }
 
-    // Find the worker's profile
-    const workerProfile = await Profile.findOne({ userId: workerId });
+    // Find the labour's profile
+    const labourProfile = await Profile.findOne({ userId: labourId });
 
-    if (!workerProfile) {
+    if (!labourProfile) {
       return res.status(404).json({
         success: false,
-        message: 'Worker profile not found'
+        message: 'Labour profile not found'
       });
     }
 
-    // Check if this HHM currently employs the worker
-    if (!workerProfile.currentEmployer || workerProfile.currentEmployer.toString() !== req.user._id.toString()) {
+    // Check if this HHM currently employs the labour
+    if (!labourProfile.currentEmployer || labourProfile.currentEmployer.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
-        message: 'You can only release workers that you currently employ'
+        message: 'You can only release labour that you currently employ'
       });
     }
 
-    // Release the worker
-    await workerProfile.releaseFromEmployment();
+    // Release the labour
+    await labourProfile.releaseFromEmployment();
 
-    // Get worker details for response
-    const worker = await User.findById(workerId).select('name email');
+    // Get labour details for response
+    const labour = await User.findById(labourId).select('name email');
 
-    console.log(` Worker ${worker.name} has been released and is now available for other HHMs`);
+    console.log(` Labour ${labour.name} has been released and is now available for other HHMs`);
 
     res.status(200).json({
       success: true,
-      message: `Worker ${worker.name} has been released successfully`,
+      message: `Labour ${labour.name} has been released successfully`,
       data: {
-        workerId: worker._id,
-        name: worker.name,
-        email: worker.email,
+        labourId: labour._id,
+        name: labour.name,
+        email: labour.email,
         status: 'released'
       }
     });
 
   } catch (error) {
-    console.error(' Error releasing worker:', error);
+    console.error(' Error releasing labour:', error);
     res.status(500).json({
       success: false,
-      message: 'Error releasing worker',
+      message: 'Error releasing labour',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    Get a single labour profile by ID
+ * @route   GET /api/hhm/labours/:id
+ * @access  Private (HHM only)
+ */
+const getLabourById = async (req, res) => {
+  try {
+    const labourId = req.params.id;
+    console.log(' Getting labour profile for ID:', labourId);
+
+    // Find labour profile and populate user details
+    const profile = await Profile.findOne({ userId: labourId })
+      .populate('userId', 'name email phone createdAt username');
+
+    if (!profile) {
+      // If no profile exists, try to find the user to see if they just haven't completed their profile
+      const labour = await User.findOne({ 
+        _id: labourId, 
+        role: 'Labour'
+      }).select('name email phone username createdAt');
+      
+      if (!labour) {
+        return res.status(404).json({
+          success: false,
+          message: 'Labour not found'
+        });
+      }
+
+      // Return a basic profile object if the labour exists but has no detailed profile yet
+      return res.status(200).json({
+        success: true,
+        data: {
+          labourId: labour._id,
+          name: labour.name,
+          email: labour.email,
+          phone: labour.phone,
+          username: labour.username,
+          joinedDate: labour.createdAt,
+          availabilityStatus: 'unknown',
+          skills: [],
+          isVerified: false,
+          rating: 0,
+          completedJobs: 0
+        }
+      });
+    }
+
+    // Transform and return full profile data
+    const labourData = {
+      labourId: profile.userId._id,
+      name: profile.userId.name,
+      email: profile.userId.email,
+      phone: profile.userId.phone,
+      username: profile.userId.username,
+      skills: profile.skills || [],
+      availabilityStatus: profile.availabilityStatus,
+      location: profile.farmLocation,
+      experience: profile.farmingExperience,
+      bio: profile.bio,
+      profileImage: profile.profileImageUrl,
+      joinedDate: profile.userId.createdAt,
+      isVerified: profile.isVerified,
+      rating: profile.rating || 0,
+      completedJobs: profile.completedJobs || 0,
+      isCurrentEmployee: profile.currentEmployer ? profile.currentEmployer.toString() === req.user._id.toString() : false
+    };
+
+    res.status(200).json({
+      success: true,
+      data: labourData
+    });
+
+  } catch (error) {
+    console.error(' Error getting labour profile:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error retrieving labour profile',
       error: error.message
     });
   }
@@ -1832,19 +1937,20 @@ module.exports = {
   updateSchedule,
   deleteSchedule,
 
-  // Worker directory
-  getWorkers,
+  // Labour directory
+  getLabours,
+  getLabourById,
 
-  // Invitation management (worker invitations)
+  // Invitation management (labour invitations)
   createInvitation,
 
   // Application management
   getApplications,
   updateApplicationStatus,
 
-  // Worker availability management
-  updateWorkerAvailability,
-  releaseWorker,
+  // Labour availability management
+  updateLabourAvailability,
+  releaseLabour,
 
   // Profile management
   getProfile,

@@ -40,7 +40,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
 import UnauthorizedPage from './pages/UnauthorizedPage.jsx';
 import FactoriesPage from './pages/FactoriesPage.jsx';
-import SpecificFactoryPage from './pages/SpecificFactoryPage.jsx';
+
 import AboutUsPage from './pages/AboutUsPage.jsx';
 
 import FarmerDashboardPage from './pages/FarmerDashboardPage.jsx';
@@ -78,11 +78,11 @@ import HHMNotificationCenter from './pages/HHMNotificationCenter.jsx';
 
 import NotificationTestPage from './pages/NotificationTestPage.jsx';
 
-import LaborManagementPage from './pages/LaborManagementPage.jsx';
+import LabourManagementPage from './pages/LabourManagementPage.jsx';
 
-import WorkerDashboardPage from './pages/WorkerDashboardPage.jsx';
+import LabourDashboardPage from './pages/LabourDashboardPage.jsx';
 
-import WorkerHHMDirectoryPage from './pages/WorkerHHMDirectoryPage.jsx';
+import LabourHHMDirectoryPage from './pages/LabourHHMDirectoryPage.jsx';
 
 import AvailableJobsPage from './pages/AvailableJobsPage.jsx';
 
@@ -131,9 +131,9 @@ import EditListingPage from './pages/EditListingPage.jsx';
 
 import FarmerProfileViewPage from './pages/FarmerProfileViewPage.jsx';
 
-import WorkerHHMProfileViewPage from './pages/WorkerHHMProfileViewPage.jsx';
+import LabourHHMProfileViewPage from './pages/LabourHHMProfileViewPage.jsx';
 
-import HHMWorkerProfileViewPage from './pages/HHMWorkerProfileViewPage.jsx';
+import HHMLabourProfileViewPage from './pages/HHMLabourProfileViewPage.jsx';
 
 import FactoryHHMProfileViewPage from './pages/FactoryHHMProfileViewPage.jsx';
 
@@ -281,7 +281,7 @@ const ConditionalNavbar=()=> {
   '/farmer/*',
   '/factory/*',
   '/hhm/*',
-  '/worker/*'
+  '/labour/*'
   ];
 
   const isKnownRoute=knownRoutePatterns.some((pattern)=> matchPath( {
@@ -413,11 +413,6 @@ function App() {
     <Route path="/factories"element= {
 
       <SafeComponent name="FactoriesPage"> <FactoriesPage /> </SafeComponent>
-    }
-
-    /> <Route path="/factory/:id"element= {
-
-      <SafeComponent name="SpecificFactoryPage"> <SpecificFactoryPage /> </SafeComponent>
     }
 
     /> {
@@ -618,12 +613,12 @@ function App() {
 
     /> <Route path="labor"element= {
 
-      <SafeComponent name="LaborManagementPage"> <LaborManagementPage /> </SafeComponent>
+      <SafeComponent name="LabourManagementPage"> <LabourManagementPage /> </SafeComponent>
     }
 
     /> <Route path="labour/:labourId"element= {
 
-      <SafeComponent name="HHMWorkerProfileViewPage"> <HHMWorkerProfileViewPage /> </SafeComponent>
+      <SafeComponent name="HHMLabourProfileViewPage"> <HHMLabourProfileViewPage /> </SafeComponent>
     }
 
     /> <Route path="factory-directory"element= {
@@ -702,7 +697,7 @@ function App() {
       /* Protected Worker Routes - Only Worker/Labour role can access */
     }
 
-    <Route path="/worker"element= {
+    <Route path="/labour"element= {
       <SafeComponent name="RoleProtectedRoute"> <RoleProtectedRoute allowedRoles= {
         ['Labour', 'Worker']
       }
@@ -720,12 +715,12 @@ function App() {
 
     > <Route path="dashboard"element= {
 
-      <SafeComponent name="WorkerDashboardPage"> <WorkerDashboardPage /> </SafeComponent>
+      <SafeComponent name="LabourDashboardPage"> <LabourDashboardPage /> </SafeComponent>
     }
 
     /> <Route path="jobs"element= {
 
-      <SafeComponent name="WorkerDashboardPage"> <WorkerDashboardPage /> </SafeComponent>
+      <SafeComponent name="LabourDashboardPage"> <LabourDashboardPage /> </SafeComponent>
     }
 
     /> <Route path="applications"element= {
@@ -735,7 +730,7 @@ function App() {
 
     /> <Route path="hhm-directory"element= {
 
-      <SafeComponent name="WorkerHHMDirectoryPage"> <WorkerHHMDirectoryPage /> </SafeComponent>
+      <SafeComponent name="LabourHHMDirectoryPage"> <LabourHHMDirectoryPage /> </SafeComponent>
     }
 
     /> <Route path="hhm-directory/:userId"element= {
@@ -745,12 +740,12 @@ function App() {
 
     /> <Route path="hhm/profile/:id"element= {
 
-      <SafeComponent name="WorkerHHMProfileViewPage"> <WorkerHHMProfileViewPage /> </SafeComponent>
+      <SafeComponent name="LabourHHMProfileViewPage"> <LabourHHMProfileViewPage /> </SafeComponent>
     }
 
     /> <Route index element= {
 
-      <SafeComponent name="WorkerDashboardPage"> <WorkerDashboardPage /> </SafeComponent>
+      <SafeComponent name="LabourDashboardPage"> <LabourDashboardPage /> </SafeComponent>
     }
 
     /> </Route> </Route> {

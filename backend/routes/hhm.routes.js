@@ -12,12 +12,13 @@ const {
   getScheduleById,
   updateSchedule,
   deleteSchedule,
-  getWorkers,
+  getLabours,
+  getLabourById,
   createInvitation,
   getApplications,
   updateApplicationStatus,
-  updateWorkerAvailability,
-  releaseWorker,
+  updateLabourAvailability,
+  releaseLabour,
   getProfile,
   updateProfile,
   getFactoryInvitations,
@@ -63,7 +64,7 @@ router.put('/profile', updateProfile);
  * @access  Private (HHM only)
  * @body    {
  *   requiredSkills: string[],
- *   workerCount: number,
+ *   labourCount: number,
  *   wageOffered: number,
  *   startDate: date,
  *   title?: string,
@@ -99,7 +100,7 @@ router.get('/schedules/:id', getScheduleById);
  * @params  id: string (schedule ObjectId)
  * @body    {
  *   requiredSkills?: string[],
- *   workerCount?: number,
+ *   labourCount?: number,
  *   wageOffered?: number,
  *   startDate?: date,
  *   title?: string,
@@ -120,12 +121,12 @@ router.put('/schedules/:id', updateSchedule);
 router.delete('/schedules/:id', deleteSchedule);
 
 // ================================
-// WORKER DIRECTORY ROUTES
+// LABOUR DIRECTORY ROUTES
 // ================================
 
 /**
- * @route   GET /api/hhm/workers
- * @desc    Browse available workers directory
+ * @route   GET /api/hhm/labours
+ * @desc    Browse available labours directory
  * @access  Private (HHM only)
  * @query   skills?: string | string[] (comma-separated skills to filter by)
  * @query   availabilityStatus?: 'available' | 'unavailable' (default: 'available')
@@ -133,25 +134,32 @@ router.delete('/schedules/:id', deleteSchedule);
  * @query   experience?: number (minimum years of experience)
  * @query   page?: number (default: 1)
  * @query   limit?: number (default: 20)
- * @example GET /api/hhm/workers?skills=planting,harvesting&availabilityStatus=available&page=1&limit=20
+ * @example GET /api/hhm/labours?skills=planting,harvesting&availabilityStatus=available&page=1&limit=20
  */
-router.get('/workers', getWorkers);
+router.get('/labours', getLabours);
 
 /**
- * @route   PUT /api/hhm/workers/:workerId/availability
- * @desc    Update worker availability status (mark as busy/available)
+ * @route   GET /api/hhm/labour/:id
+ * @desc    Get a single labour profile by ID
+ * @access  Private (HHM only)
+ */
+router.get('/labour/:id', getLabourById);
+
+/**
+ * @route   PUT /api/hhm/labours/:labourId/availability
+ * @desc    Update labour availability status (mark as busy/available)
  * @access  Private (HHM only)
  * @body    { availability: 'available' | 'busy' }
  */
-router.put('/workers/:workerId/availability', updateWorkerAvailability);
+router.put('/labours/:labourId/availability', updateLabourAvailability);
 
 /**
- * @route   POST /api/hhm/release-worker
- * @desc    Release a worker from exclusive employment (end contract)
+ * @route   POST /api/hhm/release-labour
+ * @desc    Release a labour from exclusive employment (end contract)
  * @access  Private (HHM only)
- * @body    { workerId: string }
+ * @body    { labourId: string }
  */
-router.post('/release-worker', releaseWorker);
+router.post('/release-labour', releaseLabour);
 
 // ================================
 // INVITATION MANAGEMENT ROUTES (DIRECT HIRE)
@@ -159,19 +167,19 @@ router.post('/release-worker', releaseWorker);
 
 /**
  * @route   POST /api/hhm/invitations
- * @desc    Send a direct hire invitation to a worker
+ * @desc    Send a direct hire invitation to a labour
  * @access  Private (HHM only)
  * @body    {
  *   scheduleId: string (required) - The job schedule ID,
- *   workerId: string (required) - The worker's user ID,
- *   personalMessage?: string (optional) - Personal message to the worker,
+ *   labourId: string (required) - The labour's user ID,
+ *   personalMessage?: string (optional) - Personal message to the labour,
  *   offeredWage?: number (optional) - Custom wage offer (defaults to schedule wage),
  *   priority?: 'low' | 'medium' | 'high' | 'urgent' (optional, default: 'medium')
  * }
  * @example POST /api/hhm/invitations
  *          Body: {
  *            "scheduleId": "64f123456789abcdef123456",
- *            "workerId": "64f987654321fedcba654321",
+ *            "labourId": "64f987654321fedcba654321",
  *            "personalMessage": "We would love to have you join our team for this harvest!",
  *            "offeredWage": 550,
  *            "priority": "high"
@@ -220,7 +228,7 @@ router.put('/applications/:id', updateApplicationStatus);
  * @returns {
  *   schedules: { open: number, closed: number, total: number },
  *   applications: { pending: number, approved: number, rejected: number },
- *   workers: { available: number, assigned: number }
+ *   labours: { available: number, assigned: number }
  * }
  */
 router.get('/dashboard', async (req, res) => {
@@ -242,8 +250,8 @@ router.get('/dashboard', async (req, res) => {
       Application.countDocuments({ hhmId: req.user._id, status: 'rejected' })
     ]);
 
-    // Get worker statistics
-    const [availableWorkers, unavailableWorkers] = await Promise.all([
+    // Get labour statistics
+    const [availableLabours, unavailableLabours] = await Promise.all([
       Profile.countDocuments({ availabilityStatus: 'available' }),
       Profile.countDocuments({ availabilityStatus: 'unavailable' })
     ]);
@@ -260,10 +268,10 @@ router.get('/dashboard', async (req, res) => {
         rejected: rejectedApps,
         total: pendingApps + approvedApps + rejectedApps
       },
-      workers: {
-        available: availableWorkers,
-        unavailable: unavailableWorkers,
-        total: availableWorkers + unavailableWorkers
+      labours: {
+        available: availableLabours,
+        unavailable: unavailableLabours,
+        total: availableLabours + unavailableLabours
       }
     };
 
@@ -313,7 +321,7 @@ router.get('/schedules/:id/applications', async (req, res) => {
     if (status) query.status = status;
 
     const applications = await Application.find(query)
-      .populate('workerId', 'name email phone')
+      .populate('labourId', 'name email phone')
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -322,8 +330,8 @@ router.get('/schedules/:id/applications', async (req, res) => {
       schedule: {
         id: schedule._id,
         title: schedule.title,
-        workerCount: schedule.workerCount,
-        acceptedWorkersCount: schedule.acceptedWorkersCount
+        labourCount: schedule.labourCount,
+        acceptedLabourCount: schedule.acceptedLabourCount
       }
     });
 

@@ -16,7 +16,7 @@ const FarmerContractRequestPage = () => {
     farmLocation: '',
     workType: 'Sugarcane harvesting',
     landArea: '',
-    workersRequired: '',
+    laboursRequired: '',
     workTypeDetails: [], // ['cutting', 'loading', 'transport']
     equipment: {
       tractor: false,
@@ -125,7 +125,7 @@ const FarmerContractRequestPage = () => {
           farmLocation: contractForm.farmLocation,
           workType: contractForm.workType,
           landArea: contractForm.landArea,
-          workersRequired: contractForm.workersRequired,
+          laboursRequired: contractForm.laboursRequired,
           workTypeDetails: contractForm.workTypeDetails,
           equipment: contractForm.equipment,
           fieldAccessibility: contractForm.fieldAccessibility,
@@ -218,8 +218,8 @@ const FarmerContractRequestPage = () => {
                     <input type="number" name="landArea" value={contractForm.landArea} onChange={handleInputChange} placeholder="5" required />
                   </div>
                   <div className="fp-field">
-                    <label>Workers Required *</label>
-                    <input type="number" name="workersRequired" value={contractForm.workersRequired} onChange={handleInputChange} placeholder="10" required />
+                    <label>Labours Required *</label>
+                    <input type="number" name="laboursRequired" value={contractForm.laboursRequired} onChange={handleInputChange} placeholder="10" required />
                   </div>
 
                   <div className="fp-field full">
@@ -408,7 +408,7 @@ const FarmerContractRequestPage = () => {
 
                   <div className="fp-field full">
                     <label>Special Instructions (Optional)</label>
-                    <textarea name="additionalNotes" value={contractForm.additionalNotes} onChange={handleInputChange} placeholder="Mention specific instructions, lodging for workers, etc." rows="3" maxLength="300" style={{ resize: 'none' }} />
+                    <textarea name="additionalNotes" value={contractForm.additionalNotes} onChange={handleInputChange} placeholder="Mention specific instructions, lodging for labours, etc." rows="3" maxLength="300" style={{ resize: 'none' }} />
                   </div>
                 </div>
               </div>

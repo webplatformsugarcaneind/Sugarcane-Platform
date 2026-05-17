@@ -8,7 +8,7 @@ import './HHMNotificationCenter.css';
  * 
  * Centralized notification system for HHMs to view:
  * - New factory invitations
- * - New worker applications
+ * - New labour applications
  * - Application status updates
  * - Schedule updates
  */
@@ -64,7 +64,7 @@ const HHMNotificationCenter = () => {
                     data: inv
                 }));
 
-            // Process new applications into notifications
+            // Process new labour applications into notifications
             const applicationsData = applicationsRes.data.data || applicationsRes.data.applications || [];
             const newApplications = applicationsData
                 .filter(app => app.status === 'pending' && isRecent(app.createdAt, 7));
@@ -72,8 +72,8 @@ const HHMNotificationCenter = () => {
             const applicationNotifications = newApplications.map(app => ({
                 id: `application-${app._id}`,
                 type: 'application',
-                title: 'New Worker Application',
-                message: `${app.workerId?.name || 'A worker'} applied for ${app.scheduleId?.title || 'a job'}`,
+                title: 'New Labour Application',
+                message: `${app.labourId?.name || 'A labour'} applied for ${app.scheduleId?.title || 'a job'}`,
                 timestamp: app.createdAt,
                 read: false,
                 priority: 'medium',

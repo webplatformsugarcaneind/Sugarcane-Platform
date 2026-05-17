@@ -147,7 +147,7 @@ export const getDashboardRouteForRole = (role) => {
         'Farmer': '/farmer/dashboard',
         'HHM': '/hhm/dashboard',
         'Factory': '/factory/dashboard',
-        'Labour': '/worker/jobs'
+        'Labour': '/labour/dashboard'
     };
 
     const route = routes[normalized] || '/';
