@@ -75,10 +75,7 @@ const FarmerFactoryDirectoryPage = () => {
   const getInitials = n => n ? n.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : '??';
   const fmtDate = d => d ? new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A';
 
-  const kpiTotal = factories.length;
-  const kpiHHM = factories.filter(f => f.associatedHHMs?.length > 0).length;
-  const kpiAvg = factories.length > 0 ? Math.round(factories.reduce((a, f) => a + f.ui.price, 0) / factories.length) : 0;
-  const kpiExc = factories.filter(f => f.ui.rating === 'excellent').length;
+
 
   return (
     <div className="fd-page">
@@ -93,13 +90,7 @@ const FarmerFactoryDirectoryPage = () => {
         </div>
       </div>
 
-      {/* KPI ROW */}
-      <div className="fd-kpi-row">
-        <div className="fd-kpi g"><div className="fd-kpi-label">Total Factories</div><div className="fd-kpi-val g">{kpiTotal}</div><div className="fd-kpi-sub">In your region</div></div>
-        <div className="fd-kpi a"><div className="fd-kpi-label">With Active HHMs</div><div className="fd-kpi-val a">{kpiHHM}</div><div className="fd-kpi-sub">Ready to coordinate</div></div>
-        <div className="fd-kpi b"><div className="fd-kpi-label">Avg. FRP Price</div><div className="fd-kpi-val b">₹{kpiAvg.toLocaleString('en-IN')}</div><div className="fd-kpi-sub">Per metric tonne</div></div>
-        <div className="fd-kpi g"><div className="fd-kpi-label">Excellent Rated</div><div className="fd-kpi-val g">{kpiExc}</div><div className="fd-kpi-sub">Top performers</div></div>
-      </div>
+
 
       {/* TOOLBAR */}
       <div className="fd-toolbar">

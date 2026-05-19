@@ -131,147 +131,169 @@ const ContractRequestModal = ({
       isOpen={isOpen}
       onClose={handleClose}
       title={`Request Contract - ${factoryInfo?.factoryName || factoryInfo?.name || 'Factory'}`}
-      size="large"
+      size="medium"
+      className="marketplace-style-modal"
     >
-      <form onSubmit={handleSubmit} className="contract-request-form">
-        {/* Factory Info */}
-        <div className="factory-info-section">
-          <div className="factory-info-card">
-            <h4>📍 Factory Details</h4>
-            <p><strong>Name:</strong> {factoryInfo?.factoryName || factoryInfo?.name}</p>
-            {factoryInfo?.factoryLocation && (
-              <p><strong>Location:</strong> {factoryInfo.factoryLocation}</p>
-            )}
-            {factoryInfo?.capacity && (
-              <p><strong>Capacity:</strong> {factoryInfo.capacity}</p>
-            )}
+      <div className="create-listing-form">
+        <form onSubmit={handleSubmit} className="listing-form">
+          {/* Factory Info */}
+          <div className="total-value-display" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem', background: '#e8f5e8', padding: '1rem', borderRadius: '8px', borderLeft: '4px solid #4CAF50' }}>
+            <span className="total-label" style={{ fontWeight: '600', color: '#2c5530' }}>📍 Factory Details</span>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', width: '100%', color: '#2e7d32' }}>
+              <div>
+                <span style={{ fontSize: '0.85rem', color: '#4CAF50' }}>Name</span>
+                <div className="total-amount" style={{ fontSize: '1rem', fontWeight: 'bold' }}>{factoryInfo?.factoryName || factoryInfo?.name}</div>
+              </div>
+              {factoryInfo?.factoryLocation && (
+                <div>
+                  <span style={{ fontSize: '0.85rem', color: '#4CAF50' }}>Location</span>
+                  <div className="total-amount" style={{ fontSize: '1rem', fontWeight: 'bold' }}>{factoryInfo.factoryLocation}</div>
+                </div>
+              )}
+              {factoryInfo?.capacity && (
+                <div>
+                  <span style={{ fontSize: '0.85rem', color: '#4CAF50' }}>Capacity</span>
+                  <div className="total-amount" style={{ fontSize: '1rem', fontWeight: 'bold' }}>{factoryInfo.capacity}</div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Contract Title */}
-        <div className="form-group">
-          <label htmlFor="title">
-            Contract Title <span className="optional">(Optional)</span>
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            placeholder="e.g., Harvest Season Partnership 2024"
-            className={`form-input ${errors.title ? 'error' : ''}`}
-          />
-          {errors.title && <span className="error-text">{errors.title}</span>}
-        </div>
-
-        {/* Required Fields Row */}
-        <div className="form-row">
-          {/* Vehicle */}
+          {/* Contract Title */}
           <div className="form-group">
-            <label htmlFor="vehicle">
-              Vehicle Requirements <span className="required">*</span>
+            <label htmlFor="title" className="form-label">
+              Contract Title <span style={{ fontWeight: 'normal', color: '#999' }}>(Optional)</span>
             </label>
             <input
               type="text"
-              id="vehicle"
-              name="vehicle"
-              value={formData.vehicle}
+              id="title"
+              name="title"
+              value={formData.title}
               onChange={handleInputChange}
-              placeholder="e.g., 2 trucks, 1 tractor, loading equipment"
-              className={`form-input ${errors.vehicle ? 'error' : ''}`}
-              required
+              className={`form-input ${errors.title ? 'error' : ''}`}
+              placeholder="e.g., Harvest Season Partnership 2024"
+              disabled={loading}
             />
-            {errors.vehicle && <span className="error-text">{errors.vehicle}</span>}
+            {errors.title && <span className="error-message">{errors.title}</span>}
           </div>
 
-          {/* Labor */}
+          {/* Required Fields Row */}
+          <div className="form-row">
+            {/* Vehicle */}
+            <div className="form-group">
+              <label htmlFor="vehicle" className="form-label">
+                Vehicle Requirements *
+              </label>
+              <input
+                type="text"
+                id="vehicle"
+                name="vehicle"
+                value={formData.vehicle}
+                onChange={handleInputChange}
+                placeholder="e.g., 2 trucks, 1 tractor"
+                className={`form-input ${errors.vehicle ? 'error' : ''}`}
+                disabled={loading}
+                required
+              />
+              {errors.vehicle && <span className="error-message">{errors.vehicle}</span>}
+            </div>
+
+            {/* Labor */}
+            <div className="form-group">
+              <label htmlFor="labor" className="form-label">
+                Labor Requirements *
+              </label>
+              <input
+                type="text"
+                id="labor"
+                name="labor"
+                value={formData.labor}
+                onChange={handleInputChange}
+                placeholder="e.g., 50 workers, 8-hour shifts"
+                className={`form-input ${errors.labor ? 'error' : ''}`}
+                disabled={loading}
+                required
+              />
+              {errors.labor && <span className="error-message">{errors.labor}</span>}
+            </div>
+          </div>
+
+          {/* Contract Type */}
           <div className="form-group">
-            <label htmlFor="labor">
-              Labor Requirements <span className="required">*</span>
+            <label htmlFor="contractType" className="form-label">
+              Type of Contract *
             </label>
-            <input
-              type="text"
-              id="labor"
-              name="labor"
-              value={formData.labor}
-              onChange={handleInputChange}
-              placeholder="e.g., 50 workers, harvesting skills, 8-hour shifts"
-              className={`form-input ${errors.labor ? 'error' : ''}`}
-              required
-            />
-            {errors.labor && <span className="error-text">{errors.labor}</span>}
-          </div>
-        </div>
-
-        {/* Contract Type */}
-        <div className="form-group">
-          <label htmlFor="contractType">
-            Type of Contract <span className="required">*</span>
-          </label>
-          <select
-            id="contractType"
-            name="contractType"
-            value={formData.contractType}
-            onChange={handleInputChange}
-            className={`form-select ${errors.contractType ? 'error' : ''}`}
-            required
-          >
-            <option value="">Select contract type...</option>
-            <option value="seasonal">Seasonal Contract</option>
-            <option value="harvest-only">Harvest Only</option>
-            <option value="full-service">Full Service Partnership</option>
-            <option value="equipment-rental">Equipment Rental</option>
-            <option value="labor-supply">Labor Supply</option>
-            <option value="maintenance">Maintenance Contract</option>
-            <option value="custom">Custom Agreement</option>
-          </select>
-          {errors.contractType && <span className="error-text">{errors.contractType}</span>}
-        </div>
-
-        {/* Contract Details Row */}
-        <div className="form-row">
-          {/* Priority */}
-          <div className="form-group">
-            <label htmlFor="priority">Priority Level</label>
             <select
-              id="priority"
-              name="priority"
-              value={formData.priority}
+              id="contractType"
+              name="contractType"
+              value={formData.contractType}
               onChange={handleInputChange}
-              className="form-select"
+              className={`form-input ${errors.contractType ? 'error' : ''}`}
+              disabled={loading}
+              style={{ backgroundColor: '#fff' }}
+              required
             >
-              <option value="low">Low Priority</option>
-              <option value="medium">Medium Priority</option>
-              <option value="high">High Priority</option>
-              <option value="urgent">Urgent</option>
+              <option value="">Select contract type...</option>
+              <option value="seasonal">Seasonal Contract</option>
+              <option value="harvest-only">Harvest Only</option>
+              <option value="full-service">Full Service Partnership</option>
+              <option value="equipment-rental">Equipment Rental</option>
+              <option value="labor-supply">Labor Supply</option>
+              <option value="maintenance">Maintenance Contract</option>
+              <option value="custom">Custom Agreement</option>
             </select>
+            {errors.contractType && <span className="error-message">{errors.contractType}</span>}
           </div>
 
-          {/* Contract Value */}
-          <div className="form-group">
-            <label htmlFor="contractValue">
-              Contract Value <span className="optional">(Optional)</span>
-            </label>
-            <input
-              type="number"
-              id="contractValue"
-              name="contractValue"
-              value={formData.contractValue}
-              onChange={handleInputChange}
-              placeholder="e.g., 50000"
-              className={`form-input ${errors.contractValue ? 'error' : ''}`}
-              min="0"
-              step="100"
-            />
-            {errors.contractValue && <span className="error-text">{errors.contractValue}</span>}
-            <small className="form-hint">Enter amount in your local currency</small>
+          {/* Contract Details Row */}
+          <div className="form-row">
+            {/* Priority */}
+            <div className="form-group">
+              <label htmlFor="priority" className="form-label">
+                Priority Level
+              </label>
+              <select
+                id="priority"
+                name="priority"
+                value={formData.priority}
+                onChange={handleInputChange}
+                className="form-input"
+                disabled={loading}
+                style={{ backgroundColor: '#fff' }}
+              >
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+
+            {/* Contract Value */}
+            <div className="form-group">
+              <label htmlFor="contractValue" className="form-label">
+                Contract Value <span style={{ fontWeight: 'normal', color: '#999' }}>(Optional)</span>
+              </label>
+              <input
+                type="number"
+                id="contractValue"
+                name="contractValue"
+                value={formData.contractValue}
+                onChange={handleInputChange}
+                placeholder="e.g., 50000"
+                className={`form-input ${errors.contractValue ? 'error' : ''}`}
+                min="0"
+                step="100"
+                disabled={loading}
+              />
+              {errors.contractValue && <span className="error-message">{errors.contractValue}</span>}
+              <small style={{ color: '#999', fontSize: '0.8rem', marginTop: '0.25rem' }}>Enter amount in your local currency</small>
+            </div>
           </div>
 
           {/* Duration */}
           <div className="form-group">
-            <label htmlFor="durationDays">
-              Duration (Days) <span className="optional">(Optional)</span>
+            <label htmlFor="durationDays" className="form-label">
+              Duration (Days) <span style={{ fontWeight: 'normal', color: '#999' }}>(Optional)</span>
             </label>
             <input
               type="number"
@@ -283,233 +305,161 @@ const ContractRequestModal = ({
               className={`form-input ${errors.durationDays ? 'error' : ''}`}
               min="1"
               max="365"
+              disabled={loading}
             />
-            {errors.durationDays && <span className="error-text">{errors.durationDays}</span>}
+            {errors.durationDays && <span className="error-message">{errors.durationDays}</span>}
           </div>
-        </div>
 
-        {/* Initial Message */}
-        <div className="form-group">
-          <label htmlFor="initialMessage">
-            Additional Message <span className="optional">(Optional)</span>
-          </label>
-          <textarea
-            id="initialMessage"
-            name="initialMessage"
-            value={formData.initialMessage}
-            onChange={handleInputChange}
-            placeholder="Add any additional requirements, special conditions, or personal message..."
-            rows="4"
-            className="form-textarea"
-          />
-          <small className="form-hint">
-            Provide any additional details or special requirements for this contract
-          </small>
-        </div>
+          {/* Initial Message */}
+          <div className="form-group">
+            <label htmlFor="initialMessage" className="form-label">
+              Additional Message <span style={{ fontWeight: 'normal', color: '#999' }}>(Optional)</span>
+            </label>
+            <textarea
+              id="initialMessage"
+              name="initialMessage"
+              value={formData.initialMessage}
+              onChange={handleInputChange}
+              placeholder="Add any additional requirements, special conditions, or personal message..."
+              rows="4"
+              className="form-textarea"
+              disabled={loading}
+            />
+            <small style={{ color: '#999', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+              Provide any additional details or special requirements for this contract
+            </small>
+          </div>
 
-        {/* Form Actions */}
-        <div className="modal-footer">
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={handleClose}
-            disabled={loading}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className={`btn btn-primary ${loading ? 'loading' : ''}`}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <span className="spinner-small"></span>
-                Sending Request...
-              </>
-            ) : (
-              <>
-                📋 Send Contract Request
-              </>
-            )}
-          </button>
-        </div>
-      </form>
+          {/* Form Actions */}
+          <div className="form-actions" style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+            <button
+              type="button"
+              className="submit-button"
+              onClick={handleClose}
+              disabled={loading}
+              style={{ background: '#f5f5f5', color: '#333', border: '1px solid #e1e5e9', flex: 1 }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="submit-button"
+              disabled={loading}
+              style={{ flex: 2 }}
+            >
+              {loading ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Sending Request...
+                </>
+              ) : (
+                '📋 Send Contract Request'
+              )}
+            </button>
+          </div>
+        </form>
 
-      {/* Component Styles */}
-      <style jsx>{`
-        .contract-request-form {
-          max-width: 100%;
-        }
-
-        .factory-info-section {
-          margin-bottom: 2rem;
-        }
-
-        .factory-info-card {
-          background: #f8f9fa;
-          border: 2px solid #e9ecef;
-          border-radius: 12px;
-          padding: 1.5rem;
-        }
-
-        .factory-info-card h4 {
-          margin: 0 0 1rem 0;
-          color: #4a7c59;
-          font-size: 1.1rem;
-          font-weight: 600;
-        }
-
-        .factory-info-card p {
-          margin: 0.5rem 0;
-          color: #495057;
-        }
-
-        .form-group {
-          margin-bottom: 1.5rem;
-        }
-
-        .form-row {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-        }
-
-        .form-row .form-group {
-          margin-bottom: 0;
-        }
-
-        label {
-          display: block;
-          margin-bottom: 0.5rem;
-          font-weight: 600;
-          color: #2c5f2d;
-        }
-
-        .required {
-          color: #e74c3c;
-        }
-
-        .optional {
-          color: #6c757d;
-          font-weight: 400;
-          font-size: 0.9rem;
-        }
-
-        .form-input,
-        .form-select,
-        .form-textarea {
-          width: 100%;
-          padding: 0.75rem;
-          border: 2px solid #e9ecef;
-          border-radius: 8px;
-          font-size: 1rem;
-          transition: all 0.2s ease;
-          font-family: inherit;
-        }
-
-        .form-input:focus,
-        .form-select:focus,
-        .form-textarea:focus {
-          outline: none;
-          border-color: #4a7c59;
-          box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
-        }
-
-        .form-input.error,
-        .form-select.error,
-        .form-textarea.error {
-          border-color: #e74c3c;
-        }
-
-        .form-textarea {
-          resize: vertical;
-          min-height: 100px;
-        }
-
-        .error-text {
-          color: #e74c3c;
-          font-size: 0.875rem;
-          margin-top: 0.25rem;
-          display: block;
-        }
-
-        .form-hint {
-          color: #6c757d;
-          font-size: 0.875rem;
-          margin-top: 0.25rem;
-          display: block;
-        }
-
-        .btn {
-          padding: 0.75rem 1.5rem;
-          border-radius: 8px;
-          font-weight: 600;
-          
-          transition: all 0.2s ease;
-          border: none;
-          font-size: 1rem;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-
-        .btn:disabled {
-          opacity: 0.6;
-          
-        }
-
-        .btn-primary {
-          background: #4a7c59;
-          color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-          background: #3d6b48;
-          transform: translateY(-1px);
-        }
-
-        .btn-primary.loading {
-          position: relative;
-        }
-
-        .btn-secondary {
-          background: #f8f9fa;
-          color: #495057;
-          border: 2px solid #e9ecef;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-          background: #e9ecef;
-        }
-
-        .spinner-small {
-          width: 16px;
-          height: 16px;
-          border: 2px solid transparent;
-          border-top: 2px solid currentColor;
-          border-radius: 50%;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-          .form-row {
-            grid-template-columns: 1fr;
-          }
-          
-          .factory-info-card {
-            padding: 1rem;
-          }
-          
-          .btn {
+        <style jsx>{`
+          .create-listing-form {
             width: 100%;
-            justify-content: center;
+            background: #fff;
+            border-radius: 8px;
           }
-        }
-      `}</style>
+          .listing-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+          }
+          .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+          }
+          .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+          .form-label {
+            font-weight: 600;
+            color: #2c5530;
+            font-size: 0.9rem;
+          }
+          .form-input, .form-textarea {
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            color: #333;
+          }
+          .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+          }
+          .form-input.error, .form-textarea.error {
+            border-color: #f44336;
+            box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+          }
+          .form-input:disabled, .form-textarea:disabled {
+            background-color: #f5f5f5;
+          }
+          .form-input::placeholder, .form-textarea::placeholder {
+            color: #999;
+          }
+          .error-message {
+            color: #f44336;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+          }
+          .submit-button {
+            padding: 1rem;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+          }
+          .submit-button:hover:not(:disabled) {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+          }
+          .submit-button:disabled {
+            background: #ccc;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+          }
+          .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 1s linear infinite;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          @media (max-width: 768px) {
+            .form-row {
+              grid-template-columns: 1fr;
+            }
+          }
+        `}</style>
+      </div>
     </Modal>
   );
 };

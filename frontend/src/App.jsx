@@ -59,6 +59,7 @@ import AssociateHHMPage from './pages/AssociateHHMPage.jsx';
 import HHMFactoryDirectoryPage from './pages/HHMFactoryDirectoryPage.jsx';
 
 import HHMSpecificFactoryPage from './pages/HHMSpecificFactoryPage.jsx';
+import HHMContractProposePage from './pages/HHMContractProposePage.jsx';
 
 import FactoryDirectoryPage from './pages/FactoryDirectoryPage.jsx';
 
@@ -636,12 +637,17 @@ function App() {
       <SafeComponent name="HHMFactoryDirectoryPage"> <HHMFactoryDirectoryPage /> </SafeComponent>
     }
 
-    /> <Route path="factories/:id"element= {
+    /> <Route path="factories/:id" element={
 
       <SafeComponent name="HHMSpecificFactoryPage"> <HHMSpecificFactoryPage /> </SafeComponent>
     }
 
-    /> <Route path="factory-invitations"element= {
+    /> <Route path="factories/:id/propose-contract" element={
+
+      <SafeComponent name="HHMContractProposePage"> <HHMContractProposePage /> </SafeComponent>
+    }
+
+    /> <Route path="factory-invitations" element={
 
       <SafeComponent name="HHMFactoryInvitationsPage"> <HHMFactoryInvitationsPage /> </SafeComponent>
     }

@@ -61,7 +61,6 @@
 .hd-page .hd-grid.list-view { grid-template-columns: 1fr !important; }
 
 /* Responsive: shrink below 4 only on smaller screens */
-@media (max-width: 1100px) { .hd-page .hd-grid { grid-template-columns: repeat(3, 1fr) !important; } }
 @media (max-width: 750px)  { .hd-page .hd-grid { grid-template-columns: repeat(2, 1fr) !important; } }
 @media (max-width: 480px)  { .hd-page .hd-grid { grid-template-columns: 1fr !important; } }
 

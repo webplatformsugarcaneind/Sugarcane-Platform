@@ -53,7 +53,17 @@ const HHMFactoryDirectoryPage = () => {
         const fulfill = contracts > 0 ? parseFloat(((completed / contracts) * 100).toFixed(1)) : 0;
         const recommended = rating === 'excellent' && fulfill > 80;
         const specs = Array.isArray(f.specialization) && f.specialization.length > 0 ? f.specialization : (typeof f.specialization === 'string' && f.specialization ? [f.specialization] : ['Sugar Processing']);
-        return { ...f, ui: { price, score, rating, delay, contracts, completed, fulfill, recommended, specs } };
+        // Derived operational fields
+        const tonnage = 2000 + (h % 8000);
+        const onTime = Math.min(99, 55 + (h % 44));
+        const reliability = onTime >= 85 ? 'High' : onTime >= 70 ? 'Medium' : 'Low';
+        const reliabilityColor = onTime >= 85 ? 'var(--green)' : onTime >= 70 ? 'var(--amber)' : 'var(--red)';
+        const statusLabel = rating === 'poor' ? 'Seasonal Closed' : fulfill > 80 ? 'Crushing Active' : contracts > 25 ? 'High Demand' : 'Intake Open';
+        const statusColor = rating === 'poor' ? 'red' : fulfill > 80 ? 'green' : contracts > 25 ? 'amber' : 'blue';
+        const capacityUsage = Math.min(98, Math.max(45, Math.round((completed / (contracts || 1)) * 100) + (h % 15)));
+        const priorityRegion = h % 3 === 0 ? 'Sangli' : h % 3 === 1 ? 'Kolhapur' : 'Pune';
+        const pendingReqs = h % 5;
+        return { ...f, ui: { price, score, rating, delay, contracts, completed, fulfill, recommended, specs, tonnage, onTime, reliability, reliabilityColor, statusLabel, statusColor, capacityUsage, priorityRegion, pendingReqs } };
       });
       setFactories(data);
     } catch (err) {
@@ -127,10 +137,7 @@ const HHMFactoryDirectoryPage = () => {
   const getInitials = n => n ? n.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : '??';
   const fmtDate = d => d ? new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A';
 
-  const kpiTotal = factories.length;
-  const kpiHHM = factories.filter(f => f.associatedHHMs?.length > 0).length;
-  const kpiAvg = factories.length > 0 ? Math.round(factories.reduce((a, f) => a + f.ui.price, 0) / factories.length) : 0;
-  const kpiExc = factories.filter(f => f.ui.rating === 'excellent').length;
+
 
   return (
     <div className="fd-page">
@@ -145,13 +152,7 @@ const HHMFactoryDirectoryPage = () => {
         </div>
       </div>
 
-      {/* KPI ROW */}
-      <div className="fd-kpi-row">
-        <div className="fd-kpi g"><div className="fd-kpi-label">Total Factories</div><div className="fd-kpi-val g">{kpiTotal}</div><div className="fd-kpi-sub">Available for partnership</div></div>
-        <div className="fd-kpi a"><div className="fd-kpi-label">With Active HHMs</div><div className="fd-kpi-val a">{kpiHHM}</div><div className="fd-kpi-sub">Already collaborating</div></div>
-        <div className="fd-kpi b"><div className="fd-kpi-label">Avg. FRP Price</div><div className="fd-kpi-val b">₹{kpiAvg.toLocaleString('en-IN')}</div><div className="fd-kpi-sub">Per metric tonne</div></div>
-        <div className="fd-kpi g"><div className="fd-kpi-label">Excellent Rated</div><div className="fd-kpi-val g">{kpiExc}</div><div className="fd-kpi-sub">Top tier facilities</div></div>
-      </div>
+
 
       {/* TOOLBAR */}
       <div className="fd-toolbar">
@@ -198,80 +199,85 @@ const HHMFactoryDirectoryPage = () => {
         {loading ? (
           <div className="fd-loading"><div className="fd-spinner"></div><div className="fd-empty-title">Loading factories...</div></div>
         ) : error ? (
-          <div className="fd-empty"><div className="fd-empty-icon">⚠️</div><div className="fd-empty-title">{error}</div></div>
+          <div className="fd-empty"><div className="fd-empty-title">{error}</div></div>
         ) : filtered.length === 0 ? (
-          <div className="fd-empty"><div className="fd-empty-icon">🏭</div><div className="fd-empty-title">No factories found</div><div className="fd-empty-sub">Try adjusting your search or filter criteria</div></div>
+          <div className="fd-empty"><div className="fd-empty-title">No factories found</div><div className="fd-empty-sub">Try adjusting your search or filters</div></div>
         ) : filtered.map((f, idx) => (
-          <div key={f._id || f.id || `f-${idx}`} className={`fd-card ${f.ui.rating}`} style={{ animation: `fdFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
+          <div key={f._id || f.id || `f-${idx}`} className={`fd-card ${f.ui.rating}`} style={{ animation:`fdFadeUp .5s var(--ease-out) both`, animationDelay:`${idx*0.04}s` }}>
+
+            {/* HEADER */}
             <div className="fc-header">
-              <div className="fc-avatar">🏭</div>
+              <div className="fc-avatar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              </div>
               <div className="fc-title-wrap">
-                <div className="fc-name">{f.name}{f.ui.recommended && <span style={{ color: 'var(--amber)', fontSize: '.7rem' }}> ⭐</span>}</div>
-                <div className="fc-location">📍 {f.location || 'Maharashtra'}</div>
-                {f.ui.recommended && <div className="fd-recommended">⭐ Recommended</div>}
-              </div>
-              <div className="fc-rating"><span className={`fd-rating-badge ${f.ui.rating}`}>{f.ui.rating.toUpperCase()}</span></div>
-            </div>
-
-            <div className="fc-metrics">
-              <div className="fc-metric"><div className="fcm-label">Score</div><div className={`fcm-val ${scoreClass(f.ui.score)}`}>{f.ui.score.toFixed(1)}</div></div>
-              <div className="fc-metric"><div className="fcm-label">₹/Ton</div><div className={`fcm-val ${f.ui.price > 0 ? 'green' : 'muted'}`}>{f.ui.price > 0 ? `₹${f.ui.price.toLocaleString('en-IN')}` : 'N/A'}</div></div>
-              <div className="fc-metric"><div className="fcm-label">Pay Delay</div><div className="fcm-val" style={{ color: delayColor(f.ui.delay) }}>{f.ui.delay}d</div></div>
-            </div>
-
-            <div className="fc-fulfill">
-              <div className="fc-fulfill-top">
-                <span className="fc-fulfill-label">Fulfillment Rate</span>
-                <span className="fc-fulfill-pct" style={{ color: fulfillColor(f.ui.fulfill) }}>{f.ui.fulfill.toFixed(1)}%</span>
-              </div>
-              <div className="fd-fulfill-track"><div className="fd-fulfill-fill" style={{ width: `${f.ui.fulfill}%`, background: fulfillColor(f.ui.fulfill) }}></div></div>
-            </div>
-
-            <div className="fc-spec">
-              <div className="fc-spec-label">Specialization</div>
-              <div className="fd-spec-tags">{Array.isArray(f.ui.specs) && f.ui.specs.map((s, i) => <span key={i} className="fd-spec-tag">{s}</span>)}</div>
-            </div>
-
-            <div className="fc-divider"></div>
-
-            <div className="fc-meta">
-              <div className="fc-meta-item">Contracts: <strong>{f.ui.contracts} <span style={{ color: 'var(--muted-2)' }}>({f.ui.completed} done)</span></strong></div>
-              <div className="fc-meta-item">Added: <strong>{fmtDate(f.createdAt)}</strong></div>
-            </div>
-
-            <div className="fc-hhm">
-              <div className="fd-hhm-header">
-                <div className="fd-hhm-title">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  Associated HHMs
-                  <span className="fd-hhm-pill">{f.associatedHHMs?.length || 0}</span>
+                <div className="fc-name">{f.name}</div>
+                <div className="fc-location">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  {f.location || 'Maharashtra'}
                 </div>
               </div>
-              <div className="fd-hhm-list">
-                {f.associatedHHMs && f.associatedHHMs.length > 0 ? (
-                  f.associatedHHMs.slice(0, 3).map((hhm, i) => (
-                    <div key={i} className="fd-hhm-item">
-                      <div className="fd-hhm-avatar" style={{ background: 'rgba(126,200,67,.15)', color: '#7ec843' }}>{getInitials(hhm.name)}</div>
-                      <div style={{ flex: 1 }}><div className="fd-hhm-name">{hhm.name}</div><div className="fd-hhm-role">Harvest Head Manager</div></div>
-                      <div className="fd-hhm-online" title="Online"></div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="fd-hhm-empty"><span className="fd-hhm-empty-icon">👥</span><span className="fd-hhm-empty-text">No associated HHMs</span></div>
-                )}
+              <span className={`fd-rating-badge ${f.ui.rating}`}>{f.ui.rating === 'excellent' ? 'EXC' : f.ui.rating === 'good' ? 'GOOD' : 'LOW'}</span>
+            </div>
+
+            {/* 4 MINI STATS */}
+            <div className="fc-stats-row">
+              <div className="fc-stat">
+                <div className="fc-stat-val" style={{ color:'var(--green)' }}>₹{(f.ui.price/1000).toFixed(1)}k</div>
+                <div className="fc-stat-lbl">/ Ton</div>
+              </div>
+              <div className="fc-stat">
+                <div className="fc-stat-val" style={{ color: fulfillColor(f.ui.fulfill) }}>{f.ui.fulfill.toFixed(0)}%</div>
+                <div className="fc-stat-lbl">Fulfill</div>
+              </div>
+              <div className="fc-stat">
+                <div className="fc-stat-val" style={{ color: delayColor(f.ui.delay) }}>{f.ui.delay}d</div>
+                <div className="fc-stat-lbl">Delay</div>
+              </div>
+              <div className="fc-stat">
+                <div className="fc-stat-val" style={{ color:'var(--amber)' }}>{f.ui.capacityUsage}%</div>
+                <div className="fc-stat-lbl">Usage</div>
               </div>
             </div>
 
-            <div className="fc-actions">
-              <button className="fd-btn-contact" onClick={() => handleInitiatePartnership(f)}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
-                Initiate Partnership
-              </button>
-              <button className="fd-btn-profile" onClick={() => navigate(`/hhm/factories/${f._id || f.id}`, { state: { factoryData: f } })}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                View Profile
-              </button>
+            {/* SLIM FULFILLMENT BAR */}
+            <div className="fc-bar-wrap">
+              <div className="fc-bar-track"><div className="fc-bar-fill" style={{ width:`${f.ui.fulfill}%`, background: fulfillColor(f.ui.fulfill) }}/></div>
             </div>
+
+            {/* STATUS TAG */}
+            <div className="fc-tags-row">
+              <span className={`fc-status-pill ${f.ui.statusColor}`}>{f.ui.statusLabel}</span>
+            </div>
+
+            {/* DEMAND INSIGHTS */}
+            <div className="fc-demand-insights" style={{ padding: '0 16px', marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--white)' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3z"/></svg> 
+                Needs {f.ui.tonnage.toLocaleString()} Tons
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--muted)' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg> 
+                Priority: {f.ui.priorityRegion}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--muted)' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 
+                Intake Until Mar 28
+              </div>
+            </div>
+
+            {/* PARTNERSHIP INFO & FOOTER */}
+            <div className="fc-footer" style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>Active HHMs: <strong style={{ color: 'var(--white)' }}>{f.associatedHHMs?.length || 0}</strong></div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--muted)' }}>Pending: <strong style={{ color: 'var(--amber)' }}>{f.ui.pendingReqs}</strong></div>
+              </div>
+              <div className="fc-actions" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <button className="fd-btn-contact" onClick={() => handleInitiatePartnership(f)}>Partner</button>
+                <button className="fd-btn-profile" onClick={() => navigate(`/hhm/factories/${f._id || f.id}`, { state:{ factoryData:f } })}>Profile</button>
+              </div>
+            </div>
+
           </div>
         ))}
       </div>

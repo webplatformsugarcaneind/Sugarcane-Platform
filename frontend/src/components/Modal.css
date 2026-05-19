@@ -25,9 +25,10 @@
 
 /* Modal Container */
 .modal-container {
-  background: white;
+  background: #111411;
+  border: 1px solid rgba(126, 200, 67, 0.2);
   border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(126, 200, 67, 0.05);
   max-height: 90vh;
   overflow: hidden;
   position: relative;
@@ -35,6 +36,7 @@
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
+  color: var(--white);
 }
 
 .modal-container:focus {
@@ -73,7 +75,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 24px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(126, 200, 67, 0.1);
   margin-bottom: 0;
   flex-shrink: 0;
   min-height: 50px;
@@ -83,16 +85,15 @@
   margin: 0;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #2c5f2d;
+  color: var(--green);
   line-height: 1.2;
   flex: 1;
-  text-align: center;
+  text-align: left;
 }
 
 .modal-close-button {
   background: none;
   border: none;
-  
   padding: 4px;
   border-radius: 50%;
   width: 30px;
@@ -101,18 +102,18 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  color: #666;
+  color: var(--muted);
   flex-shrink: 0;
 }
 
 .modal-close-button:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
   transform: scale(1.1);
 }
 
 .modal-close-button:focus {
-  outline: 2px solid #4a7c59;
+  outline: 2px solid var(--green);
   outline-offset: 2px;
 }
 
@@ -151,7 +152,7 @@
 /* Modal Footer (when used) */
 .modal-footer {
   padding: 20px 24px 24px 24px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(126, 200, 67, 0.1);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -383,4 +384,256 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Contract Request Modal Specific Styles */
+.glass-modal {
+  background: #111411 !important;
+  border: 1px solid rgba(126, 200, 67, 0.2) !important;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(126, 200, 67, 0.05) !important;
+  color: var(--white) !important;
+}
+
+.glass-modal .modal-header {
+  border-bottom: 1px solid rgba(126, 200, 67, 0.1) !important;
+}
+
+.glass-modal .modal-title {
+  color: var(--green) !important;
+}
+
+.glass-modal .modal-close-button {
+  color: var(--muted) !important;
+}
+
+.glass-modal .modal-close-button:hover {
+  color: #ff6b6b !important;
+  background: rgba(255, 107, 107, 0.1) !important;
+}
+
+.contract-request-form {
+  max-width: 100%;
+}
+
+.factory-info-section {
+  margin-bottom: 2rem;
+}
+
+.factory-info-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(126, 200, 67, 0.15);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.factory-info-card h4 {
+  margin: 0 0 1rem 0;
+  color: var(--green);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.factory-info-card p {
+  margin: 0.5rem 0;
+  color: var(--muted);
+}
+
+.factory-info-card p strong {
+  color: var(--white);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-row .form-group {
+  margin-bottom: 0;
+}
+
+.contract-request-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--white);
+  font-size: 0.9rem;
+}
+
+.required {
+  color: #ff6b6b;
+}
+
+.optional {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--white);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.form-select option {
+  background: #1a1f1a;
+  color: var(--white);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--green);
+  background: rgba(126, 200, 67, 0.05);
+  box-shadow: 0 0 0 3px rgba(126, 200, 67, 0.1);
+}
+
+.form-input.error,
+.form-select.error,
+.form-textarea.error {
+  border-color: #ff6b6b;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.error-text {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  margin-top: 0.4rem;
+  display: block;
+}
+
+.form-hint {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 0.4rem;
+  display: block;
+}
+
+.contract-request-form .modal-footer {
+  display: flex;
+  gap: 16px;
+  margin-top: 2.5rem;
+  padding: 0;
+  border-top: none;
+}
+
+.contract-request-form .btn {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex: 1;
+  cursor: pointer;
+}
+
+.contract-request-form .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.contract-request-form .btn-primary {
+  background: var(--green);
+  color: #000;
+}
+
+.contract-request-form .btn-primary:hover:not(:disabled) {
+  background: #6ebd3c;
+  transform: translateY(-1px);
+}
+
+.contract-request-form .btn-primary.loading {
+  position: relative;
+}
+
+.contract-request-form .btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contract-request-form .btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.contract-request-form .spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid #000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .factory-info-card {
+    padding: 1rem;
+  }
+  
+  .contract-request-form .modal-footer {
+    flex-direction: column-reverse;
+  }
+  
+  .contract-request-form .btn {
+    width: 100%;
+  }
+}
+
+/* Marketplace Style Modal */
+.marketplace-style-modal {
+  background: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+  color: #333 !important;
+}
+
+.marketplace-style-modal .modal-header {
+  border-bottom: 1px solid #e1e5e9 !important;
+}
+
+.marketplace-style-modal .modal-title {
+  color: #2c5530 !important;
+}
+
+.marketplace-style-modal .modal-close-button {
+  color: #999 !important;
+}
+
+.marketplace-style-modal .modal-close-button:hover {
+  background: #f5f5f5 !important;
+  color: #333 !important;
 }
