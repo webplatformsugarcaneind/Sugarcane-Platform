@@ -20,6 +20,7 @@ from 'react-router-dom';
 import './App.css';
 import './components/Navbar.css';
 import './pages/Auth.css';
+import './components/Chatbot/Chatbot.css';
 
 import {
   getDashboardRouteForRole,

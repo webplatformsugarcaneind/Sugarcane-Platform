@@ -154,3 +154,5 @@ test/
 .gitignore
 # Local Netlify folder
 .netlify
+
+start-project.bat

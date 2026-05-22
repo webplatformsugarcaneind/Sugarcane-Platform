@@ -323,6 +323,8 @@ const FarmerDashboardPage = () => {
           <FarmerContractsTab />
         )}
       </div>
+
+      
     </div>
   );
 };

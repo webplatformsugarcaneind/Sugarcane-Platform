@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../components/Modal';
+import ChatbotWidget from '../components/Chatbot/ChatbotWidget';
 import './HomePage.css';
 import { useTranslation } from 'react-i18next';
 
@@ -642,6 +643,8 @@ const HomePage = () => {
           </div>
         </div>
       )}
+
+      <ChatbotWidget isPublic={true} />
     </div>
   );
 };

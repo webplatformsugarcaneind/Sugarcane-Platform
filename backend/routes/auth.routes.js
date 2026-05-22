@@ -1,7 +1,16 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const User = require('../models/user.model');
+const {
+  comparePassword: compareLocalPassword,
+  createLocalUser,
+  findConflictingUser,
+  findUserById,
+  findUserByIdentifier,
+  normalizeUser
+} = require('../utils/localAuthStore');
 
 const router = express.Router();
 
@@ -26,23 +35,39 @@ const isValidPhone = (phone) => {
   return phoneRegex.test(phone);
 };
 
+const isMongoConnected = () => mongoose.connection.readyState === 1;
+
+const getFallbackEmail = (username) => `${String(username).toLowerCase()}@canesetu.local`;
+
+const buildUserResponse = (user) => ({
+  id: user._id?.toString?.() || user.id,
+  name: user.name,
+  username: user.username,
+  phone: user.phone,
+  email: user.email,
+  role: user.role,
+  isActive: user.isActive,
+  createdAt: user.createdAt
+});
+
 // @route   POST /api/auth/register
 // @desc    Register a new user
 // @access  Public
 router.post('/register', async (req, res) => {
   try {
     const { name, username, phone, email, role, password } = req.body;
+    const resolvedEmail = (email || getFallbackEmail(username)).trim().toLowerCase();
 
     // Validation - Check required fields
-    if (!name || !username || !phone || !email || !role || !password) {
+    if (!name || !username || !phone || !role || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields: name, username, phone, email, role, password'
+        message: 'Please provide all required fields: name, username, phone, role, password'
       });
     }
 
     // Validate email format
-    if (!isValidEmail(email)) {
+    if (email && !isValidEmail(resolvedEmail)) {
       return res.status(400).json({
         success: false,
         message: 'Please provide a valid email address'
@@ -74,10 +99,58 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    let userResponse;
+
+    if (!isMongoConnected()) {
+      const existingUser = await findConflictingUser({
+        username: username.toLowerCase(),
+        email: resolvedEmail,
+        phone
+      });
+
+      if (existingUser) {
+        let conflictField = '';
+        const normalizedExisting = normalizeUser(existingUser);
+        if (normalizedExisting.email === resolvedEmail) {
+          conflictField = 'email';
+        } else if (normalizedExisting.username === username.toLowerCase()) {
+          conflictField = 'username';
+        } else if (String(normalizedExisting.phone || '') === String(phone)) {
+          conflictField = 'phone';
+        }
+
+        return res.status(409).json({
+          success: false,
+          message: `User with this ${conflictField} already exists`
+        });
+      }
+
+      const localUser = await createLocalUser({
+        name,
+        username,
+        phone,
+        email: resolvedEmail,
+        role,
+        password
+      });
+
+      const token = generateToken(localUser.id);
+      userResponse = buildUserResponse(localUser);
+
+      return res.status(201).json({
+        success: true,
+        message: 'User registered successfully',
+        data: {
+          user: userResponse,
+          token
+        }
+      });
+    }
+
     // Check if user already exists with email, username, or phone
     const existingUser = await User.findOne({
       $or: [
-        { email: email.toLowerCase() },
+        { email: resolvedEmail },
         { username: username.toLowerCase() },
         { phone: phone }
       ]
@@ -85,7 +158,7 @@ router.post('/register', async (req, res) => {
 
     if (existingUser) {
       let conflictField = '';
-      if (existingUser.email === email.toLowerCase()) {
+      if (existingUser.email === resolvedEmail) {
         conflictField = 'email';
       } else if (existingUser.username === username.toLowerCase()) {
         conflictField = 'username';
@@ -104,7 +177,7 @@ router.post('/register', async (req, res) => {
       name,
       username: username.toLowerCase(),
       phone,
-      email: email.toLowerCase(),
+      email: resolvedEmail,
       role,
       password
     });
@@ -116,16 +189,7 @@ router.post('/register', async (req, res) => {
     const token = generateToken(user._id);
 
     // Remove password from response
-    const userResponse = {
-      id: user._id,
-      name: user.name,
-      username: user.username,
-      phone: user.phone,
-      email: user.email,
-      role: user.role,
-      isActive: user.isActive,
-      createdAt: user.createdAt
-    };
+    userResponse = buildUserResponse(user);
 
     res.status(201).json({
       success: true,
@@ -185,6 +249,49 @@ router.post('/login', async (req, res) => {
 
     // Find user by username, email, or phone
     console.log(' Searching for user with identifier:', identifier);
+    if (!isMongoConnected()) {
+      const user = await findUserByIdentifier(identifier);
+
+      console.log(' User found:', user ? `${user.name} (${user.username})` : 'Not found');
+
+      if (!user) {
+        console.log(' User not found or inactive');
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+        });
+      }
+
+      const isPasswordValid = await compareLocalPassword(password, user.password);
+
+      if (!isPasswordValid) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+        });
+      }
+
+      const token = generateToken(user.id);
+      console.log(' Generated token for user:', user.username);
+      console.log(' Token preview:', token.substring(0, 50) + '...');
+      console.log(' Token length:', token.length);
+
+      const userResponse = buildUserResponse(user);
+
+      if (user.role === 'Farmer') {
+        console.log(` FARMER LOGGED IN SUCCESSFULLY: ${user.name} (${user.username}) - ${new Date().toLocaleString()}`);
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Login successful',
+        data: {
+          user: userResponse,
+          token
+        }
+      });
+    }
+
     const user = await User.findOne({
       $or: [
         { username: identifier.toLowerCase() },
@@ -274,7 +381,36 @@ router.get('/verify', async (req, res) => {
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
+
+    if (!isMongoConnected()) {
+      const localUser = await findUserById(decoded.userId);
+
+      if (!localUser || !localUser.isActive) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid token or user not found'
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Token verified successfully',
+        data: {
+          user: {
+            id: localUser.id,
+            name: localUser.name,
+            username: localUser.username,
+            phone: localUser.phone,
+            email: localUser.email,
+            role: localUser.role,
+            isActive: localUser.isActive,
+            createdAt: localUser.createdAt,
+            listings: localUser.listings || []
+          }
+        }
+      });
+    }
+
     // Get user data
     const user = await User.findById(decoded.userId).select('-password');
 
@@ -283,6 +419,16 @@ router.get('/verify', async (req, res) => {
         success: false,
         message: 'Invalid token or user not found'
       });
+    }
+
+    if (!isMongoConnected()) {
+      const localUser = await findUserByIdentifier(user.username || user.email || user.phone);
+      if (!localUser || !localUser.isActive) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid token or user not found'
+        });
+      }
     }
 
     res.status(200).json({

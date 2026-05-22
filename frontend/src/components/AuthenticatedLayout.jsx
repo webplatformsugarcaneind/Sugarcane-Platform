@@ -1,5 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import ChatbotWidget from './Chatbot/ChatbotWidget';
 
 /**
  * AuthenticatedLayout Component
@@ -14,6 +15,9 @@ const AuthenticatedLayout = () => {
       <main className="main-content" style={{ background: '#0b0f0b' }}>
         <Outlet />
       </main>
+
+      {/* Floating chatbot for authenticated users (portal mounts to document.body) */}
+      <ChatbotWidget isPublic={false} />
     </div>
   );
 };
