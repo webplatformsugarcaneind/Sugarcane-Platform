@@ -133,12 +133,13 @@
 
 /* Header */
 .chatbot-header {
-  padding: 20px;
+  padding: 18px 20px;
   background: linear-gradient(135deg, var(--chatbot-primary-dark), var(--chatbot-primary));
   color: white;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
+  gap: 12px;
   border-bottom: 1px solid var(--chatbot-glass-border);
 }
 
@@ -154,19 +155,57 @@
   opacity: 0.8;
 }
 
+.header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0; /* allow truncation */
+}
+
+.header-title h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.05;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-title p {
+  margin: 0;
+  font-size: 0.8rem;
+  opacity: 0.95;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: end;
+}
+
 .header-btn {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08) !important;
   border: none;
-  color: white;
+  color: white !important;
   cursor: pointer;
   padding: 8px;
   border-radius: 8px;
-  margin-left: 8px;
-  transition: var(--chatbot-transition);
+  transition: var(--chatbot-transition) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Close button smaller and pinned to right */
+.header-btn.close-btn {
+  width: 36px;
+  height: 36px;
+  padding: 6px;
 }
 
 /* Messages Area */
@@ -286,6 +325,115 @@
   opacity: 1;
 }
 
+/* Speaker button (TTS) */
+.speak-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--chatbot-glass-border);
+  color: var(--chatbot-text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: var(--chatbot-transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.speak-btn:hover:not(.active), .speak-btn:focus {
+  background: var(--chatbot-glass-bg);
+  color: white;
+}
+
+.speak-btn .chatbot-action-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Active speaking state */
+.speak-btn.active {
+  background: linear-gradient(135deg, var(--chatbot-primary), var(--chatbot-primary-light));
+  color: white;
+  box-shadow: 0 6px 18px rgba(45, 150, 60, 0.28);
+  position: relative;
+}
+
+.speak-btn.active::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  width: 8px;
+  height: 8px;
+  background: rgba(126,200,67,0.95);
+  border-radius: 50%;
+  box-shadow: 0 0 0 rgba(126,200,67,0.8);
+  animation: speak-pulse 1s infinite;
+}
+
+@keyframes speak-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(126,200,67,0.9); }
+  70% { box-shadow: 0 0 0 8px rgba(126,200,67,0); }
+  100% { box-shadow: 0 0 0 0 rgba(126,200,67,0); }
+}
+
+/* Confirm modal */
+.cs-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.cs-modal {
+  width: 92%;
+  max-width: 420px;
+  background: var(--chatbot-surface, #0f1720);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.cs-modal-header h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.05rem;
+}
+
+.cs-modal-body p {
+  margin: 0 0 12px 0;
+  color: var(--chatbot-text-muted);
+}
+
+.cs-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.cs-btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.cs-btn.cs-btn-secondary {
+  background: transparent;
+  color: var(--chatbot-text-muted);
+  border-color: rgba(255,255,255,0.04);
+}
+
+.cs-btn.cs-btn-primary {
+  background: var(--chatbot-primary);
+  color: white;
+  border-color: var(--chatbot-primary);
+}
+
+
 /* Empty State */
 .empty-state {
   display: flex;
@@ -295,7 +443,11 @@
   text-align: center;
   height: 100%;
   color: var(--chatbot-text-muted);
-  padding: 20px;
+  padding: 28px;
+  background: var(--chatbot-glass-bg);
+  border: 1px solid var(--chatbot-glass-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
 }
 
 .empty-state h3 {
@@ -308,6 +460,47 @@
   color: var(--chatbot-text-muted);
   margin-bottom: 10px;
 }
+
+/* Strong theme overrides to prevent legacy/alternate CSS from forcing a white UI */
+.chatbot-panel-container,
+.chatbot-panel-container * {
+  color: inherit !important;
+}
+
+/* panel background */
+.chatbot-panel-container {
+  background: var(--chatbot-panel-bg) !important;
+  border-radius: var(--chatbot-radius) !important;
+  border: 1px solid var(--chatbot-glass-border) !important;
+}
+
+/* messages area background */
+.chatbot-messages {
+  background: transparent !important;
+}
+
+/* assistant message card override */
+.chatbot-message.assistant .chatbot-message-content {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--chatbot-text-main) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+/* empty state dark card */
+.chatbot-panel-container .empty-state {
+  background: var(--chatbot-glass-bg) !important;
+  border: 1px solid var(--chatbot-glass-border) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6) !important;
+  color: var(--chatbot-text-muted) !important;
+}
+
+/* ensure example prompt buttons keep green style */
+.chatbot-panel-container .example-prompts button {
+  background: var(--chatbot-primary) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
 
 .empty-icon {
   font-size: 3rem;
@@ -458,4 +651,34 @@
   .chatbot-modal-overlay {
     padding: 0;
   }
+}
+
+/* Responsive tweaks for medium and small widths */
+@media (max-width: 880px) {
+  .chatbot-panel-container {
+    width: 360px !important;
+    right: 18px !important;
+    bottom: 18px !important;
+    height: calc(100vh - 36px) !important;
+  }
+
+  .chatbot-header {
+    padding: 14px 16px !important;
+  }
+
+  .chatbot-input-form {
+    padding: 12px !important;
+  }
+
+  .chatbot-panel-container .empty-state {
+    padding: 20px !important;
+    margin: 10px !important;
+  }
+}
+
+/* Make header sticky so close button and title remain visible while scrolling messages */
+.chatbot-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
 }

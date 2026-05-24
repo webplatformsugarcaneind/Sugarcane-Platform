@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useChatbot } from '../../hooks/useChatbot';
 import ChatMessage from './ChatMessage';
 import ChatInput from './ChatInput';
 import { EmptyChatIcon, TrashIcon, CloseIcon, WarningIcon } from './ChatbotIcons';
+import ConfirmModal from './ConfirmModal';
 
 export default function ChatPanel({ onClose, isPublic = false }) {
   const {
@@ -13,6 +14,8 @@ export default function ChatPanel({ onClose, isPublic = false }) {
     clearHistory,
     submitFeedback
   } = useChatbot(isPublic);
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const messagesEndRef = useRef(null);
 
@@ -30,7 +33,7 @@ export default function ChatPanel({ onClose, isPublic = false }) {
         <div className="header-actions">
           {messages.length > 0 && (
             <button
-              onClick={clearHistory}
+                onClick={() => setConfirmOpen(true)}
               className="header-btn"
               title="Clear chat"
               aria-label="Clear chat"
@@ -113,6 +116,19 @@ export default function ChatPanel({ onClose, isPublic = false }) {
       <ChatInput
         onSend={sendMessage}
         disabled={loading}
+      />
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Clear chat history"
+        message="Are you sure you want to clear the chat history? This cannot be undone."
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={async () => {
+          setConfirmOpen(false);
+          await clearHistory();
+        }}
+        confirmLabel="Clear"
+        cancelLabel="Cancel"
       />
     </div>
   );

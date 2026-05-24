@@ -1,9 +1,20 @@
-import React from 'react';
-import { ThumbsUpIcon, ThumbsDownIcon, CopyIcon } from './ChatbotIcons';
+import React, { useState, useEffect } from 'react';
+import { ThumbsUpIcon, ThumbsDownIcon, CopyIcon, SpeakerIcon } from './ChatbotIcons';
+import { speak, stop, isSpeaking } from './tts';
 
 export default function ChatMessage({ message, onFeedback }) {
   const isUser = message.role === 'user';
   const isTyping = message.role === 'system' && message.content === 'typing';
+  const [speaking, setSpeaking] = useState(false);
+
+  useEffect(() => {
+    // keep local speaking state in sync if speech status changed elsewhere
+    if (!isSpeaking(message.id) && speaking) {
+      setSpeaking(false);
+    }
+    // no dependencies on speaking to avoid re-subscribing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isTyping) {
     return (
@@ -55,6 +66,22 @@ export default function ChatMessage({ message, onFeedback }) {
               aria-label="Copy message"
             >
               <CopyIcon className="chatbot-action-icon" />
+            </button>
+            <button
+              className={`speak-btn ${speaking ? 'active' : ''}`}
+              onClick={() => {
+                if (speaking) {
+                  stop();
+                  // onEnd will be called by stop()
+                } else {
+                  // stop any other speech and start this one
+                  speak(message.content, message.id, () => setSpeaking(true), () => setSpeaking(false));
+                }
+              }}
+              title="Read aloud"
+              aria-label="Read message aloud"
+            >
+              <SpeakerIcon className="chatbot-action-icon" />
             </button>
           </div>
         )}

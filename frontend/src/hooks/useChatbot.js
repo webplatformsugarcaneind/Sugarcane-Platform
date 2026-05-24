@@ -105,15 +105,13 @@ export function useChatbot(isPublic = false) {
   }, [sessionId, isPublic]);
 
   const clearHistory = useCallback(async () => {
-    if (confirm('Are you sure you want to clear the chat history?')) {
-      try {
-        const token = !isPublic ? getStoredToken() : null;
-        await chatbotService.clearHistory(sessionId, token);
-        setMessages([]);
-        localStorage.removeItem(`chat_${sessionId}`);
-      } catch (err) {
-        console.error('Error clearing history:', err);
-      }
+    try {
+      const token = !isPublic ? getStoredToken() : null;
+      await chatbotService.clearHistory(sessionId, token);
+      setMessages([]);
+      localStorage.removeItem(`chat_${sessionId}`);
+    } catch (err) {
+      console.error('Error clearing history:', err);
     }
   }, [sessionId, isPublic]);
 

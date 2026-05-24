@@ -78,3 +78,13 @@ export function CopyIcon({ className = '' }) {
     </IconShell>
   );
 }
+
+export function SpeakerIcon({ className = '' }) {
+  return (
+    <IconShell className={className}>
+      <path d="M3 9v6a1 1 0 0 0 1 1h3l4 3V5L7 8H4a1 1 0 0 0-1 1z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16.5 8.5a4 4 0 0 1 0 7" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 6.5a7 7 0 0 1 0 11" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
+    </IconShell>
+  );
+}
