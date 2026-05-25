@@ -40,6 +40,19 @@ export function useChatbot(isPublic = false) {
     }
   }, [messages, sessionId]);
 
+  const clientFallback = (message) => {
+    const lower = message.toLowerCase();
+    if (lower.includes('contract')) return 'To manage your contracts, go to your Dashboard and click on the Contracts tab. You can view, accept, or reject contract offers there.';
+    if (lower.includes('price') || lower.includes('market')) return 'Current sugarcane prices vary by region. Check the Marketplace section for live listings and prices from buyers near you.';
+    if (lower.includes('activity') || lower.includes('recent')) return 'Your recent activity is shown on your Dashboard — including contract updates, new listings, and notifications.';
+    if (lower.includes('hhm') || lower.includes('harvest')) return 'HHMs (Harvest Managers) coordinate between farmers and factories. You can find them in the HHM Directory under your navigation menu.';
+    if (lower.includes('factory') || lower.includes('factories')) return 'Browse available factories in the Factory Directory. You can compare prices, payment terms, and ratings using the Factory Analysis page.';
+    if (lower.includes('marketplace')) return 'The Marketplace lets you list your sugarcane or browse existing listings. Navigate to Marketplace from the top menu.';
+    if (lower.includes('profile')) return 'Update your profile from the Profile section in the top navigation. Keep your details current for better matches.';
+    if (lower.includes('hello') || lower.includes('hi')) return 'Hello! I am the CaneSetu Assistant. Ask me about contracts, the marketplace, factories, HHMs, or anything about the platform!';
+    return 'I can help you with contracts, marketplace listings, factory analysis, HHM management, and more. What would you like to know?';
+  };
+
   const sendMessage = useCallback(async (userMessage) => {
     if (!userMessage.trim()) return;
 
@@ -94,11 +107,29 @@ export function useChatbot(isPublic = false) {
 
     } catch (err) {
       console.error('Chat error:', err);
-      const errorMessage = err.message || 'Failed to send message. Please try again.';
-      setError(errorMessage);
+
+      // Check if it's a network/server error — use client-side fallback instead of showing an error
+      const isNetworkError = !err.response || err.response?.status === 404 || err.response?.status === 503;
       
-      // Remove the user message if there was an error
-      setMessages(prev => prev.slice(0, -1));
+      if (isNetworkError) {
+        // Use client-side fallback silently
+        const fallbackContent = clientFallback(userMessage);
+        const fallbackMsg = {
+          id: `msg_${Date.now() + 1}`,
+          role: 'assistant',
+          content: fallbackContent,
+          timestamp: new Date().toISOString(),
+          tokens: null,
+          feedback: null
+        };
+        setMessages(prev => [...prev, fallbackMsg]);
+      } else {
+        // Show error only for genuine failures (e.g. rate limit, auth error)
+        const errorMessage = err.response?.data?.message || 'Something went wrong. Please try again.';
+        setError(errorMessage);
+        // Remove the user message if there was an error
+        setMessages(prev => prev.slice(0, -1));
+      }
     } finally {
       setLoading(false);
     }
