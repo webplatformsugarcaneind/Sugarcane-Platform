@@ -25,37 +25,20 @@ const getProfile = async (req, res) => {
       });
     }
 
-    // Format profile data specific to farmer users
-    const profileData = {
-      _id: farmer._id,
-      name: farmer.name,
-      username: farmer.username,
-      email: farmer.email,
-      phone: farmer.phone,
-      role: farmer.role,
-      location: farmer.location,
-      farmSize: farmer.farmSize,
-      farmingExperience: farmer.farmingExperience,
-      farmingMethods: farmer.farmingMethods,
-      equipment: farmer.equipment,
-      certifications: farmer.certifications,
-      cropTypes: farmer.cropTypes,
-      irrigationType: farmer.irrigationType,
-      isActive: farmer.isActive,
-      createdAt: farmer.createdAt,
-      updatedAt: farmer.updatedAt
-    };
+    // Convert mongoose document to plain object with all virtuals and getters
+    const farmerData = farmer.toObject ? farmer.toObject({ getters: true, virtuals: true }) : farmer;
+    delete farmerData.password;
 
     res.status(200).json({
       success: true,
       message: 'Farmer profile retrieved successfully',
-      profile: profileData
+      profile: farmerData
     });
 
     console.log(' NEW FARMER CONTROLLER - Response sent:', {
       success: true,
       message: 'Farmer profile retrieved successfully',
-      profileDataKeys: Object.keys(profileData)
+      profileDataKeys: Object.keys(farmerData)
     });
 
   } catch (error) {
@@ -394,12 +377,34 @@ const getHHMs = async (req, res) => {
     const hhms = await User.find({ 
       role: 'HHM', 
       isActive: true 
-    }).select('_id name location teamSize managementExperience isActive createdAt').sort({ name: 1 });
+    })
+    .select('_id name location teamSize managementExperience isActive createdAt associatedFactories')
+    .lean()
+    .sort({ name: 1 });
+
+    // Look up all factories (safe for small/medium sets)
+    const factories = await User.find({ role: 'Factory' })
+      .select('_id name factoryName associatedHHMs')
+      .lean();
+
+    const data = hhms.map(hhm => {
+      // Find all factories that have this HHM in their associatedHHMs array
+      const linkedFactories = factories
+        .filter(f => f.associatedHHMs && f.associatedHHMs.some(id => id.toString() === hhm._id.toString()))
+        .map(f => ({ _id: f._id, name: f.factoryName || f.name }));
+        
+      // Merge with any existing associatedFactories if they exist in the DB, though they likely don't
+      const combinedFactories = [...(hhm.associatedFactories || []), ...linkedFactories];
+      // Deduplicate by ID
+      const uniqueFactories = Array.from(new Map(combinedFactories.map(item => [item._id.toString(), item])).values());
+      
+      return { ...hhm, associatedFactories: uniqueFactories };
+    });
 
     res.status(200).json({
       success: true,
-      count: hhms.length,
-      data: hhms
+      count: data.length,
+      data: data
     });
 
   } catch (error) {

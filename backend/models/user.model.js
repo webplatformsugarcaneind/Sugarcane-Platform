@@ -56,83 +56,65 @@ const userSchema = new mongoose.Schema({
   },
 
   // Factory-specific fields
-  factoryName: {
-    type: String,
-    trim: true
-  },
-  factoryLocation: {
-    type: String,
-    trim: true
-  },
-  factoryDescription: {
-    type: String,
-    trim: true
-  },
-  capacity: {
-    type: String,
-    trim: true
-  },
-  experience: {
-    type: String,
-    trim: true
-  },
-  specialization: {
-    type: String,
-    trim: true
-  },
-  crushingStatus: {
-    type: String,
-    enum: ['ON', 'OFF'],
-    default: 'OFF',
-    trim: true
-  },
+  factoryName: { type: String, trim: true },
+  factoryLocation: { type: String, trim: true },
+  factoryDescription: { type: String, trim: true },
+  capacity: { type: String, trim: true },
+  experience: { type: String, trim: true },
+  specialization: { type: String, trim: true },
+  crushingStatus: { type: String, enum: ['ON', 'OFF'], default: 'OFF', trim: true },
+  establishedYear: { type: String, trim: true },
+  description: { type: String, trim: true },
   contactInfo: {
     website: { type: String, trim: true },
     fax: { type: String, trim: true },
     tollfree: { type: String, trim: true },
     landline: { type: String, trim: true }
   },
-  operatingHours: {
-    season: { type: String, trim: true }
-  },
-  operatingSeason: {
-    type: String,
-    trim: true
-  },
+  operatingHours: { season: { type: String, trim: true } },
+  operatingSeason: { type: String, trim: true },
 
   // Farmer-specific fields
-  farmSize: {
-    type: String,
-    trim: true
-  },
-  farmingExperience: {
-    type: String,
-    trim: true
-  },
-  farmingMethods: {
-    type: String,
-    trim: true
-  },
-  equipment: {
-    type: String,
-    trim: true
-  },
-  certifications: {
-    type: String,
-    trim: true
-  },
-  cropTypes: {
-    type: String,
-    trim: true
-  },
-  irrigationType: {
-    type: String,
-    trim: true
-  },
-  location: {
-    type: String,
-    trim: true
-  },
+  farmSize: { type: String, trim: true },
+  farmingExperience: { type: String, trim: true },
+  farmingMethods: { type: String, trim: true },
+  equipment: { type: String, trim: true },
+  certifications: { type: String, trim: true },
+  cropTypes: { type: String, trim: true },
+  irrigationType: { type: String, trim: true },
+  location: { type: String, trim: true },
+  cropVariety: { type: String, trim: true },
+  estimatedYield: { type: String, trim: true },
+  cropStatus: { type: String, trim: true, default: 'Standing Crop' },
+  farmType: { type: String, trim: true },
+  preferredHarvestDate: { type: Date },
+  harvestDate: { type: Date },
+  workersNeeded: { type: String, trim: true },
+  harvestType: { type: String, trim: true, default: 'Manual' },
+  transportRequired: { type: Boolean, default: true },
+  loadingSupport: { type: Boolean, default: false },
+  machineRequired: { type: String, trim: true, default: 'Manual Preferred' },
+  urgencyLevel: { type: String, trim: true, default: 'Normal Season' },
+  village: { type: String, trim: true },
+  region: { type: String, trim: true },
+  district: { type: String, trim: true },
+  distanceFromFactory: { type: String, trim: true },
+  roadAccessibility: { type: String, trim: true, default: 'Truck Accessible' },
+  loadingPoint: { type: String, trim: true },
+  harvestWindow: { type: String, trim: true },
+  dailyHours: { type: String, trim: true },
+  shiftPreference: { type: String, trim: true, default: 'Day Shift' },
+  peakDays: { type: String, trim: true },
+  contractStatus: { type: String, trim: true, default: 'Open for Proposals' },
+  preferredPayment: { type: String, trim: true, default: 'Bank Transfer' },
+  previousContractType: { type: String, trim: true, default: 'Seasonal' },
+  advanceRequired: { type: Boolean, default: false },
+  settlementPreference: { type: String, trim: true, default: 'Per Harvest Cycle' },
+  hhmPartnerships: { type: Number, default: 0 },
+  seasonsCompleted: { type: Number, default: 0 },
+  reliabilityRating: { type: Number, default: 0 },
+  trackRecord: { type: String, trim: true },
+  contactPreference: { type: String, trim: true, default: 'Any' },
 
   // HHM-specific fields
   managementExperience: {
@@ -227,27 +209,12 @@ const userSchema = new mongoose.Schema({
   }],
 
   // Labour-specific fields
-  skills: {
-    type: String,
-    trim: true
-  },
-  workPreferences: {
-    type: String,
-    trim: true
-  },
-  wageRate: {
-    type: String,
-    trim: true
-  },
-  availability: {
-    type: String,
-    enum: ['Available', 'Unavailable'],
-    default: 'Available'
-  },
-  workExperience: {
-    type: String,
-    trim: true
-  },
+  skills: { type: String, trim: true },
+  workPreferences: { type: String, trim: true },
+  wageRate: { type: String, trim: true },
+  availability: { type: String, enum: ['Available', 'Unavailable'], default: 'Available' },
+  workExperience: { type: String, trim: true },
+  preferredLocation: { type: String, trim: true },
 
   // Marketplace fields for Farmers
   listings: [{

@@ -3,6 +3,27 @@ import axios from 'axios';
 import './FactoryAnalysisPage.css';
 
 /**
+ * Premium SVG Icons
+ */
+const Icons = {
+  Loader: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="fap-spin-icon" style={{width:'1em',height:'1em'}}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>),
+  Chart: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18"/><path strokeLinecap="round" strokeLinejoin="round" d="m19 9-5 5-4-4-3 3"/></svg>),
+  Trophy: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h7.5M5.25 9V6.75c0-.414.336-.75.75-.75h12c.414 0 .75.336.75.75V9c0 4.142-3.358 7.5-7.5 7.5h-1.5C6.608 16.5 3.25 13.142 3.25 9z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5v3.75M9 20.25h6" /></svg>),
+  Location: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0z" /></svg>),
+  Star: () => (<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>),
+  Scale: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18"/><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l4 2 4-2"/><path strokeLinecap="round" strokeLinejoin="round" d="M13 8l4 2 4-2"/><path strokeLinecap="round" strokeLinejoin="round" d="M7 10v6"/><path strokeLinecap="round" strokeLinejoin="round" d="M17 10v6"/><path strokeLinecap="round" strokeLinejoin="round" d="M4 16h6"/><path strokeLinecap="round" strokeLinejoin="round" d="M14 16h6"/><path strokeLinecap="round" strokeLinejoin="round" d="M3 8h8"/><path strokeLinecap="round" strokeLinejoin="round" d="M13 8h8"/></svg>),
+  Factory: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path strokeLinecap="round" strokeLinejoin="round" d="M2 20h20M4 20V8l4-4v16M12 20V6l4-4v18M20 20v-8l-4-4"/></svg>),
+  Money: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>),
+  Clock: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>),
+  CheckCircle: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>),
+  Clipboard: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>),
+  Crown: () => (<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/><path d="M5 18h14v2H5v-2z"/></svg>),
+  Medal: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path d="M12 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M10.8 14.8 9 21l3-1.5 3 1.5-1.8-6.2"/></svg>),
+  Handshake: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5 21 3v6l-4.5 4.5M10.5 13.5 3 21v-6l4.5-4.5M3 3l18 18"/></svg>),
+  Formula: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{width:'1em',height:'1em',verticalAlign:'-0.125em'}}><path strokeLinecap="round" strokeLinejoin="round" d="M4 19V5a2 2 0 0 1 2-2h13.4a.6.6 0 0 1 .6.6v13.114"/><path strokeLinecap="round" strokeLinejoin="round" d="M14 10h5M14 14h5M5 10l4 4M9 10l-4 4"/></svg>)
+};
+
+/**
  * FactoryAnalysisPage Component
  * CaneSetu Premium Dark Theme
  */
@@ -147,8 +168,32 @@ const FactoryAnalysisPage = () => {
   
   const ratingBadgeClass = (r) => {
     if (r === 'EXCELLENT') return 'fap-rating-excellent';
-    if (r === 'GOOD' || r==='AVERAGE') return 'fap-rating-good';
+    if (r === 'GOOD')      return 'fap-rating-good';
+    if (r === 'AVERAGE')   return 'fap-rating-average';
     return 'fap-rating-poor';
+  };
+
+  const RatingIcon = ({ r }) => {
+    if (r === 'EXCELLENT') return (
+      <svg viewBox="0 0 16 16" fill="currentColor" style={{width:'0.85em',height:'0.85em',flexShrink:0}}>
+        <path d="M8 1l1.85 3.75L14 5.5l-3 2.9.7 4.1L8 10.4l-3.7 2.1.7-4.1-3-2.9 4.15-.75z"/>
+      </svg>
+    );
+    if (r === 'GOOD') return (
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:'0.85em',height:'0.85em',flexShrink:0}}>
+        <polyline points="2.5 8 6.5 12 13.5 4"/>
+      </svg>
+    );
+    if (r === 'AVERAGE') return (
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{width:'0.85em',height:'0.85em',flexShrink:0}}>
+        <line x1="3" y1="8" x2="13" y2="8"/>
+      </svg>
+    );
+    return (
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{width:'0.85em',height:'0.85em',flexShrink:0}}>
+        <line x1="4" y1="4" x2="12" y2="12"/><line x1="12" y1="4" x2="4" y2="12"/>
+      </svg>
+    );
   };
 
   const delayBadgeClass = (d) => {
@@ -161,8 +206,8 @@ const FactoryAnalysisPage = () => {
     return (
       <div className="fap-page-container">
         <div className="fap-loading-container">
-          <div className="fap-loading-spinner"></div>
-          <p>🔄 Interfacing with CaneSetu Analytics Engine...</p>
+          <div className="fap-loading-spinner" style={{display:'flex',justifyContent:'center',alignItems:'center',width:'40px',height:'40px',color:'var(--green)'}}><Icons.Loader /></div>
+          <p>Interfacing with CaneSetu Analytics Engine...</p>
         </div>
       </div>
     );
@@ -217,7 +262,7 @@ const FactoryAnalysisPage = () => {
           <div className="fap-section-card">
             <div className="fap-section-card-header">
               <div className="fap-sch-left">
-                <div className="fap-sch-icon">📊</div>
+                <div className="fap-sch-icon" style={{fontSize: '1.4rem'}}><Icons.Chart /></div>
                 <div>
                   <div className="fap-sch-title">Profitability Score — Bar Chart</div>
                   <div className="fap-sch-sub">Higher = better partner for your cane</div>
@@ -287,7 +332,7 @@ const FactoryAnalysisPage = () => {
           <div className="fap-section-card">
             <div className="fap-section-card-header">
               <div className="fap-sch-left">
-                <div className="fap-sch-icon">🏆</div>
+                <div className="fap-sch-icon" style={{fontSize: '1.4rem'}}><Icons.Trophy /></div>
                 <div>
                   <div className="fap-sch-title">Factory Rankings</div>
                   <div className="fap-sch-sub">Ranked by profitability score — current season</div>
@@ -318,9 +363,9 @@ const FactoryAnalysisPage = () => {
                       <td><span className="fap-rank-num">#{i+1}</span></td>
                       <td>
                         <div className="fap-fn-name">{f.name}</div>
-                        <div className="fap-fn-loc">📍 {f.loc}</div>
+                        <div className="fap-fn-loc"><Icons.Location /> {f.loc}</div>
                         <div className="fap-fn-contracts">{f.contracts} contracts · {f.completed} completed</div>
-                        {i === 0 && <div className="fap-recommended-pill">⭐ Recommended Factory</div>}
+                        {i === 0 && <div className="fap-recommended-pill"><Icons.Star /> Recommended Factory</div>}
                       </td>
                       <td><span className={`fap-td-num ${f.score > 200 ? f.score > 350 ? 'green':'amber' : 'muted'}`}>{formatCurrency(f.price)}</span></td>
                       <td><span className={`fap-delay-badge ${delayBadgeClass(f.delay)}`}>{f.delay.toFixed(1)} days</span></td>
@@ -333,7 +378,7 @@ const FactoryAnalysisPage = () => {
                         </div>
                       </td>
                       <td><span className="fap-td-num" style={{color: f.color}}>{f.score.toFixed(2)}</span></td>
-                      <td><span className={`fap-rating-badge ${ratingBadgeClass(f.rating)}`}>{f.rating}</span></td>
+                      <td><span className={`fap-rating-badge ${ratingBadgeClass(f.rating)}`}><RatingIcon r={f.rating} />{f.rating}</span></td>
                     </tr>
                   ))}
                 </tbody>
@@ -347,14 +392,14 @@ const FactoryAnalysisPage = () => {
           <div className="fap-compare-section">
             <div className="fap-compare-header">
               <div className="fap-sch-left">
-                <div className="fap-sch-icon">⚖️</div>
+                <div className="fap-sch-icon" style={{fontSize: '1.4rem'}}><Icons.Scale /></div>
                 <div>
                   <div className="fap-sch-title">Head-to-Head Comparison</div>
                   <div className="fap-sch-sub">Select any two factories from the database to compare side-by-side</div>
                 </div>
               </div>
-              <div style={{fontSize:'.72rem',color:'var(--muted-2)',background:'rgba(126,200,67,.06)',border:'1px solid rgba(126,200,67,.15)',borderRadius:'100px',padding:'6px 14px'}}>
-                🏭 {factories.length} factories in database
+              <div style={{fontSize:'.72rem',color:'var(--muted-2)',background:'rgba(126,200,67,.06)',border:'1px solid rgba(126,200,67,.15)',borderRadius:'100px',padding:'6px 14px',display:'flex',alignItems:'center',gap:'6px'}}>
+                <Icons.Factory /> {factories.length} factories in database
               </div>
             </div>
 
@@ -372,7 +417,7 @@ const FactoryAnalysisPage = () => {
 
                   >
                     <div className="fap-fsb-inner">
-                      <div className="fap-fsb-avatar" style={{background:'rgba(126,200,67,.1)'}}>🏭</div>
+                      <div className="fap-fsb-avatar" style={{background:'rgba(126,200,67,.1)',color:'var(--green)',display:'flex',justifyContent:'center',alignItems:'center',fontSize:'1.2rem'}}><Icons.Factory /></div>
                       <div className="fap-fsb-info">
                         <div className="fap-fsb-name">{selA?.name || 'Select Factory'}</div>
                         <div className="fap-fsb-detail">{selA?.loc || '---'} · Score: {selA?.score?.toFixed(2)}</div>
@@ -400,7 +445,7 @@ const FactoryAnalysisPage = () => {
  
 
                           >
-                            <div className="fap-fdo-avatar" style={{background: `${f.color}22`}}>🏭</div>
+                            <div className="fap-fdo-avatar" style={{background: `${f.color}22`,color:f.color,display:'flex',justifyContent:'center',alignItems:'center',fontSize:'1.1rem'}}><Icons.Factory /></div>
                             <div>
                               <div className="fap-fdo-name">{f.name}</div>
                               <div className="fap-fdo-detail">{f.loc} · {f.contracts} contracts</div>
@@ -428,7 +473,7 @@ const FactoryAnalysisPage = () => {
 
                   >
                     <div className="fap-fsb-inner">
-                      <div className="fap-fsb-avatar" style={{background:'rgba(232,168,58,.1)'}}>🏭</div>
+                      <div className="fap-fsb-avatar" style={{background:'rgba(232,168,58,.1)',color:'var(--amber)',display:'flex',justifyContent:'center',alignItems:'center',fontSize:'1.2rem'}}><Icons.Factory /></div>
                       <div className="fap-fsb-info">
                         <div className="fap-fsb-name">{selB?.name || 'Select Factory'}</div>
                         <div className="fap-fsb-detail">{selB?.loc || '---'} · Score: {selB?.score?.toFixed(2)}</div>
@@ -456,7 +501,7 @@ const FactoryAnalysisPage = () => {
  
 
                           >
-                            <div className="fap-fdo-avatar" style={{background: `${f.color}22`}}>🏭</div>
+                            <div className="fap-fdo-avatar" style={{background: `${f.color}22`,color:f.color,display:'flex',justifyContent:'center',alignItems:'center',fontSize:'1.1rem'}}><Icons.Factory /></div>
                             <div>
                               <div className="fap-fdo-name">{f.name}</div>
                               <div className="fap-fdo-detail">{f.loc} · {f.contracts} contracts</div>
@@ -482,54 +527,58 @@ const FactoryAnalysisPage = () => {
 
                     {/* Metric Rows */}
                     {[
-                      { l: '📍 Location', va: selA.loc, vb: selB.loc, wa: false, wb: false },
-                      { l: '💰 Avg. Price / Ton', va: formatCurrency(selA.price), vb: formatCurrency(selB.price), wa: selA.price > selB.price, wb: selB.price > selA.price },
-                      { l: '⏱ Payment Delay', va: selA.delay + ' days', vb: selB.delay + ' days', wa: selA.delay < selB.delay, wb: selB.delay < selA.delay },
-                      { l: '✅ Fulfillment Rate', va: selA.fulfill.toFixed(1) + '%', vb: selB.fulfill.toFixed(1) + '%', wa: selA.fulfill > selB.fulfill, wb: selB.fulfill > selA.fulfill },
-                      { l: '📋 Total Contracts', va: `${selA.contracts} (${selA.completed} done)`, vb: `${selB.contracts} (${selB.completed} done)`, wa: selA.contracts > selB.contracts, wb: selB.contracts > selA.contracts },
-                      { l: '📊 Score', va: selA.score.toFixed(2), vb: selB.score.toFixed(2), wa: selA.score > selB.score, wb: selB.score > selA.score },
+                      { l: <><Icons.Location /> Location</>, va: selA.loc, vb: selB.loc, wa: false, wb: false },
+                      { l: <><Icons.Money /> Avg. Price / Ton</>, va: formatCurrency(selA.price), vb: formatCurrency(selB.price), wa: selA.price > selB.price, wb: selB.price > selA.price },
+                      { l: <><Icons.Clock /> Payment Delay</>, va: selA.delay + ' days', vb: selB.delay + ' days', wa: selA.delay < selB.delay, wb: selB.delay < selA.delay },
+                      { l: <><Icons.CheckCircle /> Fulfillment Rate</>, va: selA.fulfill.toFixed(1) + '%', vb: selB.fulfill.toFixed(1) + '%', wa: selA.fulfill > selB.fulfill, wb: selB.fulfill > selA.fulfill },
+                      { l: <><Icons.Clipboard /> Total Contracts</>, va: `${selA.contracts} (${selA.completed} done)`, vb: `${selB.contracts} (${selB.completed} done)`, wa: selA.contracts > selB.contracts, wb: selB.contracts > selA.contracts },
+                      { l: <><Icons.Chart /> Score</>, va: selA.score.toFixed(2), vb: selB.score.toFixed(2), wa: selA.score > selB.score, wb: selB.score > selA.score },
                     ].map((row, idx) => (
                       <React.Fragment key={idx}>
                         <div className="fap-cg-metric">{row.l}</div>
                         <div className={`fap-cg-val ${row.wa ? 'winner' : ''}`}>
                           <span className="fap-cg-num" style={{color: row.wa ? 'var(--green)' : 'var(--white)'}}>{row.va}</span>
-                          <span className="fap-winner-crown" style={{opacity: row.wa ? 1 : 0}}>👑</span>
+                          <span className="fap-winner-crown" style={{opacity: row.wa ? 1 : 0}}><Icons.Crown /></span>
                         </div>
                         <div className={`fap-cg-val ${row.wb ? 'winner' : ''}`}>
                           <span className="fap-cg-num" style={{color: row.wb ? 'var(--amber)' : 'var(--white)'}}>{row.vb}</span>
-                          <span className="fap-winner-crown" style={{opacity: row.wb ? 1 : 0}}>👑</span>
+                          <span className="fap-winner-crown" style={{opacity: row.wb ? 1 : 0}}><Icons.Crown /></span>
                         </div>
                       </React.Fragment>
                     ))}
 
-                    <div className="fap-cg-metric">🏅 Rating</div>
+                    <div className="fap-cg-metric"><Icons.Medal /> Rating</div>
                     <div className="fap-cg-val">
-                      <span className={`fap-rating-badge ${ratingBadgeClass(selA.rating)}`}>{selA.rating}</span>
+                      <span className={`fap-rating-badge ${ratingBadgeClass(selA.rating)}`}><RatingIcon r={selA.rating} />{selA.rating}</span>
                     </div>
                     <div className="fap-cg-val">
-                      <span className={`fap-rating-badge ${ratingBadgeClass(selB.rating)}`}>{selB.rating}</span>
+                      <span className={`fap-rating-badge ${ratingBadgeClass(selB.rating)}`}><RatingIcon r={selB.rating} />{selB.rating}</span>
                     </div>
                   </div>
 
                   {/* Verdict */}
                   {selA.score !== selB.score ? (
                     <div className="fap-verdict-banner">
-                      <div className="fap-verdict-icon">🏆</div>
+                      <div className="fap-verdict-icon" style={{fontSize:'2rem'}}><Icons.Trophy /></div>
                       <div className="fap-verdict-text">
                         <div className="fap-vt-label">Our Recommendation</div>
                         <div className="fap-vt-main">{(selA.score > selB.score ? selA.name : selB.name)} is the better choice</div>
-                        <div className="fap-vt-sub">
-                          Scores {Math.abs(selA.score - selB.score).toFixed(1)} points higher — 
-                          {(selA.score > selB.score ? selA : selB).loc} · 
-                          {(selA.score > selB.score ? selA : selB).fulfill.toFixed(0)}% fulfillment · 
-                          {formatCurrency((selA.score > selB.score ? selA : selB).price)}/ton · 
-                          Pays in {(selA.score > selB.score ? selA : selB).delay} days
+                        <div className="fap-vt-sub" style={{display:'flex',gap:'8px',flexWrap:'wrap',alignItems:'center'}}>
+                          <span style={{color:'var(--white)',fontWeight:'600'}}>Scores {Math.abs(selA.score - selB.score).toFixed(1)} points higher</span>
+                          <span style={{color:'var(--muted)'}}>•</span>
+                          <span><Icons.Location /> {(selA.score > selB.score ? selA : selB).loc}</span>
+                          <span style={{color:'var(--muted)'}}>•</span>
+                          <span><Icons.CheckCircle /> {(selA.score > selB.score ? selA : selB).fulfill.toFixed(0)}% fulfillment</span>
+                          <span style={{color:'var(--muted)'}}>•</span>
+                          <span><Icons.Money /> {formatCurrency((selA.score > selB.score ? selA : selB).price)}/ton</span>
+                          <span style={{color:'var(--muted)'}}>•</span>
+                          <span><Icons.Clock /> Pays in {(selA.score > selB.score ? selA : selB).delay} days</span>
                         </div>
                       </div>
                     </div>
                   ) : (
                     <div className="fap-verdict-banner">
-                      <div className="fap-verdict-icon">🤝</div>
+                      <div className="fap-verdict-icon"><Icons.Handshake /></div>
                       <div className="fap-verdict-text">
                         <div className="fap-vt-label">Verdict</div>
                         <div className="fap-vt-main">Both factories are evenly matched</div>
@@ -545,7 +594,7 @@ const FactoryAnalysisPage = () => {
 
         {/* FORMULA */}
         <div className="fap-formula-card">
-          <div className="fap-formula-icon">📐</div>
+          <div className="fap-formula-icon" style={{fontSize:'1.8rem'}}><Icons.Formula /></div>
           <div>
             <div className="fap-formula-label">Profitability Score Formula</div>
             <div className="fap-formula-eq">

@@ -379,45 +379,39 @@ const MyListingsDashboard = () => {
             </div>
 
             {/* SEARCH & FILTER BAR */}
-            <div className="ml-search-bar">
-              <div className="ml-search-input-wrap">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <div className="global-toolbar">
+              <div className="global-search-wrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path strokeLinecap="round" d="M21 21l-4.35-4.35"/></svg>
                 <input
                   type="text"
                   placeholder="Search listings, crop varieties, locations..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="ml-search-input"
+                  className="global-search"
                 />
               </div>
 
-              <div className="ml-filters-wrap">
-                <div className="ml-filter-group">
-                  <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="ml-filter-select"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="sold">Sold</option>
-                    <option value="expired">Expired</option>
-                  </select>
-                </div>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="global-filter"
+              >
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="sold">Sold</option>
+                <option value="expired">Expired</option>
+              </select>
 
-                <div className="ml-filter-group">
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="ml-filter-select"
-                  >
-                    <option value="latest">Latest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="price-high">Highest Value</option>
-                    <option value="price-low">Lowest Value</option>
-                  </select>
-                </div>
-              </div>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="global-filter"
+              >
+                <option value="latest">Latest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="price-high">Highest Value</option>
+                <option value="price-low">Lowest Value</option>
+              </select>
             </div>
 
             {/* RESULTS COUNT */}

@@ -366,7 +366,15 @@ const PostBillForm = ({ onSubmit, onCancel, isLoading = false }) => {
 
           </label>
 
-          <div className="farmer-search-container">
+          <div className="global-search-wrap">
+
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
+
+              <circle cx="11" cy="11" r="8" />
+
+              <path strokeLinecap="round" d="m21 21-4.35-4.35" />
+
+            </svg>
 
             <input
 
@@ -374,7 +382,7 @@ const PostBillForm = ({ onSubmit, onCancel, isLoading = false }) => {
 
               id="farmerSearch"
 
-              className={`form-input farmer-search ${errors.farmerId ? 'error' : ''}`}
+              className={`global-search ${errors.farmerId ? 'error' : ''}`}
 
               placeholder={isLoadingFarmers ? "Loading farmers..." : "Search by name, email, or phone..."}
 
@@ -387,18 +395,6 @@ const PostBillForm = ({ onSubmit, onCancel, isLoading = false }) => {
               disabled={isLoadingFarmers}
 
             />
-
-            <div className="pbf-search-icon">
-
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-
-                <circle cx="11" cy="11" r="8" />
-
-                <path d="m21 21-4.35-4.35" />
-
-              </svg>
-
-            </div>
 
 
 

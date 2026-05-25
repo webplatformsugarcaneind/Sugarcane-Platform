@@ -1026,28 +1026,13 @@ const getProfile = async (req, res) => {
     }
 
     // Format profile data specific to HHM users
-    const profileData = {
-      _id: hhm._id,
-      name: hhm.name,
-      username: hhm.username,
-      email: hhm.email,
-      phone: hhm.phone,
-      role: hhm.role,
-      // HHM-specific fields
-      managementExperience: hhm.managementExperience,
-      teamSize: hhm.teamSize,
-      managementOperations: hhm.managementOperations,
-      servicesOffered: hhm.servicesOffered,
-      location: hhm.location,
-      isActive: hhm.isActive,
-      createdAt: hhm.createdAt,
-      updatedAt: hhm.updatedAt
-    };
+    const hhmData = hhm.toObject ? hhm.toObject({ getters: true, virtuals: true }) : hhm;
+    delete hhmData.password;
 
     res.status(200).json({
       success: true,
       message: 'HHM profile retrieved successfully',
-      profile: profileData
+      profile: hhmData
     });
 
   } catch (error) {

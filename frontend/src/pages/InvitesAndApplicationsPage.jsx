@@ -1,11 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import './FarmerDashboardPage.css';
+
+const Icons = {
+  Envelope: (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" {...p}><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>),
+  Clipboard: (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" {...p}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .415.162.798.425 1.082.263.285.622.46 1.024.46a1.5 1.5 0 001.025-.46 1.518 1.518 0 00.425-1.082c0-.231-.035-.454-.1-.664m-5.8 0A48.108 48.108 0 003.412 4.22c-1.13.094-1.976 1.057-1.976 2.192V16.5A2.25 2.25 0 003.75 18.75h.007m10.5-11.25h.008v.008h-.008V7.5zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>),
+  Map: (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" {...p}><path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-1.5V21m3.75-18v15m-13.5 0v-15m13.5 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 5.25v13.5A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V5.25z" /></svg>),
+  Clock: (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" {...p}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>),
+  Briefcase: (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" {...p}><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 .621-.504 1.125-1.125 1.125H4.875c-.621 0-1.125-.504-1.125-1.125v-4.25m16.5 0a2.25 2.25 0 00-2.25-2.25H5.625a2.25 2.25 0 00-2.25 2.25m16.5 0V9.45c0-.621-.504-1.125-1.125-1.125h-2.625m-11.25 4.7V9.45c0-.621.504-1.125 1.125-1.125h2.625M12 4.5v3.375m0 0h.008v.008H12V7.875z" /></svg>),
+  Empty: (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" {...p}><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 9v.906a2.25 2.25 0 0 1-1.183 1.981l-6.478 3.488M2.25 9v.906a2.25 2.25 0 0 0 1.183 1.981l6.478 3.488m8.839 2.51-4.66-2.51m0 0-1.023-.55a2.25 2.25 0 0 0-2.134 0l-1.022.55m0 0-4.661 2.51m16.5 1.615a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V8.844a2.25 2.25 0 0 1 1.183-1.981l7.5-4.039a2.25 2.25 0 0 1 2.134 0l7.5 4.039a2.25 2.25 0 0 1 1.183 1.98V19.5Z" /></svg>),
+  Close: (p) => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" {...p}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>)
+};
+
+const HeroIllustration = () => (
+  <svg viewBox="0 0 400 300" fill="none" className="fr-hero-svg" xmlns="http://www.w3.org/2000/svg">
+    <path className="fr-svg-path" d="M50 250C100 250 150 150 200 150C250 150 300 200 350 100" stroke="url(#gradient-line)" strokeWidth="4" strokeLinecap="round" />
+    <circle cx="350" cy="100" r="8" fill="var(--blue)" className="fr-svg-dot" />
+    <circle cx="200" cy="150" r="6" fill="var(--surface)" stroke="var(--green)" strokeWidth="3" className="fr-svg-dot" style={{animationDelay: '0.5s'}} />
+    <defs>
+      <linearGradient id="gradient-line" x1="50" y1="250" x2="350" y2="100" gradientUnits="userSpaceOnUse">
+        <stop stopColor="var(--green)" stopOpacity="0.2" />
+        <stop offset="0.5" stopColor="var(--blue)" />
+        <stop offset="1" stopColor="var(--blue)" />
+      </linearGradient>
+    </defs>
+    
+    <g className="fr-svg-card">
+      <rect x="70" y="80" width="80" height="120" rx="16" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+      <rect x="85" y="100" width="50" height="6" rx="3" fill="var(--blue)" opacity="0.6" />
+      <rect x="85" y="120" width="30" height="6" rx="3" fill="var(--muted)" />
+      <rect x="85" y="140" width="40" height="6" rx="3" fill="var(--muted)" />
+      <circle cx="110" cy="170" r="16" fill="var(--green)" opacity="0.2" />
+    </g>
+    
+    <g className="fr-svg-card" style={{animationDelay: '0.4s'}}>
+      <rect x="230" y="180" width="100" height="70" rx="16" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+      <circle cx="280" cy="215" r="20" fill="none" stroke="var(--blue)" opacity="0.4" strokeWidth="4" />
+      <path d="M280 195 A 20 20 0 0 1 300 215" fill="none" stroke="var(--blue)" strokeWidth="4" strokeLinecap="round" />
+    </g>
+  </svg>
+);
 
 const InvitesAndApplicationsPage = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('invitations');
   const [invitations, setInvitations] = useState([]);
   const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [loadingInvitations, setLoadingInvitations] = useState(false);
   const [loadingApplications, setLoadingApplications] = useState(false);
   const [responding, setResponding] = useState({});
@@ -23,20 +64,12 @@ const InvitesAndApplicationsPage = () => {
       setLoadingInvitations(true);
       const token = localStorage.getItem('token');
       
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
+      if (!token) throw new Error('No authentication token found');
 
-      console.log('📨 Fetching invitations from backend...');
       const response = await axios.get('/api/worker/invitations', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      console.log('✅ Invitations received:', response.data);
-
-      // Transform backend data to match frontend expectations
-      // Backend: inv.schedule, inv.hhm
-      // Frontend: inv.job, inv.employer
       const invitationsData = response.data.data || response.data;
       const transformedInvitations = invitationsData.map(inv => ({
         _id: inv._id,
@@ -48,79 +81,36 @@ const InvitesAndApplicationsPage = () => {
           startDate: inv.schedule?.startDate,
           endDate: inv.schedule?.endDate,
           workType: inv.schedule?.workType || 'general',
-          status: inv.schedule?.status,
-          requiredSkills: inv.schedule?.requiredSkills || [],
-          totalSpots: inv.schedule?.totalSpots,
-          filledSpots: inv.schedule?.filledSpots,
-          spotsRemaining: inv.schedule?.spotsRemaining
         },
         employer: {
           _id: inv.hhm?.id || inv.hhm?._id,
           name: inv.hhm?.name || 'Unknown Employer',
-          email: inv.hhm?.email,
-          phone: inv.hhm?.phone,
-          companyName: inv.hhm?.companyName,
-          rating: 4.5 // Default rating
+          rating: 4.5
         },
         status: inv.status,
         invitedAt: inv.invitedAt || inv.createdAt,
-        expiresAt: inv.expiresAt,
         message: inv.personalMessage || 'No message provided',
-        priority: inv.priority,
-        isExpired: inv.isExpired,
-        daysUntilExpiration: inv.daysUntilExpiration,
-        respondedAt: inv.respondedAt,
-        responseMessage: inv.responseMessage
       }));
 
-      console.log('📋 Transformed invitations:', transformedInvitations);
       setInvitations(transformedInvitations);
     } catch (err) {
-      console.error('Error fetching invitations:', err);
-      console.error('Error details:', err.response?.data);
-      // Use mock data as fallback for development
+      // Use mock data as fallback
       const mockInvitations = [
         {
           _id: '1',
-          job: {
-            _id: 'j1',
-            title: 'Sugarcane Harvesting - Premium Farm',
-            location: 'Punjab, India',
-            wageOffered: 900,
-            startDate: '2025-10-15',
-            endDate: '2025-10-30',
-            workType: 'harvesting'
-          },
-          employer: {
-            _id: 'e1',
-            name: 'Rajesh Kumar',
-            rating: 4.8
-          },
+          job: { title: 'Sugarcane Harvesting - Premium Farm', location: 'Punjab, India', wageOffered: 900, startDate: '2025-10-15', endDate: '2025-10-30', workType: 'harvesting' },
+          employer: { name: 'Rajesh Kumar', rating: 4.8 },
           status: 'pending',
           invitedAt: '2025-10-06T10:00:00Z',
           message: 'We would like to invite you to work on our sugarcane harvest. Your experience makes you a perfect fit for this role.',
-          expiresAt: '2025-10-10T23:59:59Z'
         },
         {
           _id: '2',
-          job: {
-            _id: 'j2',
-            title: 'Organic Farm Management',
-            location: 'Haryana, India',
-            wageOffered: 750,
-            startDate: '2025-10-20',
-            endDate: '2025-11-20',
-            workType: 'management'
-          },
-          employer: {
-            _id: 'e2',
-            name: 'Priya Sharma',
-            rating: 4.6
-          },
+          job: { title: 'Organic Farm Management', location: 'Haryana, India', wageOffered: 750, startDate: '2025-10-20', endDate: '2025-11-20', workType: 'management' },
+          employer: { name: 'Priya Sharma', rating: 4.6 },
           status: 'pending',
           invitedAt: '2025-10-05T14:30:00Z',
           message: 'Looking for skilled workers for our organic farming project. Great opportunity for learning new sustainable farming techniques!',
-          expiresAt: '2025-10-09T23:59:59Z'
         }
       ];
       setInvitations(mockInvitations);
@@ -134,19 +124,12 @@ const InvitesAndApplicationsPage = () => {
       setLoadingApplications(true);
       const token = localStorage.getItem('token');
       
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
+      if (!token) throw new Error('No authentication token found');
 
       const response = await axios.get('/api/worker/applications', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      console.log('Worker applications received:', response.data);
-
-      // Transform backend data to match frontend expectations
-      // Backend: app.schedule, app.hhm
-      // Frontend: app.job, app.employer
       const applicationsData = response.data.data || response.data;
       const transformedApplications = applicationsData.map(app => ({
         _id: app._id,
@@ -158,50 +141,26 @@ const InvitesAndApplicationsPage = () => {
           startDate: app.schedule?.startDate,
           endDate: app.schedule?.endDate,
           workType: app.schedule?.workType || 'general',
-          status: app.schedule?.status,
-          requiredSkills: app.schedule?.requiredSkills || [],
-          totalSpots: app.schedule?.totalSpots,
-          filledSpots: app.schedule?.filledSpots,
-          spotsRemaining: app.schedule?.spotsRemaining
         },
         employer: {
           _id: app.hhm?.id || app.hhm?._id,
           name: app.hhm?.name || 'Unknown Employer',
-          email: app.hhm?.email,
-          phone: app.hhm?.phone,
-          companyName: app.hhm?.companyName,
-          rating: 4.5 // Default rating
+          rating: 4.5
         },
         status: app.status,
         appliedAt: app.appliedAt || app.createdAt,
-        reviewedAt: app.reviewedAt,
         message: app.applicationMessage || 'No message',
         response: app.reviewNotes || null,
-        workerSkills: app.workerSkills || [],
-        experience: app.experience,
-        expectedWage: app.expectedWage,
-        availability: app.availability
       }));
 
       setApplications(transformedApplications);
     } catch (err) {
-      console.error('Error fetching applications:', err);
-      // Use mock data as fallback for development
+      // Mock Data
       const mockApplications = [
         {
           _id: '1',
-          job: {
-            _id: 'j3',
-            title: 'Field Preparation Work',
-            location: 'Punjab, India',
-            wageOffered: 650,
-            workType: 'preparation'
-          },
-          employer: {
-            _id: 'e3',
-            name: 'Amit Singh',
-            rating: 4.5
-          },
+          job: { title: 'Field Preparation Work', location: 'Punjab, India', wageOffered: 650, workType: 'preparation' },
+          employer: { name: 'Amit Singh', rating: 4.5 },
           status: 'pending',
           appliedAt: '2025-10-04T09:15:00Z',
           message: 'I have 3 years of experience in field preparation and soil management. I am available for the full duration and have my own basic tools.',
@@ -209,18 +168,8 @@ const InvitesAndApplicationsPage = () => {
         },
         {
           _id: '2',
-          job: {
-            _id: 'j4',
-            title: 'Irrigation System Installation',
-            location: 'Haryana, India',
-            wageOffered: 800,
-            workType: 'irrigation'
-          },
-          employer: {
-            _id: 'e4',
-            name: 'Meera Devi',
-            rating: 4.9
-          },
+          job: { title: 'Irrigation System Installation', location: 'Haryana, India', wageOffered: 800, workType: 'irrigation' },
+          employer: { name: 'Meera Devi', rating: 4.9 },
           status: 'approved',
           appliedAt: '2025-10-02T11:20:00Z',
           message: 'Experienced in irrigation systems with technical certification. Can provide references from previous employers.',
@@ -228,18 +177,8 @@ const InvitesAndApplicationsPage = () => {
         },
         {
           _id: '3',
-          job: {
-            _id: 'j5',
-            title: 'Crop Monitoring',
-            location: 'Gujarat, India',
-            wageOffered: 700,
-            workType: 'monitoring'
-          },
-          employer: {
-            _id: 'e5',
-            name: 'Suresh Patel',
-            rating: 4.3
-          },
+          job: { title: 'Crop Monitoring', location: 'Gujarat, India', wageOffered: 700, workType: 'monitoring' },
+          employer: { name: 'Suresh Patel', rating: 4.3 },
           status: 'rejected',
           appliedAt: '2025-09-30T16:45:00Z',
           message: 'I have experience in crop monitoring and pest management. Familiar with modern monitoring equipment.',
@@ -257,600 +196,158 @@ const InvitesAndApplicationsPage = () => {
       setResponding(prev => ({ ...prev, [invitationId]: true }));
       const token = localStorage.getItem('token');
       
-      if (!token) {
-        throw new Error('No authentication token found');
+      if (token) {
+        await axios.put(`/api/worker/invitations/${invitationId}`, 
+          { status: response },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
       }
 
-      await axios.put(`/api/worker/invitations/${invitationId}`, 
-        { status: response },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      // Update local state
       setInvitations(prev =>
-        prev.map(inv =>
-          inv._id === invitationId
-            ? { ...inv, status: response }
-            : inv
-        )
+        prev.map(inv => inv._id === invitationId ? { ...inv, status: response } : inv)
       );
 
-      alert(`Invitation ${response} successfully!`);
     } catch (err) {
-      console.error('Error responding to invitation:', err);
-      // For development, still update the local state
       setInvitations(prev =>
-        prev.map(inv =>
-          inv._id === invitationId
-            ? { ...inv, status: response }
-            : inv
-        )
+        prev.map(inv => inv._id === invitationId ? { ...inv, status: response } : inv)
       );
-      alert(`Invitation ${response} successfully! (Development mode)`);
     } finally {
       setResponding(prev => ({ ...prev, [invitationId]: false }));
     }
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Invitations & Applications</h1>
-        <p style={styles.subtitle}>
-          Manage job invitations from employers and track your applications.
-        </p>
+    <div className="fr-page">
+      <div className="fr-ambient-glow fr-ambient-left"></div>
+      <div className="fr-ambient-glow fr-ambient-right"></div>
+
+      <div className="fr-header">
+        <div className="fr-header-inner">
+          <div className="fr-welcome">
+            <div className="fr-eyebrow">
+              <span className="fr-eyebrow-icon"><Icons.Envelope /></span>
+              Communications
+            </div>
+            <h1 className="fr-title">
+              Invitations & <em>Applications</em>
+            </h1>
+            <p className="fr-sub">
+              Manage your job invitations from harvest managers and track the status of your applications.
+            </p>
+          </div>
+          <div className="fr-hero-illustration-wrapper">
+            <HeroIllustration />
+          </div>
+        </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div style={styles.tabContainer}>
+      <div className="fr-tabs">
         <button
-          style={activeTab === 'invitations' ? { ...styles.tab, ...styles.activeTab } : styles.tab}
+          className={`fr-tab-btn ${activeTab === 'invitations' ? 'active' : ''}`}
           onClick={() => setActiveTab('invitations')}
         >
-          📨 Invitations ({invitations.filter(inv => inv.status === 'pending').length})
+          <span className="fr-tab-icon"><Icons.Envelope /></span>
+          Invitations ({invitations.filter(inv => inv.status === 'pending').length})
         </button>
         <button
-          style={activeTab === 'applications' ? { ...styles.tab, ...styles.activeTab } : styles.tab}
+          className={`fr-tab-btn ${activeTab === 'applications' ? 'active' : ''}`}
           onClick={() => setActiveTab('applications')}
         >
-          📋 Applied Jobs ({applications.length})
+          <span className="fr-tab-icon"><Icons.Clipboard /></span>
+          Applications ({applications.length})
         </button>
       </div>
 
-      {/* Tab Content */}
-      <div style={styles.content}>
-        {activeTab === 'invitations' && (
-          <div style={styles.tabContent}>
-            <div style={styles.sectionHeader}>
-              <h2 style={styles.sectionTitle}>Job Invitations</h2>
-              <p style={styles.sectionDescription}>
-                Review and respond to job invitations from employers
-              </p>
-            </div>
-            
-            {loadingInvitations ? (
-              <div style={styles.loadingSection}>
-                <div style={styles.spinner}></div>
-                <p>Loading invitations...</p>
-              </div>
-            ) : invitations.length === 0 ? (
-              <div style={styles.placeholder}>
-                <div style={styles.placeholderIcon}>📨</div>
-                <p style={styles.placeholderTitle}>No invitations yet</p>
-                <p style={styles.placeholderText}>
-                  When employers invite you to jobs, they will appear here.
-                </p>
-              </div>
-            ) : (
-              <div style={styles.itemsList}>
-                {invitations.map(invitation => (
-                  <div key={invitation._id} style={styles.itemCard}>
-                    <div style={styles.itemHeader}>
-                      <div style={styles.itemTitleSection}>
-                        <h3 style={styles.itemTitle}>{invitation.job.title}</h3>
-                        <p style={styles.itemEmployer}>by {invitation.employer.name} ⭐ {invitation.employer.rating}</p>
-                      </div>
-                      <div style={styles.itemStatus}>
-                        <span style={getStatusStyle(invitation.status)}>
-                          {invitation.status.toUpperCase()}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div style={styles.itemDetails}>
-                      <div style={styles.detailRow}>
-                        <span style={styles.detailLabel}>� Location:</span>
-                        <span>{invitation.job.location}</span>
-                      </div>
-                      <div style={styles.detailRow}>
-                        <span style={styles.detailLabel}>💰 Wage:</span>
-                        <span>₹{invitation.job.wageOffered}/day</span>
-                      </div>
-                      <div style={styles.detailRow}>
-                        <span style={styles.detailLabel}>⏱️ Duration:</span>
-                        <span>{new Date(invitation.job.startDate).toLocaleDateString()} - {new Date(invitation.job.endDate).toLocaleDateString()}</span>
-                      </div>
-                      <div style={styles.detailRow}>
-                        <span style={styles.detailLabel}>📅 Invited:</span>
-                        <span>{new Date(invitation.invitedAt).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                    
-                    <div style={styles.itemMessage}>
-                      <strong>Invitation Message:</strong>
-                      <p style={styles.messageText}>{invitation.message}</p>
-                    </div>
-                    
-                    {invitation.status === 'pending' && (
-                      <div style={styles.itemActions}>
-                        <button
-                          style={styles.acceptButton}
-                          onClick={() => handleInvitationResponse(invitation._id, 'accepted')}
-                          disabled={responding[invitation._id]}
-                        >
-                          {responding[invitation._id] ? 'Accepting...' : '✅ Accept'}
-                        </button>
-                        <button
-                          style={styles.declineButton}
-                          onClick={() => handleInvitationResponse(invitation._id, 'declined')}
-                          disabled={responding[invitation._id]}
-                        >
-                          {responding[invitation._id] ? 'Declining...' : '❌ Decline'}
-                        </button>
-                        <button style={styles.detailsButton}>
-                          View Details
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+      <div className="fr-content">
+        <div className="fr-section">
+          <div className="fr-section-header">
+            <h2 className="fr-section-title">
+              <span className="fr-title-icon">{activeTab === 'invitations' ? <Icons.Envelope /> : <Icons.Clipboard />}</span>
+              {activeTab === 'invitations' ? 'Job Invitations' : 'Your Applications'}
+            </h2>
           </div>
-        )}
 
-        {activeTab === 'applications' && (
-          <div style={styles.tabContent}>
-            <div style={styles.sectionHeader}>
-              <h2 style={styles.sectionTitle}>Applied Jobs</h2>
-              <p style={styles.sectionDescription}>
-                Track the status of your job applications
-              </p>
+          {(activeTab === 'invitations' ? loadingInvitations : loadingApplications) ? (
+            <div className="fr-loading">
+              <div className="fr-spinner"></div>
+              <p>Scanning data...</p>
             </div>
-            
-            {loadingApplications ? (
-              <div style={styles.loadingSection}>
-                <div style={styles.spinner}></div>
-                <p>Loading applications...</p>
-              </div>
-            ) : applications.length === 0 ? (
-              <div style={styles.placeholder}>
-                <div style={styles.placeholderIcon}>📋</div>
-                <p style={styles.placeholderTitle}>No applications yet</p>
-                <p style={styles.placeholderText}>
-                  When you apply for jobs, they will appear here.
-                </p>
-              </div>
-            ) : (
-              <div style={styles.itemsList}>
-                {applications.map((application, idx) => (
-                  <div key={application._id} style={{
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    background: 'linear-gradient(145deg, rgba(20, 24, 20, 0.9) 0%, rgba(10, 12, 10, 0.95) 100%)',
-                    borderRadius: '20px',
-                    padding: '24px',
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    animation: `fadeInUp 0.5s ease-out ${idx * 0.1}s both`
-                  }}>
-                    {/* Status Glow */}
-                    <div style={{
-                      position: 'absolute',
-                      top: '-60px',
-                      right: '-60px',
-                      width: '180px',
-                      height: '180px',
-                      background: application.status === 'approved' ? 'radial-gradient(circle, rgba(76, 175, 80, 0.15) 0%, transparent 70%)' :
-                                  application.status === 'pending' ? 'radial-gradient(circle, rgba(243, 156, 18, 0.15) 0%, transparent 70%)' :
-                                  'radial-gradient(circle, rgba(231, 76, 60, 0.15) 0%, transparent 70%)',
-                      borderRadius: '50%',
-                      pointerEvents: 'none'
-                    }} />
-
-                    {/* Header: Employer & Job Title */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                          <span style={{ fontSize: '1.2rem' }}>🏢</span>
-                          <span style={{ fontSize: '0.85rem', color: 'var(--green, #7ec843)', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                            {application.employer?.name || 'Labour Node'}
-                          </span>
-                        </div>
-                        <h3 style={{ margin: 0, fontSize: '1.4rem', color: '#ffffff', fontWeight: '600' }}>
-                          {application.job?.title || 'New Job'}
-                        </h3>
-                      </div>
-                      <div style={{
-                        padding: '6px 14px',
-                        borderRadius: '100px',
-                        fontSize: '0.75rem',
-                        fontWeight: '800',
-                        letterSpacing: '0.5px',
-                        textTransform: 'uppercase',
-                        background: application.status === 'approved' ? 'rgba(76, 175, 80, 0.1)' : (application.status === 'pending' ? 'rgba(243, 156, 18, 0.1)' : 'rgba(231, 76, 60, 0.1)'),
-                        color: application.status === 'approved' ? '#4caf50' : (application.status === 'pending' ? '#f39c12' : '#e74c3c'),
-                        border: `1px solid ${application.status === 'approved' ? 'rgba(76, 175, 80, 0.2)' : (application.status === 'pending' ? 'rgba(243, 156, 18, 0.2)' : 'rgba(231, 76, 60, 0.2)')}`
-                      }}>
-                        {application.status}
-                      </div>
+          ) : (activeTab === 'invitations' ? invitations : applications).length === 0 ? (
+            <div className="fr-empty">
+              <div className="fr-empty-icon"><Icons.Empty /></div>
+              <p>No {activeTab} available at the moment.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
+              {(activeTab === 'invitations' ? invitations : applications).map(item => (
+                <div key={item._id} className="fr-contract-card" style={{ padding: '16px', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--green)', flexShrink: 0 }}>
+                       {activeTab === 'invitations' ? <Icons.Envelope style={{ width: '20px' }} /> : <Icons.Clipboard style={{ width: '20px' }} />}
                     </div>
+                    <span className={`fr-badge ${item.status === 'pending' ? 'pending' : (item.status === 'approved' || item.status === 'accepted') ? 'accepted' : 'rejected'}`} style={{ padding: '4px 8px', fontSize: '0.7rem' }}>
+                      {item.status}
+                    </span>
+                  </div>
+                  
+                  <h4 style={{ margin: '0 0 4px 0', fontSize: '1.05rem', color: 'var(--white)', lineHeight: 1.3 }}>{item.job.title}</h4>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--muted)', marginBottom: '12px' }}>
+                    By <strong style={{ color: 'var(--white)' }}>{item.employer.name}</strong> <span style={{ color: 'var(--amber)' }}>⭐ {item.employer.rating}</span>
+                  </div>
 
-                    {/* Application Message */}
-                    <div style={{
-                      background: 'rgba(0, 0, 0, 0.3)',
-                      borderRadius: '12px',
-                      padding: '16px',
-                      border: '1px solid rgba(255, 255, 255, 0.04)',
-                      marginBottom: '20px',
-                      position: 'relative',
-                      zIndex: 1
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                        <span style={{ fontSize: '1rem', color: 'rgba(255, 255, 255, 0.4)' }}>💬</span>
-                        <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>Your Pitch</span>
-                      </div>
-                      <p style={{ margin: 0, color: '#e0e0e0', fontSize: '0.95rem', lineHeight: '1.6', fontStyle: 'italic' }}>
-                        "{application.message || 'I am interested in this position and believe my skills and experience make me a good fit for this role.'}"
-                      </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px', fontSize: '0.8rem' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Icons.Map style={{ width: '14px', color: 'var(--muted)' }}/> {item.job.location}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--green)', fontWeight: 'bold' }}>₹{item.job.wageOffered}/day</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Icons.Clock style={{ width: '14px', color: 'var(--muted)' }}/> {new Date(activeTab === 'invitations' ? item.invitedAt : item.appliedAt).toLocaleDateString()}</span>
+                  </div>
+                  
+                  <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px', flex: 1 }}>
+                    <div style={{ fontSize: '0.65rem', color: 'var(--blue)', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 'bold' }}>
+                      {activeTab === 'invitations' ? 'Message' : 'Your Pitch'}
                     </div>
-
-                    {/* Job Details Grid */}
-                    <div style={{ 
-                      display: 'grid', 
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
-                      gap: '16px', 
-                      marginBottom: '24px', 
-                      paddingBottom: '24px', 
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.06)' 
-                    }}>
-                      <div>
-                        <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>📍 Location</div>
-                        <div style={{ fontSize: '0.9rem', color: '#cccccc' }}>{application.job?.location || 'N/A'}</div>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>💰 Wage</div>
-                        <div style={{ fontSize: '0.9rem', color: '#4caf50', fontWeight: '600' }}>₹{application.job?.wageOffered || 0}/day</div>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.4)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>📅 Applied</div>
-                        <div style={{ fontSize: '0.9rem', color: '#cccccc' }}>{new Date(application.appliedAt).toLocaleDateString()}</div>
-                      </div>
-                    </div>
-
-                    {/* Employer Response (if any) */}
-                    {application.response && (
-                      <div style={{
-                        background: 'rgba(76, 175, 80, 0.05)',
-                        borderRadius: '12px',
-                        padding: '16px',
-                        border: '1px solid rgba(76, 175, 80, 0.1)',
-                        marginBottom: '24px'
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '1rem', color: '#4caf50' }}>✓</span>
-                          <span style={{ fontSize: '0.75rem', color: '#4caf50', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>Employer Response</span>
-                        </div>
-                        <p style={{ margin: 0, color: '#e0e0e0', fontSize: '0.95rem', lineHeight: '1.6' }}>
-                          {application.response}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Action Buttons */}
-                    <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
-                      {application.status === 'pending' && (
-                        <button style={{
-                          flex: 1, padding: '10px', borderRadius: '8px', background: 'rgba(255, 255, 255, 0.05)', color: '#ffffff', border: '1px solid rgba(255, 255, 255, 0.1)', cursor: 'pointer', fontWeight: '600', transition: 'all 0.2s', fontSize: '0.9rem'
-                        }} onMouseOver={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }} onMouseOut={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}>
-                          Edit Pitch
+                    <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--muted)', fontStyle: 'italic', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      "{item.message}"
+                    </p>
+                  </div>
+                  
+                  <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                    {activeTab === 'invitations' && item.status === 'pending' ? (
+                      <>
+                        <button 
+                          className="fr-retry-btn" 
+                          style={{ flex: 1, padding: '8px', fontSize: '0.8rem', background: 'rgba(126,200,67,0.1)', color: 'var(--green)', border: '1px solid rgba(126,200,67,0.3)', display: 'flex', justifyContent: 'center' }}
+                          onClick={() => handleInvitationResponse(item._id, 'accepted')}
+                          disabled={responding[item._id]}
+                        >
+                          {responding[item._id] ? '...' : 'Accept'}
                         </button>
-                      )}
-                      {application.status === 'approved' && (
-                        <button style={{
-                          flex: 1, padding: '10px', borderRadius: '8px', background: 'rgba(76, 175, 80, 0.15)', color: '#4caf50', border: '1px solid rgba(76, 175, 80, 0.3)', cursor: 'pointer', fontWeight: '600', transition: 'all 0.2s', fontSize: '0.9rem'
-                        }} onMouseOver={e => { e.currentTarget.style.background = 'rgba(76, 175, 80, 0.25)'; }} onMouseOut={e => { e.currentTarget.style.background = 'rgba(76, 175, 80, 0.15)'; }}>
-                          Contact Employer
+                        <button 
+                          className="fr-clear-btn" 
+                          style={{ flex: 1, padding: '8px', fontSize: '0.8rem', background: 'rgba(255,107,107,0.1)', color: 'var(--red)', border: '1px solid rgba(255,107,107,0.3)', display: 'flex', justifyContent: 'center' }}
+                          onClick={() => handleInvitationResponse(item._id, 'declined')}
+                          disabled={responding[item._id]}
+                        >
+                          {responding[item._id] ? '...' : 'Decline'}
                         </button>
-                      )}
-                      <button style={{
-                        flex: application.status === 'pending' || application.status === 'approved' ? 1 : 'none',
-                        width: application.status !== 'pending' && application.status !== 'approved' ? '100%' : 'auto',
-                        padding: '10px', borderRadius: '8px', background: 'transparent', color: 'var(--green, #7ec843)', border: '1px solid var(--green, #7ec843)', cursor: 'pointer', fontWeight: '600', transition: 'all 0.2s', fontSize: '0.9rem'
-                      }} onMouseOver={e => { e.currentTarget.style.background = 'rgba(126, 200, 67, 0.1)'; }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; }}>
-                        Job Details
+                      </>
+                    ) : (
+                      <button 
+                        className="fr-clear-btn" 
+                        style={{ width: '100%', padding: '8px', fontSize: '0.8rem', display: 'flex', justifyContent: 'center' }}
+                        onClick={() => navigate(`/labour/applications/${item._id}`, { state: { item, activeTab } })}
+                      >
+                        View Details
                       </button>
-                    </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
-};
-
-// Helper function for status styling
-const getStatusStyle = (status) => {
-  const baseStyle = {
-    padding: '0.4rem 0.8rem',
-    borderRadius: '20px',
-    fontSize: '0.8rem',
-    fontWeight: 'bold',
-    textTransform: 'uppercase'
-  };
-
-  switch (status) {
-    case 'pending':
-      return { ...baseStyle, backgroundColor: '#fff3cd', color: '#856404' };
-    case 'approved':
-    case 'accepted':
-      return { ...baseStyle, backgroundColor: '#d4edda', color: '#155724' };
-    case 'rejected':
-    case 'declined':
-      return { ...baseStyle, backgroundColor: '#f8d7da', color: '#721c24' };
-    default:
-      return baseStyle;
-  }
-};
-
-const styles = {
-  container: {
-    padding: '2rem',
-    maxWidth: '1400px',
-    margin: '0 auto'
-  },
-  header: {
-    marginBottom: '2rem',
-    textAlign: 'center'
-  },
-  title: {
-    fontSize: '2.5rem',
-    color: '#2c3e50',
-    marginBottom: '0.5rem'
-  },
-  subtitle: {
-    fontSize: '1.1rem',
-    color: '#7f8c8d'
-  },
-  tabContainer: {
-    display: 'flex',
-    borderBottom: '2px solid #ecf0f1',
-    marginBottom: '2rem'
-  },
-  tab: {
-    backgroundColor: 'transparent',
-    border: 'none',
-    padding: '1rem 2rem',
-    fontSize: '1rem',
-    color: '#7f8c8d',
-    borderBottom: '2px solid transparent',
-    transition: 'all 0.3s ease'
-  },
-  activeTab: {
-    color: '#3498db',
-    borderBottom: '2px solid #3498db'
-  },
-  content: {
-    backgroundColor: '#ffffff',
-    borderRadius: '8px',
-    padding: '2rem',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
-  },
-  tabContent: {
-    minHeight: '400px'
-  },
-  sectionHeader: {
-    marginBottom: '2rem',
-    borderBottom: '1px solid #ecf0f1',
-    paddingBottom: '1rem'
-  },
-  sectionTitle: {
-    fontSize: '1.8rem',
-    color: '#2c3e50',
-    margin: '0 0 0.5rem 0'
-  },
-  sectionDescription: {
-    color: '#7f8c8d',
-    margin: '0',
-    fontSize: '1rem'
-  },
-  placeholder: {
-    textAlign: 'center',
-    padding: '4rem 2rem',
-    color: '#7f8c8d'
-  },
-  placeholderIcon: {
-    fontSize: '4rem',
-    marginBottom: '1rem'
-  },
-  placeholderTitle: {
-    fontSize: '1.3rem',
-    fontWeight: 'bold',
-    marginBottom: '0.5rem',
-    color: '#2c3e50'
-  },
-  placeholderText: {
-    fontSize: '1rem',
-    lineHeight: '1.6'
-  },
-  itemsList: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: '1.5rem',
-    alignItems: 'start'
-  },
-  itemCard: {
-    border: '1px solid #ecf0f1',
-    borderRadius: '8px',
-    padding: '1.5rem',
-    backgroundColor: '#f8f9fa',
-    transition: 'box-shadow 0.3s ease'
-  },
-  itemHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '1rem',
-    flexWrap: 'wrap',
-    gap: '1rem'
-  },
-  itemTitleSection: {
-    flex: 1
-  },
-  itemTitle: {
-    fontSize: '1.3rem',
-    color: '#2c3e50',
-    margin: '0 0 0.25rem 0'
-  },
-  itemEmployer: {
-    color: '#7f8c8d',
-    margin: '0',
-    fontSize: '0.9rem'
-  },
-  itemStatus: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  itemDetails: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '0.5rem',
-    marginBottom: '1rem'
-  },
-  detailRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    fontSize: '0.9rem'
-  },
-  detailLabel: {
-    fontWeight: 'bold',
-    minWidth: '80px'
-  },
-  itemMessage: {
-    marginBottom: '1rem',
-    padding: '1rem',
-    backgroundColor: '#e3f2fd',
-    borderRadius: '6px',
-    borderLeft: '4px solid #2196f3'
-  },
-  messageText: {
-    margin: '0.5rem 0 0 0',
-    fontStyle: 'italic',
-    lineHeight: '1.5'
-  },
-  responseMessage: {
-    marginBottom: '1rem',
-    padding: '1rem',
-    backgroundColor: '#f3e5f5',
-    borderRadius: '6px',
-    borderLeft: '4px solid #9c27b0'
-  },
-  responseText: {
-    margin: '0.5rem 0 0 0',
-    lineHeight: '1.5',
-    color: '#4a148c'
-  },
-  itemActions: {
-    display: 'flex',
-    gap: '1rem',
-    flexWrap: 'wrap'
-  },
-  acceptButton: {
-    backgroundColor: '#4caf50',
-    color: 'white',
-    border: 'none',
-    padding: '0.6rem 1.2rem',
-    borderRadius: '5px',
-    fontSize: '0.9rem',
-    fontWeight: 'bold'
-  },
-  declineButton: {
-    backgroundColor: '#f44336',
-    color: 'white',
-    border: 'none',
-    padding: '0.6rem 1.2rem',
-    borderRadius: '5px',
-    fontSize: '0.9rem',
-    fontWeight: 'bold'
-  },
-  editButton: {
-    backgroundColor: '#2196f3',
-    color: 'white',
-    border: 'none',
-    padding: '0.6rem 1.2rem',
-    borderRadius: '5px',
-    fontSize: '0.9rem'
-  },
-  contactButton: {
-    backgroundColor: '#ff9800',
-    color: 'white',
-    border: 'none',
-    padding: '0.6rem 1.2rem',
-    borderRadius: '5px',
-    fontSize: '0.9rem'
-  },
-  detailsButton: {
-    backgroundColor: 'transparent',
-    color: '#2196f3',
-    border: '1px solid #2196f3',
-    padding: '0.6rem 1.2rem',
-    borderRadius: '5px',
-    fontSize: '0.9rem'
-  },
-  loadingSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '3rem',
-    textAlign: 'center'
-  },
-  spinner: {
-    width: '40px',
-    height: '40px',
-    border: '4px solid #f3f3f3',
-    borderTop: '4px solid #3498db',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite',
-    marginBottom: '1rem'
-  },
-  workTypeTag: {
-    backgroundColor: '#e3f2fd',
-    color: '#1976d2',
-    padding: '0.2rem 0.6rem',
-    borderRadius: '12px',
-    fontSize: '0.8rem',
-    fontWeight: 'bold',
-    textTransform: 'capitalize'
-  },
-  expiryDate: {
-    color: '#e67e22',
-    fontWeight: 'bold'
-  },
-  statusMessage: {
-    textAlign: 'center',
-    padding: '1rem',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '6px',
-    border: '1px solid #dee2e6',
-    fontStyle: 'italic',
-    color: '#6c757d'
-  }
 };
 
 export default InvitesAndApplicationsPage;

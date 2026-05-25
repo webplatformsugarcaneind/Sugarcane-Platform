@@ -503,33 +503,15 @@ const getProfile=async (req, res)=> {
     console.log(' Factory data keys:', Object.keys(factoryData));
 
     // Format profile data specific to factory users
-    const profileData = {
-      _id: factoryData._id,
-      name: factoryData.name,
-      username: factoryData.username,
-      email: factoryData.email,
-      phone: factoryData.phone,
-      role: factoryData.role,
-      factoryName: factoryData.factoryName,
-      factoryLocation: factoryData.factoryLocation,
-      factoryDescription: factoryData.factoryDescription,
-      capacity: factoryData.capacity,
-      experience: factoryData.experience,
-      specialization: factoryData.specialization,
-      crushingStatus: crushingStatus,
-      contactInfo: factoryData.contactInfo || {},
-      operatingSeason: factoryData.operatingSeason,
-      isActive: factoryData.isActive,
-      createdAt: factoryData.createdAt,
-      updatedAt: factoryData.updatedAt
-    };
+    delete factoryData.password;
+    factoryData.crushingStatus = crushingStatus;
 
-    console.log(' Profile data crushingStatus:', profileData.crushingStatus);
+    console.log(' Profile data crushingStatus:', factoryData.crushingStatus);
 
     res.status(200).json({
       success: true,
       message: 'Factory profile retrieved successfully',
-      profile: profileData
+      profile: factoryData
     });
 
   }

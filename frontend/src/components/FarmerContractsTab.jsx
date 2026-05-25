@@ -23,12 +23,16 @@ const Icons = {
  */
 const FarmerContractsTab = () => {
   const [contracts, setContracts] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notifLoading, setNotifLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [notifError, setNotifError] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     fetchContracts();
+    fetchNotifications();
   }, []);
 
   const fetchContracts = async () => {
@@ -53,6 +57,48 @@ const FarmerContractsTab = () => {
       setError(err.response?.data?.message || 'Failed to load contracts');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      setNotifLoading(true);
+      setNotifError(null);
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await axios.get('/api/notifications', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNotifications(response.data?.data?.notifications || response.data?.data || []);
+    } catch (err) {
+      console.error('Error fetching notifications:', err);
+      setNotifError('Failed to load notifications');
+    } finally {
+      setNotifLoading(false);
+    }
+  };
+
+  const clearNotifications = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      await axios.delete('/api/notifications/all', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNotifications([]);
+    } catch (err) {
+      console.error('Error clearing notifications:', err);
+    }
+  };
+
+  const getPriorityClass = (priority) => {
+    switch (priority?.toLowerCase()) {
+      case 'high': return 'high';
+      case 'medium': return 'medium';
+      case 'low': return 'low';
+      default: return 'medium';
     }
   };
 
@@ -146,6 +192,8 @@ const FarmerContractsTab = () => {
         </select>
       </div>
 
+
+
       {filteredContracts.length === 0 ? (
         <div className="fr-empty">
           <div className="fr-empty-icon"><Icons.Empty /></div>
@@ -225,6 +273,55 @@ const FarmerContractsTab = () => {
           ))}
         </div>
       )}
+
+      {/* RECENT NOTIFICATIONS SECTION */}
+      <div className="fr-section" style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+        <div className="fr-section-header">
+          <h2 className="fr-section-title">
+            <span className="fr-title-icon"><Icons.Alert /></span>
+            Recent Notifications
+          </h2>
+          {notifications.length > 0 && (
+            <button onClick={clearNotifications} className="fr-clear-btn">
+              Clear All
+            </button>
+          )}
+        </div>
+        
+        {notifLoading ? (
+          <div className="fr-loading">
+            <div className="fr-spinner"></div>
+            <p>Loading alerts...</p>
+          </div>
+        ) : notifError ? (
+          <div className="fr-empty">
+            <p className="fr-error-text">{notifError}</p>
+          </div>
+        ) : notifications.length === 0 ? (
+          <div className="fr-empty" style={{ padding: '20px' }}>
+            <p>No new notifications at the moment.</p>
+          </div>
+        ) : (
+          <div className="fr-notif-grid">
+            {notifications.map((notif) => (
+              <div key={notif._id} className="fr-notif-card">
+                {!notif.isRead && <div className="fr-notif-unread" />}
+                <div className="fr-notif-header">
+                  <span className="fr-notif-type">{notif.type?.replace(/_/g, ' ')}</span>
+                  <span className={`fr-priority ${getPriorityClass(notif.priority)}`}>
+                    {notif.priority || 'Normal'}
+                  </span>
+                </div>
+                <p className="fr-notif-msg">{notif.message}</p>
+                <div className="fr-notif-footer">
+                  <span className="fr-footer-icon"><Icons.Calendar /></span>
+                  {formatDate(notif.createdAt)}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

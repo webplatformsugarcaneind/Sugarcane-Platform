@@ -202,37 +202,33 @@ const FactoriesPage = () => {
         </div>
 
         {/* Search and Filter Controls */}
-        <div className="factories-controls">
-          <div className="search-container">
-            <div className="search-input-wrapper">
-              <input
-                type="text"
-                placeholder="Search factories by name, location, or description..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
-              <span className="search-icon">🔍</span>
-            </div>
+        <div className="global-toolbar">
+          <div className="global-search-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path strokeLinecap="round" d="M21 21l-4.35-4.35"/></svg>
+            <input
+              type="text"
+              placeholder="Search factories by name, location, or description..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="global-search"
+            />
           </div>
 
-          <div className="filter-container">
-            <select
-              value={locationFilter}
-              onChange={(e) => setLocationFilter(e.target.value)}
-              className="location-filter"
-            >
-              <option value="">All Locations</option>
-              {locations.map(location => (
-                <option key={location} value={location}>{location}</option>
-              ))}
-            </select>
-          </div>
+          <select
+            value={locationFilter}
+            onChange={(e) => setLocationFilter(e.target.value)}
+            className="global-filter"
+          >
+            <option value="">All Locations</option>
+            {locations.map(location => (
+              <option key={location} value={location}>{location}</option>
+            ))}
+          </select>
 
           {(searchTerm || locationFilter) && (
             <button
               onClick={clearFilters}
-              className="clear-filters-btn"
+              className="global-filter-btn"
               title="Clear all filters"
             >
               Clear Filters

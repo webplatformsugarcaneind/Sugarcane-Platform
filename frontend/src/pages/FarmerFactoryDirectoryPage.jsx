@@ -131,90 +131,67 @@ const FarmerFactoryDirectoryPage = () => {
         {loading ? (
           <div className="fd-loading"><div className="fd-spinner"></div><div className="fd-empty-title">Loading factories...</div></div>
         ) : error ? (
-          <div className="fd-empty"><div className="fd-empty-icon">⚠️</div><div className="fd-empty-title">{error}</div></div>
+          <div className="fd-empty"><div className="fd-empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div className="fd-empty-title">{error}</div></div>
         ) : filtered.length === 0 ? (
-          <div className="fd-empty"><div className="fd-empty-icon">🏭</div><div className="fd-empty-title">No factories found</div><div className="fd-empty-sub">Try adjusting your search or filter criteria</div></div>
+          <div className="fd-empty"><div className="fd-empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 20h20M4 20V8l6-4 6 4v12M16 20v-8l6-4v12M8 12v8M12 16v4"/></svg></div><div className="fd-empty-title">No factories found</div><div className="fd-empty-sub">Try adjusting your search or filter criteria</div></div>
         ) : filtered.map((f, idx) => (
           <div key={f._id || f.id || `f-${idx}`} className={`fd-card ${f.ui.rating}`} style={{ animation: `fdFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
             <div className="fc-header">
-              <div className="fc-avatar">🏭</div>
-              <div className="fc-title-wrap">
-                <div className="fc-name">{f.name}{f.ui.recommended && <span style={{ color: 'var(--amber)', fontSize: '.7rem' }}> ⭐</span>}</div>
-                <div className="fc-location">📍 {f.location || 'Maharashtra'}</div>
-                {f.ui.recommended && <div className="fd-recommended">⭐ Recommended</div>}
+              <div className="fc-header-top">
+                <div className="fc-avatar-glow"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M13 18h1"/><path d="M9 18h1"/></svg></div>
+                <div className="fc-rating-pill">
+                  <span className={`fd-rating-badge ${f.ui.rating}`}>{f.ui.rating.toUpperCase()}</span>
+                </div>
               </div>
-              <div className="fc-rating"><span className={`fd-rating-badge ${f.ui.rating}`}>{f.ui.rating.toUpperCase()}</span></div>
+              <div className="fc-title-wrap">
+                <h3 className="fc-name">{f.name}</h3>
+                <div className="fc-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {f.location || 'Maharashtra'}</div>
+                {f.ui.recommended && <div className="fd-recommended-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Recommended</div>}
+              </div>
             </div>
 
-            <div className="fc-metrics">
-              <div className="fc-metric"><div className="fcm-label">Score</div><div className={`fcm-val ${scoreClass(f.ui.score)}`}>{f.ui.score.toFixed(1)}</div></div>
-              <div className="fc-metric"><div className="fcm-label">₹/Ton</div><div className={`fcm-val ${f.ui.price > 0 ? 'green' : 'muted'}`}>{f.ui.price > 0 ? `₹${f.ui.price.toLocaleString('en-IN')}` : 'N/A'}</div></div>
-              <div className="fc-metric"><div className="fcm-label">Pay Delay</div><div className="fcm-val" style={{ color: delayColor(f.ui.delay) }}>{f.ui.delay}d</div></div>
+            <div className="fc-metrics-grid">
+              <div className="fc-metric-box">
+                <div className="fc-metric-lbl">Score</div>
+                <div className={`fc-metric-val ${scoreClass(f.ui.score)}`}>{f.ui.score.toFixed(1)}</div>
+              </div>
+              <div className="fc-metric-box">
+                <div className="fc-metric-lbl">₹/Ton</div>
+                <div className={`fc-metric-val ${f.ui.price > 0 ? 'green' : 'muted'}`}>{f.ui.price > 0 ? `₹${f.ui.price.toLocaleString('en-IN')}` : 'N/A'}</div>
+              </div>
+              <div className="fc-metric-box">
+                <div className="fc-metric-lbl">Pay Delay</div>
+                <div className="fc-metric-val" style={{ color: delayColor(f.ui.delay) }}>{f.ui.delay}d</div>
+              </div>
             </div>
 
-            <div className="fc-fulfill">
-              <div className="fc-fulfill-top">
-                <span className="fc-fulfill-label">Fulfillment Rate</span>
+            <div className="fc-fulfill-modern">
+              <div className="fc-fulfill-header">
+                <span className="fc-fulfill-lbl">Fulfillment</span>
                 <span className="fc-fulfill-pct" style={{ color: fulfillColor(f.ui.fulfill) }}>{f.ui.fulfill.toFixed(1)}%</span>
               </div>
-              <div className="fd-fulfill-track"><div className="fd-fulfill-fill" style={{ width: `${f.ui.fulfill}%`, background: fulfillColor(f.ui.fulfill) }}></div></div>
-            </div>
-
-            <div className="fc-spec">
-              <div className="fc-spec-label">Specialization</div>
-              <div className="fd-spec-tags">{Array.isArray(f.ui.specs) && f.ui.specs.map((s, i) => <span key={i} className="fd-spec-tag">{s}</span>)}</div>
-            </div>
-
-            <div className="fc-divider"></div>
-
-            <div className="fc-meta">
-              <div className="fc-meta-item">Contracts: <strong>{f.ui.contracts} <span style={{ color: 'var(--muted-2)' }}>({f.ui.completed} done)</span></strong></div>
-              <div className="fc-meta-item">Added: <strong>{fmtDate(f.createdAt)}</strong></div>
-            </div>
-
-            <div className="fc-hhm">
-              <div className="fd-hhm-header">
-                <div className="fd-hhm-title">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  Associated HHMs
-                  <span className="fd-hhm-pill">{f.associatedHHMs?.length || 0}</span>
-                </div>
-                {f.associatedHHMs?.length > 0 && (
-                  <button className="btn-base btn-outline" style={{ height: '28px', padding: '0 10px', fontSize: '0.7rem' }} onClick={() => navigate(`/farmer/associate-hhm/${f._id}`)}>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-                    Manage
-                  </button>
-                )}
-              </div>
-              <div className="fd-hhm-list">
-                {f.associatedHHMs && f.associatedHHMs.length > 0 ? (
-                  f.associatedHHMs.slice(0, 3).map((hhm, i) => (
-                    <div key={i} className="fd-hhm-item">
-                      <div className="fd-hhm-avatar" style={{ background: 'rgba(126,200,67,.15)', color: '#7ec843' }}>{getInitials(hhm.name)}</div>
-                      <div style={{ flex: 1 }}><div className="fd-hhm-name">{hhm.name}</div><div className="fd-hhm-role">Harvest Head Manager</div></div>
-                      <div className="fd-hhm-online" title="Online"></div>
-                    </div>
-                  ))
-                ) : (
-                  <>
-                    <div className="fd-hhm-empty"><span className="fd-hhm-empty-icon">👥</span><span className="fd-hhm-empty-text">No associated HHMs</span></div>
-                    <button className="btn-base btn-primary" style={{ width: '100%', height: '36px', fontSize: '0.8rem' }} onClick={() => navigate(`/farmer/associate-hhm/${f._id}`)}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14"/></svg>
-                      Associate HHMs
-                    </button>
-                  </>
-                )}
+              <div className="fc-fulfill-track-modern">
+                <div className="fc-fulfill-fill-modern" style={{ width: `${f.ui.fulfill}%`, background: fulfillColor(f.ui.fulfill), boxShadow: `0 0 10px ${fulfillColor(f.ui.fulfill)}` }}></div>
               </div>
             </div>
 
-            <div className="fc-actions">
-              <button className="btn-base btn-primary" onClick={() => { setContactFactory(f); setContactModal(true); }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
-                Contact
+            <div className="fc-spec-scroll">
+              {Array.isArray(f.ui.specs) && f.ui.specs.map((s, i) => <span key={i} className="fc-spec-chip">{s}</span>)}
+            </div>
+
+            <div className="fc-meta-row">
+              <div className="fc-meta-item">
+                <span className="fc-meta-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
+                <span><b>{f.ui.contracts}</b> Contracts ({f.ui.completed} Done)</span>
+              </div>
+            </div>
+
+            <div className="fc-actions-modern">
+              <button className="fc-btn-contact" onClick={() => { setContactFactory(f); setContactModal(true); }}>
+                Connect Now
               </button>
-              <button className="btn-base btn-secondary" onClick={() => navigate(`/farmer/factory/${f._id || f.id}`, { state: { factoryData: f } })}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                View Profile
+              <button className="fc-btn-profile" onClick={() => navigate(`/farmer/factory/${f._id || f.id}`, { state: { factoryData: f } })}>
+                Details
               </button>
             </div>
           </div>

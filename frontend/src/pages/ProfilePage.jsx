@@ -289,6 +289,10 @@ const ProfilePage = () => {
                             <label>Factory Location</label>
                             <input type="text" name="factoryLocation" value={profileData.factoryLocation || ''} onChange={handleInputChange} className="fp-input" />
                         </div>
+                        <div className="fp-field">
+                            <label>Established Year</label>
+                            <input type="text" name="establishedYear" value={profileData.establishedYear || ''} onChange={handleInputChange} className="fp-input" />
+                        </div>
                         <div className="fp-field full-width">
                             <label>Factory Description</label>
                             <textarea name="factoryDescription" value={profileData.factoryDescription || ''} onChange={handleInputChange} rows="3" className="fp-input" />
@@ -405,12 +409,30 @@ const ProfilePage = () => {
                             <input type="text" name="teamSize" value={profileData.teamSize || ''} onChange={handleInputChange} className="fp-input" placeholder="e.g., 15-20 labours" />
                         </div>
                         <div className="fp-field full-width">
-                            <label>Management Operations</label>
+                            <label>Management Operations (Comma separated)</label>
                             <input type="text" name="managementOperations" value={profileData.managementOperations || ''} onChange={handleInputChange} className="fp-input" />
                         </div>
                         <div className="fp-field full-width">
-                            <label>Services Offered</label>
+                            <label>Services Offered (Comma separated)</label>
                             <input type="text" name="servicesOffered" value={profileData.servicesOffered || ''} onChange={handleInputChange} className="fp-input" />
+                        </div>
+                        <div className="fp-field">
+                            <label>Working Areas (Comma separated)</label>
+                            <input type="text" name="workingAreas" value={profileData.workingAreas || ''} onChange={handleInputChange} className="fp-input" />
+                        </div>
+                        <div className="fp-field">
+                            <label>Worker Types (Comma separated)</label>
+                            <input type="text" name="workerTypes" value={profileData.workerTypes || ''} onChange={handleInputChange} className="fp-input" />
+                        </div>
+                        <div className="fp-field">
+                            <label>Price Range</label>
+                            <input type="text" name="priceRange" value={profileData.priceRange || ''} onChange={handleInputChange} className="fp-input" placeholder="e.g. ₹500 - ₹800" />
+                        </div>
+                        <div className="fp-field" style={{ display: 'flex', alignItems: 'center' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                                <input type="checkbox" name="isNegotiable" checked={profileData.isNegotiable || false} onChange={handleInputChange} style={{ width: '20px', height: '20px' }} />
+                                Rates Negotiable
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -476,6 +498,14 @@ const ProfilePage = () => {
                         <div className="fp-field">
                             <label>Work Preferences</label>
                             <input type="text" name="workPreferences" value={profileData.workPreferences || ''} onChange={handleInputChange} className="fp-input" />
+                        </div>
+                        <div className="fp-field full-width">
+                            <label>Farm Location (Optional)</label>
+                            <input type="text" name="farmLocation" value={profileData.farmLocation || ''} onChange={handleInputChange} className="fp-input" />
+                        </div>
+                        <div className="fp-field">
+                            <label>Farm Size (Optional)</label>
+                            <input type="text" name="farmSize" value={profileData.farmSize || ''} onChange={handleInputChange} className="fp-input" />
                         </div>
                     </div>
                 </div>

@@ -695,18 +695,10 @@ const getProfile = async (req, res) => {
     }
 
     // Format profile data specific to labour users - mapped to match frontend expectations
-    const profileData = {
-      _id: labour._id,
-      name: labour.name,
-      username: labour.username,
-      email: labour.email,
-      phone: labour.phone,
-      role: labour.role,
-      isActive: labour.isActive,
-      createdAt: labour.createdAt,
-      updatedAt: labour.updatedAt,
-      availability: labour.availability || 'Available', // ALWAYS include availability field
-    };
+    // Format profile data specific to labour users - mapped to match frontend expectations
+    const profileData = labour.toObject ? labour.toObject({ getters: true, virtuals: true }) : labour;
+    delete profileData.password;
+    profileData.availability = labour.availability || 'Available'; // ALWAYS include availability field
 
     // Helper function to check if a value is meaningful
     const hasValue = (value) => {
@@ -717,19 +709,6 @@ const getProfile = async (req, res) => {
       return Boolean(value);
     };
 
-    // Add non-empty labour-specific fields only
-    if (hasValue(labour.profileImage) && labour.profileImage !== 'default.jpg') {
-      profileData.profileImage = labour.profileImage;
-    }
-    
-    if (hasValue(labour.farmLocation)) {
-      profileData.farmLocation = labour.farmLocation;
-    }
-    
-    if (hasValue(labour.farmSize)) {
-      profileData.farmSize = labour.farmSize;
-    }
-    
     // Skills - ensure always returned as string for frontend form compatibility
     if (hasValue(labour.skills)) {
       // Force skills to always be a string to match frontend form input expectations
@@ -745,20 +724,13 @@ const getProfile = async (req, res) => {
     // availabilityStatus for UI display (lowercase version)
     profileData.availabilityStatus = (labour.availability || 'Available').toLowerCase();
     
-    // Work experience mapping
-    if (hasValue(labour.workExperience)) {
-      profileData.workExperience = labour.workExperience;
-    }
-    
     // Work preferences mapping
     if (hasValue(labour.workPreferences)) {
-      profileData.workPreferences = labour.workPreferences;
       profileData.workingHours = labour.workPreferences; // Also map to workingHours for frontend
     }
     
     // Wage rate mapping
     if (hasValue(labour.wageRate)) {
-      profileData.wageRate = labour.wageRate;
       // Extract numeric value for dailyWageRate field expected by frontend
       const wageMatch = labour.wageRate.match(/(\d+)/);
       if (wageMatch) {
@@ -778,15 +750,6 @@ const getProfile = async (req, res) => {
       if (certsArray.length > 0) {
         profileData.certifications = certsArray;
       }
-    }
-    
-    // Only add other fields if they have meaningful values
-    if (hasValue(labour.contactDetails)) {
-      profileData.contactDetails = labour.contactDetails;
-    }
-    
-    if (hasValue(labour.preferences)) {
-      profileData.preferences = labour.preferences;
     }
     
     // Profile completeness check

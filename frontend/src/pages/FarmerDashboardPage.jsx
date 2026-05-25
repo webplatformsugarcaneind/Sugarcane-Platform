@@ -98,10 +98,8 @@ const HeroIllustration = () => (
  * Refined and evolved based on the original structure.
  */
 const FarmerDashboardPage = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -113,72 +111,7 @@ const FarmerDashboardPage = () => {
         console.error('Error parsing user data:', err);
       }
     }
-
-    const fetchNotifications = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('No authentication token found');
-          return;
-        }
-
-        const response = await axios.get('/api/notifications', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        setNotifications(response.data?.data?.notifications || response.data?.data || []);
-      } catch (err) {
-        console.error('Error fetching notifications:', err);
-        setError(
-          err.response?.data?.message || 
-          'Failed to fetch notifications. Please try again.'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNotifications();
   }, []);
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getPriorityClass = (priority) => {
-    switch (priority?.toLowerCase()) {
-      case 'high': return 'high';
-      case 'medium': return 'medium';
-      case 'low': return 'low';
-      default: return 'medium';
-    }
-  };
-
-  const clearNotifications = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      await axios.delete('/api/notifications/all', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      setNotifications([]);
-    } catch (err) {
-      console.error('Error clearing notifications:', err);
-    }
-  };
 
   return (
     <div className="fr-page">
@@ -241,87 +174,9 @@ const FarmerDashboardPage = () => {
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="fr-tabs">
-        <button 
-          className={`fr-tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          <span className="fr-tab-icon"><Icons.Chart /></span>
-          Overview
-        </button>
-        <button 
-          className={`fr-tab-btn ${activeTab === 'contracts' ? 'active' : ''}`}
-          onClick={() => setActiveTab('contracts')}
-        >
-          <span className="fr-tab-icon"><Icons.List /></span>
-          Job Contracts
-        </button>
-      </div>
-
-      {/* Tab Content */}
+      {/* Single Page Content */}
       <div className="fr-content">
-        {activeTab === 'overview' && (
-          <div className="fr-section">
-            <div className="fr-section-header">
-              <h2 className="fr-section-title">
-                <span className="fr-title-icon"><Icons.Bell /></span>
-                Recent Notifications
-              </h2>
-              {notifications.length > 0 && (
-                <button onClick={clearNotifications} className="fr-clear-btn">
-                  Clear All
-                </button>
-              )}
-            </div>
-            
-            {loading ? (
-              <div className="fr-loading">
-                <div className="fr-spinner"></div>
-                <p>Loading alerts...</p>
-              </div>
-            ) : error ? (
-              <div className="fr-empty">
-                <div className="fr-empty-icon fr-error"><Icons.Alert /></div>
-                <p className="fr-error-text">{error}</p>
-                <button 
-                  onClick={() => window.location.reload()} 
-                  className="fr-retry-btn"
-                >
-                  Retry
-                </button>
-              </div>
-            ) : notifications.length === 0 ? (
-              <div className="fr-empty">
-                <div className="fr-empty-icon"><Icons.Empty /></div>
-                <p>No new notifications at the moment.</p>
-              </div>
-            ) : (
-              <div className="fr-notif-grid">
-                {notifications.map((notif) => (
-                  <div key={notif._id} className="fr-notif-card">
-                    {!notif.isRead && <div className="fr-notif-unread" />}
-                    <div className="fr-notif-header">
-                      <span className="fr-notif-type">{notif.type?.replace(/_/g, ' ')}</span>
-                      <span className={`fr-priority ${getPriorityClass(notif.priority)}`}>
-                        {notif.priority || 'Normal'}
-                      </span>
-                    </div>
-                    <p className="fr-notif-msg">{notif.message}</p>
-                    <div className="fr-notif-footer">
-                      <span className="fr-footer-icon"><Icons.Calendar /></span>
-                      {formatDate(notif.createdAt)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'contracts' && (
-          <FarmerContractsTab />
-        )}
+        <FarmerContractsTab />
       </div>
 
       

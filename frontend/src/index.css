@@ -107,3 +107,15 @@ input, textarea, select {
   border: 0;
 }
 
+/* ── GLOBAL PREMIUM SEARCH BAR (from Factory Directory) ── */
+.global-toolbar { display:flex; align-items:center; gap:10px; margin-bottom:24px; flex-wrap:wrap; }
+.global-search-wrap { position:relative; flex:1; min-width:220px; }
+.global-search-wrap svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted-2); pointer-events:none; }
+.global-search { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 14px 10px 38px; color:var(--white); font-family:'Instrument Sans',sans-serif; font-size:.86rem; outline:none; transition:border-color .2s,box-shadow .2s; }
+.global-search::placeholder { color:var(--muted-2); }
+.global-search:focus { border-color:rgba(126,200,67,.4); box-shadow:0 0 0 3px rgba(126,200,67,.06); }
+.global-filter { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 14px; color:var(--muted); font-family:'Instrument Sans',sans-serif; font-size:.82rem; outline:none; cursor:pointer; -webkit-appearance:none; transition:border-color .2s; min-width:140px; }
+.global-filter:focus { border-color:var(--border-g); }
+.global-filter-btn { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 14px; color:var(--white); font-family:'Instrument Sans',sans-serif; font-size:.82rem; outline:none; cursor:pointer; transition:all .2s; }
+.global-filter-btn:hover { background:var(--surface-2); border-color:rgba(126,200,67,.4); }
+

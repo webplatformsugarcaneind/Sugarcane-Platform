@@ -91,6 +91,7 @@ import AvailableJobsPage from './pages/AvailableJobsPage.jsx';
 import MyApplicationsPage from './pages/MyApplicationsPage.jsx';
 
 import InvitesAndApplicationsPage from './pages/InvitesAndApplicationsPage.jsx';
+import InvitationDetailsPage from './pages/InvitationDetailsPage.jsx';
 
 import FactoryDashboardPage from './pages/FactoryDashboardPage.jsx';
 import FactoryPostBillPage from './pages/FactoryPostBillPage.jsx';
@@ -130,6 +131,7 @@ import FactoryAnalysisDebug from './pages/FactoryAnalysisDebug.jsx';
 import ListingDetailsPage from './pages/ListingDetailsPage.jsx';
 
 import EditListingPage from './pages/EditListingPage.jsx';
+import SendInquiryPage from './pages/SendInquiryPage.jsx';
 
 import FarmerProfileViewPage from './pages/FarmerProfileViewPage.jsx';
 
@@ -569,6 +571,11 @@ function App() {
       <SafeComponent name="ListingDetailsPage"> <ListingDetailsPage /> </SafeComponent>
     }
 
+    /> <Route path="listing/inquiry/:listingId"element= {
+
+      <SafeComponent name="SendInquiryPage"> <SendInquiryPage /> </SafeComponent>
+    }
+
     /> <Route path="listing/edit/:listingId"element= {
 
       <SafeComponent name="EditListingPage"> <EditListingPage /> </SafeComponent>
@@ -733,6 +740,11 @@ function App() {
     /> <Route path="applications"element= {
 
       <SafeComponent name="InvitesAndApplicationsPage"> <InvitesAndApplicationsPage /> </SafeComponent>
+    }
+
+    /> <Route path="applications/:id"element= {
+
+      <SafeComponent name="InvitationDetailsPage"> <InvitationDetailsPage /> </SafeComponent>
     }
 
     /> <Route path="hhm-directory"element= {

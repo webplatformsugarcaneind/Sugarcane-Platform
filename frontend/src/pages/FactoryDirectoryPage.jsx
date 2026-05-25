@@ -202,8 +202,8 @@ const FactoryDirectoryPage = () => {
                 {f.associatedHHMs && f.associatedHHMs.length > 0 ? (
                   f.associatedHHMs.slice(0, 3).map((hhm, i) => (
                     <div key={i} className="fd-hhm-item">
-                      <div className="fd-hhm-avatar" style={{ background: 'rgba(126,200,67,.15)', color: '#7ec843' }}>{getInitials(hhm.name)}</div>
-                      <div style={{ flex: 1 }}><div className="fd-hhm-name">{hhm.name}</div><div className="fd-hhm-role">Harvest Head Manager</div></div>
+                      <div className="fd-hhm-avatar" style={{ background: 'rgba(126,200,67,.15)', color: '#7ec843' }}>{getInitials(hhm?.name || '??')}</div>
+                      <div style={{ flex: 1 }}><div className="fd-hhm-name">{hhm?.name || 'Unknown HHM'}</div><div className="fd-hhm-role">Harvest Head Manager</div></div>
                       <div className="fd-hhm-online" title="Online"></div>
                     </div>
                   ))

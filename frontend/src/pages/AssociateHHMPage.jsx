@@ -163,14 +163,17 @@ const AssociateHHMPage = () => {
         <div className="section">
           <h2>Available HHMs for Association ({filteredAvailableHHMs.length})</h2>
           
-          <div className="search-section">
-            <input
-              type="text"
-              placeholder="Search HHMs by name or location..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-input"
-            />
+          <div className="global-toolbar">
+            <div className="global-search-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path strokeLinecap="round" d="M21 21l-4.35-4.35"/></svg>
+              <input
+                type="text"
+                placeholder="Search HHMs by name or location..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="global-search"
+              />
+            </div>
           </div>
 
           {filteredAvailableHHMs.length === 0 ? (

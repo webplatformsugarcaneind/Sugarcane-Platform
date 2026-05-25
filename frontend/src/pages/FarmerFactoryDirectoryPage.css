@@ -71,93 +71,89 @@
 .fd-page .fd-card.good::before      { background:linear-gradient(90deg,var(--blue), transparent 70%); }
 .fd-page .fd-card.poor::before      { background:linear-gradient(90deg,var(--red),  transparent 70%); }
 
-/* ── HEADER ── */
-.fd-page .fc-header { padding:16px 16px 0; display:flex; align-items:center; gap:10px; }
-.fd-page .fc-avatar {
-  width:36px; height:36px; flex-shrink:0;
-  border-radius:10px;
-  background:rgba(126,200,67,.08); border:1px solid rgba(126,200,67,.15);
-  display:flex; align-items:center; justify-content:center; color:var(--green);
+/* ── HEADER MODERN ── */
+.fd-page .fc-header { padding: 20px 20px 0; display:flex; flex-direction:column; gap:12px; }
+.fd-page .fc-header-top { display:flex; align-items:center; justify-content:space-between; }
+.fd-page .fc-avatar-glow {
+  width:42px; height:42px;
+  border-radius:12px;
+  background:linear-gradient(135deg, rgba(126,200,67,0.15), rgba(126,200,67,0.05));
+  border:1px solid rgba(126,200,67,0.3);
+  display:flex; align-items:center; justify-content:center;
+  font-size: 1.2rem;
+  box-shadow: 0 0 20px rgba(126,200,67,0.15);
 }
-.fd-page .fc-title-wrap { flex:1; min-width:0; }
-.fd-page .fc-name {
-  font-family:'Syne',sans-serif; font-size:.86rem; font-weight:700;
-  color:var(--white); line-height:1.2; margin-bottom:3px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+.fd-page .fd-rating-badge { padding: 4px 10px; border-radius: 100px; font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; }
+.fd-page .fd-rating-badge.excellent { background:rgba(126,200,67,.15); color:var(--green); border:1px solid rgba(126,200,67,.4); box-shadow: 0 0 15px rgba(126,200,67,0.1); }
+.fd-page .fd-rating-badge.good { background:rgba(91,143,255,.15); color:var(--blue); border:1px solid rgba(91,143,255,.4); }
+.fd-page .fd-rating-badge.poor { background:rgba(255,107,107,.15); color:var(--red); border:1px solid rgba(255,107,107,.4); }
+
+.fd-page .fc-title-wrap { display:flex; flex-direction:column; gap:4px; }
+.fd-page .fc-name { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; color:var(--white); line-height:1.2; margin:0; }
+.fd-page .fc-location { font-size:0.75rem; color:var(--muted-2); display:flex; align-items:center; gap:4px; }
+.fd-page .fd-recommended-badge { display:inline-block; margin-top:4px; font-size:0.65rem; color:var(--amber); font-weight:600; background:rgba(232,168,58,0.1); padding:3px 8px; border-radius:6px; border:1px solid rgba(232,168,58,0.2); width: max-content; }
+
+/* ── METRICS GRID MODERN ── */
+.fd-page .fc-metrics-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  margin: 18px 20px 0; gap: 8px;
 }
-.fd-page .fc-location { font-size:.64rem; color:var(--muted-2); display:flex; align-items:center; gap:3px; }
-
-/* Rating badge */
-.fd-page .fd-rating-badge { display:inline-flex; align-items:center; padding:2px 7px; border-radius:100px; font-family:'Syne',sans-serif; font-size:.55rem; font-weight:700; letter-spacing:.08em; flex-shrink:0; }
-.fd-page .fd-rating-badge.excellent { background:rgba(126,200,67,.1); color:var(--green); border:1px solid rgba(126,200,67,.22); }
-.fd-page .fd-rating-badge.good      { background:rgba(91,143,255,.1);  color:var(--blue);  border:1px solid rgba(91,143,255,.22); }
-.fd-page .fd-rating-badge.poor      { background:rgba(255,107,107,.1); color:var(--red);   border:1px solid rgba(255,107,107,.22); }
-
-/* ── 4-STAT ROW ── */
-.fd-page .fc-stats-row {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  margin: 14px 16px 0;
-  background: rgba(255,255,255,.025);
-  border: 1px solid rgba(255,255,255,.06);
-  border-radius: 10px;
-  overflow: hidden;
+.fd-page .fc-metric-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 12px 8px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+  transition: background 0.2s, border-color 0.2s;
 }
-.fd-page .fc-stat {
-  padding: 10px 6px;
-  display:flex; flex-direction:column; align-items:center; gap:2px;
-  border-right: 1px solid rgba(255,255,255,.05);
-  transition: background .2s;
+.fd-page .fc-metric-box:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+.fd-page .fc-metric-lbl { font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); }
+.fd-page .fc-metric-val { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; line-height: 1; }
+.fd-page .fc-metric-val.green { color: var(--green); }
+.fd-page .fc-metric-val.amber { color: var(--amber); }
+.fd-page .fc-metric-val.muted { color: var(--muted); }
+
+/* ── FULFILLMENT MODERN ── */
+.fd-page .fc-fulfill-modern { margin: 18px 20px 0; }
+.fd-page .fc-fulfill-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.75rem; font-weight: 600; }
+.fd-page .fc-fulfill-lbl { color: var(--muted); }
+.fd-page .fc-fulfill-track-modern { height: 4px; background: rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; }
+.fd-page .fc-fulfill-fill-modern { height: 100%; border-radius: 10px; animation: fdBarGrow 1s cubic-bezier(0.1, 0.8, 0.3, 1) both; }
+
+/* ── SPECS SCROLL ── */
+.fd-page .fc-spec-scroll {
+  margin: 18px 20px 0;
+  display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
+  scrollbar-width: none;
 }
-.fd-page .fc-stat:last-child { border-right:none; }
-.fd-page .fc-stat:hover { background:rgba(255,255,255,.04); }
-.fd-page .fc-stat-val { font-family:'Syne',sans-serif; font-size:.82rem; font-weight:700; line-height:1; }
-.fd-page .fc-stat-val.green { color:var(--green); }
-.fd-page .fc-stat-val.amber { color:var(--amber); }
-.fd-page .fc-stat-val.muted { color:var(--muted); }
-.fd-page .fc-stat-lbl { font-size:.55rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted-2); }
-
-/* ── SLIM BAR ── */
-.fd-page .fc-bar-wrap { padding: 8px 16px 0; }
-.fd-page .fc-bar-track { height:2px; background:rgba(255,255,255,.06); border-radius:10px; overflow:hidden; }
-.fd-page .fc-bar-fill  { height:100%; border-radius:10px; animation:fdBarGrow .8s both; }
-
-/* ── STATUS + SPEC ROW ── */
-.fd-page .fc-tags-row { padding: 10px 16px 0; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-
-/* Operational status pill */
-.fd-page .fc-status-pill { display:inline-flex; align-items:center; padding:3px 8px; border-radius:100px; font-size:.58rem; font-weight:600; letter-spacing:.05em; white-space:nowrap; }
-.fd-page .fc-status-pill.green { background:rgba(126,200,67,.1); color:var(--green); border:1px solid rgba(126,200,67,.2); }
-.fd-page .fc-status-pill.amber { background:rgba(232,168,58,.1);  color:var(--amber); border:1px solid rgba(232,168,58,.2); }
-.fd-page .fc-status-pill.blue  { background:rgba(91,143,255,.1);  color:var(--blue);  border:1px solid rgba(91,143,255,.2); }
-.fd-page .fc-status-pill.red   { background:rgba(255,107,107,.1); color:var(--red);   border:1px solid rgba(255,107,107,.2); }
-
-/* Spec tag */
-.fd-page .fd-spec-tag { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09); border-radius:100px; padding:3px 9px; font-size:.6rem; color:var(--muted); white-space:nowrap; }
-
-/* ── FOOTER ── */
-.fd-page .fc-footer { padding:12px 16px 14px; display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:auto; }
-.fd-page .fc-hhm-count { display:flex; align-items:center; gap:5px; font-size:.68rem; color:var(--muted-2); }
-.fd-page .fc-hhm-count svg { opacity:.5; flex-shrink:0; }
-
-/* ── ACTIONS (2 buttons) ── */
-.fd-page .fc-actions { display:flex; gap:6px; }
-.fd-page .fd-btn-contact {
-  background:var(--green); color:#0a0f0a;
-  border:none; border-radius:8px; padding:7px 12px;
-  font-family:'Syne',sans-serif; font-size:.72rem; font-weight:700;
-  cursor:pointer; white-space:nowrap;
-  box-shadow:0 3px 12px var(--green-glow);
-  transition:transform .18s, box-shadow .18s;
+.fd-page .fc-spec-scroll::-webkit-scrollbar { display: none; }
+.fd-page .fc-spec-chip {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  padding: 4px 10px; border-radius: 100px; font-size: 0.65rem; color: var(--muted);
+  white-space: nowrap; flex-shrink: 0; transition: color 0.2s, background 0.2s;
 }
-.fd-page .fd-btn-contact:hover { transform:translateY(-1px); box-shadow:0 6px 22px rgba(126,200,67,.35); }
-.fd-page .fd-btn-profile {
-  background:rgba(255,255,255,.05); border:1px solid var(--border); color:var(--muted);
-  border-radius:8px; padding:7px 12px;
-  font-family:'Instrument Sans',sans-serif; font-size:.72rem;
-  cursor:pointer; white-space:nowrap;
-  transition:border-color .18s, color .18s, background .18s;
+.fd-page .fc-spec-chip:hover { color: var(--white); background: rgba(255,255,255,0.08); }
+
+/* ── META ROW ── */
+.fd-page .fc-meta-row { margin: 16px 20px 0; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; display: flex; align-items: center; justify-content: space-between; }
+.fd-page .fc-meta-item { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--muted-2); }
+.fd-page .fc-meta-item b { color: var(--white); font-weight: 600; }
+
+/* ── ACTIONS MODERN ── */
+.fd-page .fc-actions-modern { padding: 20px; display: flex; gap: 10px; margin-top: auto; }
+.fd-page .fc-btn-contact {
+  flex: 2; background: var(--green); color: #0a0f0a; border: none; border-radius: 10px;
+  padding: 12px; font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700;
+  cursor: pointer; box-shadow: 0 4px 15px rgba(126,200,67,0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.fd-page .fd-btn-profile:hover { border-color:var(--border-g); color:var(--white); background:rgba(126,200,67,.06); }
+.fd-page .fc-btn-contact:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(126,200,67,0.4); }
+.fd-page .fc-btn-profile {
+  flex: 1; background: rgba(255,255,255,0.05); color: var(--white); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 12px; font-family: 'Instrument Sans', sans-serif; font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: background 0.2s, border-color 0.2s;
+}
+.fd-page .fc-btn-profile:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
 
 /* ── EMPTY / LOADING ── */
 .fd-page .fd-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 40px; text-align:center; grid-column:1/-1; }

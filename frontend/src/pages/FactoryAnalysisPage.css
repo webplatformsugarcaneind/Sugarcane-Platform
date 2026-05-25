@@ -272,12 +272,13 @@
 .fap-delay-bad    { background:rgba(255,107,107,.1); color:var(--red);   border:1px solid rgba(255,107,107,.2); }
 
 .fap-rating-badge {
-  display:inline-flex; align-items:center; justify-content:center;
+  display:inline-flex; align-items:center; justify-content:center; gap:5px;
   padding:5px 14px; border-radius:100px;
   font-family:'Syne',sans-serif; font-size:.7rem; font-weight:700; letter-spacing:.1em;
 }
 .fap-rating-excellent { background:rgba(126,200,67,.12); color:var(--green); border:1px solid rgba(126,200,67,.25); }
 .fap-rating-good      { background:rgba(91,143,255,.12); color:var(--blue);  border:1px solid rgba(91,143,255,.25); }
+.fap-rating-average   { background:rgba(232,168,58,.12); color:var(--amber); border:1px solid rgba(232,168,58,.25); }
 .fap-rating-poor      { background:rgba(255,107,107,.12);color:var(--red);   border:1px solid rgba(255,107,107,.25); }
 
 .fap-fulfillment-bar-wrap { display:flex; align-items:center; gap:10px; }

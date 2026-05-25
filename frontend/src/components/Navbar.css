@@ -68,6 +68,7 @@
   align-items: center;
   justify-content: center;
   font-size: 14px;
+  color: #0b0f0b;
   box-shadow: 0 0 16px var(--green-glow);
   flex-shrink: 0;
 }
@@ -97,6 +98,9 @@
 }
 
 .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   color: var(--muted);
   text-decoration: none;
   font-size: 0.82rem;
@@ -135,6 +139,9 @@
 .navbar-auth { flex-shrink: 0; }
 
 .auth-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   background: var(--green);
   color: #0b0f0b;
   text-decoration: none;
@@ -143,7 +150,6 @@
   font-family: 'Instrument Sans', sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
-  
   border: none;
   box-shadow: 0 0 20px var(--green-glow);
   transition: box-shadow .2s, transform .15s;
@@ -219,6 +225,9 @@
 }
 
 .mobile-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: var(--muted);
   text-decoration: none;
   font-size: 0.95rem;
@@ -234,6 +243,10 @@
 .mobile-nav-link.active { background: rgba(126,200,67,0.08); color: var(--green); }
 
 .mobile-auth-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   background: var(--green);
   color: #0b0f0b;
   text-decoration: none;
@@ -242,7 +255,6 @@
   font-weight: 700;
   font-size: 0.9rem;
   text-align: center;
-  
   border: none;
   margin-top: 8px;
   box-shadow: 0 0 20px var(--green-glow);

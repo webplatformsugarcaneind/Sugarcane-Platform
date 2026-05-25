@@ -37,6 +37,7 @@ router.get('/factories', async (req, res) => {
 
     // Execute query to get Factory role users
     const factoryUsers = await User.find(filter)
+      .populate('associatedHHMs', 'name username email phone location experience')
       .sort(sortObj)
       .skip(skip)
       .limit(limitNum)
@@ -54,8 +55,8 @@ router.get('/factories', async (req, res) => {
       description: user.factoryDescription || 'Modern sugar processing facility',
       imageUrls: [],
       imageCount: 0,
-      associatedHHMs: [],
-      hhmCount: 0,
+      associatedHHMs: user.associatedHHMs || [],
+      hhmCount: user.associatedHHMs ? user.associatedHHMs.length : 0,
       isActive: true,
       capacity: user.capacity || 'Not specified',
       crushingStatus: user.crushingStatus || 'OFF',

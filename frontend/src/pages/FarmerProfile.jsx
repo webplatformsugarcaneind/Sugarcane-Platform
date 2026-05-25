@@ -32,6 +32,37 @@ const FarmerProfile = () => {
     experience: '',
     irrigation: 'drip',
     farmingMethods: '',
+    cropVariety: '',
+    estimatedYield: '',
+    cropStatus: 'Standing Crop',
+    farmType: '',
+    preferredHarvestDate: '',
+    workersNeeded: '',
+    harvestType: 'Manual',
+    transportRequired: true,
+    loadingSupport: false,
+    machineRequired: 'Manual Preferred',
+    urgencyLevel: 'Normal Season',
+    village: '',
+    region: '',
+    district: '',
+    distanceFromFactory: '',
+    roadAccessibility: 'Truck Accessible',
+    loadingPoint: '',
+    harvestWindow: '',
+    dailyHours: '',
+    shiftPreference: 'Day Shift',
+    peakDays: '',
+    contractStatus: 'Open for Proposals',
+    preferredPayment: 'Bank Transfer',
+    previousContractType: 'Seasonal',
+    advanceRequired: false,
+    settlementPreference: 'Per Harvest Cycle',
+    seasonsCompleted: 0,
+    reliabilityRating: 0,
+    trackRecord: '',
+    description: '',
+    contactPreference: 'Any'
   });
 
   const [crops, setCrops] = useState([]);
@@ -59,7 +90,6 @@ const FarmerProfile = () => {
 
         if (res.data.success) {
           const profile = res.data.profile;
-          
           setFormData({
             fullName: profile.name || '',
             email: profile.email || '',
@@ -69,6 +99,37 @@ const FarmerProfile = () => {
             experience: profile.farmingExperience || '',
             irrigation: profile.irrigationType || 'drip',
             farmingMethods: profile.farmingMethods || '',
+            cropVariety: profile.cropVariety || '',
+            estimatedYield: profile.estimatedYield || '',
+            cropStatus: profile.cropStatus || 'Standing Crop',
+            farmType: profile.farmType || '',
+            preferredHarvestDate: profile.preferredHarvestDate ? new Date(profile.preferredHarvestDate).toISOString().split('T')[0] : '',
+            workersNeeded: profile.workersNeeded || '',
+            harvestType: profile.harvestType || 'Manual',
+            transportRequired: profile.transportRequired ?? true,
+            loadingSupport: profile.loadingSupport ?? false,
+            machineRequired: profile.machineRequired || 'Manual Preferred',
+            urgencyLevel: profile.urgencyLevel || 'Normal Season',
+            village: profile.village || '',
+            region: profile.region || '',
+            district: profile.district || '',
+            distanceFromFactory: profile.distanceFromFactory || '',
+            roadAccessibility: profile.roadAccessibility || 'Truck Accessible',
+            loadingPoint: profile.loadingPoint || '',
+            harvestWindow: profile.harvestWindow || '',
+            dailyHours: profile.dailyHours || '',
+            shiftPreference: profile.shiftPreference || 'Day Shift',
+            peakDays: profile.peakDays || '',
+            contractStatus: profile.contractStatus || 'Open for Proposals',
+            preferredPayment: profile.preferredPayment || 'Bank Transfer',
+            previousContractType: profile.previousContractType || 'Seasonal',
+            advanceRequired: profile.advanceRequired ?? false,
+            settlementPreference: profile.settlementPreference || 'Per Harvest Cycle',
+            seasonsCompleted: profile.seasonsCompleted || 0,
+            reliabilityRating: profile.reliabilityRating || 0,
+            trackRecord: profile.trackRecord || '',
+            description: profile.description || '',
+            contactPreference: profile.contactPreference || 'Any'
           });
 
           // Handle comma-separated string lists from the backend models
@@ -159,6 +220,37 @@ const FarmerProfile = () => {
         cropTypes: crops.join(', '),
         equipment: equipment.join(', '),
         certifications: certifications.join(', '),
+        cropVariety: formData.cropVariety,
+        estimatedYield: formData.estimatedYield,
+        cropStatus: formData.cropStatus,
+        farmType: formData.farmType,
+        preferredHarvestDate: formData.preferredHarvestDate || null,
+        workersNeeded: formData.workersNeeded,
+        harvestType: formData.harvestType,
+        transportRequired: formData.transportRequired,
+        loadingSupport: formData.loadingSupport,
+        machineRequired: formData.machineRequired,
+        urgencyLevel: formData.urgencyLevel,
+        village: formData.village,
+        region: formData.region,
+        district: formData.district,
+        distanceFromFactory: formData.distanceFromFactory,
+        roadAccessibility: formData.roadAccessibility,
+        loadingPoint: formData.loadingPoint,
+        harvestWindow: formData.harvestWindow,
+        dailyHours: formData.dailyHours,
+        shiftPreference: formData.shiftPreference,
+        peakDays: formData.peakDays,
+        contractStatus: formData.contractStatus,
+        preferredPayment: formData.preferredPayment,
+        previousContractType: formData.previousContractType,
+        advanceRequired: formData.advanceRequired,
+        settlementPreference: formData.settlementPreference,
+        seasonsCompleted: formData.seasonsCompleted,
+        reliabilityRating: formData.reliabilityRating,
+        trackRecord: formData.trackRecord,
+        description: formData.description,
+        contactPreference: formData.contactPreference
       };
 
       const res = await axios.put('/api/farmer/profile', updateData, {
@@ -399,6 +491,164 @@ const FarmerProfile = () => {
                       + Add certification
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* SECTION 3: CROP & HARVEST INFO */}
+          <section className="fp-card">
+            <div className="fp-card-header">
+              <div className="fp-card-icon">🌱</div>
+              <div className="fp-card-txt">
+                <h2 className="fp-card-title">Crop & Harvest Details</h2>
+                <div className="fp-card-sub">Crop status, variety and tonnage estimates</div>
+              </div>
+            </div>
+            <div className="fp-card-body">
+              <div className="fp-form-grid">
+                <div className="fp-field">
+                  <label>Crop Variety</label>
+                  <input type="text" name="cropVariety" value={formData.cropVariety} onChange={handleChange} placeholder="e.g. Co 86032" />
+                </div>
+                <div className="fp-field">
+                  <label>Estimated Yield (Tons)</label>
+                  <input type="text" name="estimatedYield" value={formData.estimatedYield} onChange={handleChange} placeholder="e.g. 1500" />
+                </div>
+                <div className="fp-field">
+                  <label>Crop Status</label>
+                  <select name="cropStatus" value={formData.cropStatus} onChange={handleChange}>
+                    <option value="Standing Crop">Standing Crop</option>
+                    <option value="Ready for Harvest">Ready for Harvest</option>
+                    <option value="Harvesting in Progress">Harvesting in Progress</option>
+                  </select>
+                </div>
+                <div className="fp-field">
+                  <label>Farm Type</label>
+                  <input type="text" name="farmType" value={formData.farmType} onChange={handleChange} placeholder="e.g. Organic" />
+                </div>
+                <div className="fp-field">
+                  <label>Preferred Harvest Date</label>
+                  <input type="date" name="preferredHarvestDate" value={formData.preferredHarvestDate} onChange={handleChange} />
+                </div>
+                <div className="fp-field">
+                  <label>Workers Needed</label>
+                  <input type="text" name="workersNeeded" value={formData.workersNeeded} onChange={handleChange} placeholder="e.g. 50" />
+                </div>
+                <div className="fp-field">
+                  <label>Harvest Type</label>
+                  <select name="harvestType" value={formData.harvestType} onChange={handleChange}>
+                    <option value="Manual">Manual</option>
+                    <option value="Machine">Machine</option>
+                    <option value="Hybrid">Hybrid</option>
+                  </select>
+                </div>
+                <div className="fp-field">
+                  <label>Machine Required</label>
+                  <select name="machineRequired" value={formData.machineRequired} onChange={handleChange}>
+                    <option value="Manual Preferred">Manual Preferred</option>
+                    <option value="Harvester Required">Harvester Required</option>
+                    <option value="Loader Required">Loader Required</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* SECTION 4: LOCATION & LOGISTICS */}
+          <section className="fp-card">
+            <div className="fp-card-header">
+              <div className="fp-card-icon">📍</div>
+              <div className="fp-card-txt">
+                <h2 className="fp-card-title">Location & Logistics</h2>
+                <div className="fp-card-sub">Field access, road conditions and distance</div>
+              </div>
+            </div>
+            <div className="fp-card-body">
+              <div className="fp-form-grid">
+                <div className="fp-field">
+                  <label>Village / Taluka</label>
+                  <input type="text" name="village" value={formData.village} onChange={handleChange} placeholder="Village Name" />
+                </div>
+                <div className="fp-field">
+                  <label>District</label>
+                  <input type="text" name="district" value={formData.district} onChange={handleChange} placeholder="District Name" />
+                </div>
+                <div className="fp-field">
+                  <label>Distance from Factory (km)</label>
+                  <input type="text" name="distanceFromFactory" value={formData.distanceFromFactory} onChange={handleChange} placeholder="e.g. 25 km" />
+                </div>
+                <div className="fp-field">
+                  <label>Road Accessibility</label>
+                  <select name="roadAccessibility" value={formData.roadAccessibility} onChange={handleChange}>
+                    <option value="Truck Accessible">Truck Accessible</option>
+                    <option value="Tractor Only">Tractor Only</option>
+                    <option value="Poor/Mud Road">Poor/Mud Road</option>
+                  </select>
+                </div>
+                <div className="fp-field">
+                  <label>Transport Required</label>
+                  <select name="transportRequired" value={formData.transportRequired} onChange={(e) => { setFormData({...formData, transportRequired: e.target.value === 'true'}); setShowSave(true); }}>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+                <div className="fp-field">
+                  <label>Loading Support</label>
+                  <select name="loadingSupport" value={formData.loadingSupport} onChange={(e) => { setFormData({...formData, loadingSupport: e.target.value === 'true'}); setShowSave(true); }}>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* SECTION 5: SCHEDULE & CONTRACT */}
+          <section className="fp-card">
+            <div className="fp-card-header">
+              <div className="fp-card-icon">📝</div>
+              <div className="fp-card-txt">
+                <h2 className="fp-card-title">Payment & Contract</h2>
+                <div className="fp-card-sub">Settlement preferences and contract type</div>
+              </div>
+            </div>
+            <div className="fp-card-body">
+              <div className="fp-form-grid">
+                <div className="fp-field">
+                  <label>Contract Status</label>
+                  <select name="contractStatus" value={formData.contractStatus} onChange={handleChange}>
+                    <option value="Open for Proposals">Open for Proposals</option>
+                    <option value="Negotiating">Negotiating</option>
+                    <option value="Contracted">Contracted</option>
+                  </select>
+                </div>
+                <div className="fp-field">
+                  <label>Payment Method</label>
+                  <select name="preferredPayment" value={formData.preferredPayment} onChange={handleChange}>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Cheque">Cheque</option>
+                  </select>
+                </div>
+                <div className="fp-field">
+                  <label>Settlement Preference</label>
+                  <select name="settlementPreference" value={formData.settlementPreference} onChange={handleChange}>
+                    <option value="Per Harvest Cycle">Per Harvest Cycle</option>
+                    <option value="Weekly">Weekly</option>
+                    <option value="Monthly">Monthly</option>
+                  </select>
+                </div>
+                <div className="fp-field">
+                  <label>Advance Required</label>
+                  <select name="advanceRequired" value={formData.advanceRequired} onChange={(e) => { setFormData({...formData, advanceRequired: e.target.value === 'true'}); setShowSave(true); }}>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </div>
+                <div className="fp-field full">
+                  <label>Description / Additional Notes</label>
+                  <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Any specific requirements or details..." />
                 </div>
               </div>
             </div>
