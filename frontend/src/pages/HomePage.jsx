@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Modal from '../components/Modal';
 import ChatbotWidget from '../components/Chatbot/ChatbotWidget';
 import LanguageSelector from '../components/LanguageSelector';
 import './HomePage.css';
@@ -8,125 +7,72 @@ import { useTranslation } from 'react-i18next';
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [rolesData, setRolesData] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
-  const handleLangChange = (newLang) => {
-    i18n.changeLanguage(newLang);
-  };
+  const { t } = useTranslation();
 
-  // Get mock roles data function
-  // SVG icon map keyed by role
-  const RoleIcons = {
-    farmer: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="36" height="36">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3C12 3 6.5 8 6.5 13a5.5 5.5 0 0 0 11 0C17.5 8 12 3 12 3Z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 13v8M9 18h6" />
-      </svg>
-    ),
-    hhm: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="36" height="36">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
-    labour: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="36" height="36">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77Z" />
-      </svg>
-    ),
-    factory: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="36" height="36">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205v3m-5.25-9h-.008v.008h.008V3.75Z" />
-      </svg>
-    ),
+  const rolesData = {
+    farmer: {
+      title: t('roles.farmer', 'Farmer'),
+      icon: 'farmer',
+      description: t('roles.farmerDesc', 'Manage your agricultural operations efficiently'),
+      features: [
+        t('homeRolesGrid.farmerTag1', 'Harvest Request'),
+        t('homeRolesGrid.farmerTag2', 'Request Tracking'),
+        t('homeRolesGrid.farmerTag3', 'Marketplace')
+      ],
+      benefits: [
+        'Easy access to harvest managers',
+        'Reduced manual communication',
+        'Better visibility of activities'
+      ]
+    },
+    hhm: {
+      title: t('roles.hhm', 'HHM (Harvest Manager)'),
+      icon: 'hhm',
+      description: t('roles.hhmDesc', 'Coordinate operations between farmers and factories'),
+      features: [
+        t('homeRolesGrid.hhmTag1', 'Request Management'),
+        t('homeRolesGrid.hhmTag2', 'Worker Assignment'),
+        t('homeRolesGrid.hhmTag3', 'Coordination')
+      ],
+      benefits: [
+        'Simplified task handling',
+        'Better worker allocation',
+        'Improved coordination with farmers and factories'
+      ]
+    },
+    labour: {
+      title: t('roles.labour', 'Worker'),
+      icon: 'labour',
+      description: t('roles.labourDesc', 'Find work opportunities and manage your career'),
+      features: [
+        t('homeRolesGrid.labourTag1', 'Job Opportunities'),
+        t('homeRolesGrid.labourTag2', 'Availability'),
+        t('homeRolesGrid.labourTag3', 'Wage Tracking')
+      ],
+      benefits: [
+        'Easy access to jobs',
+        'Clear work information',
+        'Basic wage transparency'
+      ]
+    },
+    factories: {
+      title: t('roles.factory', 'Factory'),
+      icon: 'factory',
+      description: t('roles.factoryDesc', 'Optimize your sugar production operations'),
+      features: [
+        t('homeRolesGrid.factoryTag1', 'Contract Management'),
+        t('homeRolesGrid.factoryTag2', 'Announcements'),
+        t('homeRolesGrid.factoryTag3', 'Records')
+      ],
+      benefits: [
+        'Organized contract handling',
+        'Easy communication with stakeholders',
+        'Better record management'
+      ]
+    }
   };
-
-  const getMockRolesData = () => {
-    return {
-      farmer: {
-        title: t('roles.farmer', 'Farmer'),
-        icon: 'farmer',
-        description: t('roles.farmerDesc', 'Manage your agricultural operations efficiently'),
-        features: [
-          t('homeRolesGrid.farmerTag1', 'Harvest Request'),
-          t('homeRolesGrid.farmerTag2', 'Request Tracking'),
-          t('homeRolesGrid.farmerTag3', 'Marketplace')
-        ],
-        benefits: [
-          'Easy access to harvest managers',
-          'Reduced manual communication',
-          'Better visibility of activities'
-        ]
-      },
-      hhm: {
-        title: t('roles.hhm', 'HHM (Harvest Manager)'),
-        icon: 'hhm',
-        description: t('roles.hhmDesc', 'Coordinate operations between farmers and factories'),
-        features: [
-          t('homeRolesGrid.hhmTag1', 'Request Management'),
-          t('homeRolesGrid.hhmTag2', 'Worker Assignment'),
-          t('homeRolesGrid.hhmTag3', 'Coordination')
-        ],
-        benefits: [
-          'Simplified task handling',
-          'Better worker allocation',
-          'Improved coordination with farmers and factories'
-        ]
-      },
-      labour: {
-        title: t('roles.labour', 'Worker'),
-        icon: 'labour',
-        description: t('roles.labourDesc', 'Find work opportunities and manage your career'),
-        features: [
-          t('homeRolesGrid.labourTag1', 'Job Opportunities'),
-          t('homeRolesGrid.labourTag2', 'Availability'),
-          t('homeRolesGrid.labourTag3', 'Wage Tracking')
-        ],
-        benefits: [
-          'Easy access to jobs',
-          'Clear work information',
-          'Basic wage transparency'
-        ]
-      },
-      factories: {
-        title: t('roles.factory', 'Factory'),
-        icon: 'factory',
-        description: t('roles.factoryDesc', 'Optimize your sugar production operations'),
-        features: [
-          t('homeRolesGrid.factoryTag1', 'Contract Management'),
-          t('homeRolesGrid.factoryTag2', 'Announcements'),
-          t('homeRolesGrid.factoryTag3', 'Records')
-        ],
-        benefits: [
-          'Organized contract handling',
-          'Easy communication with stakeholders',
-          'Better record management'
-        ]
-      }
-    };
-  };
-
-  useEffect(() => {
-    const fetchRolesData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        setRolesData(getMockRolesData());
-      } catch (err) {
-        setError('Failed to load roles data. Using fallback data.');
-        setRolesData(getMockRolesData());
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchRolesData();
-  }, []);
 
   useEffect(() => {
     const nav = document.getElementById('nav');
@@ -192,7 +138,7 @@ const HomePage = () => {
       const animateDots = () => {
         t += 0.003;
         const dots = wrap.querySelectorAll('.orbit-dot');
-        orbitItems.forEach(({ angle, radius }, i) => {
+        orbitItems.forEach(({ angle }, i) => {
           const rad = ((angle * Math.PI) / 180) + t * (i % 2 === 0 ? 1 : -1);
           const r = i < 4 ? 170 : 110;
           const x = cx + r * Math.cos(rad) - 20;
@@ -249,10 +195,6 @@ const HomePage = () => {
     } else {
       navigate('/signup');
     }
-  };
-
-  const handleLearnMore = () => {
-    navigate('/about');
   };
 
   const renderModalContent = () => {
