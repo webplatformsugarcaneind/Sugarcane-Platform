@@ -308,7 +308,6 @@ const HomePage = () => {
               {t('home.startFree')}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </a>
-            <a href="/about" className="btn-hero-outline" onClick={(e) => { e.preventDefault(); handleLearnMore(); }}>{t('home.watchDemo')}</a>
           </div>
         </div>
 
