@@ -49,7 +49,8 @@ const InvitationDetailsPage = () => {
             <div>
               <h2 style={{ margin: '0 0 8px 0', fontSize: '1.8rem', color: 'var(--white)' }}>{item.job.title}</h2>
               <div style={{ fontSize: '1.05rem', color: 'var(--muted)' }}>
-                By <strong style={{ color: 'var(--white)' }}>{item.employer.name}</strong> <span style={{ color: 'var(--amber)' }}>⭐ {item.employer.rating}</span>
+                By <strong style={{ color: 'var(--white)' }}>{item.employer.name}</strong> <span style={{ color: 'var(--amber)' }}><svg viewBox="0 0 24 24" fill="#f59e0b" width="13" height="13" style={{verticalAlign:'middle',marginRight:2}}><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"/></svg> {item.employer.rating}</span>
+
               </div>
             </div>
           </div>

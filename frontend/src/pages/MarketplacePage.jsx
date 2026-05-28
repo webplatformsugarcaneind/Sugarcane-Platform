@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import CreateListingFormNew from '../components/CreateListingFormNew';
 import QuickLogin from '../components/QuickLogin';
 import './MarketplacePage.css';
@@ -17,10 +18,13 @@ const Icons = {
   Truck: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.25v5.25m0-5.25a4.632 4.632 0 0 0-3.32-3.321C9.624 3.75 8.163 3.75 6.75 3.75h-1.5c-1.413 0-2.874 0-4.23.167a4.632 4.632 0 0 0-3.32 3.322v5.25" /></svg>),
   Store: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75v-3.75a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" /></svg>),
   User: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>),
-  Star: () => (<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg>)
+  Star: () => (<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg>),
+  Clock: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>),
+  Scale: () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18M3 12h18M6 8l-3 4 3 4M18 8l3 4-3 4" /></svg>)
 };
 
 const MarketplacePage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +45,7 @@ const MarketplacePage = () => {
     try {
       setLoading(true); setError(null);
       const token = localStorage.getItem('token');
-      if (!token) { setError('Please login to view listings.'); return; }
+      if (!token) { setError(t('marketplace.loginRequired')); return; }
       const params = new URLSearchParams();
       if (filterVariety) params.append('crop_variety', filterVariety);
       
@@ -50,9 +54,9 @@ const MarketplacePage = () => {
       });
       setListings(Array.isArray(res.data.data) ? res.data.data : []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to fetch listings.');
+      setError(err.response?.data?.message || t('marketplace.failedFetch'));
     } finally { setLoading(false); }
-  }, [filterVariety, sortBy]);
+  }, [filterVariety, sortBy, t]);
 
   useEffect(() => { fetchListings(); }, [fetchListings]);
 
@@ -68,9 +72,9 @@ const MarketplacePage = () => {
       });
       setIsModalOpen(false);
       fetchListings();
-      alert('🎉 Listing created successfully!');
+      alert(t('marketplace.createSuccess'));
     } catch (err) {
-      alert(`❌ ${err.response?.data?.message || 'Failed to create listing.'}`);
+      alert(`❌ ${err.response?.data?.message || t('marketplace.createFailed')}`);
     } finally { setIsSubmitting(false); }
   };
 
@@ -107,111 +111,107 @@ const MarketplacePage = () => {
       <div className="mp-header">
         <div className="ph-top">
           <div>
-            <div className="ph-eyebrow">Farmer Marketplace</div>
-            <h1 className="mp-title">Sugarcane <em>Marketplace</em></h1>
-            <p className="mp-sub">Direct trade platform for premium sugarcane and seeds.</p>
+            <div className="ph-eyebrow">{t('marketplace.farmerMarketplace')}</div>
+            <h1 className="mp-title">{t('marketplace.sugarcaneTitle')} <em>{t('marketplace.marketplaceTitle')}</em></h1>
+            <p className="mp-sub">{t('marketplace.sub')}</p>
           </div>
-          <button className="btn-base btn-primary" onClick={() => navigate('/farmer/listing/create')}>+ Add Listing</button>
+          <button className="btn-base btn-primary" onClick={() => navigate('/farmer/listing/create')}>{t('marketplace.addListing')}</button>
         </div>
       </div>
 
       <div className="mp-toolbar">
-        <input type="text" className="mp-search" placeholder="Search variety, location..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-        <button className={`mp-action-btn ${!showMyListings ? 'active' : ''}`} onClick={showAllListings}>All Listings</button>
-        <button className={`mp-action-btn ${showMyListings ? 'active' : ''}`} onClick={viewMyListings}>My Listings</button>
+        <input type="text" className="mp-search" placeholder={t('marketplace.searchPlaceholder')} value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+        <button className={`mp-action-btn ${!showMyListings ? 'active' : ''}`} onClick={showAllListings}>{t('marketplace.allListings')}</button>
+        <button className={`mp-action-btn ${showMyListings ? 'active' : ''}`} onClick={viewMyListings}>{t('marketplace.myListings')}</button>
       </div>
 
-      <div className="mp-grid">
+      <div className="global-grid">
         {loading ? (
           <div className="mp-loading-state" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '100px 0' }}>
             <div className="mp-spinner" style={{ border: '4px solid rgba(126,200,67,0.1)', borderTop: '4px solid var(--green)', borderRadius: '50%', width: '40px', height: '40px', margin: '0 auto 20px', animation: 'mpSpin 1s linear infinite' }}></div>
-            <p style={{ color: '#888' }}>Searching for the best sugarcane deals...</p>
+            <p style={{ color: '#888' }}>{t('marketplace.searchingDeals')}</p>
           </div>
         ) : (showMyListings ? myListings : filteredListings).length === 0 ? (
           <div className="mp-empty-state" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '100px 0', background: '#161b16', borderRadius: '20px', border: '1px dashed #333' }}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px', color: 'var(--green)', opacity: 0.6 }}>
               <div style={{ width: '64px', height: '64px' }}><Icons.Crop /></div>
             </div>
-            <h3>No Listings Available</h3>
-            <p style={{ color: '#888', marginBottom: '25px' }}>Be the first to list your sugarcane crop and connect with buyers!</p>
-            <button className="btn-base btn-primary" onClick={() => navigate('/farmer/listing/create')}>+ Create New Listing</button>
+            <h3>{t('marketplace.noListings')}</h3>
+            <p style={{ color: '#888', marginBottom: '25px' }}>{t('marketplace.beFirstList')}</p>
+            <button className="btn-base btn-primary" onClick={() => navigate('/farmer/listing/create')}>{t('marketplace.createNewListing')}</button>
           </div>
-        ) : (showMyListings ? myListings : filteredListings).map((l, i) => (
-          <div key={l._id} className="mp-card" onClick={() => handleViewDetails(l)}>
-            <div className="mc-img-wrap">
-              {l.farm_images?.[0]?.url ? (
-                <img src={`http://localhost:5000${l.farm_images[0].url}`} alt={l.sugarcane_variety || l.crop_variety} />
-              ) : (
-                <div className="mc-img-placeholder" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: 'var(--green)', opacity: 0.2 }}>
-                  <div style={{ width: '48px', height: '48px' }}><Icons.Crop /></div>
+        ) : (showMyListings ? myListings : filteredListings).map((l, i) => {
+          return (
+            <div key={l._id} className={`global-card inactive`} onClick={() => handleViewDetails(l)}>
+
+
+              {/* LARGE CROP IMAGE AFTER HEADER */}
+              {l.farm_images?.[0]?.url && (
+                <div className="gc-image-wrap" style={{ width: '100%', height: '150px', overflow: 'hidden', margin: '4px 0 10px 0', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                  <img src={`http://localhost:5000${l.farm_images[0].url}`} alt="Crop" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               )}
-              <div className="mc-badge">{l.sugarcane_variety || l.crop_variety}</div>
-            </div>
-            
-            <div className="mc-content">
-              <div className="mc-header">
-                <h3 className="mc-title">
-                  {l.sugarcane_variety || l.crop_variety || 'Sugarcane'} {l.crop_type || 'Seed Cane'}
-                </h3>
-                <div className="mc-qty-badge">{l.quantity_available?.value || l.quantity_in_tons || 0} {l.quantity_available?.unit || 'Gunthas'}</div>
-              </div>
-              
-              <div className="mc-info-grid">
-                <div className="mc-info-item">
-                  <div className="mc-ii-label">Location</div>
-                  <div className="mc-ii-val">{l.delivery_location || l.location || 'Not specified'}</div>
+
+              {/* INFO GRID (2 COLUMN) */}
+              <div className="gc-info-grid-2col">
+                <div className="gc-info-item" style={{ gridColumn: '1 / -1' }}>
+                  <span className="gc-ii-label">Crop</span>
+                  <span className="gc-ii-val" style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', color: 'var(--white)' }}>
+                    <span className="mc-svg-icon text-green" style={{ marginRight: '6px' }}><Icons.Sprout /></span>
+                    {l.sugarcane_variety || l.crop_variety || 'Sugarcane'} {l.crop_type || 'Seed Cane'}
+                  </span>
                 </div>
-                <div className="mc-info-item">
-                  <div className="mc-ii-label">Asking Price</div>
-                  <div className="mc-ii-val text-green">
-                    {fmtPrice(l.price_details?.price_per_unit || l.expected_price_per_ton || 0)}
-                    <span style={{ fontSize: '0.85em', opacity: 0.8 }}> / {l.quantity_available?.unit || 'Guntha'}</span>
-                  </div>
+                <div className="gc-info-item">
+                  <span className="gc-ii-label">{t('marketplace.seller')}</span>
+                  <span className="gc-ii-val" style={{ display: 'flex', alignItems: 'center' }}>
+                    <span className="mc-svg-icon text-green" style={{ marginRight: '6px' }}><Icons.User /></span>
+                    {l.farmer_id?.name || l.farmer_name || t('marketplace.verifiedFarmer')}
+                  </span>
                 </div>
-                <div className="mc-info-item">
-                  <div className="mc-ii-label">Seller</div>
-                  <div className="mc-ii-val mc-seller-grid-val">
-                    {l.farmer_id?.name || l.farmer_name || 'Verified Farmer'}
-                    {(l.isVerifiedFarmer || l.isVerified) && <span className="mc-verified" title="Verified"><Icons.CheckCircle /></span>}
-                  </div>
+                <div className="gc-info-item">
+                  <span className="gc-ii-label">Location</span>
+                  <span className="gc-ii-val" style={{ display: 'flex', alignItems: 'center' }}>
+                    <span className="mc-svg-icon" style={{ marginRight: '6px' }}><Icons.Location /></span>
+                    {l.delivery_location || l.location || t('farmerContracts.notSpecified')}
+                  </span>
                 </div>
-                <div className="mc-info-item">
-                  <div className="mc-ii-label">Crop Age</div>
-                  <div className="mc-ii-val">{l.crop_age ? `${l.crop_age} months` : 'Fresh Harvest'}</div>
+                <div className="gc-info-item">
+                  <span className="gc-ii-label">Price</span>
+                  <span className="gc-ii-val text-green" style={{ display: 'flex', alignItems: 'center' }}>
+                    <span className="mc-svg-icon text-green" style={{ marginRight: '6px' }}><Icons.Store /></span>
+                    {fmtPrice(l.price_details?.price_per_unit || l.expected_price_per_ton || 0)} / {l.quantity_available?.unit || 'Guntha'}
+                  </span>
                 </div>
-                <div className="mc-info-item">
-                  <div className="mc-ii-label">Harvest Type</div>
-                  <div className="mc-ii-val">{l.harvest_method || 'Standard'}</div>
+                <div className="gc-info-item">
+                  <span className="gc-ii-label">Qty</span>
+                  <span className="gc-ii-val" style={{ display: 'flex', alignItems: 'center' }}>
+                    <span className="mc-svg-icon" style={{ marginRight: '6px' }}><Icons.Scale /></span>
+                    {l.quantity_available?.value || l.quantity_in_tons || 0} {l.quantity_available?.unit || 'Gunthas'}
+                  </span>
                 </div>
-                <div className="mc-info-item">
-                  <div className="mc-ii-label">Logistics</div>
-                  <div className="mc-ii-val">
-                    {l.deliveryAvailable || l.delivery_method === 'Farmer Delivery' || l.delivery_method === 'Both' ? 'Delivery' : ''}
-                    {l.deliveryAvailable || l.delivery_method === 'Farmer Delivery' || l.delivery_method === 'Both' ? (l.pickupAvailable || l.delivery_method === 'Pickup' || l.delivery_method === 'Both' ? ' • ' : '') : ''}
-                    {l.pickupAvailable || l.delivery_method === 'Pickup' || l.delivery_method === 'Both' ? 'Pickup' : ''}
-                  </div>
+                <div className="gc-info-item">
+                  <span className="gc-ii-label">Age</span>
+                  <span className="gc-ii-val" style={{ display: 'flex', alignItems: 'center' }}>
+                    <span className="mc-svg-icon text-amber" style={{ marginRight: '6px' }}><Icons.Clock /></span>
+                    {l.crop_age ? `${l.crop_age}mo` : 'Fresh'}
+                  </span>
                 </div>
-                <div className="mc-info-item">
-                  <div className="mc-ii-label">Quality</div>
-                  <div className={`mc-ii-val ${l.seed_quality?.disease_free_status === 'Certified Disease-Free' ? 'text-green' : ''}`}>
-                    {l.seed_quality?.disease_free_status === 'Certified Disease-Free' ? 'Disease-Free' : 'Standard'}
-                  </div>
-                </div>
-                <div className="mc-info-item">
-                  <div className="mc-ii-label">Rating</div>
-                  <div className="mc-ii-val">
-                    <span className="mc-rating-inline" style={{ marginLeft: 0 }}><Icons.Star /> {l.sellerRating || '4.8'} / 5.0</span>
-                  </div>
+                <div className="gc-info-item">
+                  <span className="gc-ii-label">Harvest</span>
+                  <span className="gc-ii-val" style={{ display: 'flex', alignItems: 'center' }}>
+                    <span className="mc-svg-icon text-green" style={{ marginRight: '6px' }}><Icons.HandHarvest /></span>
+                    {l.harvest_method === 'Manual' ? t('marketplace.manual') : t('marketplace.machine')}
+                  </span>
                 </div>
               </div>
 
-              <button className="mc-btn-view" onClick={(e) => { e.stopPropagation(); handleViewDetails(l); }}>
-                View Details
-              </button>
+              {/* BOTTOM ACTIONS */}
+              <div className="gc-card-bottom">
+                <button className="gc-btn-primary" style={{ gridColumn: '1 / -1' }} onClick={(e) => { e.stopPropagation(); handleViewDetails(l); }}>{t('marketplace.viewDetails')}</button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <style>{`
@@ -222,41 +222,6 @@ const MarketplacePage = () => {
         .mp-toolbar { display: flex; gap: 20px; margin: 30px 0; }
         .mp-search { flex: 1; background: #1a1f1a; border: 1px solid #333; padding: 15px 25px; border-radius: 12px; color: #fff; font-size: 1rem; transition: border-color 0.2s; }
         .mp-search:focus { border-color: var(--green); outline: none; background: #222; }
-        .mp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px; }
-        @media (max-width: 1000px) { .mp-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 768px) { .mp-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 640px) { .mp-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); } }
-        .mp-card { background: #161b16; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #222; animation: mpFadeUp 0.5s ease-out both; }
-        .mp-card:hover { transform: translateY(-6px); border-color: var(--green); box-shadow: 0 8px 24px -8px rgba(126,200,67,0.3); }
-        .mc-img-wrap { height: 170px; position: relative; background: #000; }
-        .mc-img-wrap img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: opacity 0.3s; }
-        .mp-card:hover img { opacity: 1; }
-        .mc-badge { position: absolute; top: 12px; left: 12px; background: var(--green); color: #000; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        .mc-content { padding: 18px; }
-        
-        .mc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 8px; }
-        .mc-title { margin: 0; font-size: 1.1rem; font-weight: 800; line-height: 1.3; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .mc-qty-badge { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; color: #aaa; white-space: nowrap; }
-        
-        .mc-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-        .mc-info-item { display: flex; flex-direction: column; gap: 2px; }
-        .mc-info-item.full-width { grid-column: 1 / -1; }
-        .mc-ii-label { font-size: 0.65rem; color: var(--muted-2); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
-        .mc-ii-val { font-size: 0.85rem; color: var(--white); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .mc-ii-val.text-green { color: var(--green); font-weight: 600; }
-        
-        .mc-seller-grid-val { display: flex; align-items: center; gap: 4px; }
-        .mc-verified { color: var(--blue); width: 12px; height: 12px; display: inline-flex; }
-        .mc-rating-inline { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; font-size: 0.75rem; color: var(--amber); margin-left: 4px; }
-        .mc-rating-inline svg { width: 10px; height: 10px; }
-        
-        .mc-btn-view { width: 100%; padding: 10px; background: #1a1f1a; border: 1px solid #333; color: #fff; font-weight: 600; font-size: 0.85rem; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
-        .mp-card:hover .mc-btn-view { background: var(--green); color: #000; border-color: var(--green); }
-        
-        .mp-action-btn { background: #1a1f1a; border: 1px solid #333; color: #fff; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        .mp-action-btn.active { border-color: var(--green); background: rgba(126,200,67,0.15); color: var(--green); }
-        .mp-action-btn:hover { background: #222; }
-        .mc-svg-icon { display: inline-flex; align-items: center; justify-content: center; width: 1.1em; height: 1.1em; vertical-align: -0.125em; }
       `}</style>
     </div>
   );

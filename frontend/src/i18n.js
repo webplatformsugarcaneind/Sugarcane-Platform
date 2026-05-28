@@ -18,7 +18,12 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
-    debug: false,
+    debug: true, // Enable debug to see what i18n is doing in the console
+    detection: {
+      order: ['localStorage', 'cookie', 'navigator', 'htmlTag'],
+      lookupLocalStorage: 'i18nextLng',
+      caches: ['localStorage', 'cookie'],
+    },
     interpolation: {
       escapeValue: false // React already safes from xss
     }

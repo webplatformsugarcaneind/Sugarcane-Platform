@@ -14,6 +14,8 @@ const {
 // Apply protection to all routes in this file
 router.use(protect);
 
+const FarmerContract = require('../models/farmerContract.model');
+
 // ================================
 // FARMER CONTRACT CREATION
 // ================================
@@ -100,8 +102,7 @@ router.put('/:contractId/mark-delivered', authorize('Farmer', 'HHM'), async (req
   try {
     const { contractId } = req.params;
 
-    // Import model
-    const FarmerContract = require('../models/farmerContract.model');
+
 
     // Find the contract and verify user is a party
     const contract = await FarmerContract.findById(contractId);
@@ -162,8 +163,7 @@ router.put('/:contractId/mark-paid', authorize('Farmer', 'HHM'), async (req, res
   try {
     const { contractId } = req.params;
 
-    // Import model
-    const FarmerContract = require('../models/farmerContract.model');
+
 
     // Find the contract and verify user is a party
     const contract = await FarmerContract.findById(contractId);
@@ -225,8 +225,7 @@ router.put('/:contractId/mark-completed', authorize('Farmer', 'HHM'), async (req
   try {
     const { contractId } = req.params;
 
-    // Import model
-    const FarmerContract = require('../models/farmerContract.model');
+
 
     // Find the contract and verify user is a party
     const contract = await FarmerContract.findById(contractId);

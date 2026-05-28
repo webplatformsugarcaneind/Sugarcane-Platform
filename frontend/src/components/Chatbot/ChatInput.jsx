@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { SendIcon, HourglassIcon } from './ChatbotIcons';
 
 export default function ChatInput({ onSend, disabled = false }) {
   const [message, setMessage] = useState('');
@@ -43,7 +44,7 @@ export default function ChatInput({ onSend, disabled = false }) {
         className="send-button"
         title="Send message"
       >
-        {disabled ? '⏳' : '➤'}
+        {disabled ? <HourglassIcon className="chatbot-btn-icon" /> : <SendIcon className="chatbot-btn-icon" />}
       </button>
     </form>
   );

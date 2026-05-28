@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../components/Modal';
 import ChatbotWidget from '../components/Chatbot/ChatbotWidget';
+import LanguageSelector from '../components/LanguageSelector';
 import './HomePage.css';
 import { useTranslation } from 'react-i18next';
 
@@ -19,16 +20,43 @@ const HomePage = () => {
   };
 
   // Get mock roles data function
+  // SVG icon map keyed by role
+  const RoleIcons = {
+    farmer: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="36" height="36">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3C12 3 6.5 8 6.5 13a5.5 5.5 0 0 0 11 0C17.5 8 12 3 12 3Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 13v8M9 18h6" />
+      </svg>
+    ),
+    hhm: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="36" height="36">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
+    labour: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="36" height="36">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77Z" />
+      </svg>
+    ),
+    factory: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="36" height="36">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205v3m-5.25-9h-.008v.008h.008V3.75Z" />
+      </svg>
+    ),
+  };
+
   const getMockRolesData = () => {
     return {
       farmer: {
-        title: 'Farmer',
-        icon: '🌱',
-        description: 'Manage your agricultural operations efficiently',
+        title: t('roles.farmer', 'Farmer'),
+        icon: 'farmer',
+        description: t('roles.farmerDesc', 'Manage your agricultural operations efficiently'),
         features: [
-          'Harvest Request',
-          'Request Tracking',
-          'Marketplace'
+          t('homeRolesGrid.farmerTag1', 'Harvest Request'),
+          t('homeRolesGrid.farmerTag2', 'Request Tracking'),
+          t('homeRolesGrid.farmerTag3', 'Marketplace')
         ],
         benefits: [
           'Easy access to harvest managers',
@@ -37,13 +65,13 @@ const HomePage = () => {
         ]
       },
       hhm: {
-        title: 'HHM (Harvest Manager)',
-        icon: '👥',
-        description: 'Coordinate operations between farmers and factories',
+        title: t('roles.hhm', 'HHM (Harvest Manager)'),
+        icon: 'hhm',
+        description: t('roles.hhmDesc', 'Coordinate operations between farmers and factories'),
         features: [
-          'Request Management',
-          'Worker Assignment',
-          'Coordination'
+          t('homeRolesGrid.hhmTag1', 'Request Management'),
+          t('homeRolesGrid.hhmTag2', 'Worker Assignment'),
+          t('homeRolesGrid.hhmTag3', 'Coordination')
         ],
         benefits: [
           'Simplified task handling',
@@ -52,13 +80,13 @@ const HomePage = () => {
         ]
       },
       labour: {
-        title: 'Worker',
-        icon: '⚒️',
-        description: 'Find work opportunities and manage your career',
+        title: t('roles.labour', 'Worker'),
+        icon: 'labour',
+        description: t('roles.labourDesc', 'Find work opportunities and manage your career'),
         features: [
-          'Job Opportunities',
-          'Availability',
-          'Wage Tracking'
+          t('homeRolesGrid.labourTag1', 'Job Opportunities'),
+          t('homeRolesGrid.labourTag2', 'Availability'),
+          t('homeRolesGrid.labourTag3', 'Wage Tracking')
         ],
         benefits: [
           'Easy access to jobs',
@@ -67,13 +95,13 @@ const HomePage = () => {
         ]
       },
       factories: {
-        title: 'Factory',
-        icon: '🏭',
-        description: 'Optimize your sugar production operations',
+        title: t('roles.factory', 'Factory'),
+        icon: 'factory',
+        description: t('roles.factoryDesc', 'Optimize your sugar production operations'),
         features: [
-          'Contract Management',
-          'Announcements',
-          'Records'
+          t('homeRolesGrid.factoryTag1', 'Contract Management'),
+          t('homeRolesGrid.factoryTag2', 'Announcements'),
+          t('homeRolesGrid.factoryTag3', 'Records')
         ],
         benefits: [
           'Organized contract handling',
@@ -120,29 +148,43 @@ const HomePage = () => {
         <div class="hv-ring hv-ring-2"></div>
         <div class="hv-ring hv-ring-3"></div>
         <div class="hv-center">
-          <div class="hv-icon">🌿</div>
+          <div class="hv-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3C12 3 6.5 8 6.5 13a5.5 5.5 0 0 0 11 0C17.5 8 12 3 12 3Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 13v8M9 18h6" />
+            </svg>
+          </div>
           <div class="hv-label">CaneSetu</div>
         </div>
       `;
 
+      const orbitSVGs = [
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3C12 3 6.5 8 6.5 13a5.5 5.5 0 0 0 11 0C17.5 8 12 3 12 3Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 13v8M9 18h6"/></svg>`,
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205v3m-5.25-9h-.008v.008h.008V3.75Z"/></svg>`,
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77Z"/></svg>`,
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg>`,
+        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/></svg>`,
+      ];
+
       const orbitItems = [
-        { emoji: '🌱', angle: 0, radius: 170 },
-        { emoji: '🏭', angle: 90, radius: 170 },
-        { emoji: '⚒️', angle: 180, radius: 170 },
-        { emoji: '👥', angle: 270, radius: 170 },
-        { emoji: '📊', angle: 45, radius: 110 },
-        { emoji: '💳', angle: 225, radius: 110 },
+        { svg: orbitSVGs[0], angle: 0, radius: 170 },
+        { svg: orbitSVGs[1], angle: 90, radius: 170 },
+        { svg: orbitSVGs[2], angle: 180, radius: 170 },
+        { svg: orbitSVGs[3], angle: 270, radius: 170 },
+        { svg: orbitSVGs[4], angle: 45, radius: 110 },
+        { svg: orbitSVGs[5], angle: 225, radius: 110 },
       ];
 
       const cx = 230, cy = 230;
-      orbitItems.forEach(({ emoji, angle, radius }) => {
+      orbitItems.forEach(({ svg, angle, radius }) => {
         const rad = (angle * Math.PI) / 180;
         const x = cx + radius * Math.cos(rad) - 20;
         const y = cy + radius * Math.sin(rad) - 20;
         const d = document.createElement('div');
         d.className = 'orbit-dot';
-        d.style.cssText = `left:${x}px;top:${y}px;`;
-        d.textContent = emoji;
+        d.style.cssText = `left:${x}px;top:${y}px;display:flex;align-items:center;justify-content:center;`;
+        d.innerHTML = svg;
         wrap.appendChild(d);
       });
 
@@ -222,12 +264,12 @@ const HomePage = () => {
           style={{ position: 'absolute', top: '-10px', right: '-10px', background: 'transparent', border: 'none', color: 'var(--muted)', fontSize: '24px',  }}
         >×</button>
         <h2 style={{ fontFamily: 'Syne, sans-serif', fontSize: '1.9rem', color: 'var(--white)', marginBottom: '30px' }}>
-          {selectedRole.title} <em style={{ fontStyle: 'normal', color: 'var(--green)' }}>Benefits</em>
+          {selectedRole.title} <em style={{ fontStyle: 'normal', color: 'var(--green)' }}>{t('homeRolesGrid.modalBenefits')}</em>
         </h2>
         <div className="role-details">
           {selectedRole.features && selectedRole.features.length > 0 && (
             <div className="features-section-modal">
-              <h3>🚀 Key Features</h3>
+              <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16" style={{verticalAlign:'middle',marginRight:6}}><path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.198-8.593 15.09 15.09 0 0 1 8.593 2.198c-.02.104-.04.208-.06.311m-5.03-6.169.85-.85m4.95 4.95.85.85M8.91 8.91l-.707.707M15.09 15.09l.707.707"/></svg> {t('homeRolesGrid.modalFeatures')}</h3>
               <ul className="features-list">
                 {selectedRole.features.map((feature, index) => (
                   <li key={index}>{feature}</li>
@@ -237,7 +279,7 @@ const HomePage = () => {
           )}
           {selectedRole.benefits && selectedRole.benefits.length > 0 && (
             <div className="benefits-section-modal">
-              <h3>💡 Benefits</h3>
+              <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="16" height="16" style={{verticalAlign:'middle',marginRight:6}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"/></svg> {t('homeRolesGrid.modalBenefits')}</h3>
               <ul className="benefits-list">
                 {selectedRole.benefits.map((benefit, index) => (
                   <li key={index}>{benefit}</li>
@@ -248,10 +290,10 @@ const HomePage = () => {
         </div>
         <div className="modal-actions">
           <button className="btn-primary" onClick={() => handleGetStarted(selectedRole.role)}>
-            Get Started as {selectedRole.title}
+            {t('homeRolesGrid.modalGetStarted')} {selectedRole.title}
           </button>
           <button className="btn-secondary" onClick={handleModalClose}>
-            Learn More
+            {t('homeRolesGrid.modalLearnMore')}
           </button>
         </div>
       </div>
@@ -262,22 +304,11 @@ const HomePage = () => {
     <div className="home-page-container">      <nav id="nav">
         <a href="/" className="nav-brand" onClick={(e) => { e.preventDefault(); navigate('/'); }}>
           <div className="nav-brand-dot"></div>
-          <span className="nav-brand-name">CaneSetu</span>
+          <span className="nav-brand-name">{t('nav.brand')}</span>
         </a>
 
-        <div className="nav-right">
-          <div className="nav-lang-switcher" style={{ position: 'relative', marginRight: '12px' }}>
-            <div className="lang-trigger" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.03)', padding: '8px 14px', borderRadius: '100px', border: '1px solid var(--border)', transition: 'all 0.2s' }}>
-              <span style={{ fontSize: '14px', color: 'var(--green)' }}>文/A</span>
-              <span style={{ fontSize: '0.82rem', fontWeight: 500 }}>{lang === 'en' ? 'English' : lang === 'hi' ? 'हिन्दी' : 'मराठी'}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            <div className="lang-dropdown-menu" style={{ position: 'absolute', top: '100%', right: '0', marginTop: '8px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '8px', display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '120px', zIndex: 100, opacity: 0, pointerEvents: 'none', transform: 'translateY(-10px)', transition: 'all 0.2s cubic-bezier(0.22,1,0.36,1)', boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}>
-              <button onClick={() => handleLangChange('en')} style={{ background: lang === 'en' ? 'rgba(126,200,67,0.1)' : 'transparent', color: lang === 'en' ? 'var(--green)' : 'var(--white)', border: 'none', padding: '8px 12px', textAlign: 'left', borderRadius: '6px', fontSize: '0.82rem', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>English {lang === 'en' && '✓'}</button>
-              <button onClick={() => handleLangChange('hi')} style={{ background: lang === 'hi' ? 'rgba(126,200,67,0.1)' : 'transparent', color: lang === 'hi' ? 'var(--green)' : 'var(--white)', border: 'none', padding: '8px 12px', textAlign: 'left', borderRadius: '6px', fontSize: '0.82rem', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>हिन्दी {lang === 'hi' && '✓'}</button>
-              <button onClick={() => handleLangChange('mr')} style={{ background: lang === 'mr' ? 'rgba(126,200,67,0.1)' : 'transparent', color: lang === 'mr' ? 'var(--green)' : 'var(--white)', border: 'none', padding: '8px 12px', textAlign: 'left', borderRadius: '6px', fontSize: '0.82rem', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>मराठी {lang === 'mr' && '✓'}</button>
-            </div>
-          </div>
+        <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <LanguageSelector />
           <a href="/login" className="btn-ghost" onClick={(e) => { e.preventDefault(); navigate('/login'); }}>{t('nav.logIn')}</a>
           <a href="/signup" className="btn-solid" onClick={(e) => { e.preventDefault(); handleGetStarted(); }}>{t('nav.getStarted')}</a>
         </div>
@@ -290,6 +321,9 @@ const HomePage = () => {
         <div className="hero-left">
           <div className="hero-badge">
             <div className="hero-badge-pip"></div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" style={{marginRight: 6, color: 'var(--green)'}}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18m0-18C8.5 3 5 6.5 5 11s3.5 8 7 8m0-16c3.5 0 7 3.5 7 8s-3.5 8-7 8" />
+            </svg>
             <span>{t('home.badge')}</span>
           </div>
 
@@ -308,7 +342,7 @@ const HomePage = () => {
               {t('home.startFree')}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </a>
-            <a href="/about" className="btn-hero-outline" onClick={(e) => { e.preventDefault(); handleLearnMore(); }}>{t('home.watchDemo')}</a>
+
           </div>
         </div>
 
@@ -321,60 +355,65 @@ const HomePage = () => {
       <section className="roles-sec">
         <div className="container">
           <div className="roles-header reveal">
-            <div className="sec-tag">👥 User Roles</div>
-            <h2 className="sec-title">Built for every<br/><em>stakeholder</em></h2>
-            <p className="sec-sub">Role-based dashboards and features designed for farmers, workers, harvest managers, and factories to manage their activities efficiently.</p>
+            <div className="sec-tag" style={{display: 'inline-flex', alignItems: 'center', gap: '6px'}}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+              </svg>
+              {t('home.tagRoles')}
+            </div>
+            <h2 className="sec-title">{t('home.titleRoles1')}<br/><em>{t('home.titleRoles2')}</em></h2>
+            <p className="sec-sub">{t('home.descRoles')}</p>
           </div>
 
           <div className="roles-grid reveal">
             <a href="#farmer" className="role-card farmer" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('Farmer'); }}>
               <div className="rc-num">01</div>
-              <div className="rc-icon">🌱</div>
+              <div className="rc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="32" height="32"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3C12 3 6.5 8 6.5 13a5.5 5.5 0 0 0 11 0C17.5 8 12 3 12 3Z"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 13v8M9 18h6"/></svg></div>
               <div className="rc-title">Farmer</div>
-              <p className="rc-desc">Farmers can manage their harvesting activities digitally by sending requests, tracking work progress, and accessing important updates from factories.</p>
+              <p className="rc-desc">{t('homeRolesGrid.farmerDesc')}</p>
               <div className="rc-tags">
-                <span className="rc-tag">Requests</span>
-                <span className="rc-tag">Tracking</span>
-                <span className="rc-tag">Marketplace</span>
+                <span className="rc-tag">{t('homeRolesGrid.farmerTag1')}</span>
+                <span className="rc-tag">{t('homeRolesGrid.farmerTag2')}</span>
+                <span className="rc-tag">{t('homeRolesGrid.farmerTag3')}</span>
               </div>
               <div className="rc-arrow">→</div>
             </a>
 
             <a href="#hhm" className="role-card hhm" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('HHM'); }}>
               <div className="rc-num">02</div>
-              <div className="rc-icon">👥</div>
+              <div className="rc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="32" height="32"><path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path strokeLinecap="round" strokeLinejoin="round" d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
               <div className="rc-title">HHM</div>
-              <p className="rc-desc">Harvest Managers act as the central coordinators between farmers, workers, and factories by managing requests, assigning tasks, and tracking work progress.</p>
+              <p className="rc-desc">{t('homeRolesGrid.hhmDesc')}</p>
               <div className="rc-tags">
-                <span className="rc-tag">Management</span>
-                <span className="rc-tag">Assignment</span>
-                <span className="rc-tag">Coordination</span>
+                <span className="rc-tag">{t('homeRolesGrid.hhmTag1')}</span>
+                <span className="rc-tag">{t('homeRolesGrid.hhmTag2')}</span>
+                <span className="rc-tag">{t('homeRolesGrid.hhmTag3')}</span>
               </div>
               <div className="rc-arrow">→</div>
             </a>
 
             <a href="#labour" className="role-card labour" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('Labour'); }}>
               <div className="rc-num">03</div>
-              <div className="rc-icon">⚒️</div>
+              <div className="rc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="32" height="32"><path strokeLinecap="round" strokeLinejoin="round" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77Z"/></svg></div>
               <div className="rc-title">Labour</div>
-              <p className="rc-desc">Workers can find job opportunities, respond to hiring requests, and maintain records of their work and wages.</p>
+              <p className="rc-desc">{t('homeRolesGrid.labourDesc')}</p>
               <div className="rc-tags">
-                <span className="rc-tag">Jobs</span>
-                <span className="rc-tag">Availability</span>
-                <span className="rc-tag">Wages</span>
+                <span className="rc-tag">{t('homeRolesGrid.labourTag1')}</span>
+                <span className="rc-tag">{t('homeRolesGrid.labourTag2')}</span>
+                <span className="rc-tag">{t('homeRolesGrid.labourTag3')}</span>
               </div>
               <div className="rc-arrow">→</div>
             </a>
 
             <a href="#factory" className="role-card factory" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('Factory'); }}>
               <div className="rc-num">04</div>
-              <div className="rc-icon">🏭</div>
+              <div className="rc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="32" height="32"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205v3m-5.25-9h-.008v.008h.008V3.75Z"/></svg></div>
               <div className="rc-title">Factory</div>
-              <p className="rc-desc">Factories manage contract approvals, publish announcements, and maintain supply-related information in the system.</p>
+              <p className="rc-desc">{t('homeRolesGrid.factoryDesc')}</p>
               <div className="rc-tags">
-                <span className="rc-tag">Contracts</span>
-                <span className="rc-tag">Announcements</span>
-                <span className="rc-tag">Records</span>
+                <span className="rc-tag">{t('homeRolesGrid.factoryTag1')}</span>
+                <span className="rc-tag">{t('homeRolesGrid.factoryTag2')}</span>
+                <span className="rc-tag">{t('homeRolesGrid.factoryTag3')}</span>
               </div>
               <div className="rc-arrow">→</div>
             </a>
@@ -387,9 +426,9 @@ const HomePage = () => {
           <div className="how-inner">
             <div>
               <div className="reveal">
-                <div className="sec-tag">How it works</div>
-                <h2 className="sec-title">From field to<br/><em>payment</em> in days</h2>
-                <p className="sec-sub" style={{marginBottom: '48px'}}>One connected flow that eliminates paperwork, reduces delays, and ensures fair compensation at every step.</p>
+                <div className="sec-tag">{t('homeHow.tag')}</div>
+                <h2 className="sec-title">{t('homeHow.title1')}<br/><em>{t('homeHow.title2')}</em> {t('homeHow.title3')}</h2>
+                <p className="sec-sub" style={{marginBottom: '48px'}}>{t('homeHow.sub')}</p>
               </div>
 
               <div className="how-steps">
@@ -399,8 +438,8 @@ const HomePage = () => {
                     <div className="hs-line"></div>
                   </div>
                   <div className="hs-content">
-                    <h4>Registration & Login</h4>
-                    <p>All users — Farmers, Workers, Harvest Managers (HHM), and Factories — register and log in to the system using role-based access.</p>
+                    <h4>{t('homeHow.step1Title')}</h4>
+                    <p>{t('homeHow.step1Desc')}</p>
                   </div>
                 </div>
                 <div className="how-step reveal reveal-d1">
@@ -409,8 +448,8 @@ const HomePage = () => {
                     <div className="hs-line"></div>
                   </div>
                   <div className="hs-content">
-                    <h4>Farmer Request Submission</h4>
-                    <p>Farmers submit requests to harvest managers for harvesting activities and can also view past records and factory updates.</p>
+                    <h4>{t('homeHow.step2Title')}</h4>
+                    <p>{t('homeHow.step2Desc')}</p>
                   </div>
                 </div>
                 <div className="how-step reveal reveal-d2">
@@ -419,8 +458,8 @@ const HomePage = () => {
                     <div className="hs-line"></div>
                   </div>
                   <div className="hs-content">
-                    <h4>Harvest Manager Coordination</h4>
-                    <p>Harvest managers receive farmer requests, accept or reject them, hire workers, assign tasks, and manage the harvesting process.</p>
+                    <h4>{t('homeHow.step3Title')}</h4>
+                    <p>{t('homeHow.step3Desc')}</p>
                   </div>
                 </div>
                 <div className="how-step reveal reveal-d3">
@@ -429,8 +468,8 @@ const HomePage = () => {
                     <div className="hs-line"></div>
                   </div>
                   <div className="hs-content">
-                    <h4>Worker Participation</h4>
-                    <p>Workers view job opportunities, accept or reject job requests, update availability, and perform assigned tasks while tracking their work and wages.</p>
+                    <h4>{t('homeHow.step4Title')}</h4>
+                    <p>{t('homeHow.step4Desc')}</p>
                   </div>
                 </div>
                 <div className="how-step reveal reveal-d1">
@@ -439,8 +478,8 @@ const HomePage = () => {
                     <div className="hs-line"></div>
                   </div>
                   <div className="hs-content">
-                    <h4>Factory Contract & Updates</h4>
-                    <p>Factories receive contract requests from harvest managers, approve or reject them, and post announcements related to supply and operations.</p>
+                    <h4>{t('homeHow.step5Title')}</h4>
+                    <p>{t('homeHow.step5Desc')}</p>
                   </div>
                 </div>
                 <div className="how-step reveal reveal-d2">
@@ -448,48 +487,48 @@ const HomePage = () => {
                     <div className="hs-dot">06</div>
                   </div>
                   <div className="hs-content">
-                    <h4>Record Management & Tracking</h4>
-                    <p>The system maintains records of requests, tasks, job history, and basic payment/wage information in a centralized database for all users.</p>
+                    <h4>{t('homeHow.step6Title')}</h4>
+                    <p>{t('homeHow.step6Desc')}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="how-visual reveal">
-              <div style={{fontSize: '0.68rem', letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--muted-2)', marginBottom: '14px'}}>Live Dashboard Preview</div>
+              <div style={{fontSize: '0.68rem', letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--muted-2)', marginBottom: '14px'}}>{t('homeHow.dashPreview')}</div>
               <div className="hv-screen">
                 <div className="hv-topbar">
                   <div className="hv-dot" style={{background: '#ff6b6b'}}></div>
                   <div className="hv-dot" style={{background: '#ffc94a'}}></div>
                   <div className="hv-dot" style={{background: '#7ec843'}}></div>
                   <div style={{flex: 1, background: 'var(--border)', height: '1px', margin: '0 10px', borderRadius: '4px'}}></div>
-                  <div style={{fontSize: '0.68rem', color: 'var(--muted-2)'}}>canesetu.in/dashboard</div>
+                  <div style={{fontSize: '0.68rem', color: 'var(--muted-2)'}}>{t('homeHow.dashUrl')}</div>
                 </div>
 
                 <div style={{fontSize: '0.72rem', color: 'var(--muted-2)', marginBottom: '12px', letterSpacing: '.06em', textTransform: 'uppercase'}}>
-                  Season Summary — Kharif 2025
+                  {t('homeHow.seasonSum')}
                 </div>
 
                 <div className="hv-metric-row">
                   <div className="hv-metric">
-                    <div className="hv-metric-label">Total Cane (MT)</div>
+                    <div className="hv-metric-label">{t('homeHow.totalCane')}</div>
                     <div className="hv-metric-val green">2,84,631</div>
                   </div>
                   <div className="hv-metric">
-                    <div className="hv-metric-label">Pending Payment</div>
+                    <div className="hv-metric-label">{t('homeHow.pendingPay')}</div>
                     <div className="hv-metric-val amber">₹43.2L</div>
                   </div>
                   <div className="hv-metric">
-                    <div className="hv-metric-label">Active Farmers</div>
+                    <div className="hv-metric-label">{t('homeHow.activeFarmers')}</div>
                     <div className="hv-metric-val">3,812</div>
                   </div>
                   <div className="hv-metric">
-                    <div className="hv-metric-label">Gangs Deployed</div>
+                    <div className="hv-metric-label">{t('homeHow.gangsDeployed')}</div>
                     <div className="hv-metric-val green">214</div>
                   </div>
                 </div>
 
-                <div style={{fontSize: '0.68rem', color: 'var(--muted-2)', margin: '16px 0 10px', letterSpacing: '.06em', textTransform: 'uppercase'}}>District Contribution</div>
+                <div style={{fontSize: '0.68rem', color: 'var(--muted-2)', margin: '16px 0 10px', letterSpacing: '.06em', textTransform: 'uppercase'}}>{t('homeHow.distContrib')}</div>
                 <div className="hv-bar-row">
                   <div className="hv-bar-item">
                     <span className="hv-bar-name">Nashik</span>
@@ -533,42 +572,47 @@ const HomePage = () => {
         <div className="container">
           <div className="reveal" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '24px'}}>
             <div>
-              <div className="sec-tag">🌾 Platform Capabilities</div>
-              <h2 className="sec-title">Everything<br/><em>You Need</em></h2>
-              <p className="sec-sub" style={{marginTop: '16px'}}>Designed to simplify coordination between farmers, workers, harvest managers, and factories.</p>
+              <div className="sec-tag" style={{display: 'inline-flex', alignItems: 'center', gap: '6px'}}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.075a2 2 0 0 1-2.84-2.84l7.73-7.73a2 2 0 0 1 2.84 2.84l-7.73 7.73ZM11.42 15.075l-4.24 4.24M11.42 15.075l4.24-4.24M6.42 16.075a2 2 0 1 1-2.84-2.84l2.84 2.84Z" />
+                </svg>
+                {t('home.tagFeatures')}
+              </div>
+              <h2 className="sec-title">{t('home.titleFeatures1')}<br/><em>{t('home.titleFeatures2')}</em></h2>
+              <p className="sec-sub" style={{marginTop: '16px'}}>{t('home.descFeatures')}</p>
             </div>
           </div>
 
           <div className="features-grid reveal">
             <div className="feat-card">
-              <div className="feat-icon">🔔</div>
-              <div className="feat-title">Transaction Notifications</div>
-              <p className="feat-body">Receive instant alerts and updates for every single transaction across the platform. Stay completely informed at every step without relying on complex IoT setups.</p>
+              <div className="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="28" height="28"><path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></div>
+              <div className="feat-title">{t('homeFeatGrid.feat1Title')}</div>
+              <p className="feat-body">{t('homeFeatGrid.feat1Desc')}</p>
             </div>
             <div className="feat-card">
-              <div className="feat-icon">💳</div>
-              <div className="feat-title">Digital Record Management</div>
-              <p className="feat-body">Centralized storage of requests, work history, and basic wage details. Ensures transparency and easy access to all operational records.</p>
+              <div className="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="28" height="28"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg></div>
+              <div className="feat-title">{t('homeFeatGrid.feat2Title')}</div>
+              <p className="feat-body">{t('homeFeatGrid.feat2Desc')}</p>
             </div>
             <div className="feat-card">
-              <div className="feat-icon">📊</div>
-              <div className="feat-title">Activity &amp; Record Tracking</div>
-              <p className="feat-body">Structured tracking of requests, tasks, and work history across farmers, workers, and managers for better coordination and visibility.</p>
+              <div className="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="28" height="28"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></div>
+              <div className="feat-title">{t('homeFeatGrid.feat3Title')}</div>
+              <p className="feat-body">{t('homeFeatGrid.feat3Desc')}</p>
             </div>
             <div className="feat-card">
-              <div className="feat-icon">🌦️</div>
-              <div className="feat-title">Agri-Weather Intelligence</div>
-              <p className="feat-body">Hyperlocal weather data integrated with harvest scheduling to reduce field losses during rain events.</p>
+              <div className="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="28" height="28"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15a4.5 4.5 0 0 0 4.5 4.5H18a3.75 3.75 0 0 0 1.332-7.257 3 3 0 0 0-3.758-3.848 5.25 5.25 0 0 0-10.233 2.33A4.502 4.502 0 0 0 2.25 15Z"/></svg></div>
+              <div className="feat-title">{t('homeFeatGrid.feat4Title')}</div>
+              <p className="feat-body">{t('homeFeatGrid.feat4Desc')}</p>
             </div>
             <div className="feat-card">
-              <div className="feat-icon">📱</div>
-              <div className="feat-title">Mobile & Multi-Language Support</div>
-              <p className="feat-body">Fully optimized for mobile devices so you can manage your operations on the go. Available in Marathi, Hindi, and English.</p>
+              <div className="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="28" height="28"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg></div>
+              <div className="feat-title">{t('homeFeatGrid.feat5Title')}</div>
+              <p className="feat-body">{t('homeFeatGrid.feat5Desc')}</p>
             </div>
             <div className="feat-card">
-              <div className="feat-icon">🔒</div>
-              <div className="feat-title">Secure User Authentication</div>
-              <p className="feat-body">Reliable role-based access with structured user login system. Ensures safe data handling across all stakeholders.</p>
+              <div className="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="28" height="28"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg></div>
+              <div className="feat-title">{t('homeFeatGrid.feat6Title')}</div>
+              <p className="feat-body">{t('homeFeatGrid.feat6Desc')}</p>
             </div>
           </div>
         </div>
@@ -577,17 +621,17 @@ const HomePage = () => {
       <section className="cta-band">
         <div className="container" style={{position: 'relative', zIndex: 2}}>
           <div className="reveal">
-            <div className="sec-tag" style={{justifyContent: 'center'}}>Join the Platform</div>
-            <h2 className="sec-title">Ready to modernise<br/><em>your operations?</em></h2>
-            <p className="sec-sub">Register today — available for all users. Simple onboarding with quick access to the platform.</p>
+            <div className="sec-tag" style={{justifyContent: 'center'}}>{t('home.joinPlatform')}</div>
+            <h2 className="sec-title">{t('home.readyMod1')}<br/><em>{t('home.readyMod2')}</em></h2>
+            <p className="sec-sub">{t('home.regToday')}</p>
           </div>
           <div className="cta-band-actions reveal reveal-d1">
             <a href="/signup" className="btn-hero" onClick={(e) => { e.preventDefault(); handleGetStarted(); }}>
-              Create Free Account
+              {t('home.createFree')}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </a>
           </div>
-          <p className="reveal reveal-d2" style={{marginTop: '28px', fontSize: '.78rem', color: 'var(--muted-2)'}}>No complex setup required · Simple web-based access for all users</p>
+          <p className="reveal reveal-d2" style={{marginTop: '28px', fontSize: '.78rem', color: 'var(--muted-2)'}}>{t('home.noComplex')}</p>
         </div>
       </section>
 
@@ -596,42 +640,42 @@ const HomePage = () => {
           <div className="footer-brand">
             <a href="#" className="nav-brand" style={{display: 'inline-flex'}} onClick={(e) => e.preventDefault()}>
               <div className="nav-brand-dot"></div>
-              <span className="nav-brand-name">CaneSetu</span>
+              <span className="nav-brand-name">{t('footer.canesetuTitle')}</span>
             </a>
-            <p>A unified digital platform connecting farmers, workers, harvest managers, and factories.</p>
+            <p>{t('footer.canesetuDesc')}</p>
           </div>
           <div className="footer-col">
-            <h5>Platform</h5>
+            <h5>{t('footer.footPlatform')}</h5>
             <ul>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('Farmer'); }}>For Farmers</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('HHM'); }}>For HHM</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('Labour'); }}>For Workers</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('Factory'); }}>For Factories</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('Farmer'); }}>{t('footer.platFarmer')}</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('HHM'); }}>{t('footer.platHHM')}</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('Labour'); }}>{t('footer.platWorkers')}</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); handleGuideBoxClick('Factory'); }}>{t('footer.platFactories')}</a></li>
             </ul>
           </div>
           <div className="footer-col">
-            <h5>Project</h5>
+            <h5>{t('footer.footProject')}</h5>
             <ul>
-              <li><a href="#about" style={{}} onClick={(e) => e.preventDefault()}>About Project</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Modules</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Features</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Documentation</a></li>
+              <li><a href="#about" style={{}} onClick={(e) => e.preventDefault()}>{t('footer.projAbout')}</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>{t('footer.projMod')}</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>{t('footer.projFeat')}</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>{t('footer.projDoc')}</a></li>
             </ul>
           </div>
           <div className="footer-col">
-            <h5>Support</h5>
+            <h5>{t('footer.footSupport')}</h5>
             <ul>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Help</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>Contact</a></li>
-              <li><a href="#" onClick={(e) => e.preventDefault()}>System Info</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>{t('footer.supportHelp')}</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>{t('footer.supportContact')}</a></li>
+              <li><a href="#" onClick={(e) => e.preventDefault()}>{t('footer.supportSysInfo')}</a></li>
             </ul>
           </div>
         </div>
         <div className="footer-bottom">
-          <div className="footer-copy">© 2026 CaneSetu. All rights reserved.</div>
+          <div className="footer-copy">{t('footer.copyright')}</div>
           <div className="footer-legal">
-            <a href="#" onClick={(e) => e.preventDefault()}>Privacy Policy</a>
-            <a href="#" onClick={(e) => e.preventDefault()}>Terms of Service</a>
+            <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.privacy')}</a>
+            <a href="#" onClick={(e) => e.preventDefault()}>{t('footer.terms')}</a>
           </div>
         </div>
       </footer>

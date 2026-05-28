@@ -3,6 +3,39 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './FarmerHHMDirectoryPage.css'; // Import the shared premium dark theme CSS
 
+const Icons = {
+  Farmer: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+    </svg>
+  ),
+  Location: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+    </svg>
+  ),
+  Clock: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    </svg>
+  ),
+  Wrench: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.075a2 2 0 0 1-2.84-2.84l7.73-7.73a2 2 0 0 1 2.84 2.84l-7.73 7.73ZM11.42 15.075l-4.24 4.24M11.42 15.075l4.24-4.24M6.42 16.075a2 2 0 1 1-2.84-2.84l2.84 2.84Z" />
+    </svg>
+  ),
+  Phone: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+    </svg>
+  ),
+  Email: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+    </svg>
+  )
+};
 /**
  * HHMFarmerDirectoryPage Component
  * 
@@ -174,70 +207,90 @@ const HHMFarmerDirectoryPage = () => {
       </div>
 
       {/* FARMER GRID */}
-      <div className={`hd-grid${isListView ? ' list-view' : ''}`}>
+      <div className={`hd-grid${isListView ? ' list-view' : ''}`} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginTop: '20px' }}>
         {loading ? (
           <div className="hd-loading"><div className="hd-spinner"></div><div className="hd-empty-title">Loading farmer directory...</div></div>
         ) : error ? (
-          <div className="hd-empty"><div className="hd-empty-icon">⚠️</div><div className="hd-empty-title">{error}</div><button className="hd-btn-profile" onClick={fetchFarmers}>Try Again</button></div>
+          <div className="hd-empty"><div className="hd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48" style={{color:'var(--amber)'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div><div className="hd-empty-title">{error}</div><button className="hd-btn-profile" onClick={fetchFarmers}>Try Again</button></div>
         ) : filteredFarmers.length === 0 ? (
-          <div className="hd-empty"><div className="hd-empty-icon">🌾</div><div className="hd-empty-title">No Farmers Found</div><div className="hd-empty-sub">Try adjusting your search or filters.</div></div>
+          <div className="hd-empty"><div className="hd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48" style={{color:'var(--green)'}}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg></div><div className="hd-empty-title">No Farmers Found</div><div className="hd-empty-sub">Try adjusting your search or filters.</div></div>
         ) : filteredFarmers.map((farmer, idx) => (
-          <div key={farmer._id} className={`hd-card ${farmer.isActive !== false ? 'active' : 'inactive'}`} style={{ animation: `hdFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
-            <div className="hc-header">
-              <div className="hc-avatar">🌾</div>
-              <div className="hc-title-wrap">
-                <div className="hc-name">{farmer.name || 'Unknown Name'}</div>
-                <div className="hc-username">@{farmer.username}</div>
-                <div className="hc-role-badge">Farmer</div>
+          <div key={farmer._id} className={`global-card ${farmer.isActive !== false ? 'active' : 'inactive'}`} style={{ animationDelay: `${idx * 0.05}s` }} onClick={() => navigate(farmer._id)}>
+            
+            {/* HEADER */}
+            <div className="gc-header">
+              <div className="gc-avatar-wrap">
+                <div className="gc-avatar">
+                  <Icons.Farmer />
+                </div>
+                <div className={`gc-status-ring ${farmer.isActive !== false ? 'available' : 'busy'}`}></div>
               </div>
-              <div className="hc-status">
-                <span className={`hd-status-badge ${farmer.isActive !== false ? 'active' : 'inactive'}`}>
-                  {farmer.isActive !== false ? 'ACTIVE' : 'INACTIVE'}
+              <div className="gc-title-wrap">
+                <h3 className="gc-name">{farmer.name || 'Unknown Name'}</h3>
+                <div className="gc-header-meta">
+                  <span className="gc-role-badge">Farmer</span>
+                  <span className={`gc-avail-badge ${farmer.isActive !== false ? 'available' : 'busy'}`}>
+                    {farmer.isActive !== false ? 'ACTIVE' : 'INACTIVE'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* METRICS GRID 2-COLUMN */}
+            <div className="gc-info-grid-2col">
+              <div className="gc-info-item">
+                <span className="gc-ii-label">Location</span>
+                <span className="gc-ii-val">
+                  <span className="gc-ii-icon"><Icons.Location /></span>
+                  {farmer.location || 'Not specified'}
+                </span>
+              </div>
+              <div className="gc-info-item">
+                <span className="gc-ii-label">Farm Size</span>
+                <span className="gc-ii-val text-green">
+                  <span className="gc-ii-icon" style={{ fontSize: '13px', fontWeight: '700' }}>◩</span>
+                  {farmer.farmSize || '12.5'} Acres
+                </span>
+              </div>
+              <div className="gc-info-item">
+                <span className="gc-ii-label">Experience</span>
+                <span className="gc-ii-val">
+                  <span className="gc-ii-icon"><Icons.Clock /></span>
+                  {farmer.experience ? `${farmer.experience}y` : '5y'}
+                </span>
+              </div>
+              <div className="gc-info-item">
+                <span className="gc-ii-label">Phone</span>
+                <span className="gc-ii-val">
+                  <span className="gc-ii-icon"><Icons.Phone /></span>
+                  {farmer.phone || '+91 98765 43210'}
+                </span>
+              </div>
+              <div className="gc-info-item full-width">
+                <span className="gc-ii-label">Email</span>
+                <span className="gc-ii-val" style={{ color: 'var(--muted)', whiteSpace: 'normal', wordBreak: 'break-all' }}>
+                  <span className="gc-ii-icon"><Icons.Email /></span>
+                  {farmer.email || 'farmer@example.com'}
                 </span>
               </div>
             </div>
 
-            <div className="hc-contact">
-              {farmer.location && (
-                <div className="hc-contact-item"><span className="hc-contact-icon">📍</span><span className="hc-contact-text">{farmer.location}</span></div>
+            {/* ACTIONS */}
+            <div className="gc-card-bottom">
+              {farmer.email ? (
+                <button 
+                  className="gc-btn-secondary" 
+                  onClick={(e) => { e.stopPropagation(); window.location.href = `mailto:${farmer.email}`; }}
+                >
+                  Contact
+                </button>
+              ) : (
+                <div style={{ flex: 1 }}></div>
               )}
-              {farmer.email && (
-                <div className="hc-contact-item"><span className="hc-contact-icon">📧</span><span className="hc-contact-text">{farmer.email}</span></div>
-              )}
-              {farmer.phone && (
-                <div className="hc-contact-item"><span className="hc-contact-icon">📱</span><span className="hc-contact-text">{farmer.phone}</span></div>
-              )}
-            </div>
-
-            {(farmer.farmSize || farmer.farmType || farmer.experience) && (
-              <>
-                <div className="hc-divider"></div>
-                <div className="hc-contact" style={{ paddingTop: '12px' }}>
-                  {farmer.farmSize && (
-                    <div className="hc-contact-item"><span className="hc-contact-icon">📏</span><span className="hc-contact-text">{farmer.farmSize} acres</span></div>
-                  )}
-                  {farmer.farmType && (
-                    <div className="hc-contact-item"><span className="hc-contact-icon">🚜</span><span className="hc-contact-text">{farmer.farmType}</span></div>
-                  )}
-                  {farmer.experience && (
-                    <div className="hc-contact-item"><span className="hc-contact-icon">⭐</span><span className="hc-contact-text">{farmer.experience} years exp</span></div>
-                  )}
-                </div>
-              </>
-            )}
-
-            <div className="hc-divider"></div>
-            <div className="hc-meta">
-              <div className="hc-meta-item">Joined: <strong>{formatDate(farmer.createdAt)}</strong></div>
-            </div>
-
-            <div className="hc-actions">
-              <button className="hd-btn-request" onClick={() => { if (farmer.email) window.location.href = `mailto:${farmer.email}`; }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
-                Contact
-              </button>
-              <button className="hd-btn-profile" onClick={() => navigate(farmer._id)}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <button 
+                className="gc-btn-primary" 
+                onClick={(e) => { e.stopPropagation(); navigate(farmer._id); }}
+              >
                 View Profile
               </button>
             </div>

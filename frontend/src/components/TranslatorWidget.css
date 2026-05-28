@@ -1,0 +1,199 @@
+/* ============================================================
+   TranslatorWidget — Floating language selector
+   Positioned bottom-right, above everything else
+   ============================================================ */
+
+.tw-root {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 99999;
+  font-family: 'Instrument Sans', 'Syne', system-ui, sans-serif;
+}
+
+/* ---- Trigger button ---- */
+.tw-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 10px 12px;
+  background: rgba(18, 26, 18, 0.92);
+  border: 1px solid rgba(126, 200, 67, 0.35);
+  border-radius: 100px;
+  color: #e8f5e0;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.45),
+    0 0 0 0 rgba(126, 200, 67, 0);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s,
+    transform 0.15s;
+  outline: none;
+  white-space: nowrap;
+}
+
+.tw-btn:hover,
+.tw-btn--open {
+  border-color: rgba(126, 200, 67, 0.7);
+  background: rgba(26, 38, 26, 0.96);
+  box-shadow:
+    0 6px 32px rgba(0, 0, 0, 0.55),
+    0 0 0 3px rgba(126, 200, 67, 0.12);
+  transform: translateY(-1px);
+}
+
+.tw-btn__globe {
+  display: flex;
+  align-items: center;
+  color: #7ec843;
+  flex-shrink: 0;
+}
+
+.tw-btn__label {
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tw-btn__chevron {
+  display: flex;
+  align-items: center;
+  color: rgba(200, 230, 180, 0.6);
+  flex-shrink: 0;
+  margin-left: 2px;
+}
+
+/* Loading dot while Google Translate hasn't loaded yet */
+.tw-loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7ec843;
+  animation: tw-pulse 1.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes tw-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(0.9); }
+  50%       { opacity: 1;    transform: scale(1.1); }
+}
+
+/* ---- Dropdown panel ---- */
+.tw-panel {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  width: 240px;
+  background: rgba(14, 20, 14, 0.97);
+  border: 1px solid rgba(126, 200, 67, 0.2);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(126, 200, 67, 0.06);
+  animation: tw-slide-up 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+@keyframes tw-slide-up {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+.tw-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7ec843;
+  border-bottom: 1px solid rgba(126, 200, 67, 0.1);
+}
+
+/* ---- Language list ---- */
+.tw-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(126, 200, 67, 0.25) transparent;
+}
+
+.tw-list::-webkit-scrollbar {
+  width: 4px;
+}
+.tw-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.tw-list::-webkit-scrollbar-thumb {
+  background: rgba(126, 200, 67, 0.25);
+  border-radius: 4px;
+}
+
+/* ---- Individual language item ---- */
+.tw-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+}
+
+.tw-item:hover {
+  background: rgba(126, 200, 67, 0.07);
+}
+
+.tw-item--active {
+  background: rgba(126, 200, 67, 0.1);
+}
+
+.tw-item__native {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e8f5e0;
+  flex: 1;
+}
+
+.tw-item__english {
+  font-size: 0.72rem;
+  color: rgba(200, 220, 180, 0.45);
+  flex-shrink: 0;
+}
+
+.tw-item__check {
+  display: flex;
+  align-items: center;
+  color: #7ec843;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+/* ---- Responsive: move to bottom-left on very small screens ---- */
+@media (max-width: 480px) {
+  .tw-root {
+    bottom: 16px;
+    right: 16px;
+  }
+  .tw-btn__label {
+    display: none;
+  }
+  .tw-panel {
+    right: 0;
+    width: 200px;
+  }
+}

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import './FarmerDashboardPage.css';
+import './FarmerHHMDirectoryPage.css';
 
 /**
  * High-Fidelity SVG Icons for Professional Labor Management
@@ -659,122 +660,81 @@ const LaborManagementPage = () => {
                   <p>No regional labours matching criteria</p>
                 </div>
               ) : (
-                    <div className="custom-labour-grid">
-                    <style>{`
-                      .custom-labour-grid {
-                        display: grid;
-                        grid-template-columns: repeat(3, 1fr);
-                        gap: 20px;
-                      }
-                      @media (max-width: 1200px) {
-                        .custom-labour-grid {
-                          grid-template-columns: repeat(2, 1fr);
-                        }
-                      }
-                      @media (max-width: 768px) {
-                        .custom-labour-grid {
-                          grid-template-columns: 1fr;
-                        }
-                      }
-                    `}</style>
+                    <div className="fd-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginTop: '20px' }}>
                     {filteredLabours.map(labour => (
-                      <motion.div key={labour._id} whileHover={{ y: -6, boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }} className="fr-contract-card" style={{ padding: '20px', background: 'linear-gradient(145deg, rgba(25, 30, 25, 0.9) 0%, rgba(12, 15, 12, 0.95) 100%)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '20px', position: 'relative', overflow: 'hidden', backdropFilter: 'blur(30px)', display: 'flex', flexDirection: 'column' }}>
-                        
-                        {/* Status Glow Indicator */}
-                        <div style={{
-                          position: 'absolute',
-                          top: '-60px',
-                          right: '-60px',
-                          width: '140px',
-                          height: '140px',
-                          background: labour.availability === 'Available' ? 'radial-gradient(circle, rgba(126, 200, 67, 0.15) 0%, transparent 60%)' : 'radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 60%)',
-                          borderRadius: '50%',
-                          pointerEvents: 'none'
-                        }} />
-
-                        {/* Top Header Row */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', position: 'relative', zIndex: 1 }}>
-                          <div style={{ display: 'flex', gap: '14px', flex: 1, minWidth: 0 }}>
-                            <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg, rgba(126, 200, 67, 0.15), rgba(126, 200, 67, 0.05))', border: '1px solid rgba(126, 200, 67, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--green)', fontSize: '1.5rem', fontWeight: '900', fontFamily: 'Syne', flexShrink: 0, boxShadow: 'inset 0 0 20px rgba(126,200,67,0.1)' }}>
-                              {labour.name.charAt(0)}
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                              <h4 style={{ color: 'var(--white)', fontSize: '1.15rem', margin: '0 0 4px 0', fontWeight: '800', fontFamily: 'Syne', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{labour.name}</h4>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem' }}>
-                                <span style={{ color: 'var(--green)' }}><Icons.Location style={{ width: '12px' }} /></span>
-                                <span style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{labour.location || 'Maharashtra, India'}</span>
-                              </div>
+                      <div key={labour._id} className={`global-card ${labour.availability === 'Available' ? 'active' : 'inactive'}`} style={{ animation: 'hdFadeUp 0.5s ease-out both' }} onClick={() => navigate(`/hhm/labour/${labour._id}`, { state: { labourData: labour } })}>
+                        {/* HEADER */}
+                        <div className="gc-header">
+                          <div className="gc-avatar-wrap">
+                            <div className="gc-avatar">{labour.name ? labour.name.charAt(0).toUpperCase() : '?'}</div>
+                            <div className={`gc-status-ring ${labour.availability === 'Available' ? 'available' : 'busy'}`}></div>
+                          </div>
+                          <div className="gc-title-wrap">
+                            <h3 className="gc-name">{labour.name}</h3>
+                            <div className="gc-header-meta">
+                              <span className="gc-role-badge">Labour</span>
+                              <span className={`gc-avail-badge ${labour.availability === 'Available' ? 'available' : 'busy'}`}>
+                                {labour.availability ? labour.availability.toUpperCase() : 'UNKNOWN'}
+                              </span>
                             </div>
                           </div>
                         </div>
 
-                        <div style={{ height: '1px', background: 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, transparent 100%)', marginBottom: '16px', position: 'relative', zIndex: 1 }}></div>
-
-                        {/* Metadata Panel (Glass Inner) */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px', position: 'relative', zIndex: 1, background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.04)', boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.2)' }}>
-                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(241,196,15,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F1C40F' }}><Icons.Check style={{ width: '14px' }} /></div>
-                            <div>
-                              <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '2px' }}>Reliability</div>
-                              <div style={{ color: 'var(--white)', fontSize: '0.85rem', fontWeight: '800' }}>{labour.rating || '4.8'} <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.7rem', fontWeight: '600' }}>({labour.completedJobs || 12})</span></div>
-                            </div>
+                        {/* INFO GRID */}
+                        <div className="gc-info-grid-2col">
+                          <div className="gc-info-item">
+                            <span className="gc-ii-label">Location</span>
+                            <span className="gc-ii-val">
+                              <span className="gc-ii-icon"><Icons.Location style={{width: 14}}/></span>
+                              {labour.location || 'Maharashtra'}
+                            </span>
                           </div>
-                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(126,200,67,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--green)' }}><Icons.Wallet style={{ width: '14px' }} /></div>
-                            <div>
-                              <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '2px' }}>Est. Wage</div>
-                              <div style={{ color: 'var(--white)', fontSize: '0.85rem', fontWeight: '800' }}>₹{labour.wageExpectation || '450'}/day</div>
-                            </div>
+                          <div className="gc-info-item">
+                            <span className="gc-ii-label">Est. Wage</span>
+                            <span className="gc-ii-val text-green">
+                              <span className="gc-ii-icon" style={{ fontSize: '13px', fontWeight: '700' }}>₹</span>
+                              {labour.wageExpectation || '450'}/day
+                            </span>
                           </div>
-                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--white)' }}><Icons.Clock style={{ width: '14px' }} /></div>
-                            <div>
-                              <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '2px' }}>Experience</div>
-                              <div style={{ color: 'var(--white)', fontSize: '0.85rem', fontWeight: '800' }}>{labour.experience || '3'} Years</div>
-                            </div>
+                          <div className="gc-info-item">
+                            <span className="gc-ii-label">Experience</span>
+                            <span className="gc-ii-val">
+                              <span className="gc-ii-icon"><Icons.Clock style={{width: 14}}/></span>
+                              {labour.experience || '3'} Years
+                            </span>
                           </div>
-                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--white)' }}><Icons.Briefcase style={{ width: '14px' }} /></div>
-                            <div>
-                              <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '2px' }}>Work Type</div>
-                              <div style={{ color: 'var(--white)', fontSize: '0.85rem', fontWeight: '800' }}>Contract</div>
-                            </div>
+                          <div className="gc-info-item">
+                            <span className="gc-ii-label">Reliability</span>
+                            <span className="gc-ii-val text-green">
+                              <span className="gc-ii-icon"><Icons.Check style={{width: 14}}/></span>
+                              {labour.rating || '4.8'}
+                            </span>
+                          </div>
+                          <div className="gc-info-item full-width">
+                            <span className="gc-ii-label">Contact</span>
+                            <span className="gc-ii-val" style={{ color: 'var(--muted)', whiteSpace: 'normal' }}>
+                              <span className="gc-ii-icon"><Icons.Phone style={{width: 14}}/></span>
+                              {labour.phone || labour.email || '+91 87654 32109'}
+                            </span>
                           </div>
                         </div>
 
-
-
-                        {/* Actions */}
-                        <div style={{ display: 'flex', gap: '10px', position: 'relative', zIndex: 1, marginTop: 'auto' }}>
+                        {/* ACTIONS */}
+                        <div className="gc-card-bottom">
                           <button 
-                            className="fr-btn" 
-                            style={{ flex: 1.5, height: '40px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--green)', color: '#000', border: 'none', borderRadius: '12px', fontWeight: '800', transition: 'all 0.3s ease', cursor: 'pointer', padding: '0 12px' }}
-                            onClick={() => showNotification(`Quick hire request sent to ${labour.name}`, 'success')}
-                            onMouseOver={(e) => e.currentTarget.style.boxShadow = '0 0 20px rgba(126,200,67,0.4)'}
-                            onMouseOut={(e) => e.currentTarget.style.boxShadow = 'none'}
+                            className="gc-btn-primary" 
+                            onClick={(e) => { e.stopPropagation(); showNotification(`Quick hire request sent to ${labour.name}`, 'success'); }}
                           >
-                             <Icons.Check style={{ width: '14px' }} /> Quick Hire
+                            Quick Hire
                           </button>
                           <button 
-                            className="fr-btn" 
-                            style={{ flex: 1, height: '40px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', color: 'var(--white)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontWeight: '700', transition: 'all 0.3s ease', cursor: 'pointer', padding: '0 12px' }}
-                            onClick={() => navigate(`/hhm/labour/${labour._id}`, { state: { labourData: labour } })}
-                            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
-                            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                            className="gc-btn-secondary" 
+                            onClick={(e) => { e.stopPropagation(); navigate(`/hhm/labour/${labour._id}`, { state: { labourData: labour } }); }}
                           >
                             Profile
                           </button>
-                          <button 
-                            className="fr-btn" 
-                            style={{ width: '40px', height: '40px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'rgba(255,255,255,0.05)', color: 'var(--white)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', transition: 'all 0.3s ease', cursor: 'pointer' }}
-                            onClick={() => window.open(`tel:${labour.phone || ''}`)}
-                            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
-                            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
-                          >
-                            <Icons.Phone style={{ width: '16px' }} />
-                          </button>
                         </div>
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
               )}

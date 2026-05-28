@@ -995,3 +995,6 @@
     padding: 0.2rem 0.4rem;
   }
 }
+
+.marketplace-auth-status { position: absolute; top: 1rem; right: 1rem; padding: 0.5rem 1rem; border-radius: 4px; font-size: 0.9rem; z-index: 100; }
+@media (max-width: 768px) { .marketplace-auth-status { display: none !important; } }

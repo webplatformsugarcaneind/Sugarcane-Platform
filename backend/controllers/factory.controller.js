@@ -1445,12 +1445,17 @@ const respondToHHMInvitation=async (req, res)=> {
   try {
     console.log(' Factory responding to HHM invitation:', req.params.id);
 
-    const {
+    let {
       status,
       responseMessage
     }
 
     =req.body;
+
+    // Normalize status
+    if (status && typeof status === 'string') {
+      status = status.toLowerCase().trim();
+    }
 
     // Validate status
     if ( !status || !['accepted', 'declined'].includes(status)) {

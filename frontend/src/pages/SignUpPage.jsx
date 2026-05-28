@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import LanguageSelector from '../components/LanguageSelector';
 import './Auth.css';
 import { useTranslation } from 'react-i18next';
 
@@ -104,18 +105,7 @@ const SignUpPage = () => {
           <span className="auth-nav-brand-name">CaneSetu</span>
         </a>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div className="nav-lang-switcher" style={{ position: 'relative', marginRight: '12px' }}>
-            <div className="lang-trigger" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.03)', padding: '8px 14px', borderRadius: '100px', border: '1px solid var(--border)', transition: 'all 0.2s' }}>
-              <span style={{ fontSize: '14px', color: 'var(--green)' }}>文/A</span>
-              <span style={{ fontSize: '0.82rem', fontWeight: 500 }}>{lang === 'en' ? 'English' : lang === 'hi' ? 'हिन्दी' : 'मराठी'}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-            <div className="lang-dropdown-menu" style={{ position: 'absolute', top: '100%', right: '0', marginTop: '8px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '8px', display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '120px', zIndex: 100, opacity: 0, pointerEvents: 'none', transform: 'translateY(-10px)', transition: 'all 0.2s cubic-bezier(0.22,1,0.36,1)', boxShadow: '0 10px 40px rgba(0,0,0,0.5)' }}>
-              <button onClick={() => handleLangChange('en')} style={{ background: lang === 'en' ? 'rgba(126,200,67,0.1)' : 'transparent', color: lang === 'en' ? 'var(--green)' : 'var(--white)', border: 'none', padding: '8px 12px', textAlign: 'left', borderRadius: '6px', fontSize: '0.82rem', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>English {lang === 'en' && '✓'}</button>
-              <button onClick={() => handleLangChange('hi')} style={{ background: lang === 'hi' ? 'rgba(126,200,67,0.1)' : 'transparent', color: lang === 'hi' ? 'var(--green)' : 'var(--white)', border: 'none', padding: '8px 12px', textAlign: 'left', borderRadius: '6px', fontSize: '0.82rem', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>हिन्दी {lang === 'hi' && '✓'}</button>
-              <button onClick={() => handleLangChange('mr')} style={{ background: lang === 'mr' ? 'rgba(126,200,67,0.1)' : 'transparent', color: lang === 'mr' ? 'var(--green)' : 'var(--white)', border: 'none', padding: '8px 12px', textAlign: 'left', borderRadius: '6px', fontSize: '0.82rem', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>मराठी {lang === 'mr' && '✓'}</button>
-            </div>
-          </div>
+          <LanguageSelector />
           <button 
             className="auth-btn-solid" 
             style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--white)', border: '1px solid var(--border)', boxShadow: 'none' }} 
@@ -228,25 +218,25 @@ const SignUpPage = () => {
                 <div className="role-grid">
                   <label className={`role-opt ${formData.role === 'Farmer' ? 'sel' : ''}`}>
                     <input type="radio" name="role" value="Farmer" checked={formData.role === 'Farmer'} onChange={() => handleRoleSelection('Farmer')} />
-                    <span className="role-emoji">🌾</span>
+                    <span className="role-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="24" height="24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3C12 3 6.5 8 6.5 13a5.5 5.5 0 0 0 11 0C17.5 8 12 3 12 3Z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 13v8M9 18h6" /></svg></span>
                     <span className="role-lbl">Farmer</span>
                     <span className="role-sub">Crop & payment tracking</span>
                   </label>
                   <label className={`role-opt ${formData.role === 'HHM' ? 'sel' : ''}`}>
                     <input type="radio" name="role" value="HHM" checked={formData.role === 'HHM'} onChange={() => handleRoleSelection('HHM')} />
-                    <span className="role-emoji">👥</span>
+                    <span className="role-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="24" height="24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path strokeLinecap="round" strokeLinejoin="round" d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg></span>
                     <span className="role-lbl">HHM</span>
                     <span className="role-sub">Gang & harvest mgmt</span>
                   </label>
                   <label className={`role-opt ${formData.role === 'Labour' ? 'sel' : ''}`}>
                     <input type="radio" name="role" value="Labour" checked={formData.role === 'Labour'} onChange={() => handleRoleSelection('Labour')} />
-                    <span className="role-emoji">⚒️</span>
+                    <span className="role-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="24" height="24"><path strokeLinecap="round" strokeLinejoin="round" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77Z" /></svg></span>
                     <span className="role-lbl">Labour</span>
                     <span className="role-sub">Jobs, wages & schemes</span>
                   </label>
                   <label className={`role-opt ${formData.role === 'Factory' ? 'sel' : ''}`}>
                     <input type="radio" name="role" value="Factory" checked={formData.role === 'Factory'} onChange={() => handleRoleSelection('Factory')} />
-                    <span className="role-emoji">🏭</span>
+                    <span className="role-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" width="24" height="24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205v3m-5.25-9h-.008v.008h.008V3.75Z" /></svg></span>
                     <span className="role-lbl">Factory</span>
                     <span className="role-sub">Supply chain & analytics</span>
                   </label>

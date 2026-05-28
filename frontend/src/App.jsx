@@ -21,6 +21,7 @@ import './App.css';
 import './components/Navbar.css';
 import './pages/Auth.css';
 import './components/Chatbot/Chatbot.css';
+import TranslatorWidget from './components/TranslatorWidget.jsx';
 
 import {
   getDashboardRouteForRole,
@@ -40,9 +41,7 @@ import HomePage from './pages/HomePage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
 import UnauthorizedPage from './pages/UnauthorizedPage.jsx';
-import FactoriesPage from './pages/FactoriesPage.jsx';
 
-import AboutUsPage from './pages/AboutUsPage.jsx';
 
 import FarmerDashboardPage from './pages/FarmerDashboardPage.jsx';
 
@@ -347,7 +346,9 @@ function App() {
       }
     }
 
-    > {
+    >
+    <TranslatorWidget />
+    {
       /* Conditional Navbar */
     }
 
@@ -408,24 +409,6 @@ function App() {
     <Route path="/unauthorized"element= {
 
       <SafeComponent name="UnauthorizedPage"> <UnauthorizedPage /> </SafeComponent>
-    }
-
-    /> {
-      /* Factories Routes */
-    }
-
-    <Route path="/factories"element= {
-
-      <SafeComponent name="FactoriesPage"> <FactoriesPage /> </SafeComponent>
-    }
-
-    /> {
-      /* About Route */
-    }
-
-    <Route path="/about"element= {
-
-      <SafeComponent name="AboutUsPage"> <AboutUsPage /> </SafeComponent>
     }
 
     /> {

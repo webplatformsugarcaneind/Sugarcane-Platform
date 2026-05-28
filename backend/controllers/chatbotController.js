@@ -236,7 +236,7 @@ const getAIResponse = async (userMessage, systemPrompt) => {
 
     const detailedInstructionText = 'Please answer thoroughly and with actionable details; when relevant, reference project files included in context and provide examples or steps.';
     const promptText = `${detailedInstructionText}\n\n${systemPrompt}\n\nUser: ${userMessage}`;
-    const url = `https://generativelanguage.googleapis.com/v1/models/${googleModel}:generateContent?key=${googleKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${googleModel}:generateContent?key=${googleKey}`;
 
     // Include project files as additional context so Gemini can answer project-specific questions
     const includeProjectContext = true; // enabled so the model has repository context
@@ -295,7 +295,9 @@ const getAIResponse = async (userMessage, systemPrompt) => {
     };
 
   } catch (error) {
-    console.error('Gemini API error:', error.response && error.response.data ? JSON.stringify(error.response.data) : error.message);
+    const errorDetails = error.response && error.response.data ? JSON.stringify(error.response.data) : error.message;
+    console.error('Gemini API error:', errorDetails);
+    fs.writeFileSync('gemini_error.txt', errorDetails);
     return getFallbackResponse(userMessage);
   }
 };

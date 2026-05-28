@@ -3,10 +3,40 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import NotificationToast from '../components/NotificationToast';
 import useNotifications from '../hooks/useNotifications';
-import './FactoryHHMDirectoryPage.css';
+import './FarmerHHMDirectoryPage.css';
 
 // Set axios base URL
 axios.defaults.baseURL = 'http://localhost:5000';
+
+const Icons = {
+  Location: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+    </svg>
+  ),
+  Team: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0 1 10.089 20M3 11.625a3 3 0 1 1 6 0 3 3 0 0 1-6 0Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13.125 6a2.25 2.25 0 0 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 12.75a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+    </svg>
+  ),
+  Clock: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    </svg>
+  ),
+  Star: () => (
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+    </svg>
+  ),
+  Phone: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+    </svg>
+  )
+};
 
 const FactoryHHMDirectoryPage = () => {
   const navigate = useNavigate();
@@ -203,28 +233,7 @@ const FactoryHHMDirectoryPage = () => {
         </div>
       </div>
 
-      {/* TABS */}
-      <div className="hd-tabs">
-        <button className={`hd-tab ${activeTab === 'allHHMs' ? 'active' : ''}`} onClick={() => setActiveTab('allHHMs')}>
-          <span className="hd-tab-icon">👥</span> All HHMs
-        </button>
-        <button className={`hd-tab ${activeTab === 'myRequests' ? 'active' : ''}`} onClick={() => setActiveTab('myRequests')}>
-          <span className="hd-tab-icon">📤</span> My Requests {requestsLoading && <span>...</span>}
-        </button>
-        <button className={`hd-tab ${activeTab === 'receivedApplications' ? 'active' : ''}`} onClick={() => setActiveTab('receivedApplications')}>
-          <span className="hd-tab-icon">📥</span> Received Applications {applicationsLoading && <span>...</span>}
-        </button>
-      </div>
 
-      {/* KPI ROW (Only in All HHMs tab) */}
-      {activeTab === 'allHHMs' && (
-        <div className="hd-kpi-row">
-          <div className="hd-kpi g"><div className="hd-kpi-label">Total HHMs</div><div className="hd-kpi-val g">{kpiTotal}</div><div className="hd-kpi-sub">In directory</div></div>
-          <div className="hd-kpi a"><div className="hd-kpi-label">Active HHMs</div><div className="hd-kpi-val a">{kpiActive}</div><div className="hd-kpi-sub">Ready to coordinate</div></div>
-          <div className="hd-kpi b"><div className="hd-kpi-label">Locations</div><div className="hd-kpi-val b">{kpiLocations}</div><div className="hd-kpi-sub">Regions covered</div></div>
-          <div className="hd-kpi g"><div className="hd-kpi-label">New This Month</div><div className="hd-kpi-val g">{kpiRecent}</div><div className="hd-kpi-sub">Recently joined</div></div>
-        </div>
-      )}
 
       {invitationSuccess && typeof invitationSuccess === 'string' && (
         <div className="hd-success-banner">{invitationSuccess}</div>
@@ -239,7 +248,7 @@ const FactoryHHMDirectoryPage = () => {
             </div>
             <select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)} className="hd-filter">
               <option value="">All Locations</option>
-              {uniqueLocations.map((loc, i) => <option key={i} value={loc}>📍 {loc}</option>)}
+              {uniqueLocations.map((loc, i) => <option key={i} value={loc}>{loc}</option>)}
             </select>
             <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="hd-filter">
               <option value="name">Sort: Name A–Z</option>
@@ -261,99 +270,162 @@ const FactoryHHMDirectoryPage = () => {
             <div className="hd-results-count"><strong>{filteredHhms.length}</strong> of {hhms.length} harvest managers found</div>
           </div>
 
-          <div className={`hd-grid${isListView ? ' list-view' : ''}`}>
+          <div className="hd-grid-premium">
             {loading ? (
               <div className="hd-loading"><div className="hd-spinner"></div><div className="hd-empty-title">Loading HHM directory...</div></div>
             ) : error ? (
               <div className="hd-empty">
-                <div className="hd-empty-icon">⚠️</div>
+                <div className="hd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48" style={{color:'var(--amber)'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div>
                 <div className="hd-empty-title">Error Loading Directory</div>
                 <div className="hd-empty-sub">{error}</div>
                 <button onClick={fetchHHMs} className="hd-btn-request" style={{ marginTop: 8 }}>Try Again</button>
               </div>
             ) : filteredHhms.length === 0 ? (
               <div className="hd-empty">
-                <div className="hd-empty-icon">👥</div>
+                <div className="hd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48"><path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path strokeLinecap="round" strokeLinejoin="round" d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg></div>
                 <div className="hd-empty-title">No Harvest Managers Found</div>
                 <div className="hd-empty-sub">{(searchTerm || selectedLocation) ? 'Try adjusting your search or filter criteria.' : 'No harvest managers are currently available.'}</div>
                 {(searchTerm || selectedLocation) && <button onClick={clearFilters} className="hd-btn-profile" style={{marginTop: 16}}>Clear All Filters</button>}
               </div>
             ) : (
-              filteredHhms.map((hhm, idx) => (
-                <div key={hhm._id || `hhm-${idx}`} className={`hd-card ${hhm.isActive !== false ? 'active' : 'inactive'}`} style={{ animation: `hdFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
-                  <div className="hc-header">
-                    <div className="hc-avatar">👤</div>
-                    <div className="hc-title-wrap">
-                      <div className="hc-name">{hhm.name || 'Unknown Name'}</div>
-                      <div className="hc-username">@{hhm.username || 'unknown'}</div>
-                      <div className="hc-role-badge">Harvest Manager</div>
+              filteredHhms.map((hhm, idx) => {
+                const isAvailable = hhm.isActive !== false;
+                const getInitials = n => n ? n.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : '??';
+                
+                return (
+                  <div key={hhm._id || `hhm-${idx}`} className={`global-card ${isAvailable ? 'active' : 'inactive'}`} style={{ animationDelay: `${idx * 0.05}s` }} onClick={() => navigate(`/factory/hhm-directory/${hhm._id}`)}>
+                    
+                    {/* CARD TOP */}
+                    <div className="gc-header">
+                      <div className="gc-avatar-wrap">
+                        <div className="gc-avatar">{getInitials(hhm.name)}</div>
+                        <div className={`gc-status-ring ${isAvailable ? 'available' : 'busy'}`}></div>
+                        <div className={`gc-avail-dot ${isAvailable ? 'available' : 'busy'}`}></div>
+                      </div>
+                      <div className="gc-title-wrap">
+                        <h3 className="gc-name">{hhm.name || 'Unknown HHM'}</h3>
+                        <div className="gc-header-meta">
+                          <span className="gc-role-badge">HHM</span>
+                          <span className={`gc-avail-badge ${isAvailable ? 'available' : 'busy'}`}>
+                            <span className="gc-avail-indicator"></span>
+                            {isAvailable ? 'Available' : 'Engaged'}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="hc-status">
-                      <span className={`hd-status-badge ${hhm.isActive !== false ? 'active' : 'inactive'}`}>
-                        {hhm.isActive !== false ? 'ACTIVE' : 'INACTIVE'}
-                      </span>
+
+                    {/* CARD MIDDLE (INFO GRID 2-COLUMN) */}
+                    <div className="gc-info-grid-2col">
+                      <div className="gc-info-item">
+                        <span className="gc-ii-label">Location</span>
+                        <span className="gc-ii-val">
+                          <span className="gc-ii-icon"><Icons.Location /></span>
+                          {hhm.location || 'Maharashtra'}
+                        </span>
+                      </div>
+                      <div className="gc-info-item">
+                        <span className="gc-ii-label">Team Size</span>
+                        <span className="gc-ii-val text-green">
+                          <span className="gc-ii-icon"><Icons.Team /></span>
+                          {hhm.teamSize || '15'}
+                        </span>
+                      </div>
+                      <div className="gc-info-item">
+                        <span className="gc-ii-label">Experience</span>
+                        <span className="gc-ii-val">
+                          <span className="gc-ii-icon"><Icons.Clock /></span>
+                          {hhm.experience || '0 Yrs'}
+                        </span>
+                      </div>
+                      <div className="gc-info-item">
+                        <span className="gc-ii-label">Reliability</span>
+                        <span className="gc-ii-val text-green">
+                          <span className="gc-ii-icon"><Icons.Star /></span>
+                          94%
+                        </span>
+                      </div>
+                      <div className="gc-info-item full-width">
+                        <span className="gc-ii-label">Contact</span>
+                        <span className="gc-ii-val" style={{ color: 'var(--muted)', whiteSpace: 'normal' }}>
+                          <span className="gc-ii-icon"><Icons.Phone /></span>
+                          {hhm.phone || hhm.email || '+91 98765 43210'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* CARD BOTTOM (ACTIONS) */}
+                    <div className="gc-card-bottom">
+                      <button 
+                        className="gc-btn-primary" 
+                        disabled={!isAvailable}
+                        style={{ opacity: isAvailable ? 1 : 0.6, cursor: isAvailable ? 'pointer' : 'not-allowed' }}
+                        onClick={(e) => { e.stopPropagation(); handleInviteClick(hhm); }}
+                      >
+                        Send Invite
+                      </button>
+                      <button 
+                        className="gc-btn-secondary" 
+                        onClick={(e) => { e.stopPropagation(); navigate(`/factory/hhm-directory/${hhm._id}`); }}
+                      >
+                        Profile
+                      </button>
                     </div>
                   </div>
-
-                  <div className="hc-contact">
-                    {hhm.email && (
-                      <div className="hc-contact-item">
-                        <span className="hc-contact-icon">📧</span>
-                        <span className="hc-contact-text">{hhm.email}</span>
-                      </div>
-                    )}
-                    {hhm.phone && (
-                      <div className="hc-contact-item">
-                        <span className="hc-contact-icon">📱</span>
-                        <span className="hc-contact-text">{hhm.phone}</span>
-                      </div>
-                    )}
-                    {hhm.location && (
-                      <div className="hc-contact-item">
-                        <span className="hc-contact-icon">📍</span>
-                        <span className="hc-contact-text">{hhm.location}</span>
-                      </div>
-                    )}
-                    {hhm.experience && (
-                      <div className="hc-contact-item">
-                        <span className="hc-contact-icon">⭐</span>
-                        <span className="hc-contact-text">{hhm.experience} years exp.</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="hc-divider"></div>
-
-                  <div className="hc-meta">
-                    <div className="hc-meta-item">Member since: <strong>{formatDate(hhm.createdAt)}</strong></div>
-                  </div>
-
-                  <div className="hc-actions">
-                    <button className="hd-btn-request" onClick={() => handleInviteClick(hhm)}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                      Send Invite
-                    </button>
-                    <button className="hd-btn-profile" onClick={() => navigate(`/factory/hhm-directory/${hhm._id}`)}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      View Profile
-                    </button>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </>
       )}
 
+      <style>{`
+        .mp-card { background: #161b16; border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #222; animation: hdFadeUp 0.5s ease-out both; display: flex; flex-direction: column; }
+        .mp-card:hover { transform: translateY(-6px); border-color: var(--green); box-shadow: 0 8px 24px -8px rgba(126,200,67,0.3); }
+        .mc-header { padding: 20px 20px 0; }
+        .mc-header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .mc-avatar-glow { width: 44px; height: 44px; border-radius: 12px; background: rgba(126,200,67,0.08); border: 1px solid rgba(126,200,67,0.18); display: flex; align-items: center; justify-content: center; color: var(--green); padding: 8px; box-sizing: border-box; font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
+        .mc-rating-pill { display: flex; }
+        .mc-rating-badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 100px; font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; }
+        .mc-title-wrap { margin-top: 8px; }
+        .mc-name { margin: 0 0 4px 0; font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 800; color: var(--white); line-height: 1.2; }
+        .mc-location { display: flex; align-items: center; gap: 4px; font-size: 0.8rem; color: var(--muted); }
+        .mc-stats-row { display: grid; grid-template-columns: repeat(4, 1fr); margin: 16px 20px 0; gap: 0; background: rgba(255,255,255,0.03); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
+        .mc-stat { padding: 10px 8px; text-align: center; border-right: 1px solid rgba(255,255,255,0.05); }
+        .mc-stat:last-child { border-right: none; }
+        .mc-stat-val { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; line-height: 1; color: var(--white); }
+        .mc-stat-val.text-green { color: var(--green); }
+        .mc-stat-val.text-amber { color: var(--amber); }
+        .mc-stat-lbl { font-size: 0.6rem; color: var(--muted-2); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .mc-tags-row { padding: 0 20px; margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .mc-status-pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 100px; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+        .mc-status-pill.green { background: rgba(126,200,67,.12); color: var(--green); border: 1px solid rgba(126,200,67,.25); }
+        .mc-status-pill.amber { background: rgba(232,168,58,.12); color: var(--amber); border: 1px solid rgba(232,168,58,.25); }
+        .mc-status-pill.blue { background: rgba(91,143,255,.12); color: #5b8fff; border: 1px solid rgba(91,143,255,.25); }
+        .mc-demand-insights { padding: 0 20px; margin-top: 14px; display: flex; flex-direction: column; gap: 7px; }
+        .mc-insight-row { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--white); font-weight: 500; }
+        .mc-insight-row.muted { color: var(--muted); font-weight: 400; }
+        .mc-insight-row strong { font-weight: 700; }
+        .mc-actions-modern { padding: 20px; display: flex; gap: 10px; margin-top: auto; }
+        .mc-btn-contact { flex: 1; background: var(--green); color: #0a0f0a; border: none; border-radius: 10px; padding: 12px; font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(126,200,67,0.25); transition: transform 0.2s, box-shadow 0.2s; display:flex; align-items:center; justify-content:center; }
+        .mc-btn-contact:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(126,200,67,0.4); }
+        .mc-svg-icon { display: inline-flex; align-items: center; justify-content: center; width: 1.1em; height: 1.1em; vertical-align: -0.125em; }
+        .mc-svg-icon.text-green { color: var(--green); }
+        .mc-svg-icon.text-amber { color: var(--amber); }
+
+        @media (max-width: 1000px) { .hd-grid { grid-template-columns: repeat(3, 1fr) !important; } }
+        @media (max-width: 768px) { .hd-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+        @media (max-width: 640px) { .hd-grid { grid-template-columns: repeat(1, 1fr) !important; } }
+      `}</style>
+
       {/* My Requests Tab */}
       {activeTab === 'myRequests' && (
         <div className="hd-section">
-          <h2 className="hd-section-title">📤 My Sent Invitations</h2>
+          <h2 className="hd-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24" style={{verticalAlign:'middle',marginRight:8}}><path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg> My Sent Invitations</h2>
           {requestsLoading ? (
             <div className="hd-loading"><div className="hd-spinner"></div><div className="hd-empty-title">Loading your requests...</div></div>
           ) : myRequests.length === 0 ? (
             <div className="hd-empty">
-              <div className="hd-empty-icon">📤</div>
+              <div className="hd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48"><path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg></div>
               <div className="hd-empty-title">No Sent Invitations</div>
               <div className="hd-empty-sub">You haven't sent any invitations to Harvest Managers yet.</div>
             </div>
@@ -377,12 +449,12 @@ const FactoryHHMDirectoryPage = () => {
       {/* Received Applications Tab */}
       {activeTab === 'receivedApplications' && (
         <div className="hd-section">
-          <h2 className="hd-section-title">📥 Received Applications</h2>
+          <h2 className="hd-section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24" style={{verticalAlign:'middle',marginRight:8}}><path strokeLinecap="round" strokeLinejoin="round" d="M20 13V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7m16 0v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5m16 0h-4.586a1 1 0 0 0-.707.293l-2.414 2.414a1 1 0 0 1-.707.293h-3.172a1 1 0 0 1-.707-.293l-2.414-2.414A1 1 0 0 0 6.586 13H2" /></svg> Received Applications</h2>
           {applicationsLoading ? (
             <div className="hd-loading"><div className="hd-spinner"></div><div className="hd-empty-title">Loading applications...</div></div>
           ) : receivedApplications.length === 0 ? (
             <div className="hd-empty">
-              <div className="hd-empty-icon">📥</div>
+              <div className="hd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48"><path strokeLinecap="round" strokeLinejoin="round" d="M20 13V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7m16 0v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5m16 0h-4.586a1 1 0 0 0-.707.293l-2.414 2.414a1 1 0 0 1-.707.293h-3.172a1 1 0 0 1-.707-.293l-2.414-2.414A1 1 0 0 0 6.586 13H2" /></svg></div>
               <div className="hd-empty-title">No Applications Received</div>
               <div className="hd-empty-sub">No Harvest Managers have applied to work with you yet.</div>
             </div>
@@ -399,8 +471,8 @@ const FactoryHHMDirectoryPage = () => {
                   {application.message && <p><strong>Message:</strong> {application.message}</p>}
                   {application.status === 'pending' && (
                     <div className="hd-app-actions">
-                      <button className="hd-btn-accept" onClick={() => handleApplicationResponse(application._id, 'accepted')}>✅ Accept</button>
-                      <button className="hd-btn-decline" onClick={() => handleApplicationResponse(application._id, 'declined')}>❌ Decline</button>
+                      <button className="hd-btn-accept" onClick={() => handleApplicationResponse(application._id, 'accepted')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{verticalAlign:'middle',marginRight:4}}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg> Accept</button>
+                      <button className="hd-btn-decline" onClick={() => handleApplicationResponse(application._id, 'declined')}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{verticalAlign:'middle',marginRight:4}}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg> Decline</button>
                     </div>
                   )}
                 </div>
@@ -415,7 +487,7 @@ const FactoryHHMDirectoryPage = () => {
         <div className="hd-modal-overlay" onClick={closeInviteModal}>
           <div className="hd-modal" onClick={(e) => e.stopPropagation()}>
             <div className="hd-modal-header">
-              <h2>📨 Send Invitation to {selectedHHM.name}</h2>
+              <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24" style={{verticalAlign:'middle',marginRight:8}}><path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg> Send Invitation to {selectedHHM.name}</h2>
               <button className="hd-modal-close" onClick={closeInviteModal}>×</button>
             </div>
             <div className="hd-modal-body">
@@ -424,11 +496,11 @@ const FactoryHHMDirectoryPage = () => {
               ) : (
                 <>
                   <div className="hd-preview">
-                    <div className="hd-preview-avatar">👤</div>
+                    <div className="hd-preview-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="24" height="24"><path strokeLinecap="round" strokeLinejoin="round" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg></div>
                     <div className="hd-preview-info">
                       <h3>{selectedHHM.name}</h3>
-                      <p>📍 {selectedHHM.location || 'Location not specified'}</p>
-                      <p>📧 {selectedHHM.email}</p>
+                      <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" style={{verticalAlign:'middle',marginRight:4,color:'var(--muted-2)'}}><path strokeLinecap="round" strokeLinejoin="round" d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg> {selectedHHM.location || 'Location not specified'}</p>
+                      <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14" style={{verticalAlign:'middle',marginRight:4,color:'var(--muted-2)'}}><path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> {selectedHHM.email}</p>
                     </div>
                   </div>
                   <div className="hd-form-group">
@@ -442,7 +514,7 @@ const FactoryHHMDirectoryPage = () => {
             {!invitationSuccess && (
               <div className="hd-modal-footer">
                 <button className="hd-btn-profile" onClick={closeInviteModal} disabled={sendingInvitation}>Cancel</button>
-                <button className="hd-btn-request" onClick={handleSendInvitation} disabled={sendingInvitation}>{sendingInvitation ? 'Sending...' : '📨 Send Invitation'}</button>
+                <button className="hd-btn-request" onClick={handleSendInvitation} disabled={sendingInvitation}>{sendingInvitation ? 'Sending...' : <><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{verticalAlign:'middle',marginRight:6}}><path strokeLinecap="round" strokeLinejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg> Send Invitation</>}</button>
               </div>
             )}
           </div>

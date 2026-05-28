@@ -1187,7 +1187,12 @@ const respondToFactoryInvitation = async (req, res) => {
   try {
     console.log(' HHM responding to factory invitation:', req.params.id);
 
-    const { status, responseMessage } = req.body;
+    let { status, responseMessage } = req.body;
+
+    // Normalize status
+    if (status && typeof status === 'string') {
+      status = status.toLowerCase().trim();
+    }
 
     // Validate status
     if (!status || !['accepted', 'declined'].includes(status)) {

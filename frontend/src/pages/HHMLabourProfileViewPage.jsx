@@ -107,153 +107,136 @@ const HHMLabourProfileViewPage = () => {
     }
 
     const initials = labourData.name ? labourData.name.substring(0, 2).toUpperCase() : 'W';
+    const isAvailable = labourData.availability === 'Available';
 
     return (
         <div className="farmer-profile-page" style={{ background: 'radial-gradient(ellipse at 20% 0%, rgba(126,200,67,0.07) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(126,200,67,0.05) 0%, transparent 50%), #0b0f0b' }}>
             <div className="fp-noise" />
             <div className="fp-bg-glow" />
 
-            <div className="fp-layout-shell">
-                <aside className="fp-sidebar" >
-                    <div className="fp-sidebar-profile">
-                        <div className="fp-avatar-wrap">
-                            <div className="fp-avatar">{initials}</div>
-                            <div className="fp-avatar-ring"></div>
-                        </div>
-                        <div className="fp-user-name">{labourData.name || 'Labour'}</div>
-                        <div className="fp-user-role">
-                            <span className="fp-role-dot" style={{ background: labourData.availability === 'Available' ? '#4caf50' : '#e74c3c' }}></span>
-                            {labourData.availability || 'Status Unknown'}
-                        </div>
-                    </div>
-
-                    <div className="fp-stats-grid">
-                        <div className="fp-stat-item">
-                            <div className="fp-stat-val">{labourData.rating !== undefined ? labourData.rating.toFixed(1) : '-'}</div>
-                            <div className="fp-stat-lbl">Rating ⭐</div>
-                        </div>
-                        <div className="fp-stat-item">
-                            <div className="fp-stat-val">{labourData.completedJobs !== undefined ? labourData.completedJobs : '-'}</div>
-                            <div className="fp-stat-lbl">Jobs Done</div>
-                        </div>
-                    </div>
-
-                    <div className="fp-submit-area" style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>
-                        <button className="fp-save-btn" onClick={handleSendInvitation} disabled={labourData.availability !== 'Available'} style={{ width: '100%', opacity: labourData.availability === 'Available' ? 1 : 0.5 }}>
-                            📤 Send Job Invite
-                        </button>
-                        {labourData.email && (
-                            <button className="fp-save-btn" onClick={handleContact} style={{ width: '100%', background: 'transparent', border: '1px solid var(--green)', color: 'var(--green)' }}>
-                                📧 Contact Labour
-                            </button>
-                        )}
-                        {labourData.phone && (
-                            <button className="fp-save-btn" onClick={() => window.location.href = `tel:${labourData.phone}`} style={{ width: '100%', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)' }}>
-                                📱 Call
-                            </button>
-                        )}
-                    </div>
-                </aside>
-
-                <main className="fp-main">
-                    <div className="fp-page-header">
-                        <div className="fp-header-left">
-                            <div className="fp-eyebrow">Labour Profile</div>
-                            <h1 className="fp-title">{labourData.name}'s <em className="fp-highlight">Profile</em></h1>
-                            <div className="fp-subtitle" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <span>📍 {labourData.location || 'Location not specified'}</span>
-                                {labourData.isVerified && <span style={{ background: 'rgba(126,200,67,0.1)', color: 'var(--green)', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem' }}>✓ Verified</span>}
+            <div className="fdb-container">
+                <button className="fdb-back-btn" onClick={handleGoBack}>← Back to Labour Management</button>
+                
+                {/* HERO SECTION */}
+                <div className="fdb-hero">
+                    <div className="fdb-hero-left">
+                        <div className="fdb-hero-header">
+                            <div className="fdb-avatar-lg">
+                                {initials}
+                                <div className="fdb-avatar-ring"></div>
                             </div>
-                        </div>
-                        <div className="fp-header-right">
-                            <button className="fp-save-btn" onClick={handleGoBack} style={{ background: 'rgba(255, 255, 255, 0.1)', color: 'white' }}>← Back to Labour Management</button>
-                        </div>
-                    </div>
-
-                    <section className="fp-card">
-                        <div className="fp-card-header">
-                            <div className="fp-card-icon">💼</div>
-                            <div className="fp-card-txt">
-                                <h2 className="fp-card-title">Work Information</h2>
-                                <div className="fp-card-sub">Experience and preferences</div>
-                            </div>
-                        </div>
-                        <div className="fp-card-body">
-                            <div className="fp-form-grid">
-                                {labourData.bio && (
-                                    <div className="fp-field full-width">
-                                        <label>About</label>
-                                        <textarea readOnly value={labourData.bio} rows={3}></textarea>
-                                    </div>
-                                )}
-                                <div className="fp-field">
-                                    <label>Experience</label>
-                                    <input type="text" readOnly value={labourData.workExperience || 'Not specified'} />
+                            <div className="fdb-hero-info">
+                                <div className="fdb-hero-title-wrap">
+                                    <h1 className="fdb-hero-title">{labourData.name || 'Labour'}</h1>
+                                    {labourData.isVerified && <span className="fdb-badge-verified">✓ Verified</span>}
                                 </div>
-                                <div className="fp-field">
-                                    <label>Wage Rate</label>
-                                    <input type="text" readOnly value={labourData.wageRate || 'Not specified'} />
+                                <div className="fdb-hero-meta">
+                                    <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {labourData.location || 'Location not specified'}</span>
+                                    {labourData.phone && (
+                                        <>
+                                            <span className="fdb-hero-dot">•</span>
+                                            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.1 1.11h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg> {labourData.phone}</span>
+                                        </>
+                                    )}
                                 </div>
-                                {labourData.workPreferences && (
-                                    <div className="fp-field full-width">
-                                        <label>Work Preferences</label>
-                                        <input type="text" readOnly value={labourData.workPreferences} />
-                                    </div>
-                                )}
+                                <p className="fdb-hero-tagline">{labourData.bio || 'Labour Professional'}</p>
                             </div>
                         </div>
-                    </section>
-                    
-                    {labourData.skills && labourData.skills.length > 0 && (
-                        <section className="fp-card">
-                            <div className="fp-card-header">
-                                <div className="fp-card-icon">🛠️</div>
-                                <div className="fp-card-txt">
-                                    <h2 className="fp-card-title">Skills & Expertise</h2>
-                                    <div className="fp-card-sub">Abilities of this labour</div>
-                                </div>
+                    </div>
+                    <div className="fdb-hero-right">
+                        <div className="fdb-stat-card">
+                            <div className="fdb-stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                            <div className="fdb-stat-data">
+                                <div className="fdb-stat-val">{labourData.rating !== undefined ? labourData.rating.toFixed(1) : '-'}</div>
+                                <div className="fdb-stat-lbl">Rating</div>
                             </div>
-                            <div className="fp-card-body">
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                                    {labourData.skills.map((skill, index) => (
-                                        <span key={index} style={{ background: '#101510', border: '1px solid rgba(126,200,67,0.2)', padding: '0.75rem 1.25rem', borderRadius: '8px', color: '#f0f5ec' }}>
-                                            {skill}
-                                        </span>
-                                    ))}
+                        </div>
+                        <div className="fdb-stat-card">
+                            <div className="fdb-stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                            <div className="fdb-stat-data">
+                                <div className="fdb-stat-val">{labourData.completedJobs !== undefined ? labourData.completedJobs : '-'}</div>
+                                <div className="fdb-stat-lbl">Jobs Done</div>
+                            </div>
+                        </div>
+                        <div className="fdb-stat-card">
+                            <div className="fdb-stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                            <div className="fdb-stat-data">
+                                <div className="fdb-stat-val">{labourData.wageRate || 'N/A'}</div>
+                                <div className="fdb-stat-lbl">Wage Rate</div>
+                            </div>
+                        </div>
+                        <div className="fdb-stat-card" style={{ borderColor: isAvailable ? 'rgba(126,200,67,0.3)' : 'rgba(231,76,60,0.3)' }}>
+                            <div className="fdb-stat-icon" style={{ color: isAvailable ? 'var(--green)' : '#e74c3c' }}><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                            <div className="fdb-stat-data">
+                                <div className="fdb-stat-val" style={{ color: isAvailable ? 'var(--green)' : '#e74c3c' }}>{labourData.availability || 'Unknown'}</div>
+                                <div className="fdb-stat-lbl">Status</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="fdb-grid-main">
+                    <div className="fdb-grid-left">
+                        {/* WORK INFORMATION */}
+                        <section className="fdb-section">
+                            <h2 className="fdb-section-title">Work Information</h2>
+                            <div className="fdb-overview-grid">
+                                <div className="fdb-info-card">
+                                    <div className="fdb-info-lbl">Experience</div>
+                                    <div className="fdb-info-val" style={{color: 'var(--green)'}}>{labourData.workExperience || 'Not specified'}</div>
+                                </div>
+                                <div className="fdb-info-card full-width">
+                                    <div className="fdb-info-lbl">Work Preferences</div>
+                                    <div className="fdb-info-val">{labourData.workPreferences || 'Not specified'}</div>
                                 </div>
                             </div>
                         </section>
-                    )}
 
-                    <section className="fp-card">
-                        <div className="fp-card-header">
-                            <div className="fp-card-icon">📞</div>
-                            <div className="fp-card-txt">
-                                <h2 className="fp-card-title">Contact Information</h2>
-                                <div className="fp-card-sub">Get in touch directly</div>
-                            </div>
-                        </div>
-                        <div className="fp-card-body">
-                            <div className="fp-form-grid">
-                                {labourData.email && (
-                                    <div className="fp-field">
-                                        <label>Email Address</label>
-                                        <input type="email" readOnly value={labourData.email} />
+                        {/* SKILLS */}
+                        {labourData.skills && labourData.skills.length > 0 && (
+                            <section className="fdb-section">
+                                <h2 className="fdb-section-title">Skills & Expertise</h2>
+                                <div className="fdb-overview-grid">
+                                    <div className="fdb-info-card full-width">
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                                            {labourData.skills.map((skill, index) => (
+                                                <span key={index} style={{ background: '#101510', border: '1px solid rgba(126,200,67,0.2)', padding: '0.75rem 1.25rem', borderRadius: '8px', color: '#f0f5ec' }}>
+                                                    {skill}
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
+                                </div>
+                            </section>
+                        )}
+                    </div>
+
+                    <div className="fdb-grid-right">
+                        {/* ACTION PANEL */}
+                        <section className="fdb-section" style={{ background: 'rgba(126,200,67,0.05)', borderColor: 'rgba(126,200,67,0.1)' }}>
+                            <h2 className="fdb-section-title">Actions</h2>
+                            <div className="fdb-analytics-wrap" style={{ gap: '12px', display: 'flex', flexDirection: 'column' }}>
+                                <button className="fdb-contact-btn" onClick={handleSendInvitation} disabled={!isAvailable} style={{ background: 'var(--green)', color: '#0b0f0b', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', borderRadius: '8px', fontWeight: 'bold', border: 'none', cursor: isAvailable ? 'pointer' : 'not-allowed', opacity: isAvailable ? 1 : 0.5 }}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> Send Job Invite
+                                </button>
+                                {labourData.email && (
+                                    <button className="fdb-contact-btn" onClick={handleContact} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--green)', color: 'var(--green)', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email Labour
+                                    </button>
                                 )}
                                 {labourData.phone && (
-                                    <div className="fp-field">
-                                        <label>Phone Number</label>
-                                        <input type="tel" readOnly value={labourData.phone} />
-                                    </div>
+                                    <button className="fdb-contact-btn" onClick={() => window.location.href = `tel:${labourData.phone}`} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--white)', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.1 1.11h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg> Call Direct
+                                    </button>
                                 )}
                             </div>
-                        </div>
-                    </section>
-                </main>
+                        </section>
+                    </div>
+                </div>
             </div>
         </div>
     );
 };
 
 export default HHMLabourProfileViewPage;
+

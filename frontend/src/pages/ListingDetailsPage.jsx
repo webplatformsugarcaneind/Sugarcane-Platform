@@ -271,13 +271,7 @@ const ListingDetailsPage = () => {
                             <div className="fdb-stat-lbl">{daysUntilHarvest > 0 ? 'Until Ready' : 'Ready Now'}</div>
                         </div>
                     </div>
-                    <div className="fdb-stat-card">
-                        <div className="fdb-stat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-                        <div className="fdb-stat-data">
-                            <div className="fdb-stat-val" style={{ fontSize: '1rem', marginTop: '4px', textTransform: 'capitalize' }}>{listing.seed_quality?.disease_free_status || 'Disease-Free'}</div>
-                            <div className="fdb-stat-lbl">Health Status</div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
 
@@ -432,7 +426,8 @@ const ListingDetailsPage = () => {
                         <div className="fdb-overview-grid" style={{ marginTop: '20px' }}>
                             <div className="fdb-info-card">
                                 <div className="fdb-info-lbl">Seller Rating</div>
-                                <div className="fdb-info-val" style={{color: 'var(--green)'}}>⭐ {listing.sellerRating || '4.8'}/5</div>
+                                <div className="fdb-info-val" style={{color: 'var(--green)'}}><svg viewBox="0 0 24 24" fill="#f59e0b" width="13" height="13" style={{verticalAlign:'middle',marginRight:2}}><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"/></svg> {listing.sellerRating || '4.8'}/5</div>
+
                             </div>
                             <div className="fdb-info-card">
                                 <div className="fdb-info-lbl">Successful Sales</div>

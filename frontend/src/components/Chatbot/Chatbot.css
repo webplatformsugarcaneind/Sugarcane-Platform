@@ -682,3 +682,5 @@
   top: 0;
   z-index: 3;
 }
+
+.chatbot-btn-icon { width: 1.25rem; height: 1.25rem; display: block; margin: 0 auto; }

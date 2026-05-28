@@ -269,11 +269,38 @@ const FarmerProfile = () => {
     }
   };
 
+  const IrrigationIcons = {
+    drip: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2.25c0 0-6 7.5-6 11.25a6 6 0 0 0 12 0C18 9.75 12 2.25 12 2.25Z" />
+      </svg>
+    ),
+    sprinkler: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2m4.22.78 1.42-1.42M21 12h-2M18.36 18.36l-1.42-1.42M12 21v-2M7.05 18.95 5.64 20.36M3 12h2M5.64 5.64l1.41 1.41" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    ),
+    flood: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 17c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 21c1.5-2 3-2 4.5 0s3 2 4.5 0 3-2 4.5 0 3 2 4.5 0" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 3h10l-1 9H8L7 3Z" />
+      </svg>
+    ),
+    rainfed: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="20" height="20">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5c0-1.657 1.343-3 3-3s3 1.343 3 3S8.657 10.5 6 10.5 3 9.157 3 7.5Zm9-3c0-2.485 2.015-4.5 4.5-4.5S21 2.015 21 4.5 18.985 9 16.5 9 12 6.985 12 4.5Z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 14v1m0 2v1m4-4v1m0 2v1m4-4v1m0 2v1" />
+      </svg>
+    ),
+  };
+
   const irrigationOptions = [
-    { val: 'drip', icon: '💧', lbl: 'Drip' },
-    { val: 'sprinkler', icon: '🌀', lbl: 'Sprinkler' },
-    { val: 'flood', icon: '🏞️', lbl: 'Flood' },
-    { val: 'rainfed', icon: '🌧️', lbl: 'Rain-fed' },
+    { val: 'drip',      lbl: 'Drip' },
+    { val: 'sprinkler', lbl: 'Sprinkler' },
+    { val: 'flood',     lbl: 'Flood' },
+    { val: 'rainfed',   lbl: 'Rain-fed' },
   ];
 
   if (isLoading) {
@@ -333,21 +360,6 @@ const FarmerProfile = () => {
         {/* --- MAIN CONTENT --- */}
         <main className="fp-main">
           
-          {/* PROFILE COMPLETION */}
-          {profileCompletion < 100 && (
-            <div className="fp-completion-bar">
-              <div className="fp-completion-left">
-                <div className="fp-completion-pct">{profileCompletion}%</div>
-              </div>
-              <div className="fp-completion-right">
-                <div className="fp-completion-title">Profile completion</div>
-                <div className="fp-completion-track">
-                  <div className="fp-completion-fill" style={{ width: `${profileCompletion}%` }}></div>
-                </div>
-                <p className="fp-completion-hint">Add your Aadhaar number and bank details to unlock automated FRP payments</p>
-              </div>
-            </div>
-          )}
 
           {/* PAGE HEADER */}
           <div className="fp-page-header">
@@ -368,7 +380,11 @@ const FarmerProfile = () => {
           {/* SECTION 1: FARMER INFORMATION */}
           <section className="fp-card">
             <div className="fp-card-header">
-              <div className="fp-card-icon">🌾</div>
+              <div className="fp-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="20" height="20">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                </svg>
+              </div>
               <div className="fp-card-txt">
                 <h2 className="fp-card-title">Farmer Information</h2>
                 <div className="fp-card-sub">Your personal and contact details</div>
@@ -431,7 +447,7 @@ const FarmerProfile = () => {
                         key={opt.val} 
                         className={`fp-radio-tile ${formData.irrigation === opt.val ? 'selected' : ''}`}
                         onClick={() => { setFormData({...formData, irrigation: opt.val}); setShowSave(true); }} >
-                        <span className="fp-tile-icon">{opt.icon}</span>
+                        <span className="fp-tile-icon">{IrrigationIcons[opt.val]}</span>
                         <span className="fp-tile-label">{opt.lbl}</span>
                       </div>
                     ))}
@@ -444,7 +460,11 @@ const FarmerProfile = () => {
           {/* SECTION 2: FARM EQUIPMENT */}
           <section className="fp-card">
             <div className="fp-card-header">
-              <div className="fp-card-icon">🚜</div>
+              <div className="fp-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="20" height="20">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+                </svg>
+              </div>
               <div className="fp-card-txt">
                 <h2 className="fp-card-title">Farm Equipment &amp; Technology</h2>
                 <div className="fp-card-sub">Equipment you own and methods you practice</div>
@@ -499,7 +519,11 @@ const FarmerProfile = () => {
           {/* SECTION 3: CROP & HARVEST INFO */}
           <section className="fp-card">
             <div className="fp-card-header">
-              <div className="fp-card-icon">🌱</div>
+              <div className="fp-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="20" height="20">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                </svg>
+              </div>
               <div className="fp-card-txt">
                 <h2 className="fp-card-title">Crop & Harvest Details</h2>
                 <div className="fp-card-sub">Crop status, variety and tonnage estimates</div>
@@ -558,7 +582,12 @@ const FarmerProfile = () => {
           {/* SECTION 4: LOCATION & LOGISTICS */}
           <section className="fp-card">
             <div className="fp-card-header">
-              <div className="fp-card-icon">📍</div>
+              <div className="fp-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="20" height="20">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                </svg>
+              </div>
               <div className="fp-card-txt">
                 <h2 className="fp-card-title">Location & Logistics</h2>
                 <div className="fp-card-sub">Field access, road conditions and distance</div>
@@ -607,7 +636,11 @@ const FarmerProfile = () => {
           {/* SECTION 5: SCHEDULE & CONTRACT */}
           <section className="fp-card">
             <div className="fp-card-header">
-              <div className="fp-card-icon">📝</div>
+              <div className="fp-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="20" height="20">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+              </div>
               <div className="fp-card-txt">
                 <h2 className="fp-card-title">Payment & Contract</h2>
                 <div className="fp-card-sub">Settlement preferences and contract type</div>

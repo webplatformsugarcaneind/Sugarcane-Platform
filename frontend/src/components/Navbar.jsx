@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import LanguageSelector from './LanguageSelector.jsx';
 import './Navbar.css';
 import { getStoredToken, getStoredUser, getDashboardRouteForRole, clearAuthSession } from '../utils/authSession.js';
 
@@ -216,7 +217,7 @@ const Navbar = () => {
             onClick={closeMenu}
           >
             <span className="logo-icon"><Ico.Logo /></span>
-            <span className="logo-text">CaneSetu</span>
+            <span className="logo-text notranslate">CaneSetu</span>
           </NavLink>
         </div>
 
@@ -225,9 +226,6 @@ const Navbar = () => {
           <ul className={`navbar-nav ${userRole === 'Farmer' ? 'farmer-nav' : ''}`}>
             {!isAuthenticated ? (
               <>
-                <NavItem to="/"          icon={Ico.Home}>Home</NavItem>
-                <NavItem to="/factories" icon={Ico.Factory}>Factories</NavItem>
-                <NavItem to="/about"     icon={Ico.About}>About Us</NavItem>
               </>
             ) : (
               <>
@@ -270,6 +268,10 @@ const Navbar = () => {
             )}
           </ul>
 
+
+          {/* Language Switcher */}
+          <LanguageSelector />
+
           {/* Auth Button */}
           <div className="navbar-auth">
             {!isAuthenticated ? (
@@ -301,9 +303,6 @@ const Navbar = () => {
         <div className="mobile-menu-content">
           {!isAuthenticated ? (
             <>
-              <MobileNavItem to="/"          icon={Ico.Home}>Home</MobileNavItem>
-              <MobileNavItem to="/factories" icon={Ico.Factory}>Factories</MobileNavItem>
-              <MobileNavItem to="/about"     icon={Ico.About}>About Us</MobileNavItem>
               <NavLink to="/login" className="mobile-auth-button" onClick={closeMenu}>
                 <Ico.Login /> Login / Sign Up
               </NavLink>

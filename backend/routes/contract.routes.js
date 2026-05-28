@@ -23,6 +23,8 @@ const {
 // Note: We'll apply specific role authorization per route since both HHM and Factory use these routes
 router.use(protect);
 
+const Contract = require('../models/contract.model');
+
 // ================================
 // CONTRACT CREATION & MANAGEMENT
 // ================================
@@ -422,7 +424,7 @@ router.put('/:contractId/mark-completed', authorize('HHM', 'Factory'), async (re
  */
 router.get('/dashboard', authorize('HHM', 'Factory'), async (req, res) => {
   try {
-    const Contract = require('../models/contract.model');
+    // Build query based on user role
     
     // Build query based on user role
     let query;

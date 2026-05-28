@@ -478,13 +478,18 @@ const respondToInvitation = async (req, res) => {
   try {
     console.log(' Labour responding to invitation:', req.params.id);
     
-    const { status, responseMessage } = req.body;
+    let { status, responseMessage } = req.body;
+
+    // Normalize status to lowercase
+    if (status && typeof status === 'string') {
+      status = status.toLowerCase().trim();
+    }
 
     // Validate status
     if (!status || !['accepted', 'declined'].includes(status)) {
       return res.status(400).json({
         success: false,
-        message: 'Status must be either accepted or declined'
+        message: 'Status must be either "accepted" or "declined"'
       });
     }
 

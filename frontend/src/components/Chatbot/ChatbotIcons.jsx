@@ -88,3 +88,19 @@ export function SpeakerIcon({ className = '' }) {
     </IconShell>
   );
 }
+
+export function SendIcon({ className = '' }) {
+  return (
+    <IconShell className={className}>
+      <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </IconShell>
+  );
+}
+
+export function HourglassIcon({ className = '' }) {
+  return (
+    <IconShell className={className}>
+      <path d="M12 2v20M9 2h6M9 22h6M12 12c-3-3-3-6-3-6h6s0 3-3 6 3 6 3 6H9s0-3 3-6z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </IconShell>
+  );
+}

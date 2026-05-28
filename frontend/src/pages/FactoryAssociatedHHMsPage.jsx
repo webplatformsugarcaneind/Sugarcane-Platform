@@ -121,7 +121,11 @@ const FactoryAssociatedHHMsPage = () => {
         return (
             <div className="hd-page">
                 <div className="hd-empty">
-                    <div className="hd-empty-icon">⚠️</div>
+                    <div className="hd-empty-icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48" style={{color: 'var(--amber)'}}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                      </svg>
+                    </div>
                     <div className="hd-empty-title">Error Loading Associated HHMs</div>
                     <div className="hd-empty-sub">{error}</div>
                     <button className="hd-btn-request" onClick={fetchAssociatedHHMs}>
@@ -168,7 +172,11 @@ const FactoryAssociatedHHMsPage = () => {
             <div>
                 {filteredHHMs.length === 0 ? (
                     <div className="hd-empty">
-                        <div className="hd-empty-icon">🌾</div>
+                        <div className="hd-empty-icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48" style={{color: 'var(--green)'}}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                          </svg>
+                        </div>
                         <div className="hd-empty-title">
                             {searchTerm ? 'No Matching HHMs Found' : 'No Associated HHMs'}
                         </div>
@@ -224,7 +232,8 @@ const FactoryAssociatedHHMsPage = () => {
                                     )}
                                     {hhm.experience && (
                                         <div className="hc-contact-item">
-                                            <span className="hc-contact-icon">⭐</span>
+                                            <span className="hc-contact-icon"><svg viewBox="0 0 24 24" fill="#f59e0b" width="15" height="15" style={{verticalAlign:'middle'}}><path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"/></svg></span>
+
                                             <span className="hc-contact-text">{hhm.experience} years exp.</span>
                                         </div>
                                     )}

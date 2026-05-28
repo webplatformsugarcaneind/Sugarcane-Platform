@@ -3,6 +3,16 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './HHMNotificationCenter.css';
 
+const BellSlashIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="empty-icon-svg">
+    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+    <path d="M18.63 13A17.89 17.89 0 0 1 18 8"></path>
+    <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path>
+    <path d="M18 8a6 6 0 0 0-9.33-5"></path>
+    <line x1="1" y1="1" x2="23" y2="23"></line>
+  </svg>
+);
+
 /**
  * HHMNotificationCenter Component
  * 
@@ -273,7 +283,7 @@ const HHMNotificationCenter = () => {
             <div className="notifications-list">
                 {filteredNotifications.length === 0 ? (
                     <div className="empty-state">
-                        <div className="empty-icon">🔕</div>
+                        <div className="empty-icon"><BellSlashIcon /></div>
                         <h3>No Notifications</h3>
                         <p>
                             {filter === 'all'

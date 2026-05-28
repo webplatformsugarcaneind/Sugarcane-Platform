@@ -804,27 +804,13 @@ const MarketplacePage = () => {
 
           <p className="page-subtitle">Discover and trade quality sugarcane crops</p>
 
-          
-
           {/* Authentication Status */}
 
-          <div style={{ 
-
-            position: 'absolute', 
-
-            top: '1rem', 
-
-            right: '1rem',
+          <div className="marketplace-auth-status" style={{ 
 
             backgroundColor: isAuthenticated ? '#d4edda' : '#f8d7da',
 
             color: isAuthenticated ? '#155724' : '#721c24',
-
-            padding: '0.5rem 1rem',
-
-            borderRadius: '4px',
-
-            fontSize: '0.9rem'
 
           }}>
 
@@ -1216,11 +1202,7 @@ const MarketplacePage = () => {
 
                         <div className="quality-summary">
 
-                          <span className="quality-badge">
 
-                            🧪 {listing.seed_quality.disease_free_status}
-
-                          </span>
 
                           {listing.germination_percentage && (
 
@@ -1444,7 +1426,11 @@ const MarketplacePage = () => {
 
             <div className="empty-my-orders">
 
-              <div className="empty-icon">📝</div>
+              <div className="empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48" style={{color: 'var(--amber)'}}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+              </div>
 
               <h3>No orders yet</h3>
 
@@ -1710,7 +1696,11 @@ const MarketplacePage = () => {
 
           <div className="empty-state">
 
-            <div className="empty-icon">📦</div>
+            <div className="empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48" style={{color: 'var(--green)'}}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+              </svg>
+            </div>
 
             <h3>No listings found</h3>
 
@@ -1874,13 +1864,7 @@ const MarketplacePage = () => {
 
                           <div className="quality-info">
 
-                            <div className="quality-item">
 
-                              <span className="label">🧪 Quality:</span>
-
-                              <span className="value">{listing.seed_quality.disease_free_status}</span>
-
-                            </div>
 
                             {listing.germination_percentage && (
 

@@ -6,7 +6,6 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel, initialDa
     title: initialData?.title || '',
     sugarcane_variety: initialData?.sugarcane_variety || initialData?.crop_variety || '',
     crop_type: initialData?.crop_type || 'Harvest Cane',
-    disease_free_status: initialData?.seed_quality?.disease_free_status || 'Standard Quality',
     certification_details: initialData?.seed_quality?.certification_details || '',
     crop_age: initialData?.crop_age || '',
     germination_percentage: initialData?.germination_percentage || '',
@@ -105,7 +104,6 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel, initialDa
     submission.append('sugarcane_variety', formData.sugarcane_variety);
     submission.append('crop_type', formData.crop_type);
     submission.append('seed_quality', JSON.stringify({
-      disease_free_status: formData.disease_free_status,
       certification_details: formData.certification_details
     }));
     if (formData.crop_age !== '') submission.append('crop_age', formData.crop_age);
@@ -236,14 +234,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel, initialDa
                 </div>
                 <div className="fp-card-body">
                   <div className="fp-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-                    <div className="fp-field">
-                      <label>Disease-Free Status</label>
-                      <select name="disease_free_status" value={formData.disease_free_status} onChange={handleChange}>
-                        <option value="Certified Disease-Free">Certified Disease-Free</option>
-                        <option value="Tested Healthy">Tested Healthy</option>
-                        <option value="Standard Quality">Standard Quality</option>
-                      </select>
-                    </div>
+
                     <div className="fp-field">
                       <label>Seed Type</label>
                       <select name="seed_type" value={formData.seed_type} onChange={handleChange}>

@@ -11,11 +11,67 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+
+  <!-- Google Translate: hide default widget bar & banner -->
+  <style>
+    /* Hide ALL Google Translate banners, iframes, and tooltips */
+    .goog-te-banner-frame, .goog-te-balloon-frame { display: none !important; }
+    iframe.goog-te-banner-frame { display: none !important; }
+    .skiptranslate > iframe.goog-te-banner-frame { display: none !important; }
+    body { top: 0px !important; position: static !important; }
+    .goog-te-gadget { display: none !important; font-size: 0 !important; }
+    #goog-gt-tt, .goog-te-balloon-frame { display: none !important; visibility: hidden !important; }
+    .goog-text-highlight { background: none !important; box-shadow: none !important; }
+    
+    /* Hide the specific "secure page" banner which is often a direct body child */
+    .VIpgJd-Zvi9od-aZ2wEe-wOHMyf { display: none !important; }
+    .VIpgJd-Zvi9od-aZ2wEe-wOHMyf-ti6hGc { display: none !important; }
+  </style>
 </head>
 
 <body>
+  <!-- Google Translate target: must exist before React renders -->
+  <div id="google_translate_element" style="display:none"></div>
+
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+
+  <!-- Google Translate Element -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        {
+          pageLanguage: 'en',
+          includedLanguages: 'hi,mr,ta,te,kn,gu,pa,bn,ml,ur,en',
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false,
+          multilanguagePage: false
+        },
+        'google_translate_element'
+      );
+      
+      // Aggressively destroy the banner via JS
+      setInterval(function() {
+        var banners = document.querySelectorAll('.skiptranslate');
+        for (var i = 0; i < banners.length; i++) {
+          if (banners[i].id !== 'google_translate_element' && banners[i].tagName.toLowerCase() !== 'body') {
+            banners[i].style.display = 'none';
+            banners[i].style.visibility = 'hidden';
+            banners[i].style.opacity = '0';
+            banners[i].style.height = '0px';
+          }
+        }
+        var iframes = document.querySelectorAll('iframe.goog-te-banner-frame');
+        for (var j = 0; j < iframes.length; j++) {
+          iframes[j].style.display = 'none';
+        }
+        document.body.style.top = '0px';
+      }, 50);
+    }
+  </script>
+  <script type="text/javascript"
+    src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+  </script>
 </body>
 
 </html>

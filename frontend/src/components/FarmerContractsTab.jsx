@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Premium SVG Icons
@@ -22,6 +23,7 @@ const Icons = {
  * Displays farmer's contract requests and their statuses
  */
 const FarmerContractsTab = () => {
+  const { t } = useTranslation();
   const [contracts, setContracts] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -119,12 +121,12 @@ const FarmerContractsTab = () => {
 
   const getStatusLabel = (status) => {
     const labels = {
-      farmer_pending: 'Pending',
-      hhm_accepted: 'Accepted',
-      hhm_rejected: 'Rejected',
-      auto_cancelled: 'Cancelled'
+      farmer_pending: t('farmerContracts.statusPending'),
+      hhm_accepted: t('farmerContracts.statusAccepted'),
+      hhm_rejected: t('farmerContracts.statusRejected'),
+      auto_cancelled: t('farmerContracts.statusCancelled')
     };
-    return labels[status] || 'Pending';
+    return labels[status] || t('farmerContracts.statusPending');
   };
 
   const getStatusIcon = (status) => {
@@ -149,7 +151,7 @@ const FarmerContractsTab = () => {
     return (
       <div className="fr-loading">
         <div className="fr-spinner"></div>
-        <p>Loading your contract requests...</p>
+        <p>{t('farmerContracts.loadingReq')}</p>
       </div>
     );
   }
@@ -158,10 +160,10 @@ const FarmerContractsTab = () => {
     return (
       <div className="fr-empty">
         <div className="fr-empty-icon fr-error"><Icons.Alert /></div>
-        <h3 className="fr-error-text">Error Loading Contracts</h3>
+        <h3 className="fr-error-text">{t('farmerContracts.errLoading')}</h3>
         <p>{error}</p>
         <button onClick={fetchContracts} className="fr-retry-btn" style={{ marginTop: '1rem' }}>
-          Try Again
+          {t('farmerContracts.tryAgain')}
         </button>
       </div>
     );
@@ -172,23 +174,23 @@ const FarmerContractsTab = () => {
       <div className="fr-contracts-header">
         <h2 className="fr-section-title">
           <span className="fr-title-icon"><Icons.List /></span>
-          My Job Requests
+          {t('farmerContracts.myJobReq')}
         </h2>
       </div>
 
       <div className="fr-filter-bar">
-        <label htmlFor="statusFilter">Filter Status:</label>
+        <label htmlFor="statusFilter">{t('farmerContracts.filterStatus')}</label>
         <select
           id="statusFilter"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           className="fr-select"
         >
-          <option value="all">All Requests</option>
-          <option value="farmer_pending">Pending</option>
-          <option value="hhm_accepted">Accepted</option>
-          <option value="hhm_rejected">Rejected</option>
-          <option value="auto_cancelled">Cancelled</option>
+          <option value="all">{t('farmerContracts.optAll')}</option>
+          <option value="farmer_pending">{t('farmerContracts.optPending')}</option>
+          <option value="hhm_accepted">{t('farmerContracts.optAccepted')}</option>
+          <option value="hhm_rejected">{t('farmerContracts.optRejected')}</option>
+          <option value="auto_cancelled">{t('farmerContracts.optCancelled')}</option>
         </select>
       </div>
 
@@ -197,11 +199,11 @@ const FarmerContractsTab = () => {
       {filteredContracts.length === 0 ? (
         <div className="fr-empty">
           <div className="fr-empty-icon"><Icons.Empty /></div>
-          <h3>No Requests Found</h3>
+          <h3>{t('farmerContracts.noReqFound')}</h3>
           <p>
             {contracts.length === 0
-              ? "You haven't sent any job requests yet. Visit an HHM's profile to send your first request!"
-              : `No requests with status "${statusFilter}" found.`
+              ? t('farmerContracts.emptyNoRequests')
+              : t('farmerContracts.emptyFilter')
             }
           </p>
         </div>
@@ -225,31 +227,31 @@ const FarmerContractsTab = () => {
 
               <div className="fr-contract-grid">
                 <div className="fr-detail-item">
-                  <span className="fr-detail-label">HHM Partner</span>
+                  <span className="fr-detail-label">{t('farmerContracts.hhmPartner')}</span>
                   <span className="fr-detail-val">
                     <Icons.User />
-                    {contract.hhm_id?.name || 'Unknown'}
+                    {contract.hhm_id?.name || t('farmerContracts.unknown')}
                   </span>
                 </div>
                 <div className="fr-detail-item">
-                  <span className="fr-detail-label">Location</span>
+                  <span className="fr-detail-label">{t('farmerContracts.location')}</span>
                   <span className="fr-detail-val">
                     <Icons.Location />
-                    {contract.contract_details?.farmLocation || 'Not specified'}
+                    {contract.contract_details?.farmLocation || t('farmerContracts.notSpecified')}
                   </span>
                 </div>
                 <div className="fr-detail-item">
-                  <span className="fr-detail-label">Payment</span>
+                  <span className="fr-detail-label">{t('farmerContracts.payment')}</span>
                   <span className="fr-detail-val">
                     <Icons.Money />
-                    {contract.contract_details?.paymentTerms || 'Not specified'}
+                    {contract.contract_details?.paymentTerms || t('farmerContracts.notSpecified')}
                   </span>
                 </div>
                 <div className="fr-detail-item">
-                  <span className="fr-detail-label">Duration</span>
+                  <span className="fr-detail-label">{t('farmerContracts.duration')}</span>
                   <span className="fr-detail-val">
                     <Icons.Clock />
-                    {contract.duration_days} Days
+                    {contract.duration_days} {t('farmerContracts.days')}
                   </span>
                 </div>
               </div>
@@ -257,16 +259,16 @@ const FarmerContractsTab = () => {
               <div className={`fr-status-box ${getStatusBadgeClass(contract.status)}`}>
                 {getStatusIcon(contract.status)}
                 {contract.status === 'hhm_accepted' && (
-                  <div>Great! This HHM has accepted your job request. You can expect them to contact you soon.</div>
+                  <div>{t('farmerContracts.msgAccepted')}</div>
                 )}
                 {contract.status === 'auto_cancelled' && (
-                  <div>This request was automatically cancelled because another HHM accepted a different request from you.</div>
+                  <div>{t('farmerContracts.msgCancelled')}</div>
                 )}
                 {contract.status === 'hhm_rejected' && (
-                  <div>Unfortunately, this HHM couldn't take on your job request. You can send requests to other HHMs.</div>
+                  <div>{t('farmerContracts.msgRejected')}</div>
                 )}
                 {contract.status === 'farmer_pending' && (
-                  <div>Waiting for HHM response. They have {contract.grace_period_days} days to respond.</div>
+                  <div>{t('farmerContracts.msgPending1')} {contract.grace_period_days} {t('farmerContracts.msgPending2')}</div>
                 )}
               </div>
             </div>
@@ -279,11 +281,11 @@ const FarmerContractsTab = () => {
         <div className="fr-section-header">
           <h2 className="fr-section-title">
             <span className="fr-title-icon"><Icons.Alert /></span>
-            Recent Notifications
+            {t('farmerContracts.recentNotifs')}
           </h2>
           {notifications.length > 0 && (
             <button onClick={clearNotifications} className="fr-clear-btn">
-              Clear All
+              {t('farmerContracts.clearAll')}
             </button>
           )}
         </div>
@@ -291,7 +293,7 @@ const FarmerContractsTab = () => {
         {notifLoading ? (
           <div className="fr-loading">
             <div className="fr-spinner"></div>
-            <p>Loading alerts...</p>
+            <p>{t('farmerContracts.loadingAlerts')}</p>
           </div>
         ) : notifError ? (
           <div className="fr-empty">
@@ -299,7 +301,7 @@ const FarmerContractsTab = () => {
           </div>
         ) : notifications.length === 0 ? (
           <div className="fr-empty" style={{ padding: '20px' }}>
-            <p>No new notifications at the moment.</p>
+            <p>{t('farmerContracts.noNewNotifs')}</p>
           </div>
         ) : (
           <div className="fr-notif-grid">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import FarmerContractsTab from '../components/FarmerContractsTab';
 import './FarmerDashboardPage.css';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Premium SVG Icons
@@ -98,6 +99,7 @@ const HeroIllustration = () => (
  * Refined and evolved based on the original structure.
  */
 const FarmerDashboardPage = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
@@ -125,13 +127,13 @@ const FarmerDashboardPage = () => {
           <div className="fr-welcome">
             <div className="fr-eyebrow">
               <span className="fr-eyebrow-icon"><Icons.Sprout /></span>
-              Farmer Dashboard
+              {t('farmerDash.eyebrow')}
             </div>
             <h1 className="fr-title">
-              Welcome back, <em>{user?.name || 'Farmer'}</em>
+              {t('farmerDash.welcomePrefix')} <em>{user?.name || t('farmerDash.defaultName')}</em>
             </h1>
             <p className="fr-sub">
-              Manage your farm activities, track job requests, and stay updated with the latest alerts.
+              {t('farmerDash.sub')}
             </p>
           </div>
           <div className="fr-hero-illustration-wrapper">
@@ -144,32 +146,32 @@ const FarmerDashboardPage = () => {
       <div className="fr-stats-row">
         <div className="fr-stat-card">
           <div className="fr-stat-top">
-            <span className="fr-stat-label">Pending Requests</span>
+            <span className="fr-stat-label">{t('farmerDash.pendingReq')}</span>
             <span className="fr-stat-icon-svg amber"><Icons.Clock /></span>
           </div>
           <div className="fr-stat-bottom">
             <div className="fr-stat-val amber">3</div>
-            <div className="fr-stat-trend">New requests</div>
+            <div className="fr-stat-trend">{t('farmerDash.newReq')}</div>
           </div>
         </div>
         <div className="fr-stat-card">
           <div className="fr-stat-top">
-            <span className="fr-stat-label">Active Contracts</span>
+            <span className="fr-stat-label">{t('farmerDash.activeCon')}</span>
             <span className="fr-stat-icon-svg green"><Icons.Handshake /></span>
           </div>
           <div className="fr-stat-bottom">
             <div className="fr-stat-val green">1</div>
-            <div className="fr-stat-trend">In progress</div>
+            <div className="fr-stat-trend">{t('farmerDash.inProgress')}</div>
           </div>
         </div>
         <div className="fr-stat-card">
           <div className="fr-stat-top">
-            <span className="fr-stat-label">Market Listings</span>
+            <span className="fr-stat-label">{t('farmerDash.marketList')}</span>
             <span className="fr-stat-icon-svg blue"><Icons.Market /></span>
           </div>
           <div className="fr-stat-bottom">
             <div className="fr-stat-val blue">2</div>
-            <div className="fr-stat-trend">Active posts</div>
+            <div className="fr-stat-trend">{t('farmerDash.activePosts')}</div>
           </div>
         </div>
       </div>

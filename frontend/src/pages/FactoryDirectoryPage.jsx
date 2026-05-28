@@ -1,7 +1,36 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './FactoryDirectoryPage.css';
+import './FarmerFactoryDirectoryPage.css';
+
+const Icons = {
+  Factory: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205v3m-5.25-9h-.008v.008h.008V3.75Zm.375 0h.008v.008h-.008V3.75Zm-.375 3h-.008v.008h.008v-.008Zm.375 0h.008v.008h-.008v-.008Zm-.375 3h-.008v.008h.008v-.008Zm.375 0h.008v.008h-.008v-.008Zm-.375 3h-.008v.008h.008v-.008Zm.375 0h.008v.008h-.008v-.008Z" />
+    </svg>
+  ),
+  Location: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+    </svg>
+  ),
+  Star: () => (
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+    </svg>
+  ),
+  Clock: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+    </svg>
+  ),
+  Wrench: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.075a2 2 0 0 1-2.84-2.84l7.73-7.73a2 2 0 0 1 2.84 2.84l-7.73 7.73ZM11.42 15.075l-4.24 4.24M11.42 15.075l4.24-4.24M6.42 16.075a2 2 0 1 1-2.84-2.84l2.84 2.84Z" />
+    </svg>
+  )
+};
 
 const FactoryDirectoryPage = () => {
   const navigate = useNavigate();
@@ -96,13 +125,7 @@ const FactoryDirectoryPage = () => {
         </div>
       </div>
 
-      {/* KPI ROW */}
-      <div className="fd-kpi-row">
-        <div className="fd-kpi g"><div className="fd-kpi-label">Total Network</div><div className="fd-kpi-val g">{kpiTotal}</div><div className="fd-kpi-sub">Factories available</div></div>
-        <div className="fd-kpi a"><div className="fd-kpi-label">With Active HHMs</div><div className="fd-kpi-val a">{kpiHHM}</div><div className="fd-kpi-sub">Ready to coordinate</div></div>
-        <div className="fd-kpi b"><div className="fd-kpi-label">Avg. Rating Score</div><div className="fd-kpi-val b">{kpiAvg}</div><div className="fd-kpi-sub">Network average</div></div>
-        <div className="fd-kpi g"><div className="fd-kpi-label">Excellent Rated</div><div className="fd-kpi-val g">{kpiExc}</div><div className="fd-kpi-sub">Top performers</div></div>
-      </div>
+
 
       {/* TOOLBAR */}
       <div className="fd-toolbar">
@@ -145,82 +168,87 @@ const FactoryDirectoryPage = () => {
       </div>
 
       {/* FACTORY GRID */}
-      <div className={`fd-grid${isListView ? ' list-view' : ''}`}>
+      <div className={`fd-grid${isListView ? ' list-view' : ''}`} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginTop: '20px' }}>
         {loading ? (
           <div className="fd-loading"><div className="fd-spinner"></div><div className="fd-empty-title">Loading network...</div></div>
         ) : error ? (
-          <div className="fd-empty"><div className="fd-empty-icon">⚠️</div><div className="fd-empty-title">{error}</div></div>
+          <div className="fd-empty"><div className="fd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48" style={{color:'var(--amber)'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div><div className="fd-empty-title">{error}</div></div>
         ) : filtered.length === 0 ? (
-          <div className="fd-empty"><div className="fd-empty-icon">🏭</div><div className="fd-empty-title">No factories found</div><div className="fd-empty-sub">Try adjusting your search or filter criteria</div></div>
+          <div className="fd-empty"><div className="fd-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="48" height="48"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205v3m-5.25-9h-.008v.008h.008V3.75Z" /></svg></div><div className="fd-empty-title">No factories found</div><div className="fd-empty-sub">Try adjusting your search or filter criteria</div></div>
         ) : filtered.map((f, idx) => (
-          <div key={f._id || f.id || `f-${idx}`} className={`fd-card ${f.ui.rating}`} style={{ animation: `fdFadeUp .6s var(--ease-out) both`, animationDelay: `${idx * 0.05}s` }}>
-            <div className="fc-header">
-              <div className="fc-avatar">🏭</div>
-              <div className="fc-title-wrap">
-                <div className="fc-name">{f.name}{f.ui.recommended && <span style={{ color: 'var(--amber)', fontSize: '.7rem' }}> ⭐</span>}</div>
-                <div className="fc-location">📍 {f.location || 'Location not specified'}</div>
-                {f.ui.recommended && <div className="fd-recommended">⭐ Recommended</div>}
+          <div key={f._id || f.id || `f-${idx}`} className={`global-card ${f.ui.rating === 'excellent' ? 'active' : 'inactive'}`} style={{ animationDelay: `${idx * 0.05}s` }} onClick={() => navigate(`/factory/factory-directory/${f._id || f.id}`, { state: { factoryData: f } })}>
+            
+            {/* HEADER */}
+            <div className="gc-header">
+              <div className="gc-avatar-wrap">
+                <div className="gc-avatar">
+                  <Icons.Factory />
+                </div>
+                <div className={`gc-status-ring ${f.ui.rating === 'excellent' ? 'available' : 'busy'}`}></div>
               </div>
-              <div className="fc-rating"><span className={`fd-rating-badge ${f.ui.rating}`}>{f.ui.rating.toUpperCase()}</span></div>
-            </div>
-
-            <div className="fc-metrics">
-              <div className="fc-metric"><div className="fcm-label">Score</div><div className={`fcm-val ${scoreClass(f.ui.score)}`}>{f.ui.score.toFixed(1)}</div></div>
-              <div className="fc-metric"><div className="fcm-label">Capacity</div><div className="fcm-val muted">{f.capacity || 'N/A'}</div></div>
-              <div className="fc-metric"><div className="fcm-label">Pay Delay</div><div className="fcm-val" style={{ color: delayColor(f.ui.delay) }}>{f.ui.delay}d</div></div>
-            </div>
-
-            <div className="fc-fulfill">
-              <div className="fc-fulfill-top">
-                <span className="fc-fulfill-label">Fulfillment Rate</span>
-                <span className="fc-fulfill-pct" style={{ color: fulfillColor(f.ui.fulfill) }}>{f.ui.fulfill.toFixed(1)}%</span>
-              </div>
-              <div className="fd-fulfill-track"><div className="fd-fulfill-fill" style={{ width: `${f.ui.fulfill}%`, background: fulfillColor(f.ui.fulfill) }}></div></div>
-            </div>
-
-            <div className="fc-spec">
-              <div className="fc-spec-label">Specialization</div>
-              <div className="fd-spec-tags">{Array.isArray(f.ui.specs) && f.ui.specs.map((s, i) => <span key={i} className="fd-spec-tag">{s}</span>)}</div>
-            </div>
-
-            <div className="fc-divider"></div>
-
-            <div className="fc-meta">
-              <div className="fc-meta-item">Contracts: <strong>{f.ui.contracts} <span style={{ color: 'var(--muted-2)' }}>({f.ui.completed} done)</span></strong></div>
-              <div className="fc-meta-item">Added: <strong>{fmtDate(f.createdAt)}</strong></div>
-            </div>
-
-            <div className="fc-hhm">
-              <div className="fd-hhm-header">
-                <div className="fd-hhm-title">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                  Associated HHMs
-                  <span className="fd-hhm-pill">{f.associatedHHMs?.length || 0}</span>
+              <div className="gc-title-wrap">
+                <h3 className="gc-name">{f.name}</h3>
+                <div className="gc-header-meta">
+                  <span className="gc-role-badge">Factory</span>
+                  <span className={`gc-avail-badge ${f.ui.rating === 'excellent' ? 'available' : 'busy'}`}>
+                    {f.ui.rating.toUpperCase()}
+                  </span>
                 </div>
               </div>
-              <div className="fd-hhm-list">
-                {f.associatedHHMs && f.associatedHHMs.length > 0 ? (
-                  f.associatedHHMs.slice(0, 3).map((hhm, i) => (
-                    <div key={i} className="fd-hhm-item">
-                      <div className="fd-hhm-avatar" style={{ background: 'rgba(126,200,67,.15)', color: '#7ec843' }}>{getInitials(hhm?.name || '??')}</div>
-                      <div style={{ flex: 1 }}><div className="fd-hhm-name">{hhm?.name || 'Unknown HHM'}</div><div className="fd-hhm-role">Harvest Head Manager</div></div>
-                      <div className="fd-hhm-online" title="Online"></div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="fd-hhm-empty"><span className="fd-hhm-empty-icon">👥</span><span className="fd-hhm-empty-text">No associated HHMs</span></div>
-                )}
+            </div>
+
+            {/* METRICS GRID 2-COLUMN */}
+            <div className="gc-info-grid-2col">
+              <div className="gc-info-item">
+                <span className="gc-ii-label">Location</span>
+                <span className="gc-ii-val">
+                  <span className="gc-ii-icon"><Icons.Location /></span>
+                  {f.location || 'Maharashtra'}
+                </span>
+              </div>
+              <div className="gc-info-item">
+                <span className="gc-ii-label">Score</span>
+                <span className="gc-ii-val text-green">
+                  <span className="gc-ii-icon"><Icons.Star /></span>
+                  {f.ui.score.toFixed(1)}
+                </span>
+              </div>
+              <div className="gc-info-item">
+                <span className="gc-ii-label">Price/Ton</span>
+                <span className="gc-ii-val text-green">
+                  <span className="gc-ii-icon" style={{ fontSize: '13px', fontWeight: '700' }}>₹</span>
+                  {f.ui.price > 0 ? `₹${f.ui.price.toLocaleString('en-IN')}` : '₹3,200'}
+                </span>
+              </div>
+              <div className="gc-info-item">
+                <span className="gc-ii-label">Delay</span>
+                <span className="gc-ii-val text-green">
+                  <span className="gc-ii-icon"><Icons.Clock /></span>
+                  {f.ui.delay} Days
+                </span>
+              </div>
+              <div className="gc-info-item full-width">
+                <span className="gc-ii-label">Specializations</span>
+                <span className="gc-ii-val" style={{ whiteSpace: 'normal', color: 'var(--muted)' }}>
+                  <span className="gc-ii-icon"><Icons.Wrench /></span>
+                  {Array.isArray(f.ui.specs) ? f.ui.specs.join(', ') : 'Sugar Processing'}
+                </span>
               </div>
             </div>
 
-            <div className="fc-actions">
-              <button className="fd-btn-contact" onClick={() => { setContactFactory(f); setContactModal(true); }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
-                Connect
+            {/* ACTIONS */}
+            <div className="gc-card-bottom">
+              <button 
+                className="gc-btn-primary" 
+                onClick={(e) => { e.stopPropagation(); setContactFactory(f); setContactModal(true); }}
+              >
+                Connect Now
               </button>
-              <button className="fd-btn-profile" onClick={() => navigate(`/factory/factory-directory/${f._id || f.id}`)}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                View Profile
+              <button 
+                className="gc-btn-secondary" 
+                onClick={(e) => { e.stopPropagation(); navigate(`/factory/factory-directory/${f._id || f.id}`, { state: { factoryData: f } }); }}
+              >
+                Details
               </button>
             </div>
           </div>
