@@ -296,8 +296,19 @@ const getAIResponse = async (userMessage, systemPrompt) => {
 
   } catch (error) {
     const errorDetails = error.response && error.response.data ? JSON.stringify(error.response.data) : error.message;
-    console.error('Gemini API error:', errorDetails);
-    fs.writeFileSync('gemini_error.txt', errorDetails);
+    const redactedDetails = String(errorDetails).replace(/api_key:[^"\s]+/gi, 'api_key:[REDACTED]');
+    console.error('Gemini API error:', redactedDetails);
+    fs.writeFileSync('gemini_error.txt', redactedDetails);
+
+    // Give a truthful, user-facing fallback when the Gemini key is suspended or invalid.
+    if (redactedDetails.includes('CONSUMER_SUSPENDED') || redactedDetails.includes('PERMISSION_DENIED')) {
+      return {
+        content: 'The Gemini API key is currently unavailable, so I cannot answer with live AI right now. I can still help with CaneSetu basics like fees, getting started, contracts, roles, and marketplace navigation.',
+        tokens: null,
+        model: 'fallback-suspended-key'
+      };
+    }
+
     return getFallbackResponse(userMessage);
   }
 };
@@ -309,13 +320,23 @@ const getFallbackResponse = (userMessage) => {
   const lowerMessage = userMessage.toLowerCase();
 
   const responses = {
+    'fees': 'CaneSetu does not charge a separate chatbot fee. If you mean platform/service fees, they depend on the specific workflow or service you are using. Tell me the page or action you are asking about, and I can explain it clearly.',
+    'fee': 'CaneSetu does not charge a separate chatbot fee. If you mean platform/service fees, they depend on the specific workflow or service you are using. Tell me the page or action you are asking about, and I can explain it clearly.',
+    'what is canesetu': 'CaneSetu is a sugarcane platform that helps farmers, HHMs, factories, and workers manage contracts, listings, schedules, and communication in one place.',
+    'how do i get started': 'To get started, create an account, choose your role, complete your profile, and use the dashboard to access listings, contracts, and messages.',
+    'getting started': 'To get started, create an account, choose your role, complete your profile, and use the dashboard to access listings, contracts, and messages.',
+    'contract': 'Contracts in CaneSetu help different platform roles manage agreements, track progress, and coordinate work. If you want, I can explain contracts from the farmer, HHM, or factory side.',
+    'market': 'The marketplace is where you can view and manage platform listings and related opportunities. If you want, I can help with a specific listing or workflow.',
+    'help me manage my contracts': 'I can help with contracts by explaining how to view them, track status, and coordinate the next steps. Tell me whether you are a farmer, HHM, or factory user.',
+    'current market prices': 'I do not have live market feeds in fallback mode. If you want, I can still explain how to compare prices, what to check, and where market information is usually shown in the app.',
+    'recent activity': 'You can usually review recent activity from your dashboard or activity-related sections. If you tell me your role, I can point you to the right place.',
     'hello': 'Hello! How can I assist you with CaneSetu today?',
     'help': 'I can help you with information about the platform, roles, features, and how to get started. What would you like to know?',
     'farmer': 'For Farmers: You can manage harvest requests, track progress, access the marketplace, and connect with HHMs. What else?',
     'hhm': 'For HHM (Harvest Managers): Coordinate between farmers and factories, manage workers, and optimize operations. Questions?',
     'worker': 'For Workers: Browse jobs, apply to opportunities, track your work schedule, and manage wages. How can I help?',
     'factory': 'For Factories: Manage contracts with HHMs, post updates, track supply, and optimize crushing operations. Need more info?',
-    'default': 'I\'d be happy to help! Could you provide more details about what you need assistance with?'
+    'default': 'I can help with CaneSetu features, fees, contracts, marketplace navigation, roles, and getting started. Ask me a specific question and I’ll answer as clearly as I can.'
   };
 
   let response = responses['default'];

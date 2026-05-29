@@ -1,8 +1,10 @@
+require('dotenv').config();
 const axios = require('axios');
 
 async function test() {
   try {
-    const googleKey = 'AIzaSyCzsCrXNQWvIAHPl06BoMLcw8wChFs_39o';
+    const googleKey = process.env.GOOGLE_API_KEY;
+    if (!googleKey) throw new Error('GOOGLE_API_KEY is not set');
     const googleModel = 'gemini-3.5-flash';
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${googleModel}:generateContent?key=${googleKey}`;
     
