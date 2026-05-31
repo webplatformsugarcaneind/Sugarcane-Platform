@@ -4,8 +4,8 @@
   status = 200
 
 [build]
-  publish = "dist"
-  command = "npm run build"
+  command = "cd frontend && npm install && npm run build"
+  publish = "frontend/dist"
 
 [build.environment]
   NODE_VERSION = "18"
