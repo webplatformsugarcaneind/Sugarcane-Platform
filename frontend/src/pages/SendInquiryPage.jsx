@@ -1,4 +1,4 @@
-import API_BASE_URL from '../config/api';
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';

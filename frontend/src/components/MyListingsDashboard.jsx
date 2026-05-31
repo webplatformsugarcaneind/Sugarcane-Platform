@@ -1,4 +1,4 @@
-import API_BASE_URL from '../config/api';
+import { API_BASE_URL } from '../config/api';
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './MyListingsDashboard.css';
