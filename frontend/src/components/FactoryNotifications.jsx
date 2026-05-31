@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './FactoryNotifications.css';
@@ -33,7 +34,7 @@ const XIcon = () => (
 );
 
 // Set axios base URL
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = API_BASE_URL;
 
 const FactoryNotifications = () => {
   const [notifications, setNotifications] = useState([]);

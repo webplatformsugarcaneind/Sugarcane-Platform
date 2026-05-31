@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -13,7 +14,7 @@ const CreateListingPage = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Authentication required');
 
-      const res = await axios.post('http://localhost:5000/api/listings/create', formData, {
+      const res = await axios.post(`${API_BASE_URL}/api/listings/create`, formData, {
         headers: { 
           Authorization: `Bearer ${token}`
           // Axios handles FormData Content-Type automatically

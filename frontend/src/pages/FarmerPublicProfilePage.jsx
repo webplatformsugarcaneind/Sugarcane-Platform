@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -39,10 +40,10 @@ const FarmerPublicProfilePage = () => {
             try {
                 setLoading(true);
                 setError(null);
-                const profileResponse = await axios.get(`http://localhost:5000/api/public/farmers/${farmerId}`);
+                const profileResponse = await axios.get(`${API_BASE_URL}/api/public/farmers/${farmerId}`);
                 setFarmer(profileResponse.data.data);
 
-                const listingsResponse = await axios.get(`http://localhost:5000/api/listings/marketplace?farmer_id=${farmerId}`);
+                const listingsResponse = await axios.get(`${API_BASE_URL}/api/listings/marketplace?farmer_id=${farmerId}`);
                 setListings(listingsResponse.data.data || []);
             } catch (err) {
                 console.error('Error fetching farmer data:', err);
@@ -89,7 +90,7 @@ const FarmerPublicProfilePage = () => {
                 totalAmount: parseFloat(buyForm.quantityWanted) * parseFloat(buyForm.proposedPrice)
             };
 
-            await axios.post('http://localhost:5000/api/orders/create', orderData, {
+            await axios.post(`${API_BASE_URL}/api/orders/create`, orderData, {
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
 

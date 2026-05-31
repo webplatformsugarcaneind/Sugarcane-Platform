@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -18,7 +19,7 @@ const EditListingPage = () => {
         setLoading(true);
         const token = localStorage.getItem('token');
         const response = await axios.get(
-          `http://localhost:5000/api/listings/${listingId}`,
+          `${API_BASE_URL}/api/listings/${listingId}`,
           { headers: { 'Authorization': `Bearer ${token}` } }
         );
         
@@ -44,7 +45,7 @@ const EditListingPage = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('Authentication required');
 
-      const res = await axios.put(`http://localhost:5000/api/listings/${listingId}`, formData, {
+      const res = await axios.put(`${API_BASE_URL}/api/listings/${listingId}`, formData, {
         headers: { 
           Authorization: `Bearer ${token}`
         }

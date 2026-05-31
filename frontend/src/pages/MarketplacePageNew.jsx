@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { useNavigate } from 'react-router-dom';
@@ -220,7 +221,7 @@ const MarketplacePage = () => {
 
       // Make API request to the new marketplace endpoint
 
-      const response = await axios.get(`http://localhost:5000/api/listings/marketplace?${params.toString()}`, {
+      const response = await axios.get(`${API_BASE_URL}/api/listings/marketplace?${params.toString()}`, {
 
         headers: {
 
@@ -372,7 +373,7 @@ const MarketplacePage = () => {
 
       // Make POST request to create new listing
 
-      const response = await axios.post('http://localhost:5000/api/listings/create', formData, {
+      const response = await axios.post(`${API_BASE_URL}/api/listings/create`, formData, {
 
         headers
 
@@ -462,7 +463,7 @@ const MarketplacePage = () => {
 
       console.log('📤 Fetching my listings...');
 
-      const response = await axios.get('http://localhost:5000/api/listings/my-listings');
+      const response = await axios.get(`${API_BASE_URL}/api/listings/my-listings`);
 
 
 
@@ -582,7 +583,7 @@ const MarketplacePage = () => {
 
 
 
-      const response = await fetch(`http://localhost:5000/api/listings/${listingId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/listings/${listingId}`, {
 
         method: 'DELETE',
 
@@ -660,7 +661,7 @@ const MarketplacePage = () => {
 
       
 
-      const response = await axios.get('http://localhost:5000/api/orders/my-orders');
+      const response = await axios.get(`${API_BASE_URL}/api/orders/my-orders`);
 
       
 

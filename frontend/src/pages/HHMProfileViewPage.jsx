@@ -1,10 +1,11 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './FarmerProfile.css'; // Leverage exact unified CSS
 
 // Set axios base URL
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = API_BASE_URL;
 
 const HHMProfileViewPage = () => {
     const { hhmId } = useParams();

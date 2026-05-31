@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect } from 'react';
 import '../pages/FarmerProfile.css';
 
@@ -393,7 +394,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel, initialDa
                       {/* Existing Images */}
                       {existingImages.map((img, i) => (
                         <div key={`existing-${i}`} className="preview-item" style={{ position: 'relative', width: '120px', height: '120px' }}>
-                          <img src={`http://localhost:5000${img.url || img}`} alt="Existing" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px', border: '1px solid #333' }} />
+                          <img src={`${API_BASE_URL}${img.url || img}`} alt="Existing" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px', border: '1px solid #333' }} />
                           <button type="button" onClick={() => removeExistingImage(i, img)} style={{ position: 'absolute', top: '-8px', right: '-8px', width: '28px', height: '28px', borderRadius: '50%', background: '#ff6b6b', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>×</button>
                           {i === 0 && <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'var(--green)', color: 'black', fontSize: '0.7rem', textAlign: 'center', borderRadius: '0 0 12px 12px', fontWeight: 'bold', padding: '2px 0' }}>STORED</div>}
                         </div>

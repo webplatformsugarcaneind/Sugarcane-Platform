@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './FarmerProfile.css';
@@ -56,7 +57,7 @@ const FarmerContractRequestPage = () => {
   const fetchHHMDetails = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/farmer/hhms/${hhmId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/farmer/hhms/${hhmId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (response.ok) {
@@ -144,7 +145,7 @@ const FarmerContractRequestPage = () => {
         }
       };
 
-      const response = await fetch('http://localhost:5000/api/farmer-contracts/request', {
+      const response = await fetch(`${API_BASE_URL}/api/farmer-contracts/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

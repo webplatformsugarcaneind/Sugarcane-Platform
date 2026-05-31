@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -49,7 +50,7 @@ const MarketplacePage = () => {
       const params = new URLSearchParams();
       if (filterVariety) params.append('crop_variety', filterVariety);
       
-      const res = await axios.get(`http://localhost:5000/api/listings/marketplace?${params.toString()}`, {
+      const res = await axios.get(`${API_BASE_URL}/api/listings/marketplace?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setListings(Array.isArray(res.data.data) ? res.data.data : []);
@@ -64,7 +65,7 @@ const MarketplacePage = () => {
     try {
       setIsSubmitting(true);
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:5000/api/listings/create', formData, {
+      const res = await axios.post(`${API_BASE_URL}/api/listings/create`, formData, {
         headers: { 
           Authorization: `Bearer ${token}`,
           // Don't set Content-Type, axios handles FormData
@@ -84,7 +85,7 @@ const MarketplacePage = () => {
     try {
       setMyListingsLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/listings/my-listings', {
+      const res = await axios.get(`${API_BASE_URL}/api/listings/my-listings`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMyListings(res.data.data || []);
@@ -148,7 +149,7 @@ const MarketplacePage = () => {
               {/* LARGE CROP IMAGE AFTER HEADER */}
               {l.farm_images?.[0]?.url && (
                 <div className="gc-image-wrap" style={{ width: '100%', height: '150px', overflow: 'hidden', margin: '4px 0 10px 0', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  <img src={`http://localhost:5000${l.farm_images[0].url}`} alt="Crop" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={`${API_BASE_URL}${l.farm_images[0].url}`} alt="Crop" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               )}
 

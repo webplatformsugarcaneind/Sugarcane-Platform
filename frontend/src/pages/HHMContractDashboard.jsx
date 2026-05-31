@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HHMContractDashboard.css';
@@ -17,7 +18,7 @@ const HHMContractDashboard = () => {
   const fetchContracts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/farmer-contracts/my-contracts', {
+      const response = await fetch(`${API_BASE_URL}/api/farmer-contracts/my-contracts`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -39,7 +40,7 @@ const HHMContractDashboard = () => {
     setResponding(contractId);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/farmer-contracts/respond/${contractId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/farmer-contracts/respond/${contractId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

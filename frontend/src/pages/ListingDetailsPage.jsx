@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -204,7 +205,7 @@ const ListingDetailsPage = () => {
                         {listing.farm_images && listing.farm_images.length > 0 ? (
                             <>
                                 <img 
-                                    src={`http://localhost:5000${listing.farm_images[currentImageIndex].url || listing.farm_images[currentImageIndex]}`} 
+                                    src={`${API_BASE_URL}${listing.farm_images[currentImageIndex].url || listing.farm_images[currentImageIndex]}`} 
                                     alt={listing.title} 
                                     key={currentImageIndex}
                                     style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1, transition: 'opacity 0.3s' }}

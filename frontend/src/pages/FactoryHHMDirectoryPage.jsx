@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -6,7 +7,7 @@ import useNotifications from '../hooks/useNotifications';
 import './FarmerHHMDirectoryPage.css';
 
 // Set axios base URL
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = API_BASE_URL;
 
 const Icons = {
   Location: () => (

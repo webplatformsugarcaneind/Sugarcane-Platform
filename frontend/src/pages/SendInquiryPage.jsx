@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -36,7 +37,7 @@ const SendInquiryPage = () => {
                 setLoading(true);
                 const token = localStorage.getItem('token');
                 const headers = token ? { Authorization: `Bearer ${token}` } : {};
-                const response = await axios.get(`http://localhost:5000/api/listings/${listingId}`, { headers });
+                const response = await axios.get(`${API_BASE_URL}/api/listings/${listingId}`, { headers });
                 if (response.data.success) {
                     setListing(response.data.data);
                     initializeForm(response.data.data);
@@ -82,7 +83,7 @@ const SendInquiryPage = () => {
                 ...buyForm,
                 totalAmount: parseFloat(buyForm.quantityWanted) * parseFloat(buyForm.proposedPrice)
             };
-            await axios.post('http://localhost:5000/api/orders/create', orderData, {
+            await axios.post(`${API_BASE_URL}/api/orders/create`, orderData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config/api';
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './MyListingsDashboard.css';
@@ -44,7 +45,7 @@ const MyListingsDashboard = () => {
       }
 
       // Make API request to get user's listings
-      const response = await axios.get('http://localhost:5000/api/listings/my-listings', {
+      const response = await axios.get(`${API_BASE_URL}/api/listings/my-listings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -153,7 +154,7 @@ const MyListingsDashboard = () => {
 
       // Make PUT request to update listing
       const response = await axios.put(
-        `http://localhost:5000/api/listings/${editingListing}`, 
+        `${API_BASE_URL}/api/listings/${editingListing}`, 
         updateData,
         {
           headers: {
@@ -201,7 +202,7 @@ const MyListingsDashboard = () => {
       console.log('Deleting listing:', listingId);
 
       // Make DELETE request
-      await axios.delete(`http://localhost:5000/api/listings/${listingId}`, {
+      await axios.delete(`${API_BASE_URL}/api/listings/${listingId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
