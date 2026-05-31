@@ -205,7 +205,10 @@ const ListingDetailsPage = () => {
                         {listing.farm_images && listing.farm_images.length > 0 ? (
                             <>
                                 <img 
-                                    src={`${API_BASE_URL}${listing.farm_images[currentImageIndex].url || listing.farm_images[currentImageIndex]}`} 
+                                    src={(() => {
+                                        const imgUrl = listing.farm_images[currentImageIndex].url || listing.farm_images[currentImageIndex];
+                                        return imgUrl.startsWith('http') ? imgUrl : `${API_BASE_URL}${imgUrl}`;
+                                    })()}
                                     alt={listing.title} 
                                     key={currentImageIndex}
                                     style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1, transition: 'opacity 0.3s' }}

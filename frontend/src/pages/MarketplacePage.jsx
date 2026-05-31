@@ -149,7 +149,7 @@ const MarketplacePage = () => {
               {/* LARGE CROP IMAGE AFTER HEADER */}
               {l.farm_images?.[0]?.url && (
                 <div className="gc-image-wrap" style={{ width: '100%', height: '150px', overflow: 'hidden', margin: '4px 0 10px 0', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  <img src={`${API_BASE_URL}${l.farm_images[0].url}`} alt="Crop" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src={l.farm_images[0].url.startsWith('http') ? l.farm_images[0].url : `${API_BASE_URL}${l.farm_images[0].url}`} alt="Crop" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
               )}
 

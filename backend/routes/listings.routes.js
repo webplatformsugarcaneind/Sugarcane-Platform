@@ -4,20 +4,21 @@ const CropListing = require('../models/cropListing.model');
 const multer = require('multer');
 const path = require('path');
 
-// Configure multer
-const fs = require('fs');
-const farmsDir = path.join(__dirname, '../uploads/farms/');
-if (!fs.existsSync(farmsDir)) {
-  fs.mkdirSync(farmsDir, { recursive: true });
-}
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, farmsDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'sugarcane_farms',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'heic'],
+    transformation: [{ width: 1200, crop: 'limit' }]
   }
 });
 
@@ -68,7 +69,7 @@ const parseFormData = (req, res, next) => {
 
     if (req.files && req.files.length > 0) {
       req.body.farm_images = req.files.map((file, i) => ({
-        url: `/uploads/farms/${file.filename}`,
+        url: file.path,
         caption: file.originalname,
         image_type: i === 0 ? 'farm_overview' : 'crop_closeup'
       }));
