@@ -6,7 +6,6 @@
   "scripts": {
     "predev": "npm run translate",
     "dev": "vite",
-    "prebuild": "npm run translate",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
