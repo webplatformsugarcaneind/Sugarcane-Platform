@@ -199,47 +199,8 @@ const ListingDetailsPage = () => {
             
             {/* HERO SECTION WITH CAROUSEL */}
             <div className="fdb-hero">
-                <div className="fdb-hero-left" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
-                    {/* Carousel */}
-                    <div style={{ height: '320px', width: '100%', position: 'relative', background: '#0a0d0a' }}>
-                        {listing.farm_images && listing.farm_images.length > 0 ? (
-                            <>
-                                <img 
-                                    src={(() => {
-                                        const imgUrl = listing.farm_images[currentImageIndex].url || listing.farm_images[currentImageIndex];
-                                        return imgUrl.startsWith('http') ? imgUrl : `${API_BASE_URL}${imgUrl}`;
-                                    })()}
-                                    alt={listing.title} 
-                                    key={currentImageIndex}
-                                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1, transition: 'opacity 0.3s' }}
-                                />
-                                <div style={{ position: 'absolute', top: 16, left: 16, background: 'rgba(11,15,11,0.7)', backdropFilter: 'blur(10px)', color: 'var(--green)', padding: '6px 14px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold', border: '1px solid rgba(126,200,67,0.3)' }}>
-                                    {listing.sugarcane_variety || listing.crop_variety}
-                                </div>
-                                {listing.farm_images.length > 1 && (
-                                    <>
-                                        <button onClick={prevImage} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
-                                        <button onClick={nextImage} style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
-                                        
-                                        <div style={{ position: 'absolute', bottom: 16, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                                            {listing.farm_images.map((_, i) => (
-                                                <div 
-                                                    key={i} 
-                                                    onClick={() => setCurrentImageIndex(i)}
-                                                    style={{ width: '8px', height: '8px', borderRadius: '50%', background: i === currentImageIndex ? 'var(--green)' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: 'all 0.2s' }}
-                                                />
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
-                            </>
-                        ) : (
-                            <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 6.878V6a2.25 2.25 0 0 1 2.25-2.25h7.5A2.25 2.25 0 0 1 18 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 0 0 4.5 9v.878m13.5-3A2.25 2.25 0 0 1 19.5 9v.878m0 0a2.246 2.246 0 0 0-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0 1 21 12v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6c0-.98.626-1.813 1.5-2.122" /></svg>
-                            </div>
-                        )}
-                    </div>
-                    <div className="fdb-hero-header" style={{ borderTop: '1px solid var(--border)', background: 'transparent' }}>
+                <div className="fdb-hero-left">
+                    <div className="fdb-hero-header">
                         <div className="fdb-hero-info" style={{ width: '100%' }}>
                             <div className="fdb-hero-title-wrap">
                                 <h1 className="fdb-hero-title">{listing.title || (listing.crop_variety + ' Sugarcane')}</h1>
