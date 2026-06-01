@@ -89,7 +89,6 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel, initialDa
     if (!formData.quantity_value || formData.quantity_value <= 0) e.quantity_value = 'Invalid quantity';
     if (!formData.price_per_unit || formData.price_per_unit <= 0) e.price_per_unit = 'Invalid price';
     if (formData.germination_percentage && (formData.germination_percentage < 0 || formData.germination_percentage > 100)) e.germination_percentage = '0-100 only';
-    if (imageFiles.length === 0 && existingImages.length === 0) e.images = 'At least 1 image required';
     if (!formData.delivery_location) e.delivery_location = 'Required';
     
     setErrors(e);
@@ -175,7 +174,7 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel, initialDa
                   <span>💡</span> Listing Tips
                 </h4>
                 <ul style={{ color: '#888', fontSize: '0.9rem', padding: '0', listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <li>• Use high-quality field photos</li>
+                  <li>• Fill in soil and growth details</li>
                   <li>• Mention irrigation methods</li>
                   <li>• Be precise with quantity</li>
                 </ul>
@@ -370,49 +369,6 @@ const CreateListingForm = ({ onSubmit, isSubmitting = false, onCancel, initialDa
                 </div>
               </section>
 
-              {/* SECTION 5: IMAGES */}
-              <section className="fp-card">
-                <div className="fp-card-header">
-                  <div className="fp-card-icon">📸</div>
-                  <div className="fp-card-txt">
-                    <h2 className="fp-card-title">Product Images</h2>
-                    <div className="fp-card-sub">Upload 1-5 clear photos of your crop</div>
-                  </div>
-                </div>
-                <div className="fp-card-body">
-                  <div className="image-upload-zone" style={{ border: '2px dashed #333', borderRadius: '16px', padding: '48px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', cursor: 'pointer', transition: 'border-color 0.2s' }}>
-                    <input type="file" multiple accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} id="listing-images" />
-                    <label htmlFor="listing-images" style={{ cursor: 'pointer' }}>
-                      <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>☁️</div>
-                      <div style={{ color: '#fff', fontWeight: 'bold', fontSize: '1.1rem' }}>Click to Upload Photos</div>
-                      <div style={{ color: '#888', fontSize: '0.9rem', marginTop: '4px' }}>Field View • Close Crop • Sample</div>
-                    </label>
-                  </div>
-                  
-                  { (existingImages.length > 0 || previews.length > 0) && (
-                    <div className="image-preview-strip" style={{ display: 'flex', gap: '16px', marginTop: '24px', flexWrap: 'wrap' }}>
-                      {/* Existing Images */}
-                      {existingImages.map((img, i) => (
-                        <div key={`existing-${i}`} className="preview-item" style={{ position: 'relative', width: '120px', height: '120px' }}>
-                          <img src={`${API_BASE_URL}${img.url || img}`} alt="Existing" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px', border: '1px solid #333' }} />
-                          <button type="button" onClick={() => removeExistingImage(i, img)} style={{ position: 'absolute', top: '-8px', right: '-8px', width: '28px', height: '28px', borderRadius: '50%', background: '#ff6b6b', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>×</button>
-                          {i === 0 && <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'var(--green)', color: 'black', fontSize: '0.7rem', textAlign: 'center', borderRadius: '0 0 12px 12px', fontWeight: 'bold', padding: '2px 0' }}>STORED</div>}
-                        </div>
-                      ))}
-                      
-                      {/* New Previews */}
-                      {previews.map((url, i) => (
-                        <div key={`new-${i}`} className="preview-item" style={{ position: 'relative', width: '120px', height: '120px' }}>
-                          <img src={url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px', border: '1px solid #333' }} />
-                          <button type="button" onClick={() => removeImage(i)} style={{ position: 'absolute', top: '-8px', right: '-8px', width: '28px', height: '28px', borderRadius: '50%', background: '#ff6b6b', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>×</button>
-                          {(existingImages.length === 0 && i === 0) && <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', background: 'var(--green)', color: 'black', fontSize: '0.7rem', textAlign: 'center', borderRadius: '0 0 12px 12px', fontWeight: 'bold', padding: '2px 0' }}>MAIN IMAGE</div>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {errors.images && <div style={{ color: '#ff6b6b', marginTop: '12px', fontSize: '0.9rem' }}>{errors.images}</div>}
-                </div>
-              </section>
 
               {/* SECTION 6: ADDITIONAL DETAILS */}
               <section className="fp-card">
