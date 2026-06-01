@@ -167,6 +167,42 @@ router.put('/:id', protect, authorize('Farmer'), upload.array('farm_images', 5),
     if (data.delivery_timeframe) listing.delivery_timeframe = data.delivery_timeframe;
     if (data.tags) listing.tags = data.tags;
 
+    // Map legacy fields if present to ensure backward compatibility
+    if (data.crop_variety !== undefined) {
+      listing.sugarcane_variety = data.crop_variety;
+      listing.crop_variety = data.crop_variety;
+    }
+    if (data.location !== undefined) {
+      listing.delivery_location = data.location;
+      listing.location = data.location;
+    }
+    if (data.quantity_in_tons !== undefined) {
+      const val = parseFloat(data.quantity_in_tons);
+      listing.quantity_in_tons = val;
+      listing.quantity_available = {
+        value: val,
+        unit: listing.quantity_available?.unit || 'gunthas'
+      };
+    }
+    if (data.expected_price_per_ton !== undefined) {
+      const val = parseFloat(data.expected_price_per_ton);
+      listing.expected_price_per_ton = val;
+      listing.price_details = {
+        price_per_unit: val,
+        price_negotiable: listing.price_details?.price_negotiable ?? true,
+        minimum_order_quantity: listing.price_details?.minimum_order_quantity || 0
+      };
+    }
+    if (data.harvest_availability_date !== undefined) {
+      listing.harvest_availability_date = data.harvest_availability_date;
+      listing.delivery_timeframe = {
+        available_from: data.harvest_availability_date,
+        available_until: listing.delivery_timeframe?.available_until || null,
+        preferred_delivery_time: listing.delivery_timeframe?.preferred_delivery_time || 'Flexible'
+      };
+    }
+
+
     // Update images
     // If keep_existing_images is provided, it means the user managed images
     if (data.keep_existing_images) {

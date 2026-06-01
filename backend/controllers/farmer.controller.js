@@ -147,7 +147,7 @@ const createListing = async (req, res) => {
 
     // Create new listing
     const listing = new CropListing({
-      farmerId: req.user._id,
+      farmer_id: req.user._id,
       type,
       cropName,
       quantity,
@@ -158,7 +158,7 @@ const createListing = async (req, res) => {
     await listing.save();
 
     // Populate farmer details
-    await listing.populate('farmerId', 'name email phone');
+    await listing.populate('farmer_id', 'name email phone');
 
     res.status(201).json({
       success: true,
@@ -196,7 +196,7 @@ const getAllListings = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const listings = await CropListing.find(filter)
-      .populate('farmerId', 'name email phone')
+      .populate('farmer_id', 'name email phone')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
@@ -232,14 +232,14 @@ const getMyListings = async (req, res) => {
     const { status, page = 1, limit = 10 } = req.query;
 
     // Build filter object
-    const filter = { farmerId: req.user._id };
+    const filter = { farmer_id: req.user._id };
     if (status) filter.status = status;
 
     // Pagination
     const skip = (page - 1) * limit;
 
     const listings = await CropListing.find(filter)
-      .populate('farmerId', 'name email phone')
+      .populate('farmer_id', 'name email phone')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
@@ -286,7 +286,7 @@ const updateListing = async (req, res) => {
     }
 
     // Check if the listing belongs to the authenticated farmer
-    if (listing.farmerId.toString() !== req.user._id.toString()) {
+    if (listing.farmer_id.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
         message: 'Access denied. You can only update your own listings.'
@@ -304,7 +304,7 @@ const updateListing = async (req, res) => {
     });
 
     await listing.save();
-    await listing.populate('farmerId', 'name email phone');
+    await listing.populate('farmer_id', 'name email phone');
 
     res.status(200).json({
       success: true,
@@ -342,7 +342,7 @@ const deleteListing = async (req, res) => {
     }
 
     // Check if the listing belongs to the authenticated farmer
-    if (listing.farmerId.toString() !== req.user._id.toString()) {
+    if (listing.farmer_id.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
         message: 'Access denied. You can only delete your own listings.'
