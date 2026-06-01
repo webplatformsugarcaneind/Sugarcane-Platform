@@ -142,40 +142,6 @@ const FarmerDashboardPage = () => {
         </div>
       </div>
 
-      {/* Quick Stats Row */}
-      <div className="fr-stats-row">
-        <div className="fr-stat-card">
-          <div className="fr-stat-top">
-            <span className="fr-stat-label">{t('farmerDash.pendingReq')}</span>
-            <span className="fr-stat-icon-svg amber"><Icons.Clock /></span>
-          </div>
-          <div className="fr-stat-bottom">
-            <div className="fr-stat-val amber">3</div>
-            <div className="fr-stat-trend">{t('farmerDash.newReq')}</div>
-          </div>
-        </div>
-        <div className="fr-stat-card">
-          <div className="fr-stat-top">
-            <span className="fr-stat-label">{t('farmerDash.activeCon')}</span>
-            <span className="fr-stat-icon-svg green"><Icons.Handshake /></span>
-          </div>
-          <div className="fr-stat-bottom">
-            <div className="fr-stat-val green">1</div>
-            <div className="fr-stat-trend">{t('farmerDash.inProgress')}</div>
-          </div>
-        </div>
-        <div className="fr-stat-card">
-          <div className="fr-stat-top">
-            <span className="fr-stat-label">{t('farmerDash.marketList')}</span>
-            <span className="fr-stat-icon-svg blue"><Icons.Market /></span>
-          </div>
-          <div className="fr-stat-bottom">
-            <div className="fr-stat-val blue">2</div>
-            <div className="fr-stat-trend">{t('farmerDash.activePosts')}</div>
-          </div>
-        </div>
-      </div>
-
       {/* Single Page Content */}
       <div className="fr-content">
         <FarmerContractsTab />
