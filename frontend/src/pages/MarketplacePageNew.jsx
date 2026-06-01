@@ -2065,17 +2065,7 @@ const MarketplacePage = () => {
 
 
 
-                        {/* Show farm images if available */}
 
-                        {listing.farm_images && listing.farm_images.length > 0 && (
-
-                          <div className="farm-images">
-
-                            <div className="image-count">📸 {listing.farm_images.length} image(s)</div>
-
-                          </div>
-
-                        )}
 
                       </div>
 
